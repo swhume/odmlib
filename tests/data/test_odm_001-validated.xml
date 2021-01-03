@@ -1,0 +1,97 @@
+<?xml version='1.0' encoding='us-ascii'?>
+<ODM AsOfDateTime="2020-07-13T15:07:10.701292+00:00"
+    CreationDateTime="2020-07-13T15:07:10.701292+00:00" FileOID="ODM.MDV.TEST.001"
+    FileType="Snapshot" Granularity="Metadata" ODMVersion="1.3.2" Originator="RDS"
+    SourceSystem="ODMLib" SourceSystemVersion="0.1"
+    xmlns="http://www.cdisc.org/ns/odm/v1.3">
+    <Study OID="ODM.STUDY.001">
+        <GlobalVariables>
+            <StudyName>ODM XML Test Study Name</StudyName>
+            <StudyDescription>Testing the generation of an ODM XML file</StudyDescription>
+            <ProtocolName>ODM XML Test Study</ProtocolName>
+        </GlobalVariables>
+        <MetaDataVersion Description="Trace-XML Example" Name="TRACE-XML MDV"
+            OID="MDV.TRACE-XML-ODM-01">
+            <Protocol>
+                <Description>
+                    <TranslatedText xml:lang="en">Trace-XML Test CDASH File</TranslatedText>
+                </Description>
+                <StudyEventRef Mandatory="Yes" OrderNumber="1" StudyEventOID="BASELINE"/>
+                <StudyEventRef Mandatory="Yes" OrderNumber="2" StudyEventOID="FOLLOW-UP"/>
+                <Alias Context="ClinicalTrials.gov" Name="trace-protocol"/>
+            </Protocol>
+            <StudyEventDef Name="Baseline Visit" OID="BASELINE" Repeating="No" Type="Scheduled">
+                <FormRef FormOID="ODM.F.DM" Mandatory="Yes" OrderNumber="1"/>
+                <FormRef FormOID="ODM.F.VS" Mandatory="Yes" OrderNumber="2"/>
+                <FormRef FormOID="ODM.F.AE" Mandatory="Yes" OrderNumber="3"/>
+            </StudyEventDef>
+            <StudyEventDef Name="Follow-up Visit" OID="FOLLOW-UP" Repeating="Yes" Type="Scheduled">
+                <FormRef FormOID="ODM.F.DM" Mandatory="Yes" OrderNumber="1"/>
+                <FormRef FormOID="ODM.F.VS" Mandatory="Yes" OrderNumber="2"/>
+                <FormRef FormOID="ODM.F.AE" Mandatory="Yes" OrderNumber="3"/>
+            </StudyEventDef>
+            <FormDef Name="Vital Signs" OID="ODM.F.VS" Repeating="No">
+                <ItemGroupRef ItemGroupOID="ODM.IG.Common" Mandatory="Yes" OrderNumber="1"/>
+                <ItemGroupRef ItemGroupOID="ODM.IG.VS_GENERAL" Mandatory="Yes" OrderNumber="2"/>
+                <ItemGroupRef ItemGroupOID="ODM.IG.VS" Mandatory="Yes" OrderNumber="3"/>
+            </FormDef>
+            <FormDef Name="Demographics" OID="ODM.F.DM" Repeating="No">
+                <ItemGroupRef ItemGroupOID="ODM.IG.Common" Mandatory="Yes" OrderNumber="1"/>
+                <ItemGroupRef ItemGroupOID="ODM.IG.DM" Mandatory="Yes" OrderNumber="2"/>
+            </FormDef>
+            <ItemGroupDef Name="Vital Sign Measurement" OID="ODM.IG.VS" Repeating="Yes">
+                <ItemRef ItemOID="ODM.IT.VS.VSDAT" Mandatory="Yes"/>
+                <ItemRef ItemOID="ODM.IT.VS.BP.DIABP.VSORRES" Mandatory="Yes"/>
+                <ItemRef ItemOID="ODM.IT.VS.BP.SYSBP.VSORRES" Mandatory="Yes"/>
+            </ItemGroupDef>
+            <ItemGroupDef Name="Demographics" OID="ODM.IG.DM" Repeating="No">
+                <ItemRef ItemOID="ODM.IT.DM.BRTHYR" Mandatory="Yes"/>
+                <ItemRef ItemOID="ODM.IT.DM.SEX" Mandatory="Yes"/>
+            </ItemGroupDef>
+            <ItemDef DataType="partialDate" Name="Date" OID="ODM.IT.VS.VSDAT">
+                <Description>
+                    <TranslatedText xml:lang="en">Date of measurements</TranslatedText>
+                </Description>
+                <Question>
+                    <TranslatedText xml:lang="en">Date</TranslatedText>
+                </Question>
+                <Alias Context="CDASH" Name="VSDAT"/>
+            </ItemDef>
+            <ItemDef DataType="text" Name="BP Units" OID="ODM.IT.VS.BP.VSORRESU">
+                <Description>
+                    <TranslatedText xml:lang="en">Result of the vital signs measurement as
+                        originally received or collected.</TranslatedText>
+                </Description>
+                <Question>
+                    <TranslatedText xml:lang="en">Diastolic</TranslatedText>
+                </Question>
+                <Alias Context="CDASH" Name="BP.DIABP.VSORRES"/>
+                <Alias Context="CDASH/SDTM" Name="VSORRES+VSORRESU"/>
+            </ItemDef>
+            <CodeList DataType="text" Name="No Yes Response" OID="ODM.CL.NY_SUB_Y_N">
+                <CodeListItem CodedValue="N">
+                    <Decode>
+                        <TranslatedText xml:lang="en">No</TranslatedText>
+                    </Decode>
+                </CodeListItem>
+                <CodeListItem CodedValue="Y">
+                    <Decode>
+                        <TranslatedText xml:lang="en">Yes</TranslatedText>
+                    </Decode>
+                </CodeListItem>
+            </CodeList>
+            <ConditionDef Name="Skip BRTHMO when no BRTHYR" OID="ODM.CD.BRTHMO">
+                <Description>
+                    <TranslatedText xml:lang="en">Skip the BRTHMO field when BRTHYR length NE
+                        4</TranslatedText>
+                </Description>
+            </ConditionDef>
+            <MethodDef Name="Create BRTHDTC from date elements" OID="ODM.MT.DOB" Type="Computation">
+                <Description>
+                    <TranslatedText xml:lang="en">Concatenation of BRTHYR, BRTHMO, and BRTHDY in ISO
+                        8601 format</TranslatedText>
+                </Description>
+            </MethodDef>
+        </MetaDataVersion>
+    </Study>
+</ODM>

@@ -1,0 +1,251 @@
+{
+    "FileOID": "ODM.MDV.TEST.001",
+    "Granularity": "Metadata",
+    "AsOfDateTime": "2020-07-14T00:13:51.309617+00:00",
+    "CreationDateTime": "2020-07-14T00:13:51.310614+00:00",
+    "ODMVersion": "1.3.2",
+    "FileType": "Snapshot",
+    "Originator": "RDS",
+    "SourceSystem": "ODMLib",
+    "SourceSystemVersion": "0.1",
+    "Study": [{
+        "OID": "ODM.STUDY.001",
+        "GlobalVariables": {
+            "StudyName": {"_content": "ODM XML Test Study Name"},
+            "StudyDescription": {"_content": "Testing the generation of an ODM XML file"},
+            "ProtocolName": {"_content": "ODM XML Test Study"}
+        },
+        "MetaDataVersion": [{
+            "OID": "MDV.TRACE-XML-ODM-01",
+            "Name": "TRACE-XML MDV",
+            "Description": "Trace-XML Example",
+            "Protocol": {
+                "Description": {"TranslatedText": [{
+                    "_content": "Trace-XML Test CDASH File",
+                    "xml_lang": "en"
+                }]},
+                "StudyEventRef": [
+                    {
+                        "StudyEventOID": "BASELINE",
+                        "OrderNumber": 1,
+                        "Mandatory": "Yes"
+                    },
+                    {
+                        "StudyEventOID": "FOLLOW-UP",
+                        "OrderNumber": 2,
+                        "Mandatory": "Yes"
+                    }
+                ],
+                "Alias": [{
+                    "Context": "ClinicalTrials.gov",
+                    "Name": "trace-protocol"
+                }]
+            },
+            "StudyEventDef": [
+                {
+                    "OID": "BASELINE",
+                    "Name": "Baseline Visit",
+                    "Repeating": "No",
+                    "Type": "Scheduled",
+                    "FormRef": [
+                        {
+                            "FormOID": "ODM.F.DM",
+                            "Mandatory": "Yes",
+                            "OrderNumber": 1
+                        },
+                        {
+                            "FormOID": "ODM.F.VS",
+                            "Mandatory": "Yes",
+                            "OrderNumber": 2
+                        },
+                        {
+                            "FormOID": "ODM.F.AE",
+                            "Mandatory": "Yes",
+                            "OrderNumber": 3
+                        }
+                    ]
+                },
+                {
+                    "OID": "FOLLOW-UP",
+                    "Name": "Follow-up Visit",
+                    "Repeating": "Yes",
+                    "Type": "Scheduled",
+                    "FormRef": [
+                        {
+                            "FormOID": "ODM.F.DM",
+                            "Mandatory": "Yes",
+                            "OrderNumber": 1
+                        },
+                        {
+                            "FormOID": "ODM.F.VS",
+                            "Mandatory": "Yes",
+                            "OrderNumber": 2
+                        },
+                        {
+                            "FormOID": "ODM.F.AE",
+                            "Mandatory": "Yes",
+                            "OrderNumber": 3
+                        }
+                    ]
+                }
+            ],
+            "FormDef": [
+                {
+                    "OID": "ODM.F.VS",
+                    "Name": "Vital Signs",
+                    "Repeating": "No",
+                    "ItemGroupRef": [
+                        {
+                            "ItemGroupOID": "ODM.IG.Common",
+                            "Mandatory": "Yes",
+                            "OrderNumber": 1
+                        },
+                        {
+                            "ItemGroupOID": "ODM.IG.VS_GENERAL",
+                            "Mandatory": "Yes",
+                            "OrderNumber": 2
+                        },
+                        {
+                            "ItemGroupOID": "ODM.IG.VS",
+                            "Mandatory": "Yes",
+                            "OrderNumber": 3
+                        }
+                    ]
+                },
+                {
+                    "OID": "ODM.F.DM",
+                    "Name": "Demographics",
+                    "Repeating": "No",
+                    "ItemGroupRef": [
+                        {
+                            "ItemGroupOID": "ODM.IG.Common",
+                            "Mandatory": "Yes",
+                            "OrderNumber": 1
+                        },
+                        {
+                            "ItemGroupOID": "ODM.IG.DM",
+                            "Mandatory": "Yes",
+                            "OrderNumber": 2
+                        }
+                    ]
+                }
+            ],
+            "ItemGroupDef": [
+                {
+                    "OID": "ODM.IG.VS",
+                    "Name": "Vital Sign Measurement",
+                    "Repeating": "Yes",
+                    "ItemRef": [
+                        {
+                            "ItemOID": "ODM.IT.VS.VSDAT",
+                            "Mandatory": "Yes"
+                        },
+                        {
+                            "ItemOID": "ODM.IT.VS.BP.DIABP.VSORRES",
+                            "Mandatory": "Yes"
+                        },
+                        {
+                            "ItemOID": "ODM.IT.VS.BP.SYSBP.VSORRES",
+                            "Mandatory": "Yes"
+                        }
+                    ]
+                },
+                {
+                    "OID": "ODM.IG.DM",
+                    "Name": "Demographics",
+                    "Repeating": "No",
+                    "ItemRef": [
+                        {
+                            "ItemOID": "ODM.IT.DM.BRTHYR",
+                            "Mandatory": "Yes"
+                        },
+                        {
+                            "ItemOID": "ODM.IT.DM.SEX",
+                            "Mandatory": "Yes"
+                        }
+                    ]
+                }
+            ],
+            "ItemDef": [
+                {
+                    "OID": "ODM.IT.VS.VSDAT",
+                    "Name": "Date",
+                    "DataType": "partialDate",
+                    "Description": {"TranslatedText": [{
+                        "_content": "Date of measurements",
+                        "xml_lang": "en"
+                    }]},
+                    "Question": {"TranslatedText": [{
+                        "_content": "Date",
+                        "xml_lang": "en"
+                    }]},
+                    "Alias": [{
+                        "Context": "CDASH",
+                        "Name": "VSDAT"
+                    }]
+                },
+                {
+                    "OID": "ODM.IT.VS.BP.VSORRESU",
+                    "Name": "BP Units",
+                    "DataType": "text",
+                    "Description": {"TranslatedText": [{
+                        "_content": "Result of the vital signs measurement as originally received or collected.",
+                        "xml_lang": "en"
+                    }]},
+                    "Question": {"TranslatedText": [{
+                        "_content": "Diastolic",
+                        "xml_lang": "en"
+                    }]},
+                    "Alias": [
+                        {
+                            "Context": "CDASH",
+                            "Name": "BP.DIABP.VSORRES"
+                        },
+                        {
+                            "Context": "CDASH/SDTM",
+                            "Name": "VSORRES+VSORRESU"
+                        }
+                    ]
+                }
+            ],
+            "CodeList": [{
+                "OID": "ODM.CL.NY_SUB_Y_N",
+                "Name": "No Yes Response",
+                "DataType": "text",
+                "CodeListItem": [
+                    {
+                        "CodedValue": "N",
+                        "Decode": {"TranslatedText": [{
+                            "_content": "No",
+                            "xml_lang": "en"
+                        }]}
+                    },
+                    {
+                        "CodedValue": "Y",
+                        "Decode": {"TranslatedText": [{
+                            "_content": "Yes",
+                            "xml_lang": "en"
+                        }]}
+                    }
+                ]
+            }],
+            "ConditionDef": [{
+                "OID": "ODM.CD.BRTHMO",
+                "Name": "Skip BRTHMO when no BRTHYR",
+                "Description": {"TranslatedText": [{
+                    "_content": "Skip the BRTHMO field when BRTHYR length NE 4",
+                    "xml_lang": "en"
+                }]}
+            }],
+            "MethodDef": [{
+                "OID": "ODM.MT.DOB",
+                "Name": "Create BRTHDTC from date elements",
+                "Type": "Computation",
+                "Description": {"TranslatedText": [{
+                    "_content": "Concatenation of BRTHYR, BRTHMO, and BRTHDY in ISO 8601 format",
+                    "xml_lang": "en"
+                }]}
+            }]
+        }]
+    }]
+}

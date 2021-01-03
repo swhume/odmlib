@@ -1,0 +1,2 @@
+include tests/data/*.xml
+include test/data/*.json

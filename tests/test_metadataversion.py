@@ -7,7 +7,7 @@ class TestMetaDataVersion(TestCase):
     def setUp(self) -> None:
         attrs = self.set_attributes()
         self.mdv = ODM.MetaDataVersion(**attrs)
-        self.odm_test_file = os.path.dirname(os.path.realpath(__file__)) + '\\data\\test_mdv_001.xml'
+        self.odm_test_file = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'data', 'test_mdv_001.xml')
 
     def test_add_include(self):
         inc = ODM.Include(StudyOID="STUDY.TRACE-XML-DEMO", MetaDataVersionOID="MDV.TRACE-XML-ODM-01")

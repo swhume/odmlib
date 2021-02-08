@@ -7,7 +7,7 @@ import datetime
 
 class TestClinicalData(TestCase):
     def setUp(self) -> None:
-        self.odm_test_file = os.path.dirname(os.path.realpath(__file__)) + '\\data\\test_clinical_data_01.xml'
+        self.odm_test_file = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'data','test_clinical_data_01.xml')
 
     def test_clinical_data_to_xml(self):
         cd = []
@@ -71,13 +71,13 @@ class TestClinicalData(TestCase):
     def test_annotation(self):
         annotation = ODM.Annotation(SeqNum="1", TransactionType="Insert", ID="ANN001")
         annotation.Comment = ODM.Comment(SponsorOrSite="Site", _content="Transferred from EHR")
-        annotation.Comment.Flag = ODM.Flag()
-        annotation.Comment.Flag.FlagValue = ODM.FlagValue(CodeListOID="CL.FLAGVALUE", _content="eSource")
-        annotation.Comment.Flag.FlagType = ODM.FlagType(CodeListOID="CL.FLAGTYPE", _content="eDT")
+        annotation.Flag.append(ODM.Flag())
+        annotation.Flag[0].FlagValue = ODM.FlagValue(CodeListOID="CL.FLAGVALUE", _content="eSource")
+        annotation.Flag[0].FlagType = ODM.FlagType(CodeListOID="CL.FLAGTYPE", _content="eDT")
         annotation_dict = annotation.to_dict()
         print(annotation_dict)
-        self.assertEqual(annotation_dict["Comment"]["Flag"]["FlagValue"]["CodeListOID"], "CL.FLAGVALUE")
-        self.assertEqual(annotation.Comment.Flag.FlagValue.CodeListOID, "CL.FLAGVALUE")
+        self.assertEqual(annotation_dict["Flag"][0]["FlagValue"]["CodeListOID"], "CL.FLAGVALUE")
+        self.assertEqual(annotation.Flag[0].FlagValue.CodeListOID, "CL.FLAGVALUE")
 
     def test_signature(self):
         sig = ODM.Signature(ID="SIG.001.USER.001")
@@ -116,13 +116,13 @@ class TestClinicalData(TestCase):
     def test_annotations(self):
         annotation = ODM.Annotation(SeqNum="1", TransactionType="Insert", ID="ANN001")
         annotation.Comment = ODM.Comment(SponsorOrSite="Site", _content="Transferred from EHR")
-        annotation.Comment.Flag = ODM.Flag()
-        annotation.Comment.Flag.FlagValue = ODM.FlagValue(CodeListOID="CL.FLAGVALUE", _content="eSource")
-        annotation.Comment.Flag.FlagType = ODM.FlagType(CodeListOID="CL.FLAGTYPE", _content="eDT")
+        annotation.Flag.append(ODM.Flag())
+        annotation.Flag[0].FlagValue = ODM.FlagValue(CodeListOID="CL.FLAGVALUE", _content="eSource")
+        annotation.Flag[0].FlagType = ODM.FlagType(CodeListOID="CL.FLAGTYPE", _content="eDT")
         anns = ODM.Annotations()
         anns.Annotation.append(annotation)
         self.assertEqual(anns.Annotation[0].ID, "ANN001")
-        self.assertEqual(anns.Annotation[0].Comment.Flag.FlagValue.CodeListOID, "CL.FLAGVALUE")
+        self.assertEqual(anns.Annotation[0].Flag[0].FlagValue.CodeListOID, "CL.FLAGVALUE")
 
     def create_odm_document(self, cd):
         """

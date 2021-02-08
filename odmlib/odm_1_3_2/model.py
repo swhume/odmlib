@@ -15,20 +15,20 @@ class TranslatedText(OE.ODMElement):
 
 
 class Alias(OE.ODMElement):
-    Context = T.String("Context", required=True)
-    Name = T.String("Name", required=True)
+    Context = T.String(required=True)
+    Name = T.String(required=True)
 
 
 class StudyDescription(OE.ODMElement):
-    _content = T.String("_content", required=True)
+    _content = T.String(required=True)
 
 
 class ProtocolName(OE.ODMElement):
-    _content = T.String("_content", required=True)
+    _content = T.String(required=True)
 
 
 class StudyName(OE.ODMElement):
-    _content = T.String("_content", required=True)
+    _content = T.String(required=True)
 
 
 class GlobalVariables(OE.ODMElement):
@@ -82,7 +82,6 @@ class FormRef(OE.ODMElement):
 
 
 class StudyEventDef(OE.ODMElement):
-    """ represents ODM v1.3.2 StudyEventDef and can serialize as JSON or XML """
     OID = T.OID(required=True)
     Name = T.Name(required=True)
     Repeating = T.ValueSetString(required=True)
@@ -97,9 +96,7 @@ class StudyEventDef(OE.ODMElement):
         return len(self.FormRef)
 
     def __getitem__(self, position):
-        """
-        creates an iterator from an StudyEventDef object that returns the FormRef in position
-        """
+        """ creates an iterator from an StudyEventDef object that returns the FormRef in position """
         return self.FormRef[position]
 
     def __iter__(self):
@@ -120,7 +117,6 @@ class ArchiveLayout(OE.ODMElement):
 
 
 class FormDef(OE.ODMElement):
-    """ represents ODM FormDef and can serialize as JSON or XML """
     OID = T.OID(required=True)
     Name = T.Name(required=True)
     Repeating = T.ValueSetString(required=True)
@@ -151,7 +147,6 @@ class ItemRef(OE.ODMElement):
 
 
 class ItemGroupDef(OE.ODMElement):
-    """ represents ODM ItemGroupDef and can serialize as JSON or XML"""
     OID = T.OID(required=True)
     Name = T.Name(required=True)
     Repeating = T.ValueSetString(required=True)
@@ -176,10 +171,6 @@ class ItemGroupDef(OE.ODMElement):
 
 
 class Question(OE.ODMElement):
-    """
-    Represents ODM v1.3.2 Question and can serialize as JSON or XML. Question is a label shown to a human user
-    when prompted to provide data for an item on paper or on a screen.
-    """
     TranslatedText = T.ODMListObject(required=True, element_class=TranslatedText)
 
 
@@ -194,7 +185,7 @@ class MeasurementUnitRef(OE.ODMElement):
 
 
 class CheckValue(OE.ODMElement):
-    _content = T.String("_content", required=True)
+    _content = T.String(required=True)
 
 
 class FormalExpression(OE.ODMElement):
@@ -207,7 +198,6 @@ class ErrorMessage(OE.ODMElement):
 
 
 class RangeCheck(OE.ODMElement):
-    """ represents ODM RangeCheck element that is a child of ItemDef and can serialize as JSON or XML """
     Comparator = T.ValueSetString(required=False)
     SoftHard = T.ValueSetString(required=True)
     CheckValue = T.ODMListObject(element_class=CheckValue)
@@ -221,7 +211,6 @@ class CodeListRef(OE.ODMElement):
 
 
 class ItemDef(OE.ODMElement):
-    """ represents ODM v1.3.2 ItemDef and can serialize as JSON or XML - ordering of properties matters """
     OID = T.OID(required=True)
     Name = T.Name(required=True)
     DataType = T.ValueSetString(required=True)
@@ -245,7 +234,6 @@ class Decode(OE.ODMElement):
 
 
 class CodeListItem(OE.ODMElement):
-    """ represents ODM CodeListItem element that is a child of CodeList and can serialize as JSON or XML """
     CodedValue = T.String(required=True)
     Rank = T.Float(required=False)
     OrderNumber = T.Integer(required=False)
@@ -254,7 +242,6 @@ class CodeListItem(OE.ODMElement):
 
 
 class EnumeratedItem(OE.ODMElement):
-    """ represents ODM EnumeratedItem element that is a child of CodeList and can serialize as JSON or XML """
     CodedValue = T.String(required=True)
     Rank = T.Float(required=False)
     OrderNumber = T.Integer(required=False)
@@ -269,7 +256,6 @@ class ExternalCodeList(OE.ODMElement):
 
 
 class CodeList(OE.ODMElement):
-    """ represents ODM v1.3.2 CodeList element that can serialize as JSON or XML """
     OID = T.OID(required=True)
     Name = T.Name(required=True)
     DataType = T.ValueSetString(required=True)
@@ -296,7 +282,6 @@ class ConditionDef(OE.ODMElement):
 
 
 class MethodDef(OE.ODMElement):
-    """ represents ODM v1.3.2 MethodDef and can serialize as JSON or XML """
     OID = T.OID(required=True)
     Name = T.Name(required=True)
     Type = T.ValueSetString(required=True)
@@ -461,7 +446,7 @@ class AdminData(OE.ODMElement):
 
 
 class Study(OE.ODMElement):
-    OID = T.String("OID", required=True)
+    OID = T.String(required=True)
     GlobalVariables = T.ODMObject(required=True, element_class=GlobalVariables)
     BasicDefinitions = T.ODMObject(element_class=BasicDefinitions)
     MetaDataVersion = T.ODMListObject(required=False, element_class=MetaDataVersion)
@@ -527,6 +512,7 @@ class FlagType(OE.ODMElement):
 class Flag(OE.ODMElement):
     FlagValue = T.ODMObject(required=True, element_class=FlagValue)
     FlagType = T.ODMObject(element_class=FlagType)
+
 
 class Comment(OE.ODMElement):
     SponsorOrSite = T.ValueSetString()

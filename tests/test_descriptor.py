@@ -14,8 +14,8 @@ class TestDescriptor(unittest.TestCase):
     def test_assignment(self):
         test = TestText(Name="test name", OrderNumber="1")
         self.assertEqual(test.Name, "test name")
-        test.OID = None
-        self.assertIsNone(test.OID)
+        with self.assertRaises(TypeError):
+            test.OID = None
         TestText.Name = "VariableOne"
         self.assertEqual(TestText.Name, "VariableOne")
 
@@ -37,6 +37,6 @@ class TestDescriptor(unittest.TestCase):
         self.assertIsNone(result)
         itd.Alias.append(itd.CodeListRef)
         self.assertListEqual(itd.Alias, [None])
-        itd.new_thing = "hello"
-        self.assertEqual(itd.new_thing, "hello")
+        with self.assertRaises(TypeError):
+            itd.new_thing = "hello"
 

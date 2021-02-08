@@ -4,14 +4,15 @@ import datetime
 import xml.etree.ElementTree as ET
 import os
 import odmlib.odm_loader as OL
+import odmlib.loader as LD
 
 
 class TestODM(TestCase):
     def setUp(self) -> None:
         self.odm = self.add_root()
-        self.odm_test_file = os.path.dirname(os.path.realpath(__file__)) + '\\data\\test_odm_001.xml'
-        self.odm_writer_test_file = os.path.dirname(os.path.realpath(__file__)) + '\\data\\test_odm_002.xml'
-        self.loader = OL.ODMLoader(OL.XMLODMLoader())
+        self.odm_test_file = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'data', 'test_odm_001.xml')
+        self.odm_writer_test_file = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'data', 'test_odm_002.xml')
+        self.loader = LD.ODMLoader(OL.XMLODMLoader())
 
     def test_odm_attributes(self):
         self.assertEqual("ODM.MDV.TEST.001", self.odm.FileOID)

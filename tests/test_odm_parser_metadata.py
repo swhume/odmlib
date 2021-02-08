@@ -7,8 +7,7 @@ ODM_NS = "{http://www.cdisc.org/ns/odm/v1.3}"
 
 class TestOdmParserMetaData(unittest.TestCase):
     def setUp(self) -> None:
-        self.odm_file_1 = os.path.dirname(os.path.realpath(__file__)) + '\\data\\cdash-odm-test.xml'
-        # self.odm_file_2 = os.path.dirname(os.path.realpath(__file__)) + '\\data\\cdash.odm_updated.xml'
+        self.odm_file_1 = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'data', 'cdash-odm-test.xml')
         self.parser = P.ODMParser(self.odm_file_1)
         self.root = self.parser.parse()
         self.mdv = self.parser.MetaDataVersion()

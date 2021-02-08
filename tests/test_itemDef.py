@@ -79,6 +79,16 @@ class TestItemDef(TestCase):
         self.item.CodeListRef = ODM.CodeListRef(CodeListOID="CL.NY_SUB_Y_N_2011-10-24")
         self.assertEqual(self.item.CodeListRef.CodeListOID, "CL.NY_SUB_Y_N_2011-10-24")
 
+    def test_codelist_ref_exists_check(self):
+        attrs = self.set_item_attributes()
+        item = ODM.ItemDef(**attrs)
+        codelistref_check_succeeds = False
+        if not item.CodeListRef:
+            codelistref_check_succeeds = True
+        if item.CodeListRef:
+            codelistref_check_succeeds = False
+        self.assertTrue(codelistref_check_succeeds)
+
     def test_add_alias(self):
         self.item.Alias = [ODM.Alias(Context="CDASH", Name="AEYN")]
         self.assertEqual(self.item.Alias[0].Name, "AEYN")

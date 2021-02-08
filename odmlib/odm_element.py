@@ -66,6 +66,12 @@ class ODMElement(metaclass=ODMMeta):
             if isinstance(obj, DESC.Descriptor) and (not isinstance(obj, T.ODMObject)) and (attr not in self.__dict__) and obj.required:
                 raise ValueError(f"Missing required keyword argument {attr} in {self.__class__.__name__}")
 
+    def __setattr__(self, key, value):
+        """ ensure the object being added is a type that belongs to the class """
+        if not hasattr(self, key):
+            raise TypeError(f"Assignment error: {self.__class__.__name__} does not have a defined attribute {key}")
+        super().__setattr__(key, value)
+
     def to_json(self):
         """
         transforms odmlib hierarchy into a dict and converts that to JSON and returns it
@@ -85,7 +91,7 @@ class ODMElement(metaclass=ODMMeta):
         # create attributes
         attrs = {}
         for attr, obj in self.__dict__.items():
-            if not isinstance(obj, (ODMElement, list)) and attr != "_content":
+            if not isinstance(obj, (ODMElement, list)) and attr != "_content" and obj is not None:
                 # add namespace if not the default namespace
                 if attr in self.__class__.__dict__["_attr_ns"]:
                     attrs[self.__class__.__dict__["_attr_ns"][attr] + ":" + attr] = str(obj)
@@ -125,7 +131,7 @@ class ODMElement(metaclass=ODMMeta):
                 property_dict[attr] = obj.to_dict()                    # element
             elif isinstance(obj, list):
                 property_dict[attr] = [o.to_dict() for o in obj]       # list of ELEMENTS
-            else:
+            elif obj is not None:
                 property_dict[attr] = obj                              # attributes
         return property_dict
 
@@ -206,3 +212,18 @@ class ODMElement(metaclass=ODMMeta):
         doc_dict = self.to_dict()
         result = validator.verify_conformance(doc_dict, type(self).__name__)
         return result
+
+    def verify_order(self):
+        odm_content = {attr: obj for attr, obj in self.__dict__.items() if attr not in ["_fields", "_attr_ns"]}
+        for attr, obj in odm_content.items():
+            if isinstance(obj, ODMElement):
+                if list(obj.__dict__.keys()) != obj._fields:
+                    raise ValueError(f"The order of elements in {attr} should be {obj._fields}")
+                obj.verify_order()
+            elif isinstance(obj, list):
+                for o in obj:
+                    if list(obj.__dict__.keys()) != obj._fields:
+                        raise ValueError(f"The order of elements in {attr} should be {obj._fields}")
+                    o.verify_order()
+        return True
+

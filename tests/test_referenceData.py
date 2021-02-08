@@ -8,7 +8,7 @@ import datetime
 
 class TestReferenceData(TestCase):
     def setUp(self) -> None:
-        self.odm_test_file = os.path.dirname(os.path.realpath(__file__)) + '\\data\\test_referece_data_01.xml'
+        self.odm_test_file = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'data','test_referece_data_01.xml')
 
     def test_reference_data_to_xml(self):
         rd = []
@@ -64,16 +64,16 @@ class TestReferenceData(TestCase):
     def test_annotations(self):
         annotation = ODM.Annotation(SeqNum="1", TransactionType="Insert", ID="ANN999")
         annotation.Comment = ODM.Comment(SponsorOrSite="Site", _content="Transferred from EHR")
-        annotation.Comment.Flag = ODM.Flag()
-        annotation.Comment.Flag.FlagValue = ODM.FlagValue(CodeListOID="CL.FLAGVALUE", _content="eSource")
-        annotation.Comment.Flag.FlagType = ODM.FlagType(CodeListOID="CL.FLAGTYPE", _content="eDT")
+        annotation.Flag.append(ODM.Flag())
+        annotation.Flag[0].FlagValue = ODM.FlagValue(CodeListOID="CL.FLAGVALUE", _content="eSource")
+        annotation.Flag[0].FlagType = ODM.FlagType(CodeListOID="CL.FLAGTYPE", _content="eDT")
         anns = ODM.Annotations()
         anns.Annotation.append(annotation)
         rd = []
         rd.append(ODM.ReferenceData(StudyOID="P2006-101", MetaDataVersionOID="101.01"))
         rd[0].Annotations.append(anns)
         self.assertEqual(rd[0].Annotations[0].Annotation[0].ID, "ANN999")
-        self.assertEqual(rd[0].Annotations[0].Annotation[0].Comment.Flag.FlagValue.CodeListOID, "CL.FLAGVALUE")
+        self.assertEqual(rd[0].Annotations[0].Annotation[0].Flag[0].FlagValue.CodeListOID, "CL.FLAGVALUE")
 
     def create_odm_document(self, rd):
         """

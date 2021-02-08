@@ -109,18 +109,14 @@ class TestTyped(unittest.TestCase):
                 "SDSVarName": "AEYN", "Origin": "CRF", "Comment": "Data management field", "SignificantDigits": 1}
         item = ODM.ItemDef(**attrs)
         clr = ODM.CodeListRef(CodeListOID="CL.TEST")
-        item.NewCodeList = clr
-        self.assertEqual(item.NewCodeList, clr)
-        validator = METADATA.MetadataSchema()
-        with self.assertRaises(ValueError):
-            # test shows that ItemDef fails the schema check because it has an unknown NewCodeList object
-            item.verify_conformance(validator)
+        with self.assertRaises(TypeError):
+            item.NewCodeList = clr
         # cannot add unknown attributes or elements during creation, but can afterwards; catch with conformance checks
         attrs = {"OID": "ODM.IT.AE.AEYN", "Name": "Any AEs?", "DataType": "text", "Length": 1, "SASFieldName": "AEYN",
                 "SDSVarName": "AEYN", "Origin": "CRF", "Comment": "Data management field", "SignificantDigits": 1}
         item = ODM.ItemDef(**attrs)
-        item.InSignificantDigits = 1
-        self.assertEqual(item.InSignificantDigits, 1)
+        with self.assertRaises(TypeError):
+            item.InSignificantDigits = 1
         # can add all objects during creation and they are validated
         attrs = {"OID": "ODM.IT.AE.AEYN", "Name": "Any AEs?", "DataType": "text", "Length": 1, "SASFieldName": "AEYN",
                 "SDSVarName": "AEYN", "Origin": "CRF", "Comment": "Data management field", "CodeListRef": clr}

@@ -234,16 +234,28 @@ class MetadataSchema(ConformanceChecker):
             "MethodDef": {"type": "list", "schema": {"type": "dict", "schema": schema_registry.get("MethodDef")}}
         })
 
+
         schema_registry.add("Study", {
             "OID": {"type": "string", "required": True},
             "GlobalVariables": {"type": "dict", "required": True, "schema": {
-                    "StudyName": {"schema": {"TranslatedText": {"type": "list",
-                                  "schema": {"type": "dict", "schema": schema_registry.get("TranslatedText")}}}},
-                    "StudyDescription": {"schema": {"TranslatedText": {"type": "list",
-                                         "schema": {"type": "dict", "schema": schema_registry.get("TranslatedText")}}}},
-                    "ProtocolName": {"schema": {"TranslatedText": {"type": "list",
-                                     "schema": {"type": "dict", "schema": schema_registry.get("TranslatedText")}}}}
+                    "StudyName": {"schema": {"_content": {"type": "string", "required": True}}},
+                    "StudyDescription": {"schema": {"_content": {"type": "string", "required": True}}},
+                    "ProtocolName": {"schema": {"_content": {"type": "string", "required": True}}}
                 }
             },
             "MetaDataVersion": {"type": "dict", "schema": schema_registry.get("MetaDataVersion")}
         })
+
+        # schema_registry.add("Study", {
+        #     "OID": {"type": "string", "required": True},
+        #     "GlobalVariables": {"type": "dict", "required": True, "schema": {
+        #             "StudyName": {"schema": {"TranslatedText": {"type": "list",
+        #                           "schema": {"type": "dict", "schema": schema_registry.get("TranslatedText")}}}},
+        #             "StudyDescription": {"schema": {"TranslatedText": {"type": "list",
+        #                                  "schema": {"type": "dict", "schema": schema_registry.get("TranslatedText")}}}},
+        #             "ProtocolName": {"schema": {"TranslatedText": {"type": "list",
+        #                              "schema": {"type": "dict", "schema": schema_registry.get("TranslatedText")}}}}
+        #         }
+        #     },
+        #     "MetaDataVersion": {"type": "dict", "schema": schema_registry.get("MetaDataVersion")}
+        # })

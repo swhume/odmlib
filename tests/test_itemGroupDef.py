@@ -11,7 +11,7 @@ class TestItemGroupDef(TestCase):
     def setUp(self) -> None:
         attrs = self.set_itemgroupdef_attributes()
         self.igd = ODM.ItemGroupDef(**attrs)
-        self.odm_test_file = os.path.dirname(os.path.realpath(__file__)) + '\\data\\test_igd_001.xml'
+        self.odm_test_file = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'data', 'test_igd_001.xml')
 
     def test_item_group_valid_kwargs_only(self):
         igd = ODM.ItemGroupDef(OID="IG.VS", Name="VS", Repeating="Yes")

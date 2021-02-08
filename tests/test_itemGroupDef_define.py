@@ -12,7 +12,7 @@ class TestItemGroupDef(TestCase):
     def setUp(self) -> None:
         attrs = self.set_itemgroupdef_attributes()
         self.igd = DEFINE.ItemGroupDef(**attrs)
-        self.test_file = os.path.dirname(os.path.realpath(__file__)) + '\\data\\define2-0-0-sdtm-test.xml'
+        self.test_file = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'data', 'define2-0-0-sdtm-test.xml')
         self.nsr = NS.NamespaceRegistry(prefix="odm", uri="http://www.cdisc.org/ns/odm/v1.3", is_default=True)
         self.nsr = NS.NamespaceRegistry(prefix="def", uri="http://www.cdisc.org/ns/def/v2.0")
 

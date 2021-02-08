@@ -42,7 +42,6 @@ class Description(ODM.Description):
 class WhereClauseRef(OE.ODMElement):
     namespace = "def"
     WhereClauseOID = T.OIDRef(required=True)
-    #WhereClauseOID = T.OIDRef(required=True, namespace="def")
 
 
 class ItemRef(ODM.ItemRef):
@@ -84,6 +83,15 @@ class ItemGroupDef(ODM.ItemGroupDef):
     ItemRef = ODM.ItemGroupDef.ItemRef
     Alias = ODM.ItemGroupDef.Alias
     leaf = T.ODMObject(required=True, element_class=leaf, namespace="def")
+
+    def __len__(self):
+        return len(self.ItemRef)
+
+    def __getitem__(self, position):
+        return self.ItemRef[position]
+
+    def __iter__(self):
+        return iter(self.ItemRef)
 
 
 class CheckValue(ODM.CheckValue):
@@ -219,6 +227,15 @@ class ValueListDef(OE.ODMElement):
     namespace = "def"
     OID = T.OID(required=True)
     ItemRef = T.ODMListObject(element_class=ItemRef, required=True)
+
+    def __len__(self):
+        return len(self.ItemRef)
+
+    def __getitem__(self, position):
+        return self.ItemRef[position]
+
+    def __iter__(self):
+        return iter(self.ItemRef)
 
 
 class CommentDef(OE.ODMElement):

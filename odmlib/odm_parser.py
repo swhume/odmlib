@@ -74,6 +74,9 @@ class ODMParser(BaseParser):
         for prefix, url in self.nsr.namespaces.items():
             ET.register_namespace(prefix, url)
 
+    def ODM(self):
+        return self.root
+
     def Study(self):
         study = self.root.find(ODM_PREFIX + "Study", ODM_NS)
         return study

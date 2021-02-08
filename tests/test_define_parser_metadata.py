@@ -8,7 +8,7 @@ ODM_NS = "{http://www.cdisc.org/ns/odm/v1.3}"
 
 class TestOdmParserMetaData(unittest.TestCase):
     def setUp(self) -> None:
-        self.odm_file_1 = os.path.dirname(os.path.realpath(__file__)) + '\\data\\define2-0-0-sdtm-test.xml'
+        self.odm_file_1 = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'data', 'define2-0-0-sdtm-test.xml')
         NS.NamespaceRegistry(prefix="odm", uri="http://www.cdisc.org/ns/odm/v1.3", is_default=True)
         NS.NamespaceRegistry(prefix="def", uri="http://www.cdisc.org/ns/def/v2.0")
         self.nsr = NS.NamespaceRegistry(prefix="nciodm", uri="http://ncicb.nci.nih.gov/xml/odm/EVS/CDISC")

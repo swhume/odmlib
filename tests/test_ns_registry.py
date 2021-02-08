@@ -2,7 +2,8 @@ from unittest import TestCase
 import odmlib.ns_registry as NS
 import odmlib.odm_1_3_2.model as ODM
 import xml.etree.ElementTree as ET
-import odmlib.odm_loader as OL
+import odmlib.define_loader as DL
+import odmlib.loader as LD
 import os
 
 
@@ -83,7 +84,7 @@ class TestNamespaceRegistry(TestCase):
             nsr = NS.NamespaceRegistry(prefix="def", uri="www.cdisc.org/ns/def/v2.0")
 
     def test_odm_ns_attributes(self):
-        odm_test_file = os.path.dirname(os.path.realpath(__file__)) + '\\data\\test_odm_namespace.xml'
+        odm_test_file = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'data', 'test_odm_namespace.xml')
         NS.NamespaceRegistry(prefix="def", uri="http://www.cdisc.org/ns/def/v2.0")
         NS.NamespaceRegistry(prefix="nciodm", uri="http://ncicb.nci.nih.gov/xml/odm/EVS/CDISC")
         NS.NamespaceRegistry(prefix="xsi", uri="http://www.w3.org/2001/XMLSchema-instance")
@@ -94,7 +95,7 @@ class TestNamespaceRegistry(TestCase):
         tree = ET.ElementTree(odm_xml)
         tree.write(odm_test_file, xml_declaration=True, encoding='utf-8', method='xml', short_empty_elements=True)
         self.assertEqual("ODM.MDV.TEST.001", root.FileOID)
-        loader = OL.ODMLoader(OL.XMLDefineLoader())
+        loader = LD.ODMLoader(DL.XMLDefineLoader())
         odm_root = loader.open_odm_document(odm_test_file)
         self.assertEqual("ODM.MDV.TEST.001", odm_root.attrib["FileOID"])
         odm = loader.create_odmlib(odm_root)

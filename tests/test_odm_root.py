@@ -74,7 +74,8 @@ class TestODM(TestCase):
         attrs = {"FileOID": "ODM.MDV.TEST.001", "Granularity": "Metadata",
                  "AsOfDateTime": "2020-07-13T00:13:51.309617+00:00",
                  "CreationDateTime": "2020-07-13T00:13:51.309617+00:00", "ODMVersion": "1.3.2", "FileType": "Snapshot",
-                 "Originator": "RDS", "SourceSystem": "ODMLib", "SourceSystemVersion": "0.1"}
+                 "Originator": "RDS", "SourceSystem": "ODMLib", "SourceSystemVersion": "0.1",
+                 "schemaLocation": "http://www.cdisc.org/ns/odm/v1.3 odm1-3-2.xsd"}
         return attrs
 
     def add_mdv(self):
@@ -211,6 +212,7 @@ class TestODM(TestCase):
     "Originator": "RDS",
     "SourceSystem": "ODMLib",
     "SourceSystemVersion": "0.1",
+    "schemaLocation": "http://www.cdisc.org/ns/odm/v1.3 odm1-3-2.xsd",
     "Study": [{
         "OID": "ODM.STUDY.001",
         "GlobalVariables": {

@@ -643,6 +643,7 @@ class ODM(OE.ODMElement):
     Originator = T.String(required=False)
     SourceSystem = T.String(required=False)
     SourceSystemVersion = T.String(required=False)
+    schemaLocation = T.String(required=False, namespace="xs")
     ID = T.ID()
     Study = T.ODMListObject(element_class=Study)
     AdminData = T.ODMListObject(element_class=AdminData)

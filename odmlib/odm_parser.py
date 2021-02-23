@@ -34,7 +34,14 @@ class ODMSchemaValidator(SchemaValidator):
 
 class BaseParser:
     def __init__(self, ns_registry):
-        self.nsr = ns_registry
+        if ns_registry:
+            self.nsr = ns_registry
+        else:
+            self.nsr = NS.NamespaceRegistry(prefix="odm", uri="http://www.cdisc.org/ns/odm/v1.3", is_default=True)
+
+    def register_namespaces(self):
+        for prefix, url in self.nsr.namespaces.items():
+            ET.register_namespace(prefix, url)
 
     def __getattr__(self, item):
         """ enables the parser to dynamically parse any element given it's parent """
@@ -46,33 +53,12 @@ class BaseParser:
         return parse_method
 
 
-class ODMParser(BaseParser):
-    #def __init__(self, odm_file, odm_type="ODM_1_3_2"): changed to parse different extensions
-    def __init__(self, odm_file, namespace_registry=None):
-        self.odm_file = odm_file
-        if namespace_registry:
-            self.nsr = namespace_registry
-        else:
-            self.nsr = NS.NamespaceRegistry(prefix="odm", uri="http://www.cdisc.org/ns/odm/v1.3", is_default=True)
-        super().__init__(ns_registry=self.nsr)
+class ElementParser:
+    def __init__(self):
         self.root = None
         self.mdv = []
         self.admin_data = []
         self.clinical_data = []
-
-    def parse(self):
-        self._register_namespaces()
-        odm_tree = ET.parse(self.odm_file)
-        self.root = odm_tree.getroot()
-        return self.root
-
-    def parse_tree(self):
-        self._register_namespaces()
-        return ET.parse(self.odm_file)
-
-    def _register_namespaces(self):
-        for prefix, url in self.nsr.namespaces.items():
-            ET.register_namespace(prefix, url)
 
     def ODM(self):
         return self.root
@@ -97,3 +83,35 @@ class ODMParser(BaseParser):
     def ReferenceData(self):
         self.reference_data = self.root.findall(ODM_PREFIX + "ReferenceData", ODM_NS)
         return self.reference_data
+
+
+class ODMParser(BaseParser, ElementParser):
+    def __init__(self, odm_file, namespace_registry=None):
+        self.odm_file = odm_file
+        super().__init__(ns_registry=namespace_registry)
+
+    def parse(self):
+        self.register_namespaces()
+        odm_tree = ET.parse(self.odm_file)
+        self.root = odm_tree.getroot()
+        return self.root
+
+    def parse_tree(self):
+        self.register_namespaces()
+        return ET.parse(self.odm_file)
+
+
+class ODMStringParser(BaseParser, ElementParser):
+    def __init__(self, odm_string, namespace_registry=None):
+        self.odm_string = odm_string
+        super().__init__(ns_registry=namespace_registry)
+
+    def parse(self):
+        self.register_namespaces()
+        self.root = ET.fromstring(self.odm_string)
+        return self.root
+
+    def parse_tree(self):
+        self.register_namespaces()
+        return ET.fromstring(self.odm_string)
+

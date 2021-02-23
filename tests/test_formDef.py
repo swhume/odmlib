@@ -32,6 +32,16 @@ class TestFormDef(TestCase):
         self.assertEqual(len(self.formdef.Alias), 2)
         self.assertEqual(self.formdef.Alias[1].Context, "CDASHIG")
 
+    def test_add_not_alias(self):
+        item = ODM.ItemDef(OID="ODM.IT.VSPOS", Name="VS Position", DataType="text")
+        with self.assertRaises(TypeError):
+            self.formdef.Alias = [item]
+        self.formdef.Alias.append(ODM.Alias(Context="SDTMIG", Name="VS"))
+        # list accepts invalid objects
+        self.formdef.Alias.append(ODM.ItemDef(OID="ODM.IT.VSDT", Name="VS Date", DataType="text"))
+        self.assertEqual(len(self.formdef.Alias), 2)
+        self.assertEqual(self.formdef.Alias[0].Context, "SDTMIG")
+
     def test_to_json(self):
         attrs = self.set_formdef_attributes()
         fd = ODM.FormDef(**attrs)

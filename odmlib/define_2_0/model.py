@@ -267,7 +267,6 @@ class MetaDataVersion(ODM.MetaDataVersion):
 class Study(ODM.Study):
     OID = ODM.Study.OID
     GlobalVariables = ODM.Study.GlobalVariables
-    #MetaDataVersion = ODM.Study.MetaDataVersion
     MetaDataVersion = T.ODMObject(element_class=MetaDataVersion)
 
 
@@ -280,5 +279,6 @@ class ODM(ODM.ODM):
     Originator = ODM.ODM.Originator
     SourceSystem = ODM.ODM.SourceSystem
     SourceSystemVersion = ODM.ODM.SourceSystemVersion
+    schemaLocation = ODM.ODM.schemaLocation
     ID = ODM.ODM.ID
     Study = ODM.ODM.Study

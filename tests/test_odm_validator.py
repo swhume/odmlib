@@ -32,3 +32,11 @@ class TestODMValidator(TestCase):
         tree = self.parser.parse_tree()
         is_valid = self.validator.validate_tree(tree)
         self.assertFalse(is_valid)
+
+    def test_validate_string_tree_valid(self):
+        with open(self.odm_file, "r", encoding="utf-8") as f:
+            self.odm_string = f.read()
+        self.parser = P.ODMStringParser(self.odm_string)
+        tree = self.parser.parse_tree()
+        is_valid = self.validator.validate_tree(tree)
+        self.assertTrue(is_valid)

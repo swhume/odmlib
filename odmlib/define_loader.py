@@ -37,14 +37,23 @@ class XMLDefineLoader(DL.DocumentLoader):
 
     def create_document(self, filename, namespace_registry=None):
         self.filename = filename
+        self._set_registry(namespace_registry)
+        self.parser = P.ODMParser(self.filename, self.nsr)
+        root = self.parser.parse()
+        return root
+
+    def create_document_from_string(self, odm_string, namespace_registry=None):
+        self._set_registry(namespace_registry)
+        self.parser = P.ODMStringParser(odm_string, self.nsr)
+        root = self.parser.parse()
+        return root
+
+    def _set_registry(self, namespace_registry):
         if namespace_registry:
             self.nsr = namespace_registry
         else:
             NS.NamespaceRegistry(prefix="odm", uri="http://www.cdisc.org/ns/odm/v1.3", is_default=True)
             self.nsr = NS.NamespaceRegistry(prefix="def", uri="http://www.cdisc.org/ns/def/v2.0")
-        self.parser = P.ODMParser(self.filename, self.nsr)
-        root = self.parser.parse()
-        return root
 
     def load_odm(self):
         root = self.parser.ODM()
@@ -87,6 +96,10 @@ class JSONDefineLoader(DL.DocumentLoader):
         self.filename = filename
         with open(self.filename) as json_in:
             self.odm_dict = json.load(json_in)
+        return self.odm_dict
+
+    def create_document_from_string(self, odm_string):
+        self.odm_dict = json.loads(odm_string)
         return self.odm_dict
 
     def load_odm(self):

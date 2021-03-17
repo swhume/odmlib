@@ -16,6 +16,10 @@ class ODMLoader:
         root = self.loader.create_document(filename)
         return root
 
+    def load_odm_string(self, odm_string):
+        root = self.loader.create_document_from_string(odm_string)
+        return root
+
     def root(self):
         odm = self.loader.load_odm()
         return odm

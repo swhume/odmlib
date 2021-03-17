@@ -2,6 +2,7 @@ import xml.etree.ElementTree as ET
 import xmlschema as XSD
 import odmlib.ns_registry as NS
 from abc import ABC, abstractmethod
+import json
 
 ODM_NS = {'odm': 'http://www.cdisc.org/ns/odm/v1.3'}
 ODM_PREFIX = "odm:"
@@ -115,3 +116,38 @@ class ODMStringParser(BaseParser, ElementParser):
         self.register_namespaces()
         return ET.fromstring(self.odm_string)
 
+
+class ODMJSONStringParser:
+    def __init__(self, odm_string):
+        self.root = json.loads(odm_string)
+        self.mdv = []
+        self.admin_data = []
+        self.clinical_data = []
+        self.reference_data = []
+
+    def parse(self):
+        return self.root
+
+    def ODM(self):
+        return self.root
+
+    def Study(self):
+        study = self.root["Study"]
+        return study
+
+    def MetaDataVersion(self):
+        study = self.root["Study"]
+        self.mdv = study[0]["MetaDataVersion"]
+        return self.mdv
+
+    def AdminData(self):
+        self.admin_data = self.root["AdminData"]
+        return self.admin_data
+
+    def ClinicalData(self):
+        self.clinical_data = self.root["ClinicalData"]
+        return self.clinical_data
+
+    def ReferenceData(self):
+        self.reference_data = self.root["ReferenceData"]
+        return self.reference_data

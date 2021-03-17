@@ -11,6 +11,10 @@ class DocumentLoader(ABC):
         raise NotImplementedError("Attempted to execute an abstract method create_document in the DocumentLoader class")
 
     @abstractmethod
+    def create_document_from_string(self, odm_string):
+        raise NotImplementedError("Attempted to execute an abstract method create_document_from_string in the DocumentLoader class")
+
+    @abstractmethod
     def load_metadataversion(self, idx):
         raise NotImplementedError("Attempted to execute an abstract method load_metadataversion in the DocumentLoader class")
 

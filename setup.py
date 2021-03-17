@@ -20,4 +20,11 @@ setup(
     log_description=README,
     long_description_content_type="text/markdown",
     include_package_data=True
+    install_requires=[
+        "xmlschema>=1.3.1",
+        "validators>=0.18.1",
+        "Cerberus>=1.3.2",
+        "pathvalidate>=2.3.1",
+        "setuptools>=44.1.1"
+    ]
 )

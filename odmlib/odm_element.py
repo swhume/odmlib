@@ -107,7 +107,6 @@ class ODMElement(metaclass=ODMMeta):
         # add text to element if it exists
         if "_content" in self.__dict__:
             odm_elem.text = self.__dict__["_content"]
-            del self.__dict__["_content"]
         for name, obj in self.__dict__.items():
             # process each element in a list of ELEMENTS
             if isinstance(obj, list) and obj:
@@ -173,6 +172,15 @@ class ODMElement(metaclass=ODMMeta):
         odm_elem = self.to_xml()
         odm_writer = odm_writer()
         odm_writer.write_odm(odm_file, odm_elem)
+
+    def write_json(self, odm_file):
+        """
+        write the odmlib hierarchy as a JSON file
+
+        :param odm_file: string ODM filename and path
+        """
+        with open(odm_file, 'w') as outfile:
+            json.dump(self.to_dict(), outfile)
 
     def verify_oids(self, oid_checker):
         """

@@ -1,10 +1,11 @@
 
 
 class Descriptor:
-    def __init__(self, name=None, required=False, element_class=None, namespace="odm"):
+    def __init__(self, name=None, required=False, element_class=None, valid_values=[], namespace="odm"):
         self.name = name
         self.required = required
         self.element_class = element_class
+        self.valid_values = valid_values
         self.namespace = namespace
 
     def __get__(self, instance, cls):

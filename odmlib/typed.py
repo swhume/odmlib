@@ -278,6 +278,14 @@ class ValidValues(DESC.Descriptor):
         super().__set__(instance, value)
 
 
+class ExtendedValidValues(DESC.Descriptor):
+    def __set__(self, instance, value):
+        if (value is not None) and value not in self.valid_values:
+            raise TypeError(f"Expected value for {self.name} must be one of "
+                            f"{', '.join(self.valid_values)}")
+        super().__set__(instance, value)
+
+
 class ValueSetString(ValidValues, String):
     pass
 

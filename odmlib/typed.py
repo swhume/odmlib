@@ -273,7 +273,7 @@ class FileName(DESC.Descriptor):
 class ValidValues(DESC.Descriptor):
     def __set__(self, instance, value):
         if (value is not None) and value not in VS.ValueSet.value_set(type(instance).__name__ + "." + self.name):
-            raise TypeError(f"Expected value for {self.name} must be one of "
+            raise TypeError(f"Invalid value {value} for {self.name}. Value must be one of "
                             f"{', '.join(VS.ValueSet.value_set(self.name))}")
         super().__set__(instance, value)
 
@@ -281,7 +281,7 @@ class ValidValues(DESC.Descriptor):
 class ExtendedValidValues(DESC.Descriptor):
     def __set__(self, instance, value):
         if (value is not None) and value not in self.valid_values:
-            raise TypeError(f"Expected value for {self.name} must be one of "
+            raise TypeError(f"Invalid value {value} for {self.name}. Value must be one of "
                             f"{', '.join(self.valid_values)}")
         super().__set__(instance, value)
 

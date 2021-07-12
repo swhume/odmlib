@@ -90,7 +90,7 @@ class ItemGroupDef(ODM.ItemGroupDef):
     Domain = ODM.ItemGroupDef.Domain
     Purpose = ODM.ItemGroupDef.Purpose
     Structure = T.String(required=True, namespace="def")
-    ArchiveLocationID = T.String(required=True, namespace="def")
+    ArchiveLocationID = T.String(namespace="def")
     CommentOID = T.OIDRef(namespace="def")
     IsNonStandard = T.ValueSetString(namespace="def")
     StandardOID = T.OIDRef(namespace="def")
@@ -112,7 +112,7 @@ class ItemGroupDef(ODM.ItemGroupDef):
 
 
 class CheckValue(ODM.CheckValue):
-    _content = ODM.CheckValue._content
+    _content = T.String(required=False)
 
 
 class FormalExpression(ODM.FormalExpression):
@@ -153,10 +153,11 @@ class DocumentRef(OE.ODMElement):
 
 class Origin(OE.ODMElement):
     namespace = "def"
-    Type = T.ValueSetString(required=True)
-    Source = T.ValueSetString()
-    DocumentRef = T.ODMListObject(element_class=DocumentRef, namespace="def")
+    Type = T.ExtendedValidValues(required=True, valid_values=["Collected", "Derived", "Assigned", "Protocol",
+                                                              "Predecessor", "Not Available"])
+    Source = T.ExtendedValidValues(valid_values=["Subject", "Investigator", "Vendor", "Sponsor"])
     Description = T.ODMObject(element_class=Description)
+    DocumentRef = T.ODMListObject(element_class=DocumentRef, namespace="def")
 
 
 class ItemDef(ODM.ItemDef):
@@ -284,6 +285,15 @@ class Standards(OE.ODMElement):
     namespace = "def"
     Standard = T.ODMListObject(element_class=Standard, required=True, namespace="def")
 
+    def __len__(self):
+        return len(self.Standard)
+
+    def __getitem__(self, position):
+        return self.Standard[position]
+
+    def __iter__(self):
+        return iter(self.Standard)
+
 
 class MetaDataVersion(ODM.MetaDataVersion):
     OID = ODM.MetaDataVersion.OID
@@ -307,7 +317,7 @@ class MetaDataVersion(ODM.MetaDataVersion):
 class Study(ODM.Study):
     OID = ODM.Study.OID
     GlobalVariables = ODM.Study.GlobalVariables
-    MetaDataVersion = T.ODMObject(element_class=MetaDataVersion)
+    MetaDataVersion = T.ODMObject(required=True, element_class=MetaDataVersion)
 
 
 class ODM(ODM.ODM):

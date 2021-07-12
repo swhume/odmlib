@@ -14,8 +14,7 @@ The odmlib package satisfies my personal interest in working with ODM using an o
 interface in Python.
 
 ## Getting Started
-Since odmlib is still in development it has not yet been posted to PyPi, though ultimately the plan is to do
-so. For those interested in getting involved with odmlib early, the best way to proceed is to clone the odmlib 
+Since odmlib is still in development the best way to proceed is to clone the odmlib 
 repository, switch to the odmlib directory, and run 
 
 `python setup.py install` 
@@ -36,18 +35,23 @@ When running PyCharm on Linux:
 3. switch to odmlib directory
 4. run: python setup.py develop
 
-Once the production version has been completed, it will be released as a PyPi package.
-
 The odmlib package requires that some packages be installed:
 * validators
 * pathvalidate
 * cerberus
+
+Although odmlib is still under development, a version of odmlib is available on PyPI. Although not the most 
+up-to-date, it’s the easiest to install:
+
+`pip install odmlib`
 
 ## Example Code
 Example code is available in the [odmlib_examples repository](https://github.com/swhume/odmlib_examples) 
 that demonstrate ways to use odmlib. 
 Selected examples include:
 * get_started: a basic example that shows how to create and process a basic ODM metadata file
+* xlsx2define2-1: generates a Define-XML v2.1 file from a metadata spreadsheet
+* define2-1-to-xlsx: generates a metadata spreadsheet from a Define-XML v2.1 file
 * xls2define: generates a Define-XML v2.0 file from a metadata spreadsheet
 * define2xls: generates a metadata spreadsheet from a Define-XML v2.0 file
 * merge_odm: simple merge application that generates a target ODM file with a CRF moved from a source 

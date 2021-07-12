@@ -10,7 +10,7 @@ class ConformanceChecker(ABC):
 
 
 class MetadataSchema(ConformanceChecker):
-    """ The metadata schema for Define-XML v2.0 to aid in conformance checking """
+    """ The metadata schema for Define-XML v2.1 to aid in conformance checking """
     def __init__(self):
         self._set_metadata_registry()
 
@@ -54,7 +54,8 @@ class MetadataSchema(ConformanceChecker):
             "Type": {"type": "string", "required": True, "allowed": ["PhysicalRef", "NamedDestination"]},
             "PageRefs": {"type": "string"},
             "FirstPage": {"type": "integer"},
-            "LastPage": {"type": "integer"}
+            "LastPage": {"type": "integer"},
+            "Title": {"type": "string"}
         })
 
         schema_registry.add("DocumentRef", {
@@ -70,7 +71,19 @@ class MetadataSchema(ConformanceChecker):
             "MethodOID": {"type": "string", "required": False},
             "Role": {"type": "string", "required": False},
             "RoleCodeListOID": {"type": "string", "required": False},
+            "IsNonStandard": {"type": "string", "allowed": ["Yes"]},
+            "HasNoData": {"type": "string", "allowed": ["Yes"]},
             "WhereClauseRef": {"type": "list", "schema": {"type": "dict", "schema": schema_registry.get("WhereClauseRef")}}
+        })
+
+        schema_registry.add("SubClass", {
+            "Name": {"type": "string"},
+            "ParentClass": {"type": "string"}
+        })
+
+        schema_registry.add("Class", {
+            "Name": {"type": "string"},
+            "SubClass": {"type": "list", "schema": {"type": "dict", "schema": schema_registry.get("SubClass")}}
         })
 
         schema_registry.add("ItemGroupDef", {
@@ -83,12 +96,15 @@ class MetadataSchema(ConformanceChecker):
             "Origin": {"type": "string"},
             "Purpose": {"type": "string"},
             "Structure": {"type": "string", "required": True},
-            "Class": {"type": "string", "required": True},
-            "ArchiveLocationID": {"type": "string", "required": True},
+            "ArchiveLocationID": {"type": "string"},
             "CommentOID": {"type": "string"},
+            "IsNonStandard": {"type": "string", "allowed": ["Yes"]},
+            "StandardOID": {"type": "string"},
+            "HasNoData": {"type": "string", "allowed": ["Yes"]},
             "Description": {"type": "dict", "schema": schema_registry.get("Description")},
             "ItemRef": {"type": "list", "schema": {"type": "dict", "schema": schema_registry.get("ItemRef")}},
             "Alias": {"type": "list", "schema": {"type": "dict", "schema": schema_registry.get("Alias")}},
+            "Class": {"type": "dict", "schema": schema_registry.get("Class")},
             "leaf": {"type": "dict", "schema": schema_registry.get("leaf")}
         })
 
@@ -106,7 +122,8 @@ class MetadataSchema(ConformanceChecker):
 
         schema_registry.add("Origin", {
             "Type": {"type": "string", "required": True,
-                     "allowed": ["CRF", "Derived", "Assigned", "Assigned", "Protocol", "eDT", "Predecessor"]},
+                     "allowed": ["Collected", "Derived", "Assigned", "Protocol", "Predecessor", "Not Available"]},
+            "Source": {"type": "string", "allowed": ["Subject", "Investigator", "Vendor", "Sponsor"]},
             "DocumentRef": {"type": "list", "schema": {"type": "dict", "schema": schema_registry.get("DocumentRef")}},
             "Description": {"type": "dict", "schema": schema_registry.get("Description")}
         })
@@ -130,7 +147,7 @@ class MetadataSchema(ConformanceChecker):
             "CommentOID": {"type": "string"},
             "Description": {"type": "dict", "schema": schema_registry.get("Description")},
             "CodeListRef": {"type": "dict", "schema": schema_registry.get("CodeListRef")},
-            "Origin": {"type": "dict", "schema": schema_registry.get("Origin")},
+            "Origin": {"type": "list", "schema": {"type": "dict", "schema": schema_registry.get("Origin")}},
             "ValueListRef": {"type": "dict", "schema": schema_registry.get("ValueListRef")},
             "Alias": {"type": "list", "schema": {"type": "dict", "schema": schema_registry.get("Alias")}}
         })
@@ -140,6 +157,7 @@ class MetadataSchema(ConformanceChecker):
             "Rank": {"type": "float"},
             "OrderNumber": {"type": "integer"},
             "ExtendedValue": {"type": "string", "allowed": ["Yes"]},
+            "Description": {"type": "dict", "schema": schema_registry.get("Description")},
             "Decode": {"type": "dict", "schema": {"TranslatedText": {"type": "list",
                        "schema": {"type": "dict", "schema": schema_registry.get("TranslatedText")}}}},
             "Alias": {"type": "list", "schema": {"type": "dict", "schema": schema_registry.get("Alias")}}
@@ -150,6 +168,7 @@ class MetadataSchema(ConformanceChecker):
             "Rank": {"type": "float"},
             "OrderNumber": {"type": "integer"},
             "ExtendedValue": {"type": "string", "allowed": ["Yes"]},
+            "Description": {"type": "dict", "schema": schema_registry.get("Description")},
             "Alias": {"type": "list", "schema": {"type": "dict", "schema": schema_registry.get("Alias")}}
         })
 
@@ -164,6 +183,9 @@ class MetadataSchema(ConformanceChecker):
             "OID": {"type": "string", "required": True},
             "Name": {"type": "string", "required": True},
             "DataType": {"type": "string", "allowed": ["text", "integer", "float", "string"]},
+            "IsNonStandard": {"type": "string", "allowed": ["Yes"]},
+            "StandardOID": {"type": "string"},
+            "CommentOID": {"type": "string"},
             "SASFormatName": {"type": "string"},
             "Description": {"type": "dict", "schema": schema_registry.get("Description")},
             "CodeListItem": {"type": "list", "schema": {"type": "dict", "schema": schema_registry.get("CodeListItem")}},
@@ -188,6 +210,7 @@ class MetadataSchema(ConformanceChecker):
 
         schema_registry.add("ValueListDef", {
             "OID": {"type": "string", "required": True},
+            "Description": {"type": "dict", "schema": schema_registry.get("Description")},
             "ItemRef": {"type": "list", "schema": {"type": "dict", "schema": schema_registry.get("ItemRef")}}
         })
 
@@ -207,13 +230,27 @@ class MetadataSchema(ConformanceChecker):
             "DocumentRef": {"type": "list", "schema": {"type": "dict", "schema": schema_registry.get("DocumentRef")}}
         })
 
+        schema_registry.add("Standard", {
+            "OID": {"type": "string", "required": True},
+            "Name": {"type": "string", "required": True},
+            "Type": {"type": "string", "required": True},
+            "PublishingSet": {"type": "string"},
+            "Version": {"type": "string", "required": True},
+            "Status": {"type": "string"},
+            "CommentOID": {"type": "string"}
+        })
+
+        schema_registry.add("Standards", {
+            "Standard": {"type": "list", "schema": {"type": "dict", "schema": schema_registry.get("Standard")}}
+        })
+
         schema_registry.add("MetaDataVersion", {
             "OID": {"type": "string", "required": True},
             "Name": {"type": "string", "required": True},
             "Description": {"type": "string"},
             "DefineVersion": {"type": "string", "required": True},
-            "StandardName": {"type": "string", "required": True},
-            "StandardVersion": {"type": "string", "required": True},
+            "CommentOID": {"type": "string"},
+            "Standards": {"type": "dict", "schema": schema_registry.get("Standards")},
             "AnnotatedCRF": {"type": "dict", "schema": schema_registry.get("AnnotatedCRF")},
             "SupplementalDoc": {"type": "dict", "schema": schema_registry.get("SupplementalDoc")},
             "ValueListDef": {"type": "list", "schema": {"type": "dict", "schema": schema_registry.get("ValueListDef")}},
@@ -225,6 +262,7 @@ class MetadataSchema(ConformanceChecker):
             "CommentDef": {"type": "list", "schema": {"type": "dict", "schema": schema_registry.get("CommentDef")}},
             "leaf": {"type": "list", "schema": {"type": "dict", "schema": schema_registry.get("leaf")}}
         })
+
 
         schema_registry.add("StudyName", {"_content": {"type": "string", "required": True}})
 

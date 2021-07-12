@@ -153,7 +153,7 @@ class ODMElement(metaclass=ODMMeta):
 
         :param obj_name: text name of the ODM Element (case sensitive)
         :param attr: text name of the ODM Element Attribute (case sensitive)
-        :param val: attribute value to search form
+        :param val: attribute value to search for
         :return: an odmlib object of the ODM element with the first time the attribute value matches val
         """
         obj_list = eval("self." + obj_name)
@@ -222,6 +222,7 @@ class ODMElement(metaclass=ODMMeta):
         return result
 
     def verify_order(self):
+        # TODO attempt to fix order to match _fields by sorting?
         odm_content = {attr: obj for attr, obj in self.__dict__.items() if attr not in ["_fields", "_attr_ns"]}
         for attr, obj in odm_content.items():
             if isinstance(obj, ODMElement):

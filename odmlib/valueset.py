@@ -6,7 +6,6 @@ class ValueSet:
                                "SUBJECT LEVEL ANALYSIS DATASET", "BASIC DATA STRUCTURE", "ADAM OTHER"],
         "PDFPageRef.Type": ["NamedDestination", "PhysicalRef"],
         "Origin.Type": ["CRF", "Derived", "Assigned", "Protocol", "eDT", "Predecessor"],
-        "Origin.Source": ["Collected", "Derived", "Assigned", "Protocol", "Predecessor", "Not Available"],
         "RangeCheck.Comparator": ["LT", "LE", "GT", "GE", "EQ", "NE", "IN", "NOTIN"],
         "RangeCheck.SoftHard": ["Soft", "Hard"],
         "StudyEventDef.Repeating": ["Yes", "No"],

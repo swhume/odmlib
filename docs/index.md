@@ -1,19 +1,14 @@
-## Welcome to odmlib
+# Welcome to odmlib
 
-### Introduction
+## Introduction
 
-The odmlib package simplifies working with the CDISC ODM data exchange standard and its extensions, such as Define-XML, in Python. The odmlib package provides an object-oriented interface to working with ODM documents that simplifies creating and processing them. It supports serializations in XML and JSON. ODM models have been created for ODM 1.3.2 and Define-XML versions 2.0 and 2.1. An ODM v2.0 draft will be delivered once the draft specification has been completed. Odmlib simplifies the act of creating propriety extensions and automatically serializing them as XML or JSON. Odmlib also supports conformance checks and schema validation to ensure quality and standards compliance.
+The odmlib package simplifies working with the CDISC ODM data exchange standard and its extensions, such as Define-XML, in Python. The odmlib package provides an object-oriented interface to working with ODM documents that simplifies creating and processing them. It supports serializations in XML and JSON. ODM models have been created for ODM 1.3.2 and Define-XML versions 2.0 and 2.1. Odmlib simplifies the act of creating propriety extensions and automatically serializing them as XML or JSON. Odmlib also supports conformance checks and schema validation to ensure quality and standards compliance.
 
-### Why odmlib?
-
-The odmlib package satisfies my interest in working with ODM using an object-oriented interface in Python.
-
-### Getting Started
+## Getting Started
 
 Although odmlib is still under development, a version of odmlib is available on PyPI. Although not the most up-to-date, it’s the easiest to install:
 ```
 pip install odmlib
-
 ```
 
 Alternatively, for those that may want to contribute to the development of odmlib, run:
@@ -41,7 +36,7 @@ The odmlib package requires that some packages be installed:
 - pathvalidate
 - cerberus
 
-### Example Code
+## Example Code
 
 Example code is available in the [odmlib_examples repository](https://github.com/swhume/odmlib_examples) that demonstrate ways to use odmlib. 
 
@@ -55,12 +50,12 @@ Selected examples include:
 * define2xls: generates a metadata spreadsheet from a Define-XML v2.0 file
 * merge_odm: simple merge application that generates a target ODM file with a CRF moved from a source ODM file
 
-### Creating Your First Application
+## Creating Your First Application
 
 Let’s start by creating the ODM root element. To create the root object, the object name is the same as the element name 
 and the attributes are set as part of object creation:
 
-```Python
+```python
 root = ODM.ODM(
 	FileOID="ODM.DEMO.001", 
 	Granularity="Metadata", 
@@ -75,7 +70,7 @@ root = ODM.ODM(
 
 Now the variable root is set to the ODM object. All that remains is to create the child elements by instantiating and appending them in the right order. For example, the Study element is created next and appended to ODM as follows:
 
-```Python
+```python
 root.Study.append(ODM.Study(OID="ODM.GET.STARTED"))
 ```
 
@@ -87,7 +82,7 @@ ODM(Study*, AdminData*, ReferenceData*, ClinicalData*, ...)
 
 Follow this same approach to create the rest of this simple ODM file. Keep in mind the order in which you add elements should match the order in the ODM specification. For example:
 
-```Python
+```python
 root.Study[0].GlobalVariables = ODM.GlobalVariables()
 root.Study[0].GlobalVariables.StudyName = ODM.StudyName(_content="Get Started with ODM XML")
 root.Study[0].GlobalVariables.StudyDescription = ODM.StudyDescription(_content="Getting started with odmlib")
@@ -96,12 +91,12 @@ root.Study[0].GlobalVariables.ProtocolName = ODM.ProtocolName(_content="ODM XML 
 
 This basic process is repeated to complete building the ODM file. Once all the content has been created, the ODM file can be generated as XML and written to a file as follows:
 
-```Python
+```python
 root.write_xml("./data/simple_create.xml")
 ```
 If you want to generate JSON instead of XML, root can be serialized as JSON as follows:
 
-```Python
+```python
 root.write_json(“./data/simple_create.json”)
 ```
 
@@ -109,7 +104,11 @@ Now you’ve got an ODM XML file. You can find a more complete version of this [
 
 Although this was a very basic example, it highlights how odmlib simplifies creating ODM documents, including extensions like Define-XML, in Python.
 
-### Limitations
+## Why odmlib?
+
+The odmlib package satisfies my interest in working with ODM using an object-oriented interface in Python.
+
+## Limitations
 The odmlib package is still in development. Although odmlib supports all of ODM more work remains 
 to complete all features for processing ClinicalData. The initial focus has been on getting 
 the metadata sections complete. Other limitations include:
@@ -122,3 +121,7 @@ the metadata sections complete. Other limitations include:
 * The odm_loader returns the first MetaDataVersion by default, but can be set to return others. It does not return 
   a list.
 
+## Future
+
+* Additional testing will be done for ClinicalData and a Dataset-XML model will be created.
+* An ODM v2.0 model will be delivered once the draft specification has been completed.

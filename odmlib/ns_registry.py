@@ -46,8 +46,8 @@ class NamespaceRegistry(Borg):
 
     def get_prefix_ns_from_uri(self, uri):
         for prefix, ns_uri in self.namespaces.items():
-            if uri.lower() == uri.lower():
-                return prefix + ":", self.get_ns_entry_dict(prefix)
+            if uri.lower() == ns_uri.lower():
+                return prefix
         raise ValueError(f"Error: Namespace with URI {uri} has not been registered")
 
     def set_odm_namespace_attributes(self, odm_elem):

@@ -26,6 +26,17 @@ class TestFormDef(TestCase):
         self.assertEqual(self.formdef.ItemGroupRef[0].ItemGroupOID, "ODM.IG.COMMON")
         self.assertEqual(self.formdef.ItemGroupRef[2].OrderNumber, 3)
 
+    def test_append_item_group_ref(self):
+        fd = ODM.FormDef(OID="ODM.F.VS", Name="Vital Signs Form", Repeating="Yes")
+        fd.Description = ODM.Description()
+        fd.Description.TranslatedText.append(ODM.TranslatedText(_content="this is the first test description", lang="en"))
+        fd.ItemGroupRef.append(ODM.ItemGroupRef(ItemGroupOID="ODM.IG.COMMON", Mandatory="Yes", OrderNumber=1))
+        fd.ItemGroupRef.append(ODM.ItemGroupRef(ItemGroupOID="ODM.IG.VS_GENERAL", Mandatory="Yes", OrderNumber=2))
+        fd.ItemGroupRef.append(ODM.ItemGroupRef(ItemGroupOID="ODM.IG.VS", Mandatory="Yes", OrderNumber=3))
+        self.assertEqual(fd.ItemGroupRef[0].ItemGroupOID, "ODM.IG.COMMON")
+        self.assertEqual(fd.ItemGroupRef[2].OrderNumber, 3)
+        self.assertEqual(fd.Description.TranslatedText[0]._content, "this is the first test description")
+
     def test_add_alias(self):
         self.formdef.Alias.append(ODM.Alias(Context="SDTMIG", Name="VS"))
         self.formdef.Alias.append(ODM.Alias(Context="CDASHIG", Name="VS"))

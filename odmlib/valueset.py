@@ -28,6 +28,7 @@ class ValueSet:
                              "incompleteDate", "incompleteTime", "URI"],
         "CodeList.DataType": ["integer", "float", "text", "string"],
         "CodeList.IsNonStandard": ["Yes"],
+        "CodeList.CodeListExtensible": ["Yes", "No"],
         "MethodDef.Type": ["Computation", "Imputation", "Transpose", "Other"],
         "StudyEventDef.Type": ["Scheduled", "Unscheduled", "Common"],
         "ODM.FileType": ["Snapshot", "Transactional"],

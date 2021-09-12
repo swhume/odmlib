@@ -1,6 +1,7 @@
 import odmlib.descriptor as DESC
 import odmlib.typed as T
 import odmlib.ns_registry as NS
+import odmlib.oid_index as IDX
 from collections import OrderedDict
 import json
 import xml.etree.ElementTree as ET
@@ -14,19 +15,36 @@ class ODMMeta(type):
 
     def __new__(cls, clsname, bases, clsdict):
         # variables created in classes become the class attributes
-        fields = [key for key, val in clsdict.items() if isinstance(val, (DESC.Descriptor, ODMMeta))]
+        # fields = [key for key, val in clsdict.items() if isinstance(val, (DESC.Descriptor, ODMMeta))]
+        clsdict["_fields"] = []
+        clsdict["_elems"] = {}
+        clsdict["_attrs"] = {}
+        clsdict["_attr_ns"] = {}
+        for key, val in clsdict.items():
+            if isinstance(val, (T.ODMObject, T.ODMListObject)):
+                clsdict["_elems"][key] = val
+                clsdict[key].name = key
+                clsdict["_fields"].append(key)
+            elif isinstance(val, (DESC.Descriptor, ODMMeta)):
+                clsdict["_attrs"][key] = val
+                clsdict[key].name = key
+                clsdict["_fields"].append(key)
+                if val.namespace != "odm":
+                    clsdict["_attr_ns"][key] = val.namespace
 
-        for name in fields:
-            clsdict[name].name = name
+        # for name in fields:
+        #     clsdict[name].name = name
 
-        clsdict["_fields"] = fields
+        #clsdict["_fields"] = fields
         # the default class namespace is odm
         if "namespace" not in clsdict:
             clsdict["namespace"] = "odm"
+        # elems = {key: val for key, val in clsdict.items() if isinstance(val, (T.ODMObject, T.ODMListObject))}
+        # clsdict["_elems"] = elems
         # add attribute non-default namespaces
-        ns = {key: val.namespace for key, val in clsdict.items() if isinstance(val, (DESC.Descriptor, ODMMeta))
-              if val.namespace != "odm"}
-        clsdict["_attr_ns"] = ns
+        # ns = {key: val.namespace for key, val in clsdict.items() if isinstance(val, (DESC.Descriptor, ODMMeta))
+        #       if val.namespace != "odm"}
+        # clsdict["_attr_ns"] = ns
 
         clsobj = super().__new__(cls, clsname, bases, dict(clsdict))
         return clsobj
@@ -124,7 +142,7 @@ class ODMElement(metaclass=ODMMeta):
         """
         # Note: namespaces used in the XML serialization are not part of the dictionary or json serializations
         property_dict = {}
-        odm_content = {attr: obj for attr, obj in self.__dict__.items() if attr not in ["_fields", "_attr_ns"]}
+        odm_content = {attr: obj for attr, obj in self.__dict__.items() if attr not in ["_fields", "_attr_ns", "_elems", "_attrs"]}
         for attr, obj in odm_content.items():
             if isinstance(obj, ODMElement):
                 property_dict[attr] = obj.to_dict()                    # element
@@ -182,6 +200,29 @@ class ODMElement(metaclass=ODMMeta):
         with open(odm_file, 'w') as outfile:
             json.dump(self.to_dict(), outfile)
 
+    def build_oid_index(self):
+        idx = IDX.OIDIndex()
+        self._init_oid_index(idx)
+        return idx
+
+    def _init_oid_index(self, idx):
+        """
+        for odmlib object, loads all OIDs into a dict that functions as an OID index
+
+        :return oid_index: object that provices a dictionary lookup based on OID
+        """
+        odm_content = {attr: obj for attr, obj in self.__dict__.items() if attr not in ["_fields", "_attr_ns", "_elems", "_attrs"]}
+        for attr, obj in odm_content.items():
+            if isinstance(obj, ODMElement):
+                obj._init_oid_index(idx)                    # element
+            elif isinstance(obj, list):
+                for o in obj:
+                    o._init_oid_index(idx)                  # list of ELEMENTS
+            else:
+                if attr == "OID" or "OID" in attr:
+                    idx.add_oid(obj, self)
+        return
+
     def verify_oids(self, oid_checker):
         """
         checks all the OIDs for uniqueness and Def/Ref integrity; oid_checker throws a ValueError on failure
@@ -197,7 +238,7 @@ class ODMElement(metaclass=ODMMeta):
 
         :param oid_checker: object used to check OIDs for uniqueness and Def/Ref check
         """
-        odm_content = {attr: obj for attr, obj in self.__dict__.items() if attr not in ["_fields", "_attr_ns"]}
+        odm_content = {attr: obj for attr, obj in self.__dict__.items() if attr not in ["_fields", "_attr_ns", "_elems", "_attrs"]}
         for attr, obj in odm_content.items():
             if isinstance(obj, ODMElement):
                 obj._init_oid_check(oid_checker)                    # element
@@ -222,17 +263,25 @@ class ODMElement(metaclass=ODMMeta):
         return result
 
     def verify_order(self):
-        # TODO attempt to fix order to match _fields by sorting?
-        odm_content = {attr: obj for attr, obj in self.__dict__.items() if attr not in ["_fields", "_attr_ns"]}
+        odm_content = {attr: obj for attr, obj in self.__dict__.items() if attr not in ["_fields", "_attr_ns", "_elems", "_attrs"]}
+        obj_list = [key for key in list(self.__dict__.keys()) if key != "_content" and key not in self._attrs]
+        elem_list = [elem for elem in self._elems if elem in obj_list]
+        if obj_list != elem_list:
+            raise ValueError(f"The order of elements in {self.__class__.__name__} should be {', '.join([key for key in self._elems.keys()])}")
         for attr, obj in odm_content.items():
             if isinstance(obj, ODMElement):
-                if list(obj.__dict__.keys()) != obj._fields:
-                    raise ValueError(f"The order of elements in {attr} should be {obj._fields}")
                 obj.verify_order()
             elif isinstance(obj, list):
                 for o in obj:
-                    if list(obj.__dict__.keys()) != obj._fields:
-                        raise ValueError(f"The order of elements in {attr} should be {obj._fields}")
                     o.verify_order()
         return True
+
+    def reorder_object(self):
+        ordered_obj = OrderedDict()
+        for model_elem_name, model_elem_obj in self._elems.items():
+            if model_elem_name in self.__dict__:
+                obj = self.__dict__.pop(model_elem_name)
+                ordered_obj[model_elem_name] = obj
+        for name, elem in ordered_obj.items():
+            self.__dict__[name] = elem
 

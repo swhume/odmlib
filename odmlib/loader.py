@@ -31,3 +31,13 @@ class ODMLoader:
     def Study(self):
         study = self.loader.load_study()
         return study
+
+    def __getattr__(self, attr):
+        if hasattr(self.loader, attr):
+            load_func = getattr(self.loader, attr, None)
+            if callable(load_func):
+                return load_func
+            else:
+                raise AttributeError(f"{attr} is not callable in the loader {self.loader.__class__.__name__}")
+        else:
+            raise AttributeError(f"The {attr} method does not exist in the loader {self.loader.__class__.__name__}")

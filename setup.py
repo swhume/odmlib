@@ -6,9 +6,9 @@ README = (HERE / "README.md").read_text()
 
 setup(
     name='odmlib',
-    version='0.1.1',
-    packages=['tests', 'odmlib', 'odmlib.odm_2_0', 'odmlib.odm_1_3_2', 'odmlib.odm_1_3_2.rules', 'odmlib.define_2_0',
-              'odmlib.define_2_1'],
+    version='0.1.3',
+    packages=['tests', 'odmlib', 'odmlib.odm_1_3_2', 'odmlib.odm_1_3_2.rules', 'odmlib.define_2_0',
+              'odmlib.define_2_0.rules', 'odmlib.define_2_1', 'odmlib.define_2_1.rules', 'odmlib.ct_1_1_1'],
     url='https://github.com/swhume/odmlib',
     license='MIT',
     author='Sam Hume',

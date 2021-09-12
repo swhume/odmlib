@@ -55,6 +55,13 @@ class JSONODMLoader(DL.DocumentLoader):
         mdv_odmlib = self.load_document(mdv_dict, "MetaDataVersion")
         return mdv_odmlib
 
+    def load_study(self, idx=0):
+        if not self.odm_dict:
+            raise ValueError("create_document must be used to create the document before executing load_metadataversion")
+        study_dict = self.odm_dict["Study"][idx]
+        study_odmlib = self.load_document(study_dict, "Study")
+        return study_odmlib
+
 
 class DictODMLoader(JSONODMLoader):
     pass

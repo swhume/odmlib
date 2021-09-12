@@ -3,7 +3,6 @@ import odmlib.odm_parser as P
 import odmlib.ns_registry as NS
 import json
 import importlib
-import xml.etree.ElementTree as ET
 
 
 class XMLDefineLoader(DL.DocumentLoader):
@@ -68,7 +67,8 @@ class XMLDefineLoader(DL.DocumentLoader):
 
     def load_study(self, idx=0):
         study = self.parser.Study()
-        study_odmlib = self.load_document(study[idx])
+        # TODO will need to make Study a list and treat it like MDV above
+        study_odmlib = self.load_document(study)
         return study_odmlib
 
 
@@ -107,17 +107,33 @@ class JSONDefineLoader(DL.DocumentLoader):
     def load_odm(self):
         if not self.odm_dict:
             raise ValueError("create_document must be used to create the document before executing load_odm")
-        odm_odmlib = self.load_document(self.odm_dict, "MetaDataVersion")
+        odm_odmlib = self.load_document(self.odm_dict, "ODM")
         return odm_odmlib
 
     def load_metadataversion(self, idx=0):
         if not self.odm_dict:
             raise ValueError("create_document must be used to create the document before executing load_metadataversion")
         if "MetaDataVersion" in self.odm_dict:
-            mdv_dict = self.odm_dict["MetaDataVersion"][idx]
+            if isinstance(self.odm_dict["MetaDataVersion"], list):
+                mdv_dict = self.odm_dict["MetaDataVersion"][idx]
+            else:
+                mdv_dict = self.odm_dict["MetaDataVersion"]
         elif "Study" in self.odm_dict and "MetaDataVersion" in self.odm_dict["Study"][0]:
-            mdv_dict = self.odm_dict["Study"][0]["MetaDataVersion"][idx]
+            if isinstance(self.odm_dict["Study"][0]["MetaDataVersion"], list):
+                mdv_dict = self.odm_dict["Study"][0]["MetaDataVersion"][idx]
+            else:
+                mdv_dict = self.odm_dict["Study"][0]["MetaDataVersion"]
         else:
             raise ValueError("MetaDataVersion not found in ODM dictionary")
         mdv_odmlib = self.load_document(mdv_dict, "MetaDataVersion")
         return mdv_odmlib
+
+    def load_study(self, idx=0):
+        if not self.odm_dict:
+            raise ValueError("create_document must be used to create the document before executing load_study")
+        elif "Study" in self.odm_dict:
+            study_dict = self.odm_dict["Study"][idx]
+        else:
+            raise ValueError("Study not found in ODM dictionary")
+        study_odmlib = self.load_document(study_dict, "Study")
+        return study_odmlib

@@ -20,6 +20,11 @@ class TestODMLoader(TestCase):
         odm = self.loader.root()
         self.assertEqual(odm.FileOID, "CDASH_File_2011-10-24")
 
+    def test_odm_order(self):
+        self.loader.open_odm_document(self.odm_file)
+        odm = self.loader.root()
+        self.assertTrue(odm.verify_order())
+
     def test_meta_data_version(self):
         self.loader.open_odm_document(self.odm_file)
         mdv = self.loader.MetaDataVersion()
@@ -55,3 +60,28 @@ class TestODMLoader(TestCase):
         odm2 = self.loader.create_odmlib(root2)
         self.assertEqual(odm2.Study[0].MetaDataVersion[0].ItemDef[0].OID, "ODM.IT.Common.StudyID")
         self.assertEqual(len(odm2.Study[0].MetaDataVersion[0].ItemGroupDef[1]), 7)
+
+    def test_igd_itemref_iterator(self):
+        self.loader.open_odm_document(self.odm_file)
+        mdv = self.loader.MetaDataVersion()
+        igd_list = []
+        for igd in mdv.ItemGroupDef:
+            igd_list.append(igd.OID)
+        expected_list = ["ODM.IG.COMMON", "ODM.IG.DM", "ODM.IG.VS_GENERAL", "ODM.IG.VS", "ODM.IG.RACE", "ODM.IG.AEYN",
+                         "ODM.IG.AE"]
+        self.assertListEqual(igd_list, expected_list)
+        self.assertEqual(mdv.ItemGroupDef[1].OID, "ODM.IG.DM")
+        self.assertEqual(len(mdv.ItemGroupDef), 7)
+        # test __getitem__
+        self.assertEqual(mdv.ItemGroupDef[0][0].ItemOID, "ODM.IT.Common.StudyID")
+        # test __iter__
+        ir_list = []
+        for ir in mdv.ItemGroupDef[0]:
+            ir_list.append(ir.ItemOID)
+        # test ItemGroupDef iterator
+        expected_list = ["ODM.IT.Common.StudyID", "ODM.IT.Common.SiteID", "ODM.IT.Common.SubjectID",
+                         "ODM.IT.Common.Visit"]
+        self.assertListEqual(ir_list, expected_list)
+        # test __len__
+        self.assertEqual(len(mdv.ItemGroupDef[0]), 4)
+

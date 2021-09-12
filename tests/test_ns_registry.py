@@ -14,6 +14,28 @@ class TestNamespaceRegistry(TestCase):
         NS.NamespaceRegistry(prefix="xml", uri="http://www.w3.org/XML/1998/namespace")
         NS.NamespaceRegistry(prefix="xlink", uri="http://www.w3.org/1999/xlink")
 
+    def test_get_ns_prefix(self):
+        nsr = NS.NamespaceRegistry(prefix="def", uri="http://www.cdisc.org/ns/def/v2.0")
+        def_prefix = nsr.get_prefix_ns_from_uri("http://www.cdisc.org/ns/def/v2.0")
+        self.assertEqual("def", def_prefix)
+
+    def test_get_ns_prefix_missing(self):
+        nsr = NS.NamespaceRegistry(prefix="def", uri="http://www.cdisc.org/ns/def/v2.0")
+        with self.assertRaises(ValueError):
+            def_prefix = nsr.get_prefix_ns_from_uri("http://www.cdisc.org/ns/def/v3.0")
+
+    def test_get_ns_entry_dict(self):
+        nsr = NS.NamespaceRegistry(prefix="def", uri="http://www.cdisc.org/ns/def/v2.0")
+        def_ns_dict = nsr.get_ns_entry_dict("def")
+        expected_dict = {"def": "http://www.cdisc.org/ns/def/v2.0"}
+        self.assertDictEqual(expected_dict, def_ns_dict)
+
+    def test_get_ns_entry_dict_missing(self):
+        nsr = NS.NamespaceRegistry(prefix="def", uri="http://www.cdisc.org/ns/def/v2.0")
+        missing_ns_dict = nsr.get_ns_entry_dict("ct")
+        expected_dict = {}
+        self.assertDictEqual(expected_dict, missing_ns_dict)
+
     def test_update_registry(self):
         nsr = NS.NamespaceRegistry(prefix="def", uri="http://www.cdisc.org/ns/def/v2.0")
         expected_ns = self.get_ns_defaults()

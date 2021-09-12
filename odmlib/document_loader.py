@@ -19,5 +19,9 @@ class DocumentLoader(ABC):
         raise NotImplementedError("Attempted to execute an abstract method load_metadataversion in the DocumentLoader class")
 
     @abstractmethod
+    def load_study(self, idx):
+        raise NotImplementedError("Attempted to execute an abstract method load_study in the DocumentLoader class")
+
+    @abstractmethod
     def load_odm(self):
         raise NotImplementedError("Attempted to execute an abstract method load_odm in the DocumentLoader class")

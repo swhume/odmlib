@@ -2,7 +2,7 @@
 
 ## Introduction
 
-The odmlib package simplifies working with the CDISC ODM data exchange standard and its extensions, such as Define-XML, in Python. The odmlib package provides an object-oriented interface to working with ODM documents that simplifies creating and processing them. It supports serializations in XML and JSON. ODM models have been created for ODM 1.3.2 and Define-XML versions 2.0 and 2.1. Odmlib simplifies the act of creating propriety extensions and automatically serializing them as XML or JSON. Odmlib also supports conformance checks and schema validation to ensure quality and standards compliance.
+The odmlib package simplifies working with the CDISC ODM data exchange standard and its extensions, such as Define-XML, in Python. The odmlib package provides an object-oriented interface for working with ODM documents that simplifies creating and processing them. It supports serializations in XML and JSON. ODM models have been created for ODM 1.3.2, Define-XML versions 2.0 and 2.1, and CT 1.1.1. Odmlib simplifies the act of creating propriety extensions and automatically serializing them as XML or JSON. Odmlib also supports conformance checks and schema validation to ensure quality and standards compliance. [See my blog for posts](https://swhume.github.io/blog-home.html) on odmlib and [odmlib example programs](https://github.com/swhume/odmlib_examples).
 
 ## Getting Started
 
@@ -97,7 +97,7 @@ root.write_xml("./data/simple_create.xml")
 If you want to generate JSON instead of XML, root can be serialized as JSON as follows:
 
 ```python
-root.write_json(“./data/simple_create.json”)
+root.write_json("./data/simple_create.json")
 ```
 
 Now you’ve got an ODM XML file. You can find a more complete version of this [simple example in my gists](https://gist.github.com/swhume/ef8ca0385a706c344eec83dac34a1359).

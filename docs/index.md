@@ -4,6 +4,11 @@
 
 The odmlib package simplifies working with the CDISC ODM data exchange standard and its extensions, such as Define-XML, in Python. The odmlib package provides an object-oriented interface for working with ODM documents that simplifies creating and processing them. It supports serializations in XML and JSON. ODM models have been created for ODM 1.3.2, Define-XML versions 2.0 and 2.1, and CT 1.1.1. Odmlib simplifies the act of creating propriety extensions and automatically serializing them as XML or JSON. Odmlib also supports conformance checks and schema validation to ensure quality and standards compliance. [See my blog for posts](https://swhume.github.io/blog-home.html) on odmlib and [odmlib example programs](https://github.com/swhume/odmlib_examples).
 
+## Table of Contents
+
+- [Getting Started](#getting-started)
+- [Validating Content](./validate.html)
+
 ## Getting Started
 
 Although odmlib is still under development, a version of odmlib is available on PyPI. Although not the most up-to-date, it’s the easiest to install:

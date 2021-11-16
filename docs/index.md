@@ -7,6 +7,8 @@ The odmlib package simplifies working with the CDISC ODM data exchange standard 
 ## Table of Contents
 
 - [Getting Started](#getting-started)
+- [Creating Content](./create.html)
+- [Loading Content](./load.html)
 - [Validating Content](./validate.html)
 
 ## Getting Started

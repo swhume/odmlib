@@ -183,15 +183,10 @@ class TestCheckODM(TestCase):
     def test_MethodDef(self):
         attrs = {"OID": "ODM.MT.AGE", "Name": "Algorithm to derive AGE", "Type": "Computation"}
         method = ODM.MethodDef(**attrs)
-        desc = ODM.Description()
-        tt1 = ODM.TranslatedText(_content="Age at Screening Date (Screening Date - Birth date)", lang="en")
-        desc.TranslatedText = [tt1]
-        method.Description = desc
-        fex = ODM.FormalExpression(Context="Python 3.7", _content="print('hello world')")
-        method.FormalExpression = [fex]
-        method_dict = method.to_dict()
-        print(method_dict)
-        is_valid = self.validator.verify_conformance(method_dict, "MethodDef")
+        method.Description = ODM.Description()
+        method.Description.TranslatedText.append(ODM.TranslatedText(_content="Age at Screening Date (Screening Date - Birth date)", lang="en"))
+        method.FormalExpression.append(ODM.FormalExpression(Context="Python 3.7", _content="print('hello world')"))
+        is_valid = self.validator.verify_conformance(method.to_dict(), "MethodDef")
         self.assertTrue(is_valid)
 
     def test_OID_unique(self):

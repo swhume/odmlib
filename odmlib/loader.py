@@ -28,8 +28,8 @@ class ODMLoader:
         mdv = self.loader.load_metadataversion(idx)
         return mdv
 
-    def Study(self):
-        study = self.loader.load_study()
+    def Study(self, idx=0):
+        study = self.loader.load_study(idx)
         return study
 
     def __getattr__(self, attr):

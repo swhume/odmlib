@@ -20,6 +20,10 @@ class SchemaValidator(ABC):
             "Attempted to execute an abstract method validate_file in the Validator class")
 
 
+class OdmlibSchemaValidationError(Exception):
+    pass
+
+
 class ODMSchemaValidator(SchemaValidator):
     def __init__(self, xsd_file):
         self.xsd = XSD.XMLSchema(xsd_file)
@@ -29,7 +33,10 @@ class ODMSchemaValidator(SchemaValidator):
         return result
 
     def validate_file(self, odm_file):
-        result = self.xsd.validate(odm_file)
+        try:
+            result = self.xsd.validate(odm_file)
+        except XSD.validators.exceptions.XMLSchemaChildrenValidationError as ex:
+            raise OdmlibSchemaValidationError(ex)
         return result
 
 
@@ -65,12 +72,12 @@ class ElementParser:
         return self.root
 
     def Study(self):
-        study = self.root.find(ODM_PREFIX + "Study", ODM_NS)
+        study = self.root.findall(ODM_PREFIX + "Study", ODM_NS)
         return study
 
-    def MetaDataVersion(self):
-        study = self.root.find(ODM_PREFIX + "Study", ODM_NS)
-        self.mdv = study.findall(ODM_PREFIX + "MetaDataVersion", ODM_NS)
+    def MetaDataVersion(self, idx=0):
+        study = self.root.findall(ODM_PREFIX + "Study", ODM_NS)
+        self.mdv = study[idx].findall(ODM_PREFIX + "MetaDataVersion", ODM_NS)
         return self.mdv
 
     def AdminData(self):
@@ -114,6 +121,7 @@ class ODMStringParser(BaseParser, ElementParser):
 
     def parse_tree(self):
         self.register_namespaces()
+        #return ET.ElementTree(ET.fromstring(self.odm_string))
         return ET.fromstring(self.odm_string)
 
 

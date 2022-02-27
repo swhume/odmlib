@@ -25,6 +25,45 @@ class TestConformanceCheckODM(TestCase):
         # oid ref/def check
         self.assertTrue(self.oid_checker.check_oid_refs())
 
+    def test_refdef_orphans(self):
+        attrs = {"OID": "MDV.TRACE-XML-ODM-01", "Name": "TRACE-XML MDV", "Description": "Trace-XML Example"}
+        self.mdv = ODM.MetaDataVersion(**attrs)
+        self.mdv.Protocol = self.add_protocol()
+        self.mdv.StudyEventDef = self.add_SED()
+        self.mdv.FormDef = self.add_FD()
+        self.mdv.ItemGroupDef = self.add_IGD()
+        self.mdv.ItemDef = self.add_ITD()
+        self.mdv.CodeList = self.add_CL()
+        self.mdv.MethodDef = self.add_MD()
+        self.mdv.ConditionDef = self.add_CD()
+        # oid uniqueness check and ref/def init
+        self.mdv.verify_oids(self.oid_checker)
+        orphans = self.mdv.unreferenced_oids(self.oid_checker)
+        expected_orphans = {'MDV.TRACE-XML-ODM-01': 'MetaDataVersionOID', 'ODM.IT.VS.BP.VSORRESU': 'ItemOID',
+                            'ODM.CL.NY_SUB_Y_N': 'CodeListOID', 'ODM.MT.DOB': 'MethodOID',
+                            'ODM.CD.BRTHMO': 'CollectionExceptionConditionOID'}
+        self.assertDictEqual(orphans, expected_orphans)
+
+    def test_refdef_orphans_unitialized(self):
+        attrs = {"OID": "MDV.TRACE-XML-ODM-01", "Name": "TRACE-XML MDV", "Description": "Trace-XML Example"}
+        self.mdv = ODM.MetaDataVersion(**attrs)
+        self.mdv.Protocol = self.add_protocol()
+        self.mdv.StudyEventDef = self.add_SED()
+        self.mdv.FormDef = self.add_FD()
+        self.mdv.ItemGroupDef = self.add_IGD()
+        self.mdv.ItemDef = self.add_ITD()
+        self.mdv.CodeList = self.add_CL()
+        self.mdv.MethodDef = self.add_MD()
+        self.mdv.ConditionDef = self.add_CD()
+        oid_checker = OID.OIDRef()
+        # use unitialized oid_checker
+        orphans = self.mdv.unreferenced_oids(oid_checker)
+        # returns an empty dictionary since oid index has not been created
+        expected_orphans = {'MDV.TRACE-XML-ODM-01': 'MetaDataVersionOID', 'ODM.IT.VS.BP.VSORRESU': 'ItemOID',
+                            'ODM.CL.NY_SUB_Y_N': 'CodeListOID', 'ODM.MT.DOB': 'MethodOID',
+                            'ODM.CD.BRTHMO': 'CollectionExceptionConditionOID'}
+        self.assertDictEqual(orphans, expected_orphans)
+
     def test_OID_unique_dirty(self):
         attrs = {"OID": "MDV.TRACE-XML-ODM-01", "Name": "TRACE-XML MDV", "Description": "Trace-XML Example"}
         self.mdv = ODM.MetaDataVersion(**attrs)

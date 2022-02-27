@@ -30,12 +30,17 @@ class TestInsertItem(unittest.TestCase):
         loader = LD.ODMLoader(OL.XMLODMLoader())
         loader.open_odm_document(self.odm_file_out)
         mdv = loader.MetaDataVersion()
-        is_found_inserted_item = False
-        for it in mdv.ItemDef:
-            if it.OID == "ODM.IT.AE.TEST":
-                is_found_inserted_item = True
-        self.assertTrue(is_found_inserted_item)
-        # TODO test json for None values
+        # is_found_inserted_item = False
+        # for it in mdv.ItemDef:
+        #     if it.OID == "ODM.IT.AE.TEST":
+        #         is_found_inserted_item = True
+        # self.assertTrue(is_found_inserted_item)
+        itd = mdv.find("ItemDef", "OID", "ODM.IT.AE.TEST")
+        self.assertEqual(itd.OID, "ODM.IT.AE.TEST")
+        # comment was created as None and should not be part of the object
+        self.assertIsNone(itd.Comment)
+        itd_json = itd.to_json()
+        self.assertNotIn("Comment", itd_json)
         odm_json = root.to_json()
 
     def add_study(self, mdv):

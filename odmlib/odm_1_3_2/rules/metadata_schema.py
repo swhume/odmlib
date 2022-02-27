@@ -140,7 +140,7 @@ class MetadataSchema(ConformanceChecker):
         })
 
         schema_registry.add("CodeListRef", {
-            "CodeListOID": {"type": "string"}
+            "CodeListOID": {"type": "string", "required": True}
         })
 
         schema_registry.add("ItemDef", {
@@ -161,6 +161,7 @@ class MetadataSchema(ConformanceChecker):
             "Question": {"type": "dict", "schema": {"TranslatedText": {"type": "list",
                          "schema": {"type": "dict", "schema": schema_registry.get("TranslatedText")}}}},
             "ExternalQuestion": {"type": "dict", "schema": schema_registry.get("ExternalQuestion")},
+            "MeasurementUnitRef": {"type": "list", "schema": {  "type": "dict", "schema": schema_registry.get("MeasurementUnitRef")}},
             "CodeListRef": {"type": "dict", "schema": schema_registry.get("CodeListRef")},
             "ErrorMessage": {"type": "dict", "schema": {"TranslatedText": {"type": "list",
                              "schema": {"type": "dict", "schema": schema_registry.get("TranslatedText")}}}},
@@ -220,10 +221,16 @@ class MetadataSchema(ConformanceChecker):
             "Alias": {"type": "list", "schema": {"type": "dict", "schema": schema_registry.get("Alias")}}
         })
 
+        schema_registry.add("Include", {
+            "StudyOID": {"type": "string", "required": True},
+            "MetaDataVersionOID": {"type": "string", "required": True}
+        })
+
         schema_registry.add("MetaDataVersion", {
             "OID": {"type": "string", "required": True},
             "Name": {"type": "string", "required": True},
             "Description": {"type": "string"},
+            "Include": {"type": "dict", "schema": schema_registry.get("Include")},
             "Protocol": {"type": "dict", "schema": schema_registry.get("Protocol")},
             "StudyEventDef": {"type": "list", "schema": {"type": "dict", "schema": schema_registry.get("StudyEventDef")}},
             "FormDef": {"type": "list", "schema": {"type": "dict", "schema": schema_registry.get("FormDef")}},
@@ -232,6 +239,20 @@ class MetadataSchema(ConformanceChecker):
             "CodeList": {"type": "list", "schema": {"type": "dict", "schema": schema_registry.get("CodeList")}},
             "ConditionDef": {"type": "list", "schema": {"type": "dict", "schema": schema_registry.get("ConditionDef")}},
             "MethodDef": {"type": "list", "schema": {"type": "dict", "schema": schema_registry.get("MethodDef")}}
+        })
+
+        schema_registry.add("MeasurementUnit", {
+            "OID": {"type": "string", "required": True},
+            "Name": {"type": "string", "required": True},
+            "Symbol": {"type": "dict", "schema" : {
+                "TranslatedText": {"type": "list",
+                                    "schema": {"type": "dict", "schema": schema_registry.get("TranslatedText")}}}
+            },
+            "Alias": {"type": "list", "schema": {"type": "dict", "schema": schema_registry.get("Alias")}}
+        })
+
+        schema_registry.add("BasicDefinitions", {
+            "MeasurementUnit": {"type": "list", "schema": {"type": "dict", "schema": schema_registry.get("MeasurementUnit")}}
         })
 
 
@@ -243,19 +264,26 @@ class MetadataSchema(ConformanceChecker):
                     "ProtocolName": {"schema": {"_content": {"type": "string", "required": True}}}
                 }
             },
-            "MetaDataVersion": {"type": "dict", "schema": schema_registry.get("MetaDataVersion")}
+            "BasicDefinitions": {"type": "dict", "schema": schema_registry.get("BasicDefinitions")},
+            "MetaDataVersion": {"type": "list", "schema": {"type": "dict", "schema": schema_registry.get("MetaDataVersion")}}
         })
 
-        # schema_registry.add("Study", {
-        #     "OID": {"type": "string", "required": True},
-        #     "GlobalVariables": {"type": "dict", "required": True, "schema": {
-        #             "StudyName": {"schema": {"TranslatedText": {"type": "list",
-        #                           "schema": {"type": "dict", "schema": schema_registry.get("TranslatedText")}}}},
-        #             "StudyDescription": {"schema": {"TranslatedText": {"type": "list",
-        #                                  "schema": {"type": "dict", "schema": schema_registry.get("TranslatedText")}}}},
-        #             "ProtocolName": {"schema": {"TranslatedText": {"type": "list",
-        #                              "schema": {"type": "dict", "schema": schema_registry.get("TranslatedText")}}}}
-        #         }
-        #     },
-        #     "MetaDataVersion": {"type": "dict", "schema": schema_registry.get("MetaDataVersion")}
-        # })
+        schema_registry.add("ODM", {
+            "Description": {"type": "string"},
+            "FileType": {"type": "string", "required": True, "allowed": ["Snapshot", "Transactional"]},
+            "Granularity": {"type": "string", "allowed": ["All", "Metadata", "AdminData", "ReferenceData",
+                                                          "AllClinicalData", "SingleSite", "SingleSubject"]},
+            "Archival": {"type": "string", "allowed": ["Yes", "No"]},
+            "FileOID": {"type": "string", "required": True},
+            "CreationDateTime": {"type": "string", "required": True},
+            "PriorFileOID": {"type": "string"},
+            "AsOfDateTime": {"type": "string"},
+            "FileType": {"type": "string", "required": True, "allowed": ["Snapshot", "Transactional"]},
+            "ODMVersion": {"type": "string", "allowed": ["1.3.2", "1.3"]},
+            "Originator": {"type": "string"},
+            "SourceSystem": {"type": "string"},
+            "SourceSystemVersion": {"type": "string"},
+            "ID": {"type": "string"},
+            "schemaLocation": {"type": "string"},
+            "Study": {"type": "list", "schema": {"type": "dict", "schema": schema_registry.get("Study")}}
+        })

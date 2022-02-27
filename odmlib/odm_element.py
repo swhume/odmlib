@@ -134,6 +134,11 @@ class ODMElement(metaclass=ODMMeta):
                 obj.to_xml(odm_elem, top_elem)
         return top_elem
 
+    def to_xml_string(self):
+        elem = self.to_xml()
+        xml_str = ET.tostring(elem, encoding='utf8', method='xml')
+        return xml_str.decode("utf-8")
+
     def to_dict(self):
         """
         transform odmlib object hierarchy into a Python dictionary and return it
@@ -175,10 +180,16 @@ class ODMElement(metaclass=ODMMeta):
         :return: an odmlib object of the ODM element with the first time the attribute value matches val
         """
         obj_list = eval("self." + obj_name)
-        for o in obj_list:
-            if o.__dict__[attr] == val:
-                return o
-        return None
+        if type(obj_list) == list:
+            for o in obj_list:
+                if o.__dict__[attr] == val:
+                    return o
+            return None
+        else:
+            if obj_list.__dict__[attr] == val:
+                return obj_list
+            else:
+                return None
 
     def write_xml(self, odm_file, odm_writer=ODMWriter):
         """
@@ -232,6 +243,11 @@ class ODMElement(metaclass=ODMMeta):
         self._init_oid_check(oid_checker)
         oid_checker.check_oid_refs()
 
+    def unreferenced_oids(self, oid_checker):
+        if not oid_checker.is_oids_verified():
+            self.verify_oids(oid_checker)
+        return oid_checker.check_unreferenced_oids()
+
     def _init_oid_check(self, oid_checker):
         """
         for odmlib object, loads all OIDs and checks them for uniqueness; throws an error if uniqueness check fails
@@ -246,6 +262,7 @@ class ODMElement(metaclass=ODMMeta):
                 for o in obj:
                     o._init_oid_check(oid_checker)                  # list of ELEMENTS
             else:
+                # assumes consistency in OID naming. Exceptions: FileOID and PriorFileOID in ODM
                 if attr == "OID":
                     oid_checker.add_oid(obj, self.__class__.__name__)
                 elif "OID" in attr:

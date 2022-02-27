@@ -34,6 +34,7 @@ class TestODMLoader(TestCase):
         self.assertEqual(mdv.CodeList[0].CodeListItem[1].CodedValue, "MODERATE")
 
     def test_mdv_find_by_OID(self):
+        # test find for a list element
         self.loader.open_odm_document(self.odm_file)
         mdv = self.loader.MetaDataVersion()
         self.assertEqual(mdv.Name, "TRACE-XML MDV")
@@ -43,6 +44,15 @@ class TestODMLoader(TestCase):
         self.assertEqual(it.CodeListRef.CodeListOID, "ODM.CL.NY_SUB_Y_N")
         cli = mdv.CodeList[2].find("CodeListItem", "CodedValue", "DOSE REDUCED")
         self.assertEqual(cli.Decode.TranslatedText[0]._content, "DOSE REDUCED")
+
+    def test_find_non_list_element(self):
+        # test find for a non-list element
+        self.loader.open_odm_document(self.odm_file)
+        mdv = self.loader.MetaDataVersion()
+        it = mdv.ItemDef[4]
+        self.assertEqual(it.OID, "ODM.IT.AE.AEYN")
+        clref = it.find("CodeListRef", "CodeListOID", "ODM.CL.NY_SUB_Y_N")
+        self.assertEqual(clref.CodeListOID, "ODM.CL.NY_SUB_Y_N")
 
     def test_odm_round_trip(self):
         root = self.loader.open_odm_document(self.odm_file)

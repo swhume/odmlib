@@ -6,10 +6,13 @@ import importlib
 
 
 class XMLDefineLoader(DL.DocumentLoader):
-    def __init__(self, model_package="define_2_0", ns_uri="http://www.cdisc.org/ns/def/v2.0"):
+    def __init__(self, model_package="define_2_0", ns_uri="http://www.cdisc.org/ns/def/v2.0", local_model=False):
         self.filename = None
         self.parser = None
-        self.DEF = importlib.import_module(f"odmlib.{model_package}.model")
+        if local_model:
+            self.DEF = importlib.import_module(f"{model_package}.model")
+        else:
+            self.DEF = importlib.import_module(f"odmlib.{model_package}.model")
         self.ns_uri = ns_uri
         self.nsr = NS.NamespaceRegistry()
 
@@ -67,8 +70,7 @@ class XMLDefineLoader(DL.DocumentLoader):
 
     def load_study(self, idx=0):
         study = self.parser.Study()
-        # TODO will need to make Study a list and treat it like MDV above
-        study_odmlib = self.load_document(study)
+        study_odmlib = self.load_document(study[0])
         return study_odmlib
 
 

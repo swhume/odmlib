@@ -1,6 +1,8 @@
 from unittest import TestCase
 import odmlib.odm_1_3_2.model as ODM
 import odmlib.odm_parser as ODM_PARSER
+import odmlib.odm_loader as OL
+import odmlib.loader as LD
 import os
 import datetime
 
@@ -8,6 +10,7 @@ import datetime
 class TestClinicalData(TestCase):
     def setUp(self) -> None:
         self.odm_test_file = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'data','test_clinical_data_01.xml')
+        self.odm_test_file2 = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'data','odm-data-snapshot.xml')
 
     def test_clinical_data_to_xml(self):
         cd = []
@@ -42,6 +45,7 @@ class TestClinicalData(TestCase):
         self.assertEqual(odm_xml.attrib["FileOID"], "ODM.TEST.CD.001")
         self.assertListEqual(["ClinicalData", "ClinicalData"], [e.tag for e in odm_xml.getchildren()])
 
+
     def test_clinical_data_from_xml(self):
         parser = ODM_PARSER.ODMParser(self.odm_test_file)
         parser.parse()
@@ -52,6 +56,43 @@ class TestClinicalData(TestCase):
         igd = parser.ItemGroupData(parent=fd[0]["elem"])
         item_data = parser.ItemData(parent=igd[0]["elem"])
         self.assertEqual(item_data[0]["Value"], "Fever")
+
+    def test_load_odm_xml_data(self):
+        loader = LD.ODMLoader(OL.XMLODMLoader(model_package="odm_1_3_2", ns_uri="http://www.cdisc.org/ns/odm/v1.3"))
+        loader.open_odm_document(self.odm_test_file2)
+        odm = loader.load_odm()
+        self.assertEqual(odm.FileOID, "Study-MetaD20220210213634")
+        self.assertEqual(odm.ClinicalData[0].StudyOID, "1001_corona")
+        igd_0 = odm.ClinicalData[0].SubjectData[0].StudyEventData[0].FormData[0].ItemGroupData[0]
+        self.assertEqual(igd_0.ItemGroupOID, "IG.DM")
+        self.assertEqual(igd_0.ItemData[2].ItemOID, "IT.BRTHDAT")
+        self.assertEqual(igd_0.ItemData[2].Value, "1966-02-10")
+
+    def test_load_odm_xml_data_iterator(self):
+        loader = LD.ODMLoader(OL.XMLODMLoader(model_package="odm_1_3_2", ns_uri="http://www.cdisc.org/ns/odm/v1.3"))
+        loader.open_odm_document(self.odm_test_file2)
+        odm = loader.load_odm()
+        self.assertEqual(odm.FileOID, "Study-MetaD20220210213634")
+        self.assertEqual(odm.ClinicalData[0].StudyOID, "1001_corona")
+        igd_0 = odm.ClinicalData[0].SubjectData[0].StudyEventData[0].FormData[0].ItemGroupData[0]
+        values = []
+        for item in igd_0:
+            values.append(item.Value)
+        test_values = self._get_test_values()
+        self.assertListEqual(values, test_values)
+        subjects = []
+        for subject in odm.ClinicalData[0]:
+            subjects.append(subject.SubjectKey)
+        test_subjects = ["SS_0001", "SS_0002"]
+        self.assertListEqual(subjects, test_subjects)
+
+    def test_find_record(self):
+        loader = LD.ODMLoader(OL.XMLODMLoader(model_package="odm_1_3_2", ns_uri="http://www.cdisc.org/ns/odm/v1.3"))
+        loader.open_odm_document(self.odm_test_file)
+        odm = loader.load_odm()
+        subject = odm.ClinicalData[0].find("SubjectData", "SubjectKey", "1000")
+        self.assertEqual(subject.TransactionType, "Insert")
+        self.assertEqual(subject.SubjectKey, "1000")
 
     def test_audit_record(self):
         ar = ODM.AuditRecord(EditPoint="Monitoring", UsedImputationMethod="Yes", ID="1")
@@ -123,6 +164,9 @@ class TestClinicalData(TestCase):
         anns.Annotation.append(annotation)
         self.assertEqual(anns.Annotation[0].ID, "ANN001")
         self.assertEqual(anns.Annotation[0].Flag[0].FlagValue.CodeListOID, "CL.FLAGVALUE")
+
+    def _get_test_values(self):
+        return ["56", "YEARS", "1966-02-10", "2022-02-19", "HISPANIC/LATINO", "WHITE", "yd", "Male"]
 
     def create_odm_document(self, cd):
         """

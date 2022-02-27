@@ -1,7 +1,6 @@
 from unittest import TestCase
 import os
 import odmlib.odm_parser as P
-import xmlschema as XSD
 
 
 class TestODMValidator(TestCase):
@@ -23,8 +22,17 @@ class TestODMValidator(TestCase):
 
     def test_validate_file_invalid(self):
         odm_file = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'data', 'cdash-odm-test-invalid.xml')
-        with self.assertRaises(XSD.validators.exceptions.XMLSchemaChildrenValidationError):
+        # with self.assertRaises(XSD.validators.exceptions.XMLSchemaChildrenValidationError):
+        with self.assertRaises(P.OdmlibSchemaValidationError):
             self.validator.validate_file(odm_file)
+
+    def test_validate_file_invalid_msg(self):
+        odm_file = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'data', 'cdash-odm-test-invalid.xml')
+        try:
+            self.validator.validate_file(odm_file)
+        except P.OdmlibSchemaValidationError as ex:
+            # print(ex)
+            self.assertIn("failed validating", ex.args[0].msg)
 
     def test_validate_tree_invalid(self):
         odm_file = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'data', 'cdash-odm-test-invalid.xml')

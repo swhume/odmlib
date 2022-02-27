@@ -548,6 +548,15 @@ class ItemGroupData(OE.ODMElement):
     Annotation = T.ODMListObject(required=False, element_class=Annotation)
     ItemData = T.ODMListObject(required=False, element_class=ItemData)
 
+    def __len__(self):
+        return len(self.ItemData)
+
+    def __getitem__(self, position):
+        return self.ItemData[position]
+
+    def __iter__(self):
+        return iter(self.ItemData)
+
 
 class FormData(OE.ODMElement):
     FormOID = T.OIDRef(required=True)
@@ -559,6 +568,15 @@ class FormData(OE.ODMElement):
     Annotation = T.ODMListObject(required=False, element_class=Annotation)
     ItemGroupData = T.ODMListObject(required=False, element_class=ItemGroupData)
 
+    def __len__(self):
+        return len(self.ItemGroupData)
+
+    def __getitem__(self, position):
+        return self.ItemGroupData[position]
+
+    def __iter__(self):
+        return iter(self.ItemGroupData)
+
 
 class StudyEventData(OE.ODMElement):
     StudyEventOID = T.OIDRef(required=True)
@@ -568,6 +586,15 @@ class StudyEventData(OE.ODMElement):
     Signature = T.ODMObject(required=False, element_class=Signature)
     Annotation = T.ODMListObject(required=False, element_class=Annotation)
     FormData = T.ODMListObject(required=False, element_class=FormData)
+
+    def __len__(self):
+        return len(self.FormData)
+
+    def __getitem__(self, position):
+        return self.FormData[position]
+
+    def __iter__(self):
+        return iter(self.FormData)
 
 
 class SubjectData(OE.ODMElement):
@@ -579,6 +606,15 @@ class SubjectData(OE.ODMElement):
     SiteRef = T.ODMObject(required=False, element_class=SiteRef)
     Annotation = T.ODMListObject(required=False, element_class=Annotation)
     StudyEventData = T.ODMListObject(required=False, element_class=StudyEventData)
+
+    def __len__(self):
+        return len(self.StudyEventData)
+
+    def __getitem__(self, position):
+        return self.StudyEventData[position]
+
+    def __iter__(self):
+        return iter(self.StudyEventData)
 
 
 class AuditRecords(OE.ODMElement):
@@ -600,6 +636,15 @@ class ClinicalData(OE.ODMElement):
     AuditRecords = T.ODMListObject(element_class=AuditRecords)
     Signatures = T.ODMListObject(element_class=Signatures)
     Annotations = T.ODMListObject(element_class=Annotations)
+
+    def __len__(self):
+        return len(self.SubjectData)
+
+    def __getitem__(self, position):
+        return self.SubjectData[position]
+
+    def __iter__(self):
+        return iter(self.SubjectData)
 
 
 class ReferenceData(OE.ODMElement):

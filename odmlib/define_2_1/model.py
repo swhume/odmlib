@@ -332,4 +332,4 @@ class ODM(ODM.ODM):
     schemaLocation = ODM.ODM.schemaLocation
     Context = T.ValueSetString(required=True, namespace="def")
     ID = ODM.ODM.ID
-    Study = ODM.ODM.Study
+    Study = T.ODMObject(required=True, element_class=Study)

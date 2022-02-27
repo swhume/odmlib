@@ -57,6 +57,15 @@ class NamespaceRegistry(Borg):
             if prefix != list(self.default_namespace.keys())[0]:
                 odm_elem.attrib["xmlns:" + prefix] = uri
 
+    def set_odm_namespace_attributes_string(self, odm_str):
+        """ add NS attributes to the ODM XML element object """
+        ns_str = "<ODM xmlns=\"" + list(self.default_namespace.values())[0] + "\""
+        for prefix, uri in self.namespaces.items():
+            if prefix != list(self.default_namespace.keys())[0]:
+                ns_str += " xmlns:" + prefix + "=\"" + uri + "\""
+        odm_ns_str = odm_str.replace("<ODM", ns_str)
+        return odm_ns_str
+
     def _update_registry(self, prefix, uri, is_default):
         self.namespaces[prefix] = uri
         if is_default:

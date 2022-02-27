@@ -45,7 +45,7 @@ class JSONODMLoader(DL.DocumentLoader):
     def load_odm(self):
         if not self.odm_dict:
             raise ValueError("create_document must be used to creat the document before executing load_odm")
-        odm_odmlib = self.load_document(self.odm_dict, "MetaDataVersion")
+        odm_odmlib = self.load_document(self.odm_dict, "ODM")
         return odm_odmlib
 
     def load_metadataversion(self, idx=0):
@@ -68,11 +68,14 @@ class DictODMLoader(JSONODMLoader):
 
 
 class XMLODMLoader(DL.DocumentLoader):
-    def __init__(self, model_package="odm_1_3_2", ns_uri="http://www.cdisc.org/ns/odm/v1.3"):
+    def __init__(self, model_package="odm_1_3_2", ns_uri="http://www.cdisc.org/ns/odm/v1.3", local_model=False):
         self.filename = None
         self.parser = None
-        self.ODM = importlib.import_module(f"odmlib.{model_package}.model")
-        self.nsr = NS.NamespaceRegistry(prefix="odm", uri=ns_uri, is_default=True)
+        if local_model:
+            self.ODM = importlib.import_module(f"{model_package}.model")
+        else:
+            self.ODM = importlib.import_module(f"odmlib.{model_package}.model")
+        self.nsr = NS.NamespaceRegistry()
 
     def load_document(self, elem, *args):
         elem_name = elem.tag[elem.tag.find('}') + 1:]

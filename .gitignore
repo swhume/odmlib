@@ -5,4 +5,5 @@ __pycache__/
 venv/
 *.egg-info/
 docs/build/
+odmlib/build/
 dist/

@@ -241,7 +241,7 @@ class ODMElement(metaclass=ODMMeta):
         :param oid_checker: object that performs that checks OID uniqueness and Def/Ref checks
         """
         self._init_oid_check(oid_checker)
-        oid_checker.check_oid_refs()
+        return oid_checker.check_oid_refs()
 
     def unreferenced_oids(self, oid_checker):
         if not oid_checker.is_oids_verified():
@@ -276,7 +276,7 @@ class ODMElement(metaclass=ODMMeta):
         :param validator: object that validates the odmlib object against the model
         """
         doc_dict = self.to_dict()
-        result = validator.verify_conformance(doc_dict, type(self).__name__)
+        result = validator.check_conformance(doc_dict, type(self).__name__)
         return result
 
     def verify_order(self):

@@ -222,10 +222,10 @@ class TestItemGroupDef(TestCase):
         """
         odm = self.create_root()
         study = self.create_study()
-        odm.Study = [study]
+        odm.Study = study
         mdv = self.create_mdv()
-        odm.Study[0].MetaDataVersion = [mdv]
-        odm.Study[0].MetaDataVersion[0].ItemGroupDef.append(igd)
+        odm.Study.MetaDataVersion = mdv
+        odm.Study.MetaDataVersion.ItemGroupDef.append(igd)
         odm.write_json(self.test_file_json)
         return odm
 

@@ -4,7 +4,7 @@ from cerberus import schema_registry, validator
 
 class ConformanceChecker(ABC):
     @abstractmethod
-    def verify_conformance(self, doc, schema_name):
+    def check_conformance(self, doc, schema_name):
         raise NotImplementedError(
             "Attempted to execute an abstract method validate_tree in the Validator class")
 
@@ -13,7 +13,7 @@ class MetadataSchema(ConformanceChecker):
     def __init__(self):
         self._set_metadata_registry()
 
-    def verify_conformance(self, doc, schema_name):
+    def check_conformance(self, doc, schema_name):
         schema = schema_registry.get(schema_name)
         v = validator.Validator(schema)
         is_valid = v.validate(doc)

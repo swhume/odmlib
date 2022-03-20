@@ -116,15 +116,9 @@ class JSONDefineLoader(DL.DocumentLoader):
         if not self.odm_dict:
             raise ValueError("create_document must be used to create the document before executing load_metadataversion")
         if "MetaDataVersion" in self.odm_dict:
-            if isinstance(self.odm_dict["MetaDataVersion"], list):
-                mdv_dict = self.odm_dict["MetaDataVersion"][idx]
-            else:
-                mdv_dict = self.odm_dict["MetaDataVersion"]
-        elif "Study" in self.odm_dict and "MetaDataVersion" in self.odm_dict["Study"][0]:
-            if isinstance(self.odm_dict["Study"][0]["MetaDataVersion"], list):
-                mdv_dict = self.odm_dict["Study"][0]["MetaDataVersion"][idx]
-            else:
-                mdv_dict = self.odm_dict["Study"][0]["MetaDataVersion"]
+            mdv_dict = self.odm_dict["MetaDataVersion"]
+        elif "Study" in self.odm_dict and "MetaDataVersion" in self.odm_dict["Study"]:
+            mdv_dict = self.odm_dict["Study"]["MetaDataVersion"]
         else:
             raise ValueError("MetaDataVersion not found in ODM dictionary")
         mdv_odmlib = self.load_document(mdv_dict, "MetaDataVersion")
@@ -134,7 +128,7 @@ class JSONDefineLoader(DL.DocumentLoader):
         if not self.odm_dict:
             raise ValueError("create_document must be used to create the document before executing load_study")
         elif "Study" in self.odm_dict:
-            study_dict = self.odm_dict["Study"][idx]
+            study_dict = self.odm_dict["Study"]
         else:
             raise ValueError("Study not found in ODM dictionary")
         study_odmlib = self.load_document(study_dict, "Study")

@@ -53,11 +53,11 @@ class TestCheckODM(TestCase):
         p.Alias = [ODM.Alias(Context="ClinicalTrials.gov", Name="trace-protocol")]
         description_dict = p.Description.to_dict()
         print(description_dict)
-        is_valid = self.validator.verify_conformance(description_dict, "Description")
+        is_valid = self.validator.check_conformance(description_dict, "Description")
         self.assertTrue(is_valid)
         protocol_dict = p.to_dict()
         print(protocol_dict)
-        is_valid = self.validator.verify_conformance(protocol_dict, "Protocol")
+        is_valid = self.validator.check_conformance(protocol_dict, "Protocol")
         self.assertTrue(is_valid)
 
     def test_StudEventDef(self):
@@ -76,7 +76,7 @@ class TestCheckODM(TestCase):
         sed.Alias = [a1, a2]
         sed_dict = sed.to_dict()
         print(sed_dict)
-        is_valid = self.validator.verify_conformance(sed_dict, "StudyEventDef")
+        is_valid = self.validator.check_conformance(sed_dict, "StudyEventDef")
         self.assertTrue(is_valid)
 
     def test_FormDef(self):
@@ -93,7 +93,7 @@ class TestCheckODM(TestCase):
         formdef.Alias.append(ODM.Alias(Context="SDTMIG", Name="VS"))
         fd_dict = formdef.to_dict()
         print(fd_dict)
-        is_valid = self.validator.verify_conformance(fd_dict, "FormDef")
+        is_valid = self.validator.check_conformance(fd_dict, "FormDef")
         self.assertTrue(is_valid)
 
     def test_ItemGroupDef(self):
@@ -108,7 +108,7 @@ class TestCheckODM(TestCase):
         igd.ItemRef = [ir1, ir2]
         igd_dict = igd.to_dict()
         print(igd_dict)
-        is_valid = self.validator.verify_conformance(igd_dict, "ItemGroupDef")
+        is_valid = self.validator.check_conformance(igd_dict, "ItemGroupDef")
         self.assertTrue(is_valid)
 
     def test_RangeCheck(self):
@@ -121,7 +121,7 @@ class TestCheckODM(TestCase):
         rc.MeasurementUnitRef = ODM.MeasurementUnitRef(MeasurementUnitOID="ODM.MU.UNITS")
         rc_dict = rc.to_dict()
         print(rc_dict)
-        is_valid = self.validator.verify_conformance(rc_dict, "RangeCheck")
+        is_valid = self.validator.check_conformance(rc_dict, "RangeCheck")
         self.assertTrue(is_valid)
 
     def test_ItemDef(self):
@@ -133,7 +133,7 @@ class TestCheckODM(TestCase):
         item.CodeListRef = ODM.CodeListRef(CodeListOID="CL.NY_SUB_Y_N_2011-10-24")
         item_dict = item.to_dict()
         print(item_dict)
-        is_valid = self.validator.verify_conformance(item_dict, "ItemDef")
+        is_valid = self.validator.check_conformance(item_dict, "ItemDef")
         self.assertTrue(is_valid)
 
     def test_CodeListItem(self):
@@ -145,7 +145,7 @@ class TestCheckODM(TestCase):
         cli.Alias.append(ODM.Alias(Context="nci:ExtCodeID", Name="C64848"))
         cli_dict = cli.to_dict()
         print(cli_dict)
-        is_valid = self.validator.verify_conformance(cli_dict, "CodeListItem")
+        is_valid = self.validator.check_conformance(cli_dict, "CodeListItem")
         self.assertTrue(is_valid)
 
     def test_CodeList(self):
@@ -157,7 +157,7 @@ class TestCheckODM(TestCase):
         eni.Alias.append(ODM.Alias(Context="nci:ExtCodeID", Name="C65047"))
         cl_dict = cl.to_dict()
         print(cl_dict)
-        is_valid = self.validator.verify_conformance(cl_dict, "CodeList")
+        is_valid = self.validator.check_conformance(cl_dict, "CodeList")
         self.assertTrue(is_valid)
 
     def test_ExternalCodeList(self):
@@ -166,7 +166,7 @@ class TestCheckODM(TestCase):
         excl = ODM.ExternalCodeList(Dictionary="MedDRA", Version="23.0", href="https://www.meddra.org/")
         cl.ExternalCodeList = excl
         cl_dict = cl.to_dict()
-        is_valid = self.validator.verify_conformance(cl_dict, "CodeList")
+        is_valid = self.validator.check_conformance(cl_dict, "CodeList")
         self.assertTrue(is_valid)
 
     def test_ConditionDef(self):
@@ -177,7 +177,7 @@ class TestCheckODM(TestCase):
         cd.FormalExpression = [ODM.FormalExpression(Context="Python 3.7", _content="BRTHYR != 4")]
         cd_dict = cd.to_dict()
         print(cd_dict)
-        is_valid = self.validator.verify_conformance(cd_dict, "ConditionDef")
+        is_valid = self.validator.check_conformance(cd_dict, "ConditionDef")
         self.assertTrue(is_valid)
 
     def test_MethodDef(self):
@@ -186,7 +186,7 @@ class TestCheckODM(TestCase):
         method.Description = ODM.Description()
         method.Description.TranslatedText.append(ODM.TranslatedText(_content="Age at Screening Date (Screening Date - Birth date)", lang="en"))
         method.FormalExpression.append(ODM.FormalExpression(Context="Python 3.7", _content="print('hello world')"))
-        is_valid = self.validator.verify_conformance(method.to_dict(), "MethodDef")
+        is_valid = self.validator.check_conformance(method.to_dict(), "MethodDef")
         self.assertTrue(is_valid)
 
     def test_OID_unique(self):
@@ -237,7 +237,7 @@ class TestCheckODM(TestCase):
         self.mdv.ConditionDef = self.add_CD()
         mdv_dict = self.mdv.to_dict()
         print(mdv_dict)
-        is_valid = self.validator.verify_conformance(mdv_dict, "MetaDataVersion")
+        is_valid = self.validator.check_conformance(mdv_dict, "MetaDataVersion")
         self.assertTrue(is_valid)
 
     def add_protocol(self):

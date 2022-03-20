@@ -5,6 +5,9 @@ import odmlib.odm_loader as OL
 import odmlib.loader as LD
 import os
 import datetime
+from odmlib.odm_1_3_2.rules import metadata_schema as METADATA
+from odmlib.odm_1_3_2.rules import oid_ref as OID
+
 
 
 class TestClinicalData(TestCase):
@@ -164,6 +167,35 @@ class TestClinicalData(TestCase):
         anns.Annotation.append(annotation)
         self.assertEqual(anns.Annotation[0].ID, "ANN001")
         self.assertEqual(anns.Annotation[0].Flag[0].FlagValue.CodeListOID, "CL.FLAGVALUE")
+
+    def test_oid_ref_def_check_missing_mdv(self):
+        loader = LD.ODMLoader(OL.XMLODMLoader(model_package="odm_1_3_2", ns_uri="http://www.cdisc.org/ns/odm/v1.3"))
+        loader.open_odm_document(self.odm_test_file)
+        odm = loader.load_odm()
+        oid_checker = OID.OIDRef()
+        # this file has only clinical data so will fail the ref_def check
+        with self.assertRaises(ValueError):
+            odm.verify_oids(oid_checker)
+
+    def test_oid_ref_def_check_with_mdv(self):
+        loader = LD.ODMLoader(OL.XMLODMLoader(model_package="odm_1_3_2", ns_uri="http://www.cdisc.org/ns/odm/v1.3"))
+        loader.open_odm_document(self.odm_test_file2)
+        odm = loader.load_odm()
+        oid_checker = OID.OIDRef()
+        odm.verify_oids(oid_checker)
+        self.assertTrue(oid_checker.check_oid_refs())
+
+    def test_metadata_conformance_check(self):
+        loader = LD.ODMLoader(OL.XMLODMLoader(model_package="odm_1_3_2", ns_uri="http://www.cdisc.org/ns/odm/v1.3"))
+        loader.open_odm_document(self.odm_test_file2)
+        odm = loader.load_odm()
+        validator = METADATA.MetadataSchema()
+        study_dict = odm.Study[0].to_dict()
+        self.assertTrue(validator.check_conformance(study_dict, "Study"))
+
+        oid_checker = OID.OIDRef()
+        odm.verify_oids(oid_checker)
+        self.assertTrue(oid_checker.check_oid_refs())
 
     def _get_test_values(self):
         return ["56", "YEARS", "1966-02-10", "2022-02-19", "HISPANIC/LATINO", "WHITE", "yd", "Male"]

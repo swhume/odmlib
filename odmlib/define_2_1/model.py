@@ -321,11 +321,11 @@ class Study(ODM.Study):
 
 
 class ODM(ODM.ODM):
-    FileType = ODM.ODM.FileType
+    FileType = T.ExtendedValidValues(required=True, valid_values=["Snapshot"])
     FileOID = ODM.ODM.FileOID
     CreationDateTime = ODM.ODM.CreationDateTime
     AsOfDateTime = ODM.ODM.AsOfDateTime
-    ODMVersion = ODM.ODM.ODMVersion
+    ODMVersion = T.ExtendedValidValues(required=True, valid_values=["1.3.2"])
     Originator = ODM.ODM.Originator
     SourceSystem = ODM.ODM.SourceSystem
     SourceSystemVersion = ODM.ODM.SourceSystemVersion

@@ -53,6 +53,17 @@ class Protocol(OE.ODMElement):
     Alias = T.ODMListObject(element_class=Alias)
 
 
+class ItemGroupRef(OE.ODMElement):
+    ItemGroupOID = T.OID(required=True)
+    OrderNumber = T.Integer(required=False)
+    Mandatory = T.ValueSetString(required=True)
+    CollectionExceptionConditionOID = T.OIDRef()
+
+
+class WorkflowRef(OE.ODMElement):
+    WorkflowOID = T.OID(required=True)
+
+
 class StudyEventDef(OE.ODMElement):
     """ represents ODM v2.0 StudyEventDef and can serialize as JSON or XML """
     OID = T.OID(required=True)
@@ -78,12 +89,6 @@ class StudyEventDef(OE.ODMElement):
     def __iter__(self):
         return iter(self.FormRef)
 
-
-class ItemGroupRef(OE.ODMElement):
-    ItemGroupOID = T.OID(required=True)
-    OrderNumber = T.Integer(required=False)
-    Mandatory = T.ValueSetString(required=True)
-    CollectionExceptionConditionOID = T.OIDRef()
 
 
 class ArchiveLayout(OE.ODMElement):
@@ -330,8 +335,6 @@ class ExceptionEvent(OE.ODMElement):
     StudyEventRef = T.ODMListObject(element_class=StudyEventRef)
 
 
-class WorkflowRef(OE.ODMElement):
-    WorkflowOID = T.OID(required=True)
 
 
 class Arm(OE.ODMElement):

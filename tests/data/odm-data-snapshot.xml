@@ -1,0 +1,1350 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ODM xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+    xsi:schemaLocation="http://www.cdisc.org/ns/odm/v1.3 ODM1-3-2.xsd" 
+    FileOID="Study-Virus-20220308071610" CreationDateTime="2022-03-08T07:16:10"
+    FileType="Snapshot" ODMVersion="1.3.2" 
+    xmlns="http://www.cdisc.org/ns/odm/v1.3" 
+    xmlns:ds="http://www.w3.org/2000/09/xmldsig#" >
+    <Study OID="1001_virus">
+        <GlobalVariables>
+            <StudyName>virus</StudyName>
+            <StudyDescription>
+                ee
+            </StudyDescription>
+            <ProtocolName>virus</ProtocolName>
+        </GlobalVariables>
+        <BasicDefinitions>
+            <MeasurementUnit OID="MU.mmHg" Name="BP Unit">
+                <Symbol>
+                    <TranslatedText xml:lang="en">BP Unit</TranslatedText>
+                </Symbol>
+            </MeasurementUnit>
+            <MeasurementUnit OID="MU.10³/㎕" Name="International unit">
+                <Symbol>
+                    <TranslatedText xml:lang="en">International unit</TranslatedText>
+                </Symbol>
+            </MeasurementUnit>
+            <MeasurementUnit OID="MU.U/L" Name="International unit">
+                <Symbol>
+                    <TranslatedText xml:lang="en">International unit</TranslatedText>
+                </Symbol>
+            </MeasurementUnit>
+            <MeasurementUnit OID="MU.mg/dL" Name="International unit">
+                <Symbol>
+                    <TranslatedText xml:lang="en">International unit</TranslatedText>
+                </Symbol>
+            </MeasurementUnit>
+            <MeasurementUnit OID="MU.YEARS" Name="Age Unit">
+                <Symbol>
+                    <TranslatedText xml:lang="en">Age Unit</TranslatedText>
+                </Symbol>
+            </MeasurementUnit>
+            <MeasurementUnit OID="MU.g/dL" Name="Unit">
+                <Symbol>
+                    <TranslatedText xml:lang="en">Unit</TranslatedText>
+                </Symbol>
+            </MeasurementUnit>
+            <MeasurementUnit OID="MU.mg" Name="Milligram">
+                <Symbol>
+                    <TranslatedText xml:lang="en">Milligram</TranslatedText>
+                </Symbol>
+            </MeasurementUnit>
+        </BasicDefinitions>
+        <MetaDataVersion OID="v1.0.0" Name="Version 1.0.0">
+            
+            <Protocol>
+                <StudyEventRef StudyEventOID="SE.SCREENING" OrderNumber="1" Mandatory="Yes"/>                <StudyEventRef StudyEventOID="SE.VISIT 1" OrderNumber="2" Mandatory="Yes"/>                <StudyEventRef StudyEventOID="SE.VISIT 2" OrderNumber="3" Mandatory="Yes"/>                <StudyEventRef StudyEventOID="SE.VISIT 3" OrderNumber="4" Mandatory="Yes"/>
+            </Protocol>
+            <StudyEventDef OID="SE.SCREENING"  Name="Screening" Repeating="Yes" Type="Scheduled">
+                <FormRef FormOID="DM" OrderNumber="1" Mandatory="No"/>
+                <FormRef FormOID="VS" OrderNumber="2" Mandatory="No"/>
+            </StudyEventDef>
+            <StudyEventDef OID="SE.VISIT 1"  Name="Visit 1" Repeating="Yes" Type="Scheduled">
+                <FormRef FormOID="AE" OrderNumber="1" Mandatory="No"/>
+                <FormRef FormOID="DS" OrderNumber="2" Mandatory="No"/>
+            </StudyEventDef>
+            <StudyEventDef OID="SE.VISIT 2"  Name="Visit 2" Repeating="Yes" Type="Scheduled">
+                <FormRef FormOID="LB" OrderNumber="1" Mandatory="No"/>
+                <FormRef FormOID="EC" OrderNumber="2" Mandatory="No"/>
+            </StudyEventDef>
+            <StudyEventDef OID="SE.VISIT 3"  Name="Visit 3" Repeating="Yes" Type="Scheduled">
+                <FormRef FormOID="VS" OrderNumber="1" Mandatory="No"/>
+                <FormRef FormOID="CM" OrderNumber="2" Mandatory="No"/>
+            </StudyEventDef>
+            <FormDef OID="AE" Name="AdverseEvent" Repeating="Yes">
+                <ItemGroupRef ItemGroupOID="IG.AE" OrderNumber="1" Mandatory="Yes"/>
+                <ItemGroupRef ItemGroupOID="IG.AE.AE_ARRAY1" OrderNumber="2" Mandatory="Yes"/>
+            </FormDef>
+            <FormDef OID="DS" Name="Disposition" Repeating="No">
+                <ItemGroupRef ItemGroupOID="IG.DS" OrderNumber="3" Mandatory="Yes"/>
+            </FormDef>
+            <FormDef OID="LB" Name="Laboratory Test Results" Repeating="Yes">
+                <ItemGroupRef ItemGroupOID="IG.LB.LB_ARRAY1" OrderNumber="4" Mandatory="Yes"/>
+            </FormDef>
+            <FormDef OID="EC" Name="Chemotherapy" Repeating="Yes">
+                <ItemGroupRef ItemGroupOID="IG.EC" OrderNumber="5" Mandatory="Yes"/>
+                <ItemGroupRef ItemGroupOID="IG.EC.EC_ARRAY1" OrderNumber="6" Mandatory="Yes"/>
+            </FormDef>
+            <FormDef OID="DM" Name="Informed Consent and Demographics" Repeating="No">
+                <ItemGroupRef ItemGroupOID="IG.DM" OrderNumber="7" Mandatory="Yes"/>
+            </FormDef>
+            <FormDef OID="VS" Name="Vital Sign" Repeating="No">
+                <ItemGroupRef ItemGroupOID="IG.VS" OrderNumber="8" Mandatory="Yes"/>
+            </FormDef>
+            <FormDef OID="CM" Name="Concomitant Medications" Repeating="No">
+                <ItemGroupRef ItemGroupOID="IG.CM" OrderNumber="9" Mandatory="Yes"/>
+            </FormDef>
+            <ItemGroupDef OID="IG.AE" Name="AdverseEvent" Domain="AE Domain" Origin="AE Origin" Repeating="Yes">
+                <ItemRef ItemOID="IT.AEYN" OrderNumber="1" Mandatory="Yes"/>
+            </ItemGroupDef>
+            <ItemGroupDef OID="IG.AE.AE_ARRAY1" Name="AdverseEvent Array1" Domain="AE Domain" Origin="AE Origin" Repeating="Yes">
+                <ItemRef ItemOID="IT.AESPID" OrderNumber="1" Mandatory="No"/>
+                <ItemRef ItemOID="IT.AETERM" OrderNumber="2" Mandatory="No"/>
+                <ItemRef ItemOID="IT.AETOXGR" OrderNumber="3" Mandatory="Yes"/>
+            </ItemGroupDef>
+            <ItemGroupDef OID="IG.DS" Name="Disposition" Domain="DS Domain" Origin="DS Origin" Repeating="Yes">
+                <ItemRef ItemOID="IT.TUTEST1" OrderNumber="1" Mandatory="Yes"/>
+                <ItemRef ItemOID="IT.DSSTDTC" OrderNumber="2" Mandatory="Yes"/>
+                <ItemRef ItemOID="IT.DSYN" OrderNumber="3" Mandatory="Yes"/>
+                <ItemRef ItemOID="IT.DSSTDTC2" OrderNumber="4" Mandatory="Yes"/>
+                <ItemRef ItemOID="IT.DSTERM" OrderNumber="5" Mandatory="Yes"/>
+                <ItemRef ItemOID="IT.RSTEST" OrderNumber="6" Mandatory="Yes"/>
+                <ItemRef ItemOID="IT.SSORRES" OrderNumber="7" Mandatory="Yes"/>
+                <ItemRef ItemOID="IT.RFENDTC" OrderNumber="8" Mandatory="Yes"/>
+                <ItemRef ItemOID="IT.DDDTC" OrderNumber="9" Mandatory="Yes"/>
+                <ItemRef ItemOID="IT.DROPOUT_REASND" OrderNumber="10" Mandatory="Yes"/>
+                <ItemRef ItemOID="IT.RSDTC" OrderNumber="11" Mandatory="Yes"/>
+            </ItemGroupDef>
+            <ItemGroupDef OID="IG.LB.LB_ARRAY1" Name="Laboratory Test Results Array1" Domain="LB Domain" Origin="LB Origin" Repeating="Yes">
+                <ItemRef ItemOID="IT.LBORRES" OrderNumber="1" Mandatory="Yes"/>
+                <ItemRef ItemOID="IT.LBTESTCD" OrderNumber="2" Mandatory="No"/>
+                <ItemRef ItemOID="IT.LBORRESU" OrderNumber="3" Mandatory="No"/>
+            </ItemGroupDef>
+            <ItemGroupDef OID="IG.EC" Name="Chemotherapy" Domain="EC Domain" Origin="EC Origin" Repeating="Yes">
+                <ItemRef ItemOID="IT.ECADJYN" OrderNumber="1" Mandatory="Yes"/>
+                <ItemRef ItemOID="IT.ECADJ" OrderNumber="2" Mandatory="Yes"/>
+                <ItemRef ItemOID="IT.ECDOSE1" OrderNumber="3" Mandatory="Yes"/>
+                <ItemRef ItemOID="IT.ECTRT1" OrderNumber="4" Mandatory="No"/>
+                <ItemRef ItemOID="IT.ECPER" OrderNumber="5" Mandatory="Yes"/>
+            </ItemGroupDef>
+            <ItemGroupDef OID="IG.EC.EC_ARRAY1" Name="Chemotherapy Array1" Domain="EC Domain" Origin="EC Origin" Repeating="Yes">
+                <ItemRef ItemOID="IT.ECDOSU" OrderNumber="1" Mandatory="No"/>
+                <ItemRef ItemOID="IT.ECTRT" OrderNumber="2" Mandatory="No"/>
+                <ItemRef ItemOID="IT.ECDOSE" OrderNumber="3" Mandatory="Yes"/>
+            </ItemGroupDef>
+            <ItemGroupDef OID="IG.DM" Name="Informed Consent and Demographics" Domain="DM Domain" Origin="DM Origin" Repeating="Yes">
+                <ItemRef ItemOID="IT.AGEU" OrderNumber="1" Mandatory="Yes"/>
+                <ItemRef ItemOID="IT.DMDTC" OrderNumber="2" Mandatory="No"/>
+                <ItemRef ItemOID="IT.RACEOTH" OrderNumber="3" Mandatory="No"/>
+                <ItemRef ItemOID="IT.ETHNIC" OrderNumber="4" Mandatory="Yes"/>
+                <ItemRef ItemOID="IT.AGE" OrderNumber="5" Mandatory="Yes"/>
+                <ItemRef ItemOID="IT.SEX" OrderNumber="6" Mandatory="Yes"/>
+                <ItemRef ItemOID="IT.RACE" OrderNumber="7" Mandatory="Yes"/>
+                <ItemRef ItemOID="IT.BRTHDAT" OrderNumber="8" Mandatory="Yes"/>
+            </ItemGroupDef>
+            <ItemGroupDef OID="IG.VS" Name="VitalSign" Domain="VS Domain" Origin="VS Origin" Repeating="Yes">
+                <ItemRef ItemOID="IT.PT_PULSE" OrderNumber="1" Mandatory="Yes"/>
+                <ItemRef ItemOID="IT.PT_TEMP" OrderNumber="2" Mandatory="Yes"/>
+                <ItemRef ItemOID="IT.PT_WEIGHT" OrderNumber="3" Mandatory="Yes"/>
+                <ItemRef ItemOID="IT.PT_BMI" OrderNumber="4" Mandatory="Yes"/>
+                <ItemRef ItemOID="IT.VISITDTC" OrderNumber="5" Mandatory="Yes"/>
+                <ItemRef ItemOID="IT.PT_HEIGHT" OrderNumber="6" Mandatory="Yes"/>
+                <ItemRef ItemOID="IT.PT_DBP" OrderNumber="7" Mandatory="Yes"/>
+                <ItemRef ItemOID="IT.PT_SBP" OrderNumber="8" Mandatory="Yes"/>
+            </ItemGroupDef>
+            <ItemGroupDef OID="IG.CM" Name="Concomitant Medications" Domain="CM Domain" Origin="CM Origin" Repeating="Yes">
+                <ItemRef ItemOID="IT.CMROUTE" OrderNumber="1" Mandatory="Yes"/>
+                <ItemRef ItemOID="IT.CMONGO" OrderNumber="2" Mandatory="Yes"/>
+                <ItemRef ItemOID="IT.CMINDC" OrderNumber="3" Mandatory="Yes"/>
+                <ItemRef ItemOID="IT.CMCOM" OrderNumber="4" Mandatory="Yes"/>
+                <ItemRef ItemOID="IT.CMSTDAT" OrderNumber="5" Mandatory="Yes"/>
+                <ItemRef ItemOID="IT.CMENDAT" OrderNumber="6" Mandatory="Yes"/>
+                <ItemRef ItemOID="IT.CMTRT" OrderNumber="7" Mandatory="Yes"/>
+                <ItemRef ItemOID="IT.CMDOSE" OrderNumber="8" Mandatory="Yes"/>
+                <ItemRef ItemOID="IT.CMDOSFRQ" OrderNumber="9" Mandatory="Yes"/>
+                <ItemRef ItemOID="IT.CMDOSU" OrderNumber="10" Mandatory="Yes"/>
+            </ItemGroupDef>
+            <ItemDef OID="IT.RACEOTH" Name="Other Specify" DataType="string" Length="20">
+                <Question>
+                    <TranslatedText>
+                    Other Specify:
+                    </TranslatedText>
+                </Question>
+            </ItemDef>
+            <ItemDef OID="IT.BRTHDAT" Name="Date of Birth" DataType="date" Length="9">
+                <Question>
+                    <TranslatedText>
+                    Date of Birth:
+                    </TranslatedText>
+                </Question>
+            </ItemDef>
+            <ItemDef OID="IT.AGE" Name="Age" DataType="string" Length="20">
+                <Question>
+                    <TranslatedText>
+                    Age:
+                    </TranslatedText>
+                </Question>
+            </ItemDef>
+            <ItemDef OID="IT.SEX" Name="Sex" DataType="string" Length="20">
+                <Question>
+                    <TranslatedText>
+                    Gender:
+                    </TranslatedText>
+                </Question>
+                <CodeListRef CodeListOID="CL.SEX"/>
+            </ItemDef>
+            <ItemDef OID="IT.ETHNIC" Name="Ethnicity" DataType="string" Length="20">
+                <Question>
+                    <TranslatedText>
+                    Ethnicity:
+                    </TranslatedText>
+                </Question>
+                <CodeListRef CodeListOID="CL.ETHNIC"/>
+            </ItemDef>
+            <ItemDef OID="IT.AGEU" Name="Age Unit" DataType="string" Length="20">
+                <Question>
+                    <TranslatedText>
+                    Age Unit
+                    </TranslatedText>
+                </Question>
+                <MeasurementUnitRef MeasurementUnitOID="MU.YEARS"/>
+            </ItemDef>
+            <ItemDef OID="IT.DMDTC" Name="Date/Time of Collection" DataType="date" Length="9">
+                <Question>
+                    <TranslatedText>
+                    Date/Time of Collection
+                    </TranslatedText>
+                </Question>
+            </ItemDef>
+            <ItemDef OID="IT.RACE" Name="Race" DataType="string" Length="20">
+                <Question>
+                    <TranslatedText>
+                    Race:
+                    </TranslatedText>
+                </Question>
+                <CodeListRef CodeListOID="CL.RACE"/>
+            </ItemDef>
+            <ItemDef OID="IT.PT_DBP" Name="Diastolic Blood Pressure" DataType="string" Length="20">
+                <Question>
+                    <TranslatedText>
+                    Diastolic Blood Pressure:
+                    </TranslatedText>
+                </Question>
+            </ItemDef>
+            <ItemDef OID="IT.PT_SBP" Name="Systolic Blood Pressure" DataType="string" Length="20">
+                <Question>
+                    <TranslatedText>
+                    Systolic Blood Pressure:
+                    </TranslatedText>
+                </Question>
+            </ItemDef>
+            <ItemDef OID="IT.PT_WEIGHT" Name="Weight" DataType="string" Length="20">
+                <Question>
+                    <TranslatedText>
+                    Weight
+                    </TranslatedText>
+                </Question>
+            </ItemDef>
+            <ItemDef OID="IT.PT_PULSE" Name="Heart Rate" DataType="string" Length="20">
+                <Question>
+                    <TranslatedText>
+                    Heart Rate:
+                    </TranslatedText>
+                </Question>
+            </ItemDef>
+            <ItemDef OID="IT.PT_BMI" Name="BMI" DataType="string" Length="20">
+                <Question>
+                    <TranslatedText>
+                    BMI:
+                    </TranslatedText>
+                </Question>
+            </ItemDef>
+            <ItemDef OID="IT.VISITDTC" Name="Visit Date" DataType="date" Length="9">
+                <Question>
+                    <TranslatedText>
+                    Visit Date:
+                    </TranslatedText>
+                </Question>
+            </ItemDef>
+            <ItemDef OID="IT.PT_HEIGHT" Name="Height" DataType="string" Length="20">
+                <Question>
+                    <TranslatedText>
+                    Height:
+                    </TranslatedText>
+                </Question>
+            </ItemDef>
+            <ItemDef OID="IT.PT_TEMP" Name="Body Temperature" DataType="string" Length="20">
+                <Question>
+                    <TranslatedText>
+                    Body Temperature:
+                    </TranslatedText>
+                </Question>
+            </ItemDef>
+            <ItemDef OID="IT.AEYN" Name="Any Adverse Events?" DataType="string" Length="20">
+                <Question>
+                    <TranslatedText>
+                    Any Adverse Events?
+                    </TranslatedText>
+                </Question>
+                <CodeListRef CodeListOID="CL.AEYN"/>
+            </ItemDef>
+            <ItemDef OID="IT.AETOXGR" Name="Grade" DataType="string" Length="20">
+                <Question>
+                    <TranslatedText>
+                    Grade
+                    </TranslatedText>
+                </Question>
+                <CodeListRef CodeListOID="CL.AETOXGR"/>
+            </ItemDef>
+            <ItemDef OID="IT.AESPID" Name="AE No" DataType="string" Length="20">
+                <Question>
+                    <TranslatedText>
+                    AE No
+                    </TranslatedText>
+                </Question>
+            </ItemDef>
+            <ItemDef OID="IT.AETERM" Name="Description" DataType="string" Length="20">
+                <Question>
+                    <TranslatedText>
+                    Description
+                    </TranslatedText>
+                </Question>
+            </ItemDef>
+            <ItemDef OID="IT.LBORRES" Name="Result" DataType="string" Length="20">
+                <Question>
+                    <TranslatedText>
+                    Result
+                    </TranslatedText>
+                </Question>
+            </ItemDef>
+            <ItemDef OID="IT.LBORRESU" Name="Unit" DataType="string" Length="20">
+                <Question>
+                    <TranslatedText>
+                    Unit
+                    </TranslatedText>
+                </Question>
+                <MeasurementUnitRef MeasurementUnitOID="MU.g/dL"/>
+            </ItemDef>
+            <ItemDef OID="IT.LBTESTCD" Name="Laboratory " DataType="string" Length="20">
+                <Question>
+                    <TranslatedText>
+                    Laboratory 
+                    </TranslatedText>
+                </Question>
+            </ItemDef>
+            <ItemDef OID="IT.TUTEST1" Name="If recur, specify site(multiple check available)" DataType="string" Length="20">
+                <Question>
+                    <TranslatedText>
+                    If recur, specify site(multiple check available)
+                    </TranslatedText>
+                </Question>
+                <CodeListRef CodeListOID="CL.TUTEST1"/>
+            </ItemDef>
+            <ItemDef OID="IT.RSDTC" Name="Date of recur" DataType="date" Length="9">
+                <Question>
+                    <TranslatedText>
+                    Date of recur
+                    </TranslatedText>
+                </Question>
+            </ItemDef>
+            <ItemDef OID="IT.RSTEST" Name="Recurrence" DataType="string" Length="20">
+                <Question>
+                    <TranslatedText>
+                    Recurrence
+                    </TranslatedText>
+                </Question>
+                <CodeListRef CodeListOID="CL.RSTEST"/>
+            </ItemDef>
+            <ItemDef OID="IT.DSSTDTC" Name="Date of screening" DataType="date" Length="9">
+                <Question>
+                    <TranslatedText>
+                    Date of screening
+                    </TranslatedText>
+                </Question>
+            </ItemDef>
+            <ItemDef OID="IT.DSTERM" Name="Did the patient complete the study protocol?" DataType="string" Length="20">
+                <Question>
+                    <TranslatedText>
+                    Did the patient complete the study protocol?
+                    </TranslatedText>
+                </Question>
+                <CodeListRef CodeListOID="CL.DSTERM"/>
+            </ItemDef>
+            <ItemDef OID="IT.DDDTC" Name="Date of death" DataType="date" Length="9">
+                <Question>
+                    <TranslatedText>
+                    Date of death
+                    </TranslatedText>
+                </Question>
+            </ItemDef>
+            <ItemDef OID="IT.DSYN" Name="Completion of follow up" DataType="string" Length="20">
+                <Question>
+                    <TranslatedText>
+                    Completion of follow up
+                    </TranslatedText>
+                </Question>
+                <CodeListRef CodeListOID="CL.DSYN"/>
+            </ItemDef>
+            <ItemDef OID="IT.DSSTDTC2" Name="Date of last follow-up or drop" DataType="date" Length="9">
+                <Question>
+                    <TranslatedText>
+                    Date of last follow-up or drop:
+                    </TranslatedText>
+                </Question>
+            </ItemDef>
+            <ItemDef OID="IT.SSORRES" Name="Last status" DataType="string" Length="20">
+                <Question>
+                    <TranslatedText>
+                    Last status
+                    </TranslatedText>
+                </Question>
+                <CodeListRef CodeListOID="CL.SSORRES"/>
+            </ItemDef>
+            <ItemDef OID="IT.RFENDTC" Name="Date of last follow-up" DataType="date" Length="9">
+                <Question>
+                    <TranslatedText>
+                    Date of last follow-up
+                    </TranslatedText>
+                </Question>
+            </ItemDef>
+            <ItemDef OID="IT.DROPOUT_REASND" Name="“No”, what was the most important cause?" DataType="string" Length="20">
+                <Question>
+                    <TranslatedText>
+                    “No”, what was the most important cause?
+                    </TranslatedText>
+                </Question>
+                <CodeListRef CodeListOID="CL.DROPOUT_REASND"/>
+            </ItemDef>
+            <ItemDef OID="IT.ECTRT" Name="LIST" DataType="string" Length="20">
+                <Question>
+                    <TranslatedText>
+                    List
+                    </TranslatedText>
+                </Question>
+            </ItemDef>
+            <ItemDef OID="IT.ECTRT1" Name="If yes, describe " DataType="string" Length="20">
+                <Question>
+                    <TranslatedText>
+                    If yes, describe 
+                    </TranslatedText>
+                </Question>
+            </ItemDef>
+            <ItemDef OID="IT.ECDOSE1" Name="drug" DataType="string" Length="20">
+                <Question>
+                    <TranslatedText>
+                    drug
+                    </TranslatedText>
+                </Question>
+            </ItemDef>
+            <ItemDef OID="IT.ECDOSU" Name="Unit" DataType="string" Length="20">
+                <Question>
+                    <TranslatedText>
+                    Unit
+                    </TranslatedText>
+                </Question>
+                <MeasurementUnitRef MeasurementUnitOID="MU.g/dL"/>
+            </ItemDef>
+            <ItemDef OID="IT.ECPER" Name="ecper" DataType="string" Length="20">
+                <Question>
+                    <TranslatedText>
+                    ecper
+                    </TranslatedText>
+                </Question>
+            </ItemDef>
+            <ItemDef OID="IT.ECADJ" Name="cause" DataType="string" Length="20">
+                <Question>
+                    <TranslatedText>
+                    cause
+                    </TranslatedText>
+                </Question>
+            </ItemDef>
+            <ItemDef OID="IT.ECDOSE" Name="ORRES" DataType="string" Length="20">
+                <Question>
+                    <TranslatedText>
+                    ORRES
+                    </TranslatedText>
+                </Question>
+            </ItemDef>
+            <ItemDef OID="IT.ECADJYN" Name="Dose reduction" DataType="string" Length="20">
+                <Question>
+                    <TranslatedText>
+                    Dose reduction:
+                    </TranslatedText>
+                </Question>
+                <CodeListRef CodeListOID="CL.ECADJYN"/>
+            </ItemDef>
+            <ItemDef OID="IT.CMDOSU" Name="Dose Units" DataType="string" Length="20">
+                <Question>
+                    <TranslatedText>
+                    Dose Units
+                    </TranslatedText>
+                </Question>
+            </ItemDef>
+            <ItemDef OID="IT.CMCOM" Name="Commenrts" DataType="string" Length="20">
+                <Question>
+                    <TranslatedText>
+                    Commenrts
+                    </TranslatedText>
+                </Question>
+            </ItemDef>
+            <ItemDef OID="IT.CMONGO" Name="Ongoing" DataType="string" Length="20">
+                <Question>
+                    <TranslatedText>
+                    Ongoing
+                    </TranslatedText>
+                </Question>
+                <CodeListRef CodeListOID="CL.CMONGO"/>
+            </ItemDef>
+            <ItemDef OID="IT.CMENDAT" Name="End Date" DataType="date" Length="9">
+                <Question>
+                    <TranslatedText>
+                    End Date
+                    </TranslatedText>
+                </Question>
+            </ItemDef>
+            <ItemDef OID="IT.CMINDC" Name="Indication" DataType="string" Length="20">
+                <Question>
+                    <TranslatedText>
+                    Indication
+                    </TranslatedText>
+                </Question>
+            </ItemDef>
+            <ItemDef OID="IT.CMROUTE" Name="Route" DataType="string" Length="20">
+                <Question>
+                    <TranslatedText>
+                    Route
+                    </TranslatedText>
+                </Question>
+                <CodeListRef CodeListOID="CL.CMROUTE"/>
+            </ItemDef>
+            <ItemDef OID="IT.CMDOSE" Name="Dose" DataType="string" Length="20">
+                <Question>
+                    <TranslatedText>
+                    Dose
+                    </TranslatedText>
+                </Question>
+            </ItemDef>
+            <ItemDef OID="IT.CMDOSFRQ" Name="Frequency" DataType="string" Length="20">
+                <Question>
+                    <TranslatedText>
+                    Frequency
+                    </TranslatedText>
+                </Question>
+            </ItemDef>
+            <ItemDef OID="IT.CMSTDAT" Name="Start Date" DataType="date" Length="9">
+                <Question>
+                    <TranslatedText>
+                    Start Date
+                    </TranslatedText>
+                </Question>
+            </ItemDef>
+            <ItemDef OID="IT.CMTRT" Name="Medication" DataType="string" Length="20">
+                <Question>
+                    <TranslatedText>
+                    Medication
+                    </TranslatedText>
+                </Question>
+            </ItemDef>
+            <CodeList OID="CL.SEX" Name="SEX" DataType="string"  >
+                <CodeListItem CodedValue="Male">
+                    <Decode>
+                        <TranslatedText xml:lang="en">Male</TranslatedText>
+                    </Decode>
+                </CodeListItem>
+                <CodeListItem CodedValue="Female">
+                    <Decode>
+                        <TranslatedText xml:lang="en">Female</TranslatedText>
+                    </Decode>
+                </CodeListItem>
+            </CodeList>
+            <CodeList OID="CL.ETHNIC" Name="ETHNIC" DataType="string"  >
+                <CodeListItem CodedValue="HISPANIC/LATINO">
+                    <Decode>
+                        <TranslatedText xml:lang="en">HISPANIC/LATINO</TranslatedText>
+                    </Decode>
+                </CodeListItem>
+                <CodeListItem CodedValue="NOT HISPANIC/LATINOnnnnHispanic/latinoNot hispanic/latino">
+                    <Decode>
+                        <TranslatedText xml:lang="en">NOT HISPANIC/LATINOnnnnHispanic/latinoNot hispanic/latino</TranslatedText>
+                    </Decode>
+                </CodeListItem>
+            </CodeList>
+            <CodeList OID="CL.RACE" Name="RACE" DataType="string"  >
+                <CodeListItem CodedValue="WHITE">
+                    <Decode>
+                        <TranslatedText xml:lang="en">WHITE</TranslatedText>
+                    </Decode>
+                </CodeListItem>
+                <CodeListItem CodedValue="BLACK/AFRICAN AMERICAN">
+                    <Decode>
+                        <TranslatedText xml:lang="en">BLACK/AFRICAN AMERICAN</TranslatedText>
+                    </Decode>
+                </CodeListItem>
+                <CodeListItem CodedValue="ASIAN">
+                    <Decode>
+                        <TranslatedText xml:lang="en">ASIAN</TranslatedText>
+                    </Decode>
+                </CodeListItem>
+                <CodeListItem CodedValue="AMERICAN INDIAN/ALASKA NATIVE">
+                    <Decode>
+                        <TranslatedText xml:lang="en">AMERICAN INDIAN/ALASKA NATIVE</TranslatedText>
+                    </Decode>
+                </CodeListItem>
+                <CodeListItem CodedValue="NATIVE HAWAIIAN/OTHER PACIFIC ISLANDER">
+                    <Decode>
+                        <TranslatedText xml:lang="en">NATIVE HAWAIIAN/OTHER PACIFIC ISLANDER</TranslatedText>
+                    </Decode>
+                </CodeListItem>
+            </CodeList>
+            <CodeList OID="CL.AEYN" Name="AEYN" DataType="string"  >
+                <CodeListItem CodedValue="Yes">
+                    <Decode>
+                        <TranslatedText xml:lang="en">Yes</TranslatedText>
+                    </Decode>
+                </CodeListItem>
+                <CodeListItem CodedValue="No">
+                    <Decode>
+                        <TranslatedText xml:lang="en">No</TranslatedText>
+                    </Decode>
+                </CodeListItem>
+            </CodeList>
+            <CodeList OID="CL.AETOXGR" Name="AETOXGR" DataType="string"  >
+                <CodeListItem CodedValue="No">
+                    <Decode>
+                        <TranslatedText xml:lang="en">No</TranslatedText>
+                    </Decode>
+                </CodeListItem>
+                <CodeListItem CodedValue="1">
+                    <Decode>
+                        <TranslatedText xml:lang="en">1</TranslatedText>
+                    </Decode>
+                </CodeListItem>
+                <CodeListItem CodedValue="2">
+                    <Decode>
+                        <TranslatedText xml:lang="en">2</TranslatedText>
+                    </Decode>
+                </CodeListItem>
+                <CodeListItem CodedValue="3">
+                    <Decode>
+                        <TranslatedText xml:lang="en">3</TranslatedText>
+                    </Decode>
+                </CodeListItem>
+                <CodeListItem CodedValue="4">
+                    <Decode>
+                        <TranslatedText xml:lang="en">4</TranslatedText>
+                    </Decode>
+                </CodeListItem>
+                <CodeListItem CodedValue="5">
+                    <Decode>
+                        <TranslatedText xml:lang="en">5</TranslatedText>
+                    </Decode>
+                </CodeListItem>
+            </CodeList>
+            <CodeList OID="CL.TUTEST1" Name="TUTEST1" DataType="string"  >
+                <CodeListItem CodedValue="Local">
+                    <Decode>
+                        <TranslatedText xml:lang="en">Local</TranslatedText>
+                    </Decode>
+                </CodeListItem>
+                <CodeListItem CodedValue="Liver">
+                    <Decode>
+                        <TranslatedText xml:lang="en">Liver</TranslatedText>
+                    </Decode>
+                </CodeListItem>
+                <CodeListItem CodedValue="Lung">
+                    <Decode>
+                        <TranslatedText xml:lang="en">Lung</TranslatedText>
+                    </Decode>
+                </CodeListItem>
+                <CodeListItem CodedValue="Peritoneum">
+                    <Decode>
+                        <TranslatedText xml:lang="en">Peritoneum</TranslatedText>
+                    </Decode>
+                </CodeListItem>
+                <CodeListItem CodedValue="Others">
+                    <Decode>
+                        <TranslatedText xml:lang="en">Others</TranslatedText>
+                    </Decode>
+                </CodeListItem>
+            </CodeList>
+            <CodeList OID="CL.RSTEST" Name="RSTEST" DataType="string"  >
+                <CodeListItem CodedValue="Yes">
+                    <Decode>
+                        <TranslatedText xml:lang="en">Yes</TranslatedText>
+                    </Decode>
+                </CodeListItem>
+                <CodeListItem CodedValue="No">
+                    <Decode>
+                        <TranslatedText xml:lang="en">No</TranslatedText>
+                    </Decode>
+                </CodeListItem>
+            </CodeList>
+            <CodeList OID="CL.DSTERM" Name="DSTERM" DataType="string"  >
+                <CodeListItem CodedValue="Yes">
+                    <Decode>
+                        <TranslatedText xml:lang="en">Yes</TranslatedText>
+                    </Decode>
+                </CodeListItem>
+                <CodeListItem CodedValue="No">
+                    <Decode>
+                        <TranslatedText xml:lang="en">No</TranslatedText>
+                    </Decode>
+                </CodeListItem>
+            </CodeList>
+            <CodeList OID="CL.DSYN" Name="DSYN" DataType="string"  >
+                <CodeListItem CodedValue="Yes">
+                    <Decode>
+                        <TranslatedText xml:lang="en">Yes</TranslatedText>
+                    </Decode>
+                </CodeListItem>
+                <CodeListItem CodedValue="No">
+                    <Decode>
+                        <TranslatedText xml:lang="en">No</TranslatedText>
+                    </Decode>
+                </CodeListItem>
+            </CodeList>
+            <CodeList OID="CL.SSORRES" Name="SSORRES" DataType="string"  >
+                <CodeListItem CodedValue="Survival">
+                    <Decode>
+                        <TranslatedText xml:lang="en">Survival</TranslatedText>
+                    </Decode>
+                </CodeListItem>
+                <CodeListItem CodedValue="Death">
+                    <Decode>
+                        <TranslatedText xml:lang="en">Death</TranslatedText>
+                    </Decode>
+                </CodeListItem>
+            </CodeList>
+            <CodeList OID="CL.DROPOUT_REASND" Name="DROPOUT_REASND" DataType="string"  >
+                <CodeListItem CodedValue="PROTOCOL VIOLATION">
+                    <Decode>
+                        <TranslatedText xml:lang="en">PROTOCOL VIOLATION</TranslatedText>
+                    </Decode>
+                </CodeListItem>
+                <CodeListItem CodedValue="WITHDRAWAL BY SUBJECT">
+                    <Decode>
+                        <TranslatedText xml:lang="en">WITHDRAWAL BY SUBJECT</TranslatedText>
+                    </Decode>
+                </CodeListItem>
+                <CodeListItem CodedValue="PHYSICIAN DECISION">
+                    <Decode>
+                        <TranslatedText xml:lang="en">PHYSICIAN DECISION</TranslatedText>
+                    </Decode>
+                </CodeListItem>
+                <CodeListItem CodedValue="FOLLOW-UP FAIL">
+                    <Decode>
+                        <TranslatedText xml:lang="en">FOLLOW-UP FAIL</TranslatedText>
+                    </Decode>
+                </CodeListItem>
+                <CodeListItem CodedValue="DEATH">
+                    <Decode>
+                        <TranslatedText xml:lang="en">DEATH</TranslatedText>
+                    </Decode>
+                </CodeListItem>
+                <CodeListItem CodedValue="OTHER">
+                    <Decode>
+                        <TranslatedText xml:lang="en">OTHER</TranslatedText>
+                    </Decode>
+                </CodeListItem>
+            </CodeList>
+            <CodeList OID="CL.ECADJYN" Name="ECADJYN" DataType="string"  >
+                <CodeListItem CodedValue="Yes">
+                    <Decode>
+                        <TranslatedText xml:lang="en">Yes</TranslatedText>
+                    </Decode>
+                </CodeListItem>
+                <CodeListItem CodedValue="No">
+                    <Decode>
+                        <TranslatedText xml:lang="en">No</TranslatedText>
+                    </Decode>
+                </CodeListItem>
+            </CodeList>
+            <CodeList OID="CL.CMONGO" Name="CMONGO" DataType="string"  >
+                <CodeListItem CodedValue="Yes">
+                    <Decode>
+                        <TranslatedText xml:lang="en">Yes</TranslatedText>
+                    </Decode>
+                </CodeListItem>
+                <CodeListItem CodedValue="No">
+                    <Decode>
+                        <TranslatedText xml:lang="en">No</TranslatedText>
+                    </Decode>
+                </CodeListItem>
+            </CodeList>
+            <CodeList OID="CL.CMROUTE" Name="CMROUTE" DataType="string"  >
+                <CodeListItem CodedValue="INTRAMUSCULAR">
+                    <Decode>
+                        <TranslatedText xml:lang="en">INTRAMUSCULAR</TranslatedText>
+                    </Decode>
+                </CodeListItem>
+                <CodeListItem CodedValue="RESPIRATORY INHALATION">
+                    <Decode>
+                        <TranslatedText xml:lang="en">RESPIRATORY INHALATION</TranslatedText>
+                    </Decode>
+                </CodeListItem>
+                <CodeListItem CodedValue="INTRAVENOUS">
+                    <Decode>
+                        <TranslatedText xml:lang="en">INTRAVENOUS</TranslatedText>
+                    </Decode>
+                </CodeListItem>
+                <CodeListItem CodedValue="NASAL">
+                    <Decode>
+                        <TranslatedText xml:lang="en">NASAL</TranslatedText>
+                    </Decode>
+                </CodeListItem>
+                <CodeListItem CodedValue="ORAL">
+                    <Decode>
+                        <TranslatedText xml:lang="en">ORAL</TranslatedText>
+                    </Decode>
+                </CodeListItem>
+                <CodeListItem CodedValue="RECTAL">
+                    <Decode>
+                        <TranslatedText xml:lang="en">RECTAL</TranslatedText>
+                    </Decode>
+                </CodeListItem>
+                <CodeListItem CodedValue="SUBCUTANEOUS">
+                    <Decode>
+                        <TranslatedText xml:lang="en">SUBCUTANEOUS</TranslatedText>
+                    </Decode>
+                </CodeListItem>
+                <CodeListItem CodedValue="SUBLINGUAL">
+                    <Decode>
+                        <TranslatedText xml:lang="en">SUBLINGUAL</TranslatedText>
+                    </Decode>
+                </CodeListItem>
+                <CodeListItem CodedValue="SPRAY">
+                    <Decode>
+                        <TranslatedText xml:lang="en">SPRAY</TranslatedText>
+                    </Decode>
+                </CodeListItem>
+                <CodeListItem CodedValue="TOPICAL">
+                    <Decode>
+                        <TranslatedText xml:lang="en">TOPICAL</TranslatedText>
+                    </Decode>
+                </CodeListItem>
+                <CodeListItem CodedValue="VAGINAL">
+                    <Decode>
+                        <TranslatedText xml:lang="en">VAGINAL</TranslatedText>
+                    </Decode>
+                </CodeListItem>
+                <CodeListItem CodedValue="OTHER">
+                    <Decode>
+                        <TranslatedText xml:lang="en">OTHER</TranslatedText>
+                    </Decode>
+                </CodeListItem>
+            </CodeList>
+        </MetaDataVersion>
+    </Study>
+    <AdminData StudyOID="1001_virus">
+        <User OID="admin" UserType="Other">
+            <LocationRef LocationOID="ISSS"/>
+        </User>
+        <Location OID="ISSS" Name="ISSS" LocationType="Site">
+            <MetaDataVersionRef StudyOID="1001_virus" MetaDataVersionOID="v1.0.0" EffectiveDate="2022-03-08"/>
+        </Location>
+    </AdminData>
+    <ClinicalData StudyOID="1001_virus" MetaDataVersionOID="v1.0.0">
+        <SubjectData SubjectKey="SS_0001">
+            <StudyEventData StudyEventOID="SE.SCREENING" StudyEventRepeatKey="1">
+                <FormData FormOID="DM">
+                    <ItemGroupData ItemGroupOID="IG.DM" ItemGroupRepeatKey="1" >
+                        <ItemData ItemOID="IT.AGE" Value="56">
+                        </ItemData>
+                        <ItemData ItemOID="IT.AGEU" Value="YEARS">
+                        </ItemData>
+                        <ItemData ItemOID="IT.BRTHDAT" Value="1966-02-10">
+                        </ItemData>
+                        <ItemData ItemOID="IT.DMDTC" Value="2022-02-19">
+                        </ItemData>
+                        <ItemData ItemOID="IT.ETHNIC" Value="HISPANIC/LATINO">
+                        </ItemData>
+                        <ItemData ItemOID="IT.RACE" Value="WHITE">
+                        </ItemData>
+                        <ItemData ItemOID="IT.RACEOTH" Value="yd">
+                        </ItemData>
+                        <ItemData ItemOID="IT.SEX" Value="Male">
+                        </ItemData>
+                    </ItemGroupData>
+                </FormData>
+                <FormData FormOID="VS">
+                    <ItemGroupData ItemGroupOID="IG.VS" ItemGroupRepeatKey="1" >
+                        <ItemData ItemOID="IT.PT_BMI" Value="27">
+                        </ItemData>
+                        <ItemData ItemOID="IT.PT_DBP" Value="ee">
+                        </ItemData>
+                        <ItemData ItemOID="IT.PT_HEIGHT" Value="7">
+                        </ItemData>
+                        <ItemData ItemOID="IT.PT_PULSE" Value="89">
+                        </ItemData>
+                        <ItemData ItemOID="IT.PT_SBP" Value="yes">
+                        </ItemData>
+                        <ItemData ItemOID="IT.PT_TEMP" Value="57">
+                        </ItemData>
+                        <ItemData ItemOID="IT.PT_WEIGHT" Value="56">
+                        </ItemData>
+                        <ItemData ItemOID="IT.VISITDTC" Value="2022-02-12">
+                        </ItemData>
+                    </ItemGroupData>
+                </FormData>
+            </StudyEventData>
+            <StudyEventData StudyEventOID="SE.VISIT 1" StudyEventRepeatKey="1">
+                <FormData FormOID="AE" FormRepeatKey="1">
+                    <ItemGroupData ItemGroupOID="IG.AE" ItemGroupRepeatKey="1" >
+                        <ItemData ItemOID="IT.AEYN" Value="Yes">
+                        </ItemData>
+                    </ItemGroupData>
+                    <ItemGroupData ItemGroupOID="IG.AE.AE_ARRAY1" ItemGroupRepeatKey="1" >
+                        <ItemData ItemOID="IT.AETERM" Value="Constipation">
+                        </ItemData>
+                        <ItemData ItemOID="IT.AETOXGR" Value="No">
+                        </ItemData>
+                    </ItemGroupData>
+                    <ItemGroupData ItemGroupOID="IG.AE.AE_ARRAY1" ItemGroupRepeatKey="2" >
+                        <ItemData ItemOID="IT.AESPID" Value="2">
+                        </ItemData>
+                        <ItemData ItemOID="IT.AETERM" Value="Diarrhea">
+                        </ItemData>
+                    </ItemGroupData>
+                    <ItemGroupData ItemGroupOID="IG.AE.AE_ARRAY1" ItemGroupRepeatKey="3" >
+                        <ItemData ItemOID="IT.AESPID" Value="3">
+                        </ItemData>
+                        <ItemData ItemOID="IT.AETERM" Value="Anal Pain">
+                        </ItemData>
+                        <ItemData ItemOID="IT.AETOXGR" Value="2">
+                        </ItemData>
+                    </ItemGroupData>
+                    <ItemGroupData ItemGroupOID="IG.AE.AE_ARRAY1" ItemGroupRepeatKey="4" >
+                        <ItemData ItemOID="IT.AESPID" Value="7">
+                        </ItemData>
+                        <ItemData ItemOID="IT.AETERM" Value="Dysuria">
+                        </ItemData>
+                        <ItemData ItemOID="IT.AETOXGR" Value="4">
+                        </ItemData>
+                    </ItemGroupData>
+                    <ItemGroupData ItemGroupOID="IG.AE.AE_ARRAY1" ItemGroupRepeatKey="5" >
+                        <ItemData ItemOID="IT.AESPID" Value="5">
+                        </ItemData>
+                        <ItemData ItemOID="IT.AETERM" Value="Proctitis">
+                        </ItemData>
+                        <ItemData ItemOID="IT.AETOXGR" Value="4">
+                        </ItemData>
+                    </ItemGroupData>
+                    <ItemGroupData ItemGroupOID="IG.AE.AE_ARRAY1" ItemGroupRepeatKey="6" >
+                        <ItemData ItemOID="IT.AESPID" Value="10">
+                        </ItemData>
+                        <ItemData ItemOID="IT.AETERM" Value="Other">
+                        </ItemData>
+                    </ItemGroupData>
+                    <ItemGroupData ItemGroupOID="IG.AE.AE_ARRAY1" ItemGroupRepeatKey="7" >
+                        <ItemData ItemOID="IT.AESPID" Value="8">
+                        </ItemData>
+                        <ItemData ItemOID="IT.AETERM" Value="Urinary frequency">
+                        </ItemData>
+                        <ItemData ItemOID="IT.AETOXGR" Value="3">
+                        </ItemData>
+                    </ItemGroupData>
+                    <ItemGroupData ItemGroupOID="IG.AE.AE_ARRAY1" ItemGroupRepeatKey="8" >
+                        <ItemData ItemOID="IT.AESPID" Value="6">
+                        </ItemData>
+                        <ItemData ItemOID="IT.AETERM" Value="Anal bleeding">
+                        </ItemData>
+                        <ItemData ItemOID="IT.AETOXGR" Value="5">
+                        </ItemData>
+                    </ItemGroupData>
+                    <ItemGroupData ItemGroupOID="IG.AE.AE_ARRAY1" ItemGroupRepeatKey="9" >
+                        <ItemData ItemOID="IT.AESPID" Value="4">
+                        </ItemData>
+                        <ItemData ItemOID="IT.AETERM" Value="Rectal pain">
+                        </ItemData>
+                        <ItemData ItemOID="IT.AETOXGR" Value="3">
+                        </ItemData>
+                    </ItemGroupData>
+                    <ItemGroupData ItemGroupOID="IG.AE.AE_ARRAY1" ItemGroupRepeatKey="10" >
+                        <ItemData ItemOID="IT.AESPID" Value="9">
+                        </ItemData>
+                        <ItemData ItemOID="IT.AETERM" Value="Urinary urgency">
+                        </ItemData>
+                        <ItemData ItemOID="IT.AETOXGR" Value="2">
+                        </ItemData>
+                    </ItemGroupData>
+                </FormData>
+                <FormData FormOID="DS">
+                    <ItemGroupData ItemGroupOID="IG.DS" ItemGroupRepeatKey="1" >
+                        <ItemData ItemOID="IT.DDDTC" Value="2022-02-04">
+                        </ItemData>
+                        <ItemData ItemOID="IT.DROPOUT_REASND" Value="PROTOCOL VIOLATION">
+                        </ItemData>
+                        <ItemData ItemOID="IT.DSSTDTC" Value="2022-02-12">
+                        </ItemData>
+                        <ItemData ItemOID="IT.DSSTDTC2" Value="2022-02-12">
+                        </ItemData>
+                        <ItemData ItemOID="IT.DSTERM" Value="Yes">
+                        </ItemData>
+                        <ItemData ItemOID="IT.DSYN" Value="Yes">
+                        </ItemData>
+                        <ItemData ItemOID="IT.RFENDTC" Value="2022-02-19">
+                        </ItemData>
+                        <ItemData ItemOID="IT.RSDTC" Value="2022-02-19">
+                        </ItemData>
+                        <ItemData ItemOID="IT.RSTEST" Value="Yes">
+                        </ItemData>
+                        <ItemData ItemOID="IT.SSORRES" Value="Survival">
+                        </ItemData>
+                        <ItemData ItemOID="IT.TUTEST1" Value="Local">
+                        </ItemData>
+                    </ItemGroupData>
+                </FormData>
+            </StudyEventData>
+            <StudyEventData StudyEventOID="SE.VISIT 2" StudyEventRepeatKey="1">
+                <FormData FormOID="LB" FormRepeatKey="1">
+                    <ItemGroupData ItemGroupOID="IG.LB.LB_ARRAY1" ItemGroupRepeatKey="1" >
+                        <ItemData ItemOID="IT.LBORRES" Value="good">
+                        </ItemData>
+                        <ItemData ItemOID="IT.LBORRESU" Value="10³/㎕">
+                        </ItemData>
+                        <ItemData ItemOID="IT.LBTESTCD" Value="Platelet">
+                        </ItemData>
+                    </ItemGroupData>
+                    <ItemGroupData ItemGroupOID="IG.LB.LB_ARRAY1" ItemGroupRepeatKey="2" >
+                        <ItemData ItemOID="IT.LBORRES" Value="good">
+                        </ItemData>
+                        <ItemData ItemOID="IT.LBORRESU" Value="g/dL">
+                        </ItemData>
+                        <ItemData ItemOID="IT.LBTESTCD" Value="Hb">
+                        </ItemData>
+                    </ItemGroupData>
+                    <ItemGroupData ItemGroupOID="IG.LB.LB_ARRAY1" ItemGroupRepeatKey="3" >
+                        <ItemData ItemOID="IT.LBORRES" Value="ss">
+                        </ItemData>
+                        <ItemData ItemOID="IT.LBORRESU" Value="U/L">
+                        </ItemData>
+                        <ItemData ItemOID="IT.LBTESTCD" Value="GPT">
+                        </ItemData>
+                    </ItemGroupData>
+                    <ItemGroupData ItemGroupOID="IG.LB.LB_ARRAY1" ItemGroupRepeatKey="4" >
+                        <ItemData ItemOID="IT.LBORRES" Value="ss">
+                        </ItemData>
+                        <ItemData ItemOID="IT.LBORRESU" Value="mg/dL">
+                        </ItemData>
+                        <ItemData ItemOID="IT.LBTESTCD" Value="Creatinine">
+                        </ItemData>
+                    </ItemGroupData>
+                    <ItemGroupData ItemGroupOID="IG.LB.LB_ARRAY1" ItemGroupRepeatKey="5" >
+                        <ItemData ItemOID="IT.LBORRES" Value="yy">
+                        </ItemData>
+                        <ItemData ItemOID="IT.LBORRESU" Value="10³/㎕">
+                        </ItemData>
+                        <ItemData ItemOID="IT.LBTESTCD" Value="Neutrophil">
+                        </ItemData>
+                    </ItemGroupData>
+                    <ItemGroupData ItemGroupOID="IG.LB.LB_ARRAY1" ItemGroupRepeatKey="6" >
+                        <ItemData ItemOID="IT.LBORRES" Value="ss">
+                        </ItemData>
+                        <ItemData ItemOID="IT.LBORRESU" Value="mg/dL">
+                        </ItemData>
+                        <ItemData ItemOID="IT.LBTESTCD" Value="Total Bilirubin">
+                        </ItemData>
+                    </ItemGroupData>
+                    <ItemGroupData ItemGroupOID="IG.LB.LB_ARRAY1" ItemGroupRepeatKey="7" >
+                        <ItemData ItemOID="IT.LBORRES" Value="ss">
+                        </ItemData>
+                        <ItemData ItemOID="IT.LBORRESU" Value="U/L">
+                        </ItemData>
+                        <ItemData ItemOID="IT.LBTESTCD" Value="GOT">
+                        </ItemData>
+                    </ItemGroupData>
+                    <ItemGroupData ItemGroupOID="IG.LB.LB_ARRAY1" ItemGroupRepeatKey="8" >
+                        <ItemData ItemOID="IT.LBORRES" Value="ww">
+                        </ItemData>
+                        <ItemData ItemOID="IT.LBORRESU" Value="10³/㎕">
+                        </ItemData>
+                        <ItemData ItemOID="IT.LBTESTCD" Value="WBC">
+                        </ItemData>
+                    </ItemGroupData>
+                    <ItemGroupData ItemGroupOID="IG.LB.LB_ARRAY1" ItemGroupRepeatKey="9" >
+                        <ItemData ItemOID="IT.LBORRES" Value="gg">
+                        </ItemData>
+                        <ItemData ItemOID="IT.LBORRESU" Value="10³/㎕">
+                        </ItemData>
+                        <ItemData ItemOID="IT.LBTESTCD" Value="Lymphocyte">
+                        </ItemData>
+                    </ItemGroupData>
+                </FormData>
+                <FormData FormOID="EC" FormRepeatKey="1">
+                    <ItemGroupData ItemGroupOID="IG.EC.EC_ARRAY1" ItemGroupRepeatKey="1" >
+                        <ItemData ItemOID="IT.ECDOSE" Value="yes">
+                        </ItemData>
+                        <ItemData ItemOID="IT.ECDOSU" Value="mg">
+                        </ItemData>
+                        <ItemData ItemOID="IT.ECTRT" Value="Leucovirn">
+                        </ItemData>
+                    </ItemGroupData>
+                    <ItemGroupData ItemGroupOID="IG.EC.EC_ARRAY1" ItemGroupRepeatKey="2" >
+                        <ItemData ItemOID="IT.ECDOSE" Value="yes">
+                        </ItemData>
+                        <ItemData ItemOID="IT.ECDOSU" Value="mg">
+                        </ItemData>
+                        <ItemData ItemOID="IT.ECTRT" Value="5-FU bolus">
+                        </ItemData>
+                    </ItemGroupData>
+                    <ItemGroupData ItemGroupOID="IG.EC.EC_ARRAY1" ItemGroupRepeatKey="3" >
+                        <ItemData ItemOID="IT.ECDOSE" Value="yes">
+                        </ItemData>
+                        <ItemData ItemOID="IT.ECDOSU" Value="mg">
+                        </ItemData>
+                        <ItemData ItemOID="IT.ECTRT" Value="5-FU continuous">
+                        </ItemData>
+                    </ItemGroupData>
+                    <ItemGroupData ItemGroupOID="IG.EC.EC_ARRAY1" ItemGroupRepeatKey="4" >
+                        <ItemData ItemOID="IT.ECDOSE" Value="yes">
+                        </ItemData>
+                        <ItemData ItemOID="IT.ECDOSU" Value="mg">
+                        </ItemData>
+                        <ItemData ItemOID="IT.ECTRT" Value="Capecitabine">
+                        </ItemData>
+                    </ItemGroupData>
+                    <ItemGroupData ItemGroupOID="IG.EC" ItemGroupRepeatKey="1" >
+                        <ItemData ItemOID="IT.ECADJ" Value="ee">
+                        </ItemData>
+                        <ItemData ItemOID="IT.ECADJYN" Value="Yes">
+                        </ItemData>
+                        <ItemData ItemOID="IT.ECDOSE1" Value="ee">
+                        </ItemData>
+                        <ItemData ItemOID="IT.ECPER" Value="ee">
+                        </ItemData>
+                        <ItemData ItemOID="IT.ECTRT1" Value="ee">
+                        </ItemData>
+                    </ItemGroupData>
+                </FormData>
+            </StudyEventData>
+            <StudyEventData StudyEventOID="SE.VISIT 3" StudyEventRepeatKey="1">
+                <FormData FormOID="CM">
+                    <ItemGroupData ItemGroupOID="IG.CM" ItemGroupRepeatKey="1" >
+                        <ItemData ItemOID="IT.CMCOM" Value="good result">
+                        </ItemData>
+                        <ItemData ItemOID="IT.CMDOSE" Value="yes">
+                        </ItemData>
+                        <ItemData ItemOID="IT.CMDOSFRQ" Value="very">
+                        </ItemData>
+                        <ItemData ItemOID="IT.CMDOSU" Value="mmHg">
+                        </ItemData>
+                        <ItemData ItemOID="IT.CMENDAT" Value="2022-02-19">
+                        </ItemData>
+                        <ItemData ItemOID="IT.CMINDC" Value="yes">
+                        </ItemData>
+                        <ItemData ItemOID="IT.CMONGO" Value="Yes">
+                        </ItemData>
+                        <ItemData ItemOID="IT.CMROUTE" Value="INTRAMUSCULAR">
+                        </ItemData>
+                        <ItemData ItemOID="IT.CMSTDAT" Value="2022-02-12">
+                        </ItemData>
+                        <ItemData ItemOID="IT.CMTRT" Value="pcm">
+                        </ItemData>
+                    </ItemGroupData>
+                </FormData>
+                <FormData FormOID="VS">
+                    <ItemGroupData ItemGroupOID="IG.VS" ItemGroupRepeatKey="1" >
+                        <ItemData ItemOID="IT.PT_BMI" Value="27">
+                        </ItemData>
+                        <ItemData ItemOID="IT.PT_DBP" Value="ee">
+                        </ItemData>
+                        <ItemData ItemOID="IT.PT_HEIGHT" Value="7">
+                        </ItemData>
+                        <ItemData ItemOID="IT.PT_PULSE" Value="89">
+                        </ItemData>
+                        <ItemData ItemOID="IT.PT_SBP" Value="yes">
+                        </ItemData>
+                        <ItemData ItemOID="IT.PT_TEMP" Value="57">
+                        </ItemData>
+                        <ItemData ItemOID="IT.PT_WEIGHT" Value="56">
+                        </ItemData>
+                        <ItemData ItemOID="IT.VISITDTC" Value="2022-02-12">
+                        </ItemData>
+                    </ItemGroupData>
+                </FormData>
+            </StudyEventData>
+        </SubjectData>
+        <SubjectData SubjectKey="SS_0002">
+            <StudyEventData StudyEventOID="SE.SCREENING" StudyEventRepeatKey="1">
+                <FormData FormOID="DM">
+                    <ItemGroupData ItemGroupOID="IG.DM" ItemGroupRepeatKey="1" >
+                        <ItemData ItemOID="IT.AGEU" Value="YEARS">
+                        </ItemData>
+                    </ItemGroupData>
+                </FormData>
+                <FormData FormOID="VS">
+                    <ItemGroupData ItemGroupOID="IG.VS" ItemGroupRepeatKey="1" >
+                    </ItemGroupData>
+                </FormData>
+            </StudyEventData>
+            <StudyEventData StudyEventOID="SE.VISIT 1" StudyEventRepeatKey="1">
+                <FormData FormOID="AE" FormRepeatKey="1">
+                    <ItemGroupData ItemGroupOID="IG.AE" ItemGroupRepeatKey="1" >
+                    </ItemGroupData>
+                    <ItemGroupData ItemGroupOID="IG.AE.AE_ARRAY1" ItemGroupRepeatKey="1" >
+                        <ItemData ItemOID="IT.AESPID" Value="10">
+                        </ItemData>
+                        <ItemData ItemOID="IT.AETERM" Value="Other">
+                        </ItemData>
+                    </ItemGroupData>
+                    <ItemGroupData ItemGroupOID="IG.AE.AE_ARRAY1" ItemGroupRepeatKey="2" >
+                        <ItemData ItemOID="IT.AESPID" Value="10">
+                        </ItemData>
+                        <ItemData ItemOID="IT.AETERM" Value="Other">
+                        </ItemData>
+                    </ItemGroupData>
+                    <ItemGroupData ItemGroupOID="IG.AE.AE_ARRAY1" ItemGroupRepeatKey="3" >
+                        <ItemData ItemOID="IT.AESPID" Value="10">
+                        </ItemData>
+                        <ItemData ItemOID="IT.AETERM" Value="Other">
+                        </ItemData>
+                    </ItemGroupData>
+                    <ItemGroupData ItemGroupOID="IG.AE.AE_ARRAY1" ItemGroupRepeatKey="4" >
+                        <ItemData ItemOID="IT.AESPID" Value="10">
+                        </ItemData>
+                        <ItemData ItemOID="IT.AETERM" Value="Other">
+                        </ItemData>
+                    </ItemGroupData>
+                    <ItemGroupData ItemGroupOID="IG.AE.AE_ARRAY1" ItemGroupRepeatKey="5" >
+                        <ItemData ItemOID="IT.AESPID" Value="10">
+                        </ItemData>
+                        <ItemData ItemOID="IT.AETERM" Value="Other">
+                        </ItemData>
+                    </ItemGroupData>
+                    <ItemGroupData ItemGroupOID="IG.AE.AE_ARRAY1" ItemGroupRepeatKey="6" >
+                        <ItemData ItemOID="IT.AESPID" Value="10">
+                        </ItemData>
+                        <ItemData ItemOID="IT.AETERM" Value="Other">
+                        </ItemData>
+                    </ItemGroupData>
+                    <ItemGroupData ItemGroupOID="IG.AE.AE_ARRAY1" ItemGroupRepeatKey="7" >
+                        <ItemData ItemOID="IT.AESPID" Value="10">
+                        </ItemData>
+                        <ItemData ItemOID="IT.AETERM" Value="Other">
+                        </ItemData>
+                    </ItemGroupData>
+                    <ItemGroupData ItemGroupOID="IG.AE.AE_ARRAY1" ItemGroupRepeatKey="8" >
+                        <ItemData ItemOID="IT.AESPID" Value="10">
+                        </ItemData>
+                        <ItemData ItemOID="IT.AETERM" Value="Other">
+                        </ItemData>
+                    </ItemGroupData>
+                    <ItemGroupData ItemGroupOID="IG.AE.AE_ARRAY1" ItemGroupRepeatKey="9" >
+                        <ItemData ItemOID="IT.AESPID" Value="10">
+                        </ItemData>
+                        <ItemData ItemOID="IT.AETERM" Value="Other">
+                        </ItemData>
+                    </ItemGroupData>
+                    <ItemGroupData ItemGroupOID="IG.AE.AE_ARRAY1" ItemGroupRepeatKey="10" >
+                        <ItemData ItemOID="IT.AESPID" Value="10">
+                        </ItemData>
+                        <ItemData ItemOID="IT.AETERM" Value="Other">
+                        </ItemData>
+                    </ItemGroupData>
+                </FormData>
+                <FormData FormOID="DS">
+                    <ItemGroupData ItemGroupOID="IG.DS" ItemGroupRepeatKey="1" >
+                    </ItemGroupData>
+                </FormData>
+            </StudyEventData>
+            <StudyEventData StudyEventOID="SE.VISIT 2" StudyEventRepeatKey="1">
+                <FormData FormOID="LB" FormRepeatKey="1">
+                    <ItemGroupData ItemGroupOID="IG.LB.LB_ARRAY1" ItemGroupRepeatKey="1" >
+                        <ItemData ItemOID="IT.LBORRESU" Value="mg/dL">
+                        </ItemData>
+                        <ItemData ItemOID="IT.LBTESTCD" Value="Creatinine">
+                        </ItemData>
+                    </ItemGroupData>
+                    <ItemGroupData ItemGroupOID="IG.LB.LB_ARRAY1" ItemGroupRepeatKey="2" >
+                        <ItemData ItemOID="IT.LBORRESU" Value="mg/dL">
+                        </ItemData>
+                        <ItemData ItemOID="IT.LBTESTCD" Value="Creatinine">
+                        </ItemData>
+                    </ItemGroupData>
+                    <ItemGroupData ItemGroupOID="IG.LB.LB_ARRAY1" ItemGroupRepeatKey="3" >
+                        <ItemData ItemOID="IT.LBORRESU" Value="mg/dL">
+                        </ItemData>
+                        <ItemData ItemOID="IT.LBTESTCD" Value="Creatinine">
+                        </ItemData>
+                    </ItemGroupData>
+                    <ItemGroupData ItemGroupOID="IG.LB.LB_ARRAY1" ItemGroupRepeatKey="4" >
+                        <ItemData ItemOID="IT.LBORRESU" Value="mg/dL">
+                        </ItemData>
+                        <ItemData ItemOID="IT.LBTESTCD" Value="Creatinine">
+                        </ItemData>
+                    </ItemGroupData>
+                    <ItemGroupData ItemGroupOID="IG.LB.LB_ARRAY1" ItemGroupRepeatKey="5" >
+                        <ItemData ItemOID="IT.LBORRESU" Value="mg/dL">
+                        </ItemData>
+                        <ItemData ItemOID="IT.LBTESTCD" Value="Creatinine">
+                        </ItemData>
+                    </ItemGroupData>
+                    <ItemGroupData ItemGroupOID="IG.LB.LB_ARRAY1" ItemGroupRepeatKey="6" >
+                        <ItemData ItemOID="IT.LBORRESU" Value="mg/dL">
+                        </ItemData>
+                        <ItemData ItemOID="IT.LBTESTCD" Value="Creatinine">
+                        </ItemData>
+                    </ItemGroupData>
+                    <ItemGroupData ItemGroupOID="IG.LB.LB_ARRAY1" ItemGroupRepeatKey="7" >
+                        <ItemData ItemOID="IT.LBORRESU" Value="mg/dL">
+                        </ItemData>
+                        <ItemData ItemOID="IT.LBTESTCD" Value="Creatinine">
+                        </ItemData>
+                    </ItemGroupData>
+                    <ItemGroupData ItemGroupOID="IG.LB.LB_ARRAY1" ItemGroupRepeatKey="8" >
+                        <ItemData ItemOID="IT.LBORRESU" Value="mg/dL">
+                        </ItemData>
+                        <ItemData ItemOID="IT.LBTESTCD" Value="Creatinine">
+                        </ItemData>
+                    </ItemGroupData>
+                    <ItemGroupData ItemGroupOID="IG.LB.LB_ARRAY1" ItemGroupRepeatKey="9" >
+                        <ItemData ItemOID="IT.LBORRESU" Value="mg/dL">
+                        </ItemData>
+                        <ItemData ItemOID="IT.LBTESTCD" Value="Creatinine">
+                        </ItemData>
+                    </ItemGroupData>
+                </FormData>
+                <FormData FormOID="EC" FormRepeatKey="1">
+                    <ItemGroupData ItemGroupOID="IG.EC.EC_ARRAY1" ItemGroupRepeatKey="1" >
+                        <ItemData ItemOID="IT.ECDOSU" Value="mg">
+                        </ItemData>
+                        <ItemData ItemOID="IT.ECTRT" Value="Leucovirn">
+                        </ItemData>
+                    </ItemGroupData>
+                    <ItemGroupData ItemGroupOID="IG.EC.EC_ARRAY1" ItemGroupRepeatKey="2" >
+                        <ItemData ItemOID="IT.ECDOSU" Value="mg">
+                        </ItemData>
+                        <ItemData ItemOID="IT.ECTRT" Value="Leucovirn">
+                        </ItemData>
+                    </ItemGroupData>
+                    <ItemGroupData ItemGroupOID="IG.EC.EC_ARRAY1" ItemGroupRepeatKey="3" >
+                        <ItemData ItemOID="IT.ECDOSU" Value="mg">
+                        </ItemData>
+                        <ItemData ItemOID="IT.ECTRT" Value="Leucovirn">
+                        </ItemData>
+                    </ItemGroupData>
+                    <ItemGroupData ItemGroupOID="IG.EC.EC_ARRAY1" ItemGroupRepeatKey="4" >
+                        <ItemData ItemOID="IT.ECDOSU" Value="mg">
+                        </ItemData>
+                        <ItemData ItemOID="IT.ECTRT" Value="Leucovirn">
+                        </ItemData>
+                    </ItemGroupData>
+                    <ItemGroupData ItemGroupOID="IG.EC" ItemGroupRepeatKey="1" >
+                    </ItemGroupData>
+                </FormData>
+            </StudyEventData>
+            <StudyEventData StudyEventOID="SE.VISIT 3" StudyEventRepeatKey="1">
+                <FormData FormOID="CM">
+                    <ItemGroupData ItemGroupOID="IG.CM" ItemGroupRepeatKey="1" >
+                        <ItemData ItemOID="IT.CMDOSU" Value="mmHg">
+                        </ItemData>
+                    </ItemGroupData>
+                </FormData>
+                <FormData FormOID="VS">
+                    <ItemGroupData ItemGroupOID="IG.VS" ItemGroupRepeatKey="1" >
+                    </ItemGroupData>
+                </FormData>
+            </StudyEventData>
+        </SubjectData>
+    </ClinicalData>
+</ODM>

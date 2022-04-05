@@ -1,4 +1,7 @@
+from xml.etree import ElementTree
 import xml.etree.ElementTree as ET
+from xml.etree.ElementTree import Element
+from typing import List, Optional
 import xmlschema as XSD
 import odmlib.ns_registry as NS
 from abc import ABC, abstractmethod
@@ -28,11 +31,11 @@ class ODMSchemaValidator(SchemaValidator):
     def __init__(self, xsd_file):
         self.xsd = XSD.XMLSchema(xsd_file)
 
-    def validate_tree(self, tree):
+    def validate_tree(self, tree: ElementTree):
         result = self.xsd.is_valid(tree)
         return result
 
-    def validate_file(self, odm_file):
+    def validate_file(self, odm_file: str):
         try:
             result = self.xsd.validate(odm_file)
         except XSD.validators.exceptions.XMLSchemaChildrenValidationError as ex:
@@ -68,27 +71,27 @@ class ElementParser:
         self.admin_data = []
         self.clinical_data = []
 
-    def ODM(self):
+    def ODM(self) -> Element:
         return self.root
 
-    def Study(self):
+    def Study(self) -> List[Element]:
         study = self.root.findall(ODM_PREFIX + "Study", ODM_NS)
         return study
 
-    def MetaDataVersion(self, idx=0):
+    def MetaDataVersion(self, idx: int = 0) -> List[Element]:
         study = self.root.findall(ODM_PREFIX + "Study", ODM_NS)
         self.mdv = study[idx].findall(ODM_PREFIX + "MetaDataVersion", ODM_NS)
         return self.mdv
 
-    def AdminData(self):
+    def AdminData(self) -> List[Element]:
         self.admin_data = self.root.findall(ODM_PREFIX + "AdminData", ODM_NS)
         return self.admin_data
 
-    def ClinicalData(self):
+    def ClinicalData(self) -> List[Element]:
         self.clinical_data = self.root.findall(ODM_PREFIX + "ClinicalData", ODM_NS)
         return self.clinical_data
 
-    def ReferenceData(self):
+    def ReferenceData(self) -> List[Element]:
         self.reference_data = self.root.findall(ODM_PREFIX + "ReferenceData", ODM_NS)
         return self.reference_data
 
@@ -98,13 +101,13 @@ class ODMParser(BaseParser, ElementParser):
         self.odm_file = odm_file
         super().__init__(ns_registry=namespace_registry)
 
-    def parse(self):
+    def parse(self) -> Element:
         self.register_namespaces()
         odm_tree = ET.parse(self.odm_file)
         self.root = odm_tree.getroot()
         return self.root
 
-    def parse_tree(self):
+    def parse_tree(self) -> ElementTree:
         self.register_namespaces()
         return ET.parse(self.odm_file)
 
@@ -114,12 +117,12 @@ class ODMStringParser(BaseParser, ElementParser):
         self.odm_string = odm_string
         super().__init__(ns_registry=namespace_registry)
 
-    def parse(self):
+    def parse(self) -> Element:
         self.register_namespaces()
         self.root = ET.fromstring(self.odm_string)
         return self.root
 
-    def parse_tree(self):
+    def parse_tree(self) -> ElementTree:
         self.register_namespaces()
         #return ET.ElementTree(ET.fromstring(self.odm_string))
         return ET.fromstring(self.odm_string)
@@ -133,29 +136,29 @@ class ODMJSONStringParser:
         self.clinical_data = []
         self.reference_data = []
 
-    def parse(self):
+    def parse(self) -> dict:
         return self.root
 
-    def ODM(self):
+    def ODM(self) -> dict:
         return self.root
 
-    def Study(self):
+    def Study(self) -> List[dict]:
         study = self.root["Study"]
         return study
 
-    def MetaDataVersion(self):
+    def MetaDataVersion(self) -> List[dict]:
         study = self.root["Study"]
         self.mdv = study[0]["MetaDataVersion"]
         return self.mdv
 
-    def AdminData(self):
+    def AdminData(self) -> List[dict]:
         self.admin_data = self.root["AdminData"]
         return self.admin_data
 
-    def ClinicalData(self):
+    def ClinicalData(self) -> List[dict]:
         self.clinical_data = self.root["ClinicalData"]
         return self.clinical_data
 
-    def ReferenceData(self):
+    def ReferenceData(self) -> List[dict]:
         self.reference_data = self.root["ReferenceData"]
         return self.reference_data

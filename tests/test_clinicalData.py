@@ -7,13 +7,14 @@ import os
 import datetime
 from odmlib.odm_1_3_2.rules import metadata_schema as METADATA
 from odmlib.odm_1_3_2.rules import oid_ref as OID
+from tests import get_data_file_path
 
 
 
 class TestClinicalData(TestCase):
     def setUp(self) -> None:
-        self.odm_test_file = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'data','test_clinical_data_01.xml')
-        self.odm_test_file2 = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'data','odm-data-snapshot.xml')
+        self.odm_test_file = get_data_file_path('test_clinical_data_01.xml')
+        self.odm_test_file2 = get_data_file_path('odm-data-snapshot.xml')
 
     def test_clinical_data_to_xml(self):
         cd = []
@@ -46,7 +47,7 @@ class TestClinicalData(TestCase):
         root = self.create_odm_document(cd)
         odm_xml = root.to_xml()
         self.assertEqual(odm_xml.attrib["FileOID"], "ODM.TEST.CD.001")
-        self.assertListEqual(["ClinicalData", "ClinicalData"], [e.tag for e in odm_xml.getchildren()])
+        self.assertListEqual(["ClinicalData", "ClinicalData"], [e.tag for e in odm_xml])
 
 
     def test_clinical_data_from_xml(self):

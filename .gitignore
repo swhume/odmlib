@@ -7,3 +7,5 @@ venv/
 docs/build/
 odmlib/build/
 dist/
+.tox/
+.idea/

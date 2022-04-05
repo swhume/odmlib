@@ -3,10 +3,12 @@ import odmlib.odm_loader as OL
 import odmlib.ns_registry as NS
 import os
 
+from tests import get_data_file_path
+
 
 class TestReadDataset(unittest.TestCase):
     def setUp(self) -> None:
-        self.odm_file = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'data', 'ae_test.xml')
+        self.odm_file = get_data_file_path('ae_test.xml')
         self.loader = OL.XMLODMLoader(model_package="dataset_1_0_1", ns_uri="http://www.cdisc.org/ns/Dataset-XML/v1.0")
         NS.NamespaceRegistry(prefix="odm", uri="http://www.cdisc.org/ns/odm/v1.3", is_default=True)
         self.ns = NS.NamespaceRegistry(prefix="data", uri="http://www.cdisc.org/ns/Dataset-XML/v1.0")

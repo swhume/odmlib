@@ -3,10 +3,11 @@ import odmlib.dataset_1_0_1.model as ODM
 import datetime
 import odmlib.ns_registry as NS
 import odmlib.odm_loader as OL
+from tests import get_data_file_path
 
 
-ODM_XML_FILE = "./data/ae_test.xml"
-ODM_JSON_FILE = "./data/ae_test.json"
+ODM_XML_FILE = "ae_test.xml"
+ODM_JSON_FILE = "ae_test.json"
 
 class TestCreateDataset(unittest.TestCase):
     def setUp(self) -> None:
@@ -24,11 +25,11 @@ class TestCreateDataset(unittest.TestCase):
 
 
     def test_write_dataset_xml(self):
-        self.root.write_xml(ODM_XML_FILE)
+        self.root.write_xml(get_data_file_path(ODM_XML_FILE))
         loader = OL.XMLODMLoader(model_package="dataset_1_0_1", ns_uri="http://www.cdisc.org/ns/Dataset-XML/v1.0")
         NS.NamespaceRegistry(prefix="odm", uri="http://www.cdisc.org/ns/odm/v1.3", is_default=True)
         ns = NS.NamespaceRegistry(prefix="data", uri="http://www.cdisc.org/ns/Dataset-XML/v1.0")
-        loader.create_document(ODM_XML_FILE, ns)
+        loader.create_document(get_data_file_path(ODM_XML_FILE), ns)
         odm = loader.load_odm()
         self.assertEqual(odm.FileOID, "ODM.DATASET.001")
         self.assertEqual(odm.ClinicalData.ItemGroupData[0].ItemGroupOID, "IG.AE")
@@ -36,9 +37,9 @@ class TestCreateDataset(unittest.TestCase):
         self.assertEqual(odm.ClinicalData.ItemGroupData[1].ItemData[4].Value, "ANXIETY")
 
     def test_write_dataset_json(self):
-        self.root.write_json(ODM_JSON_FILE)
+        self.root.write_json(get_data_file_path(ODM_JSON_FILE))
         loader = OL.JSONODMLoader(model_package="dataset_1_0_1")
-        loader.create_document(ODM_JSON_FILE)
+        loader.create_document(get_data_file_path(ODM_JSON_FILE))
         odm = loader.load_odm()
         self.assertEqual(odm.FileOID, "ODM.DATASET.001")
         self.assertEqual(odm.ClinicalData.ItemGroupData[0].ItemGroupOID, "IG.AE")

@@ -4,13 +4,15 @@ import odmlib.odm_loader as OL
 import odmlib.loader as LD
 import os
 
+from tests import get_data_file_path
+
 
 class TestInsertItem(unittest.TestCase):
     def setUp(self):
-        self.odm_file = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'data', 'cdash-odm-test.xml')
-        self.odm_file_out = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'data', 'cdash-odm-test-insert.xml')
+        self.odm_file = get_data_file_path('cdash-odm-test.xml')
+        self.odm_file_out = get_data_file_path('cdash-odm-test-insert.xml')
         self.loader = LD.ODMLoader(OL.XMLODMLoader())
-
+            
     def test_insert_item_with_none_element(self):
         attrs = self.set_item_attributes()
         item = ODM.ItemDef(**attrs)

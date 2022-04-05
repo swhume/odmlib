@@ -88,7 +88,7 @@ class TestItemGroupDef(TestCase):
         igd.ItemRef = [ir1, ir2]
         igd_xml = igd.to_xml()
         self.assertEqual(igd_xml.attrib["OID"], "IG.VS")
-        self.assertListEqual(["Description", "ItemRef", "ItemRef"], [e.tag for e in igd_xml.getchildren()])
+        self.assertListEqual(["Description", "ItemRef", "ItemRef"], [e.tag for e in igd_xml])
 
     def test_itemgroupdef_round_trip(self):
         """ system test to create and serialize an ItemGroupDef object """

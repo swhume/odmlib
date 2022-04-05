@@ -22,7 +22,7 @@ class TestReferenceData(TestCase):
         root = self.create_odm_document(rd)
         odm_xml = root.to_xml()
         self.assertEqual(odm_xml.attrib["FileOID"], "ODM.TEST.RD.001")
-        self.assertListEqual(["ReferenceData"], [e.tag for e in odm_xml.getchildren()])
+        self.assertListEqual(["ReferenceData"], [e.tag for e in odm_xml])
 
     def test_clinical_data_from_xml(self):
         parser = ODM_PARSER.ODMParser(self.odm_test_file)

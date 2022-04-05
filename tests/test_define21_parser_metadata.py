@@ -4,13 +4,14 @@ import odmlib.odm_parser as P
 import odmlib.ns_registry as NS
 import odmlib.define_loader as OL
 import odmlib.loader as LD
+from tests import get_data_file_path
 
 ODM_NS = "{http://www.cdisc.org/ns/odm/v1.3}"
 
 
 class TestDefine21LoaderMetaData(unittest.TestCase):
     def setUp(self) -> None:
-        self.odm_file_1 = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'data', 'defineV21-SDTM-metadata.xml')
+        self.odm_file_1 = get_data_file_path('defineV21-SDTM-metadata.xml')
         NS.NamespaceRegistry(prefix="odm", uri="http://www.cdisc.org/ns/odm/v1.3", is_default=True)
         NS.NamespaceRegistry(prefix="def", uri="http://www.cdisc.org/ns/def/v2.1")
         self.nsr = NS.NamespaceRegistry(prefix="nciodm", uri="http://ncicb.nci.nih.gov/xml/odm/EVS/CDISC")
@@ -31,7 +32,7 @@ class TestDefine21LoaderMetaData(unittest.TestCase):
         self.assertDictEqual(self.mdv[0].attrib, mdv_dict)
         self.assertEqual(mdv_dict["{http://www.cdisc.org/ns/def/v2.1}DefineVersion"],
                          self.mdv[0].attrib["{http://www.cdisc.org/ns/def/v2.1}DefineVersion"])
-        # self.assertEqual(769, len([e.tag for e in self.mdv[0].getchildren()]))
+        self.assertEqual(337, len([e.tag for e in self.mdv[0]]))
 
     def test_Standards(self):
         # self.assertTrue(isinstance(self.mdv[0].Standards.Standard, list))

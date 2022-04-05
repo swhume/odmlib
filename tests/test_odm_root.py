@@ -23,9 +23,9 @@ class TestODM(TestCase):
         self.odm.Study = [study]
         odm_xml = self.odm.to_xml()
         self.write_odm_file(odm_xml)
-        found_list = [e.tag for e in odm_xml.getchildren()]
+        found_list = [e.tag for e in odm_xml]
         print(found_list)
-        self.assertListEqual(["Study"], [e.tag for e in odm_xml.getchildren()])
+        self.assertListEqual(["Study"], [e.tag for e in odm_xml])
 
     def test_odm_xml_writer(self):
         study = self.add_study()

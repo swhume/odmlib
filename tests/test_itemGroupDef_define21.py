@@ -100,7 +100,7 @@ class TestItemGroupDef(TestCase):
         igd.ItemRef = [ir1, ir2]
         igd_xml = igd.to_xml()
         self.assertEqual(igd_xml.attrib["OID"], "IG.VS")
-        self.assertListEqual(["Description", "ItemRef", "ItemRef"], [e.tag for e in igd_xml.getchildren()])
+        self.assertListEqual(["Description", "ItemRef", "ItemRef"], [e.tag for e in igd_xml])
 
     def test_itemgroupdef_parse_xml(self):
         parser = ODM_PARSER.ODMParser(self.input_file, self.nsr)

@@ -65,8 +65,8 @@ class TestClinicalData(TestCase):
         loader = LD.ODMLoader(OL.XMLODMLoader(model_package="odm_1_3_2", ns_uri="http://www.cdisc.org/ns/odm/v1.3"))
         loader.open_odm_document(self.odm_test_file2)
         odm = loader.load_odm()
-        self.assertEqual(odm.FileOID, "Study-MetaD20220210213634")
-        self.assertEqual(odm.ClinicalData[0].StudyOID, "1001_corona")
+        self.assertEqual(odm.FileOID, "Study-Virus-20220308071610")
+        self.assertEqual(odm.ClinicalData[0].StudyOID, "1001_virus")
         igd_0 = odm.ClinicalData[0].SubjectData[0].StudyEventData[0].FormData[0].ItemGroupData[0]
         self.assertEqual(igd_0.ItemGroupOID, "IG.DM")
         self.assertEqual(igd_0.ItemData[2].ItemOID, "IT.BRTHDAT")
@@ -76,8 +76,8 @@ class TestClinicalData(TestCase):
         loader = LD.ODMLoader(OL.XMLODMLoader(model_package="odm_1_3_2", ns_uri="http://www.cdisc.org/ns/odm/v1.3"))
         loader.open_odm_document(self.odm_test_file2)
         odm = loader.load_odm()
-        self.assertEqual(odm.FileOID, "Study-MetaD20220210213634")
-        self.assertEqual(odm.ClinicalData[0].StudyOID, "1001_corona")
+        self.assertEqual(odm.FileOID, "Study-Virus-20220308071610")
+        self.assertEqual(odm.ClinicalData[0].StudyOID, "1001_virus")
         igd_0 = odm.ClinicalData[0].SubjectData[0].StudyEventData[0].FormData[0].ItemGroupData[0]
         values = []
         for item in igd_0:

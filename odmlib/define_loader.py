@@ -6,7 +6,12 @@ import importlib
 
 
 class XMLDefineLoader(DL.DocumentLoader):
-    def __init__(self, model_package="define_2_0", ns_uri="http://www.cdisc.org/ns/def/v2.0", local_model=False):
+    def __init__(
+        self,
+        model_package="define_2_0",
+        ns_uri="http://www.cdisc.org/ns/def/v2.0",
+        local_model=False,
+    ):
         self.filename = None
         self.parser = None
         if local_model:
@@ -17,7 +22,7 @@ class XMLDefineLoader(DL.DocumentLoader):
         self.nsr = NS.NamespaceRegistry()
 
     def load_document(self, elem, *args):
-        elem_name = elem.tag[elem.tag.find('}') + 1:]
+        elem_name = elem.tag[elem.tag.find("}") + 1:]
         if elem.text and not elem.text.isspace():
             attrib = {**elem.attrib, **{"_content": elem.text}}
             odm_obj = eval("self.DEF." + elem_name + "(**" + str(attrib) + ")")
@@ -55,7 +60,9 @@ class XMLDefineLoader(DL.DocumentLoader):
         if namespace_registry:
             self.nsr = namespace_registry
         else:
-            NS.NamespaceRegistry(prefix="odm", uri="http://www.cdisc.org/ns/odm/v1.3", is_default=True)
+            NS.NamespaceRegistry(
+                prefix="odm", uri="http://www.cdisc.org/ns/odm/v1.3", is_default=True
+            )
             self.nsr = NS.NamespaceRegistry(prefix="def", uri=self.ns_uri)
 
     def load_odm(self):
@@ -81,7 +88,11 @@ class JSONDefineLoader(DL.DocumentLoader):
         self.DEF = importlib.import_module(f"odmlib.{model_package}.model")
 
     def load_document(self, odm_dict, key):
-        attrib = {key: value for key, value in odm_dict.items() if not isinstance(value, (list, dict))}
+        attrib = {
+            key: value
+            for key, value in odm_dict.items()
+            if not isinstance(value, (list, dict))
+        }
         odm_obj = eval("self.DEF." + key + "(**" + str(attrib) + ")")
         odm_obj_items = eval("self.DEF." + key + ".__dict__.items()")
         for k, v in odm_obj_items:
@@ -108,13 +119,17 @@ class JSONDefineLoader(DL.DocumentLoader):
 
     def load_odm(self):
         if not self.odm_dict:
-            raise ValueError("create_document must be used to create the document before executing load_odm")
+            raise ValueError(
+                "create_document must be used to create the document before executing load_odm"
+            )
         odm_odmlib = self.load_document(self.odm_dict, "ODM")
         return odm_odmlib
 
     def load_metadataversion(self, idx=0):
         if not self.odm_dict:
-            raise ValueError("create_document must be used to create the document before executing load_metadataversion")
+            raise ValueError(
+                "create_document must be used to create the document before executing load_metadataversion"
+            )
         if "MetaDataVersion" in self.odm_dict:
             mdv_dict = self.odm_dict["MetaDataVersion"]
         elif "Study" in self.odm_dict and "MetaDataVersion" in self.odm_dict["Study"]:
@@ -126,7 +141,9 @@ class JSONDefineLoader(DL.DocumentLoader):
 
     def load_study(self, idx=0):
         if not self.odm_dict:
-            raise ValueError("create_document must be used to create the document before executing load_study")
+            raise ValueError(
+                "create_document must be used to create the document before executing load_study"
+            )
         elif "Study" in self.odm_dict:
             study_dict = self.odm_dict["Study"]
         else:

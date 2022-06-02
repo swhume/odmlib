@@ -10,9 +10,12 @@ ODM_NS = "{http://www.cdisc.org/ns/odm/v1.3}"
 class TestOdmParserMetaData(unittest.TestCase):
     def setUp(self) -> None:
         self.odm_file_1 = get_data_file_path('define2-0-0-sdtm-test.xml')
-        NS.NamespaceRegistry(prefix="odm", uri="http://www.cdisc.org/ns/odm/v1.3", is_default=True)
-        NS.NamespaceRegistry(prefix="def", uri="http://www.cdisc.org/ns/def/v2.0")
-        self.nsr = NS.NamespaceRegistry(prefix="nciodm", uri="http://ncicb.nci.nih.gov/xml/odm/EVS/CDISC")
+        NS.NamespaceRegistry(
+            prefix="odm", uri="http://www.cdisc.org/ns/odm/v1.3", is_default=True)
+        NS.NamespaceRegistry(
+            prefix="def", uri="http://www.cdisc.org/ns/def/v2.0")
+        self.nsr = NS.NamespaceRegistry(
+            prefix="nciodm", uri="http://ncicb.nci.nih.gov/xml/odm/EVS/CDISC")
         self.parser = P.ODMParser(self.odm_file_1, self.nsr)
         self.root = self.parser.parse()
         self.mdv = self.parser.MetaDataVersion()
@@ -40,7 +43,8 @@ class TestOdmParserMetaData(unittest.TestCase):
                   "{http://www.cdisc.org/ns/def/v2.0}CommentOID": "COM.DOMAIN.DM",
                   "{http://www.cdisc.org/ns/def/v2.0}ArchiveLocationID": "LF.DM"}
         self.assertDictEqual(dm_itg, ig[5]['elem'].attrib)
-        self.assertEqual(ig[4]["{http://www.cdisc.org/ns/def/v2.0}ArchiveLocationID"], "LF.TV")
+        self.assertEqual(
+            ig[4]["{http://www.cdisc.org/ns/def/v2.0}ArchiveLocationID"], "LF.TV")
 
     def test_ItemGroupDef_nsr(self):
         ig = self.parser.ItemGroupDef(parent=self.mdv[0])
@@ -52,7 +56,8 @@ class TestOdmParserMetaData(unittest.TestCase):
                   self.nsr.get_ns_attribute_name("CommentOID", "def"): "COM.DOMAIN.DM",
                   self.nsr.get_ns_attribute_name("ArchiveLocationID", "def"): "LF.DM"}
         self.assertDictEqual(dm_itg, ig[5]['elem'].attrib)
-        self.assertEqual(ig[4][self.nsr.get_ns_attribute_name("ArchiveLocationID", "def")], "LF.TV")
+        self.assertEqual(ig[4][self.nsr.get_ns_attribute_name(
+            "ArchiveLocationID", "def")], "LF.TV")
 
     def test_ItemRef(self):
         ig = self.parser.ItemGroupDef(parent=self.mdv[0])
@@ -69,7 +74,8 @@ class TestOdmParserMetaData(unittest.TestCase):
         # now back to retrieving an element from the Define-XML doc that exists in the ODM namespace
         ir_list = self.parser.ItemRef(parent=vld[0]['elem'])
         self.assertEqual(len(ir_list), 2)
-        wc = self.parser.WhereClauseRef(parent=ir_list[0]['elem'], ns_prefix="def")
+        wc = self.parser.WhereClauseRef(
+            parent=ir_list[0]['elem'], ns_prefix="def")
         self.assertEqual(wc[0]["WhereClauseOID"], "WC.DA.DATESTCD.DISPAMT")
 
 

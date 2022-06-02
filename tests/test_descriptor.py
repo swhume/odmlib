@@ -20,17 +20,20 @@ class TestDescriptor(unittest.TestCase):
         self.assertEqual(TextTest.Name, "VariableOne")
 
     def test_get_missing_attribute(self):
-        igd = ODM.ItemGroupDef(OID="IG.VS", Name="Vital Signs", Repeating="Yes")
+        igd = ODM.ItemGroupDef(
+            OID="IG.VS", Name="Vital Signs", Repeating="Yes")
         self.assertEqual(igd.OID, "IG.VS")
         self.assertIsNone(igd.Comment)
 
     def test_get_missing_element_with_required(self):
-        itd = ODM.ItemDef(OID="IT.VS.VSORRES", Name="Vital Signs Results", DataType="text")
+        itd = ODM.ItemDef(OID="IT.VS.VSORRES",
+                          Name="Vital Signs Results", DataType="text")
         self.assertEqual(itd.OID, "IT.VS.VSORRES")
         self.assertIsNone(itd.CodeListRef)
 
     def test_get_missing_undefined_attribute(self):
-        itd = ODM.ItemDef(OID="IT.VS.VSORRES", Name="Vital Signs Results", DataType="text")
+        itd = ODM.ItemDef(OID="IT.VS.VSORRES",
+                          Name="Vital Signs Results", DataType="text")
         self.assertEqual(itd.OID, "IT.VS.VSORRES")
         self.assertListEqual(itd.MeasurementUnitRef, [])
         result = itd.CodeListRef
@@ -39,4 +42,3 @@ class TestDescriptor(unittest.TestCase):
         self.assertListEqual(itd.Alias, [None])
         with self.assertRaises(TypeError):
             itd.new_thing = "hello"
-

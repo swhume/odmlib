@@ -52,7 +52,9 @@ class ItemRef(ODM.ItemRef):
     MethodOID = ODM.ItemRef.MethodOID
     Role = ODM.ItemRef.Role
     RoleCodeListOID = ODM.ItemRef.RoleCodeListOID
-    WhereClauseRef = T.ODMListObject(required=True, element_class=WhereClauseRef, namespace="def")
+    WhereClauseRef = T.ODMListObject(
+        required=True, element_class=WhereClauseRef, namespace="def"
+    )
 
 
 class title(OE.ODMElement):
@@ -213,7 +215,9 @@ class AnnotatedCRF(OE.ODMElement):
 
 class SupplementalDoc(OE.ODMElement):
     namespace = "def"
-    DocumentRef = T.ODMListObject(required=True, element_class=DocumentRef, namespace="def")
+    DocumentRef = T.ODMListObject(
+        required=True, element_class=DocumentRef, namespace="def"
+    )
 
 
 class WhereClauseDef(OE.ODMElement):

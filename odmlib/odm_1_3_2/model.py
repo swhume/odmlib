@@ -3,7 +3,9 @@ import odmlib.typed as T
 import odmlib.ns_registry as NS
 
 
-NS.NamespaceRegistry(prefix="odm", uri="http://www.cdisc.org/ns/odm/v1.3", is_default=True)
+NS.NamespaceRegistry(
+    prefix="odm", uri="http://www.cdisc.org/ns/odm/v1.3", is_default=True
+)
 NS.NamespaceRegistry(prefix="xs", uri="http://www.w3.org/2001/XMLSchema-instance")
 NS.NamespaceRegistry(prefix="xml", uri="http://www.w3.org/XML/1998/namespace")
 NS.NamespaceRegistry(prefix="xlink", uri="http://www.w3.org/1999/xlink")
@@ -92,11 +94,11 @@ class StudyEventDef(OE.ODMElement):
     Alias = T.ODMListObject(element_class=Alias)
 
     def __len__(self):
-        """ returns the number of FormRefs in an StudyEventDef object as the length """
+        """returns the number of FormRefs in an StudyEventDef object as the length"""
         return len(self.FormRef)
 
     def __getitem__(self, position):
-        """ creates an iterator from an StudyEventDef object that returns the FormRef in position """
+        """creates an iterator from an StudyEventDef object that returns the FormRef in position"""
         return self.FormRef[position]
 
     def __iter__(self):
@@ -420,7 +422,9 @@ class Location(OE.ODMElement):
     OID = T.OID(required=True)
     Name = T.Name(required=True)
     LocationType = T.ValueSetString()
-    MetaDataVersionRef = T.ODMListObject(required=True, element_class=MetaDataVersionRef)
+    MetaDataVersionRef = T.ODMListObject(
+        required=True, element_class=MetaDataVersionRef
+    )
 
 
 class Meaning(OE.ODMElement):

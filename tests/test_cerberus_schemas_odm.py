@@ -28,7 +28,8 @@ class TestCheckODM(TestCase):
         self.assertTrue(is_valid)
 
     def test_Alias(self):
-        schema = {"Context": {"type": "string", "required": True}, "Name": {"type": "string", "required": True}}
+        schema = {"Context": {"type": "string", "required": True},
+                  "Name": {"type": "string", "required": True}}
         doc = {"Context": "nci:ExtCodeID", "Name": "C64848"}
         check = CheckODM(schema, doc)
         is_valid = check.check_odm()
@@ -37,23 +38,29 @@ class TestCheckODM(TestCase):
     def test_Description(self):
         schema = {"TranslatedText": {"type": "list", "schema": {
             "type": "dict", "schema": {"lang": {"type": "string"}, "_content": {"type": "string", "required": True}}}}}
-        doc = {'TranslatedText': [{'_content': 'Trace-XML Test CDASH File', 'lang': 'en'}]}
+        doc = {'TranslatedText': [
+            {'_content': 'Trace-XML Test CDASH File', 'lang': 'en'}]}
         check = CheckODM(schema, doc)
         is_valid = check.check_odm()
         self.assertTrue(is_valid)
 
     def test_Protocol(self):
         p = ODM.Protocol()
-        tt = ODM.TranslatedText(_content="Trace-XML Test CDASH File", lang="en")
+        tt = ODM.TranslatedText(
+            _content="Trace-XML Test CDASH File", lang="en")
         p.Description = ODM.Description()
         p.Description.TranslatedText = [tt]
-        ser1 = ODM.StudyEventRef(StudyEventOID="BASELINE", OrderNumber="1", Mandatory="Yes")
-        ser2 = ODM.StudyEventRef(StudyEventOID="FOLLOW-UP", OrderNumber="2", Mandatory="Yes")
+        ser1 = ODM.StudyEventRef(
+            StudyEventOID="BASELINE", OrderNumber="1", Mandatory="Yes")
+        ser2 = ODM.StudyEventRef(
+            StudyEventOID="FOLLOW-UP", OrderNumber="2", Mandatory="Yes")
         p.StudyEventRef = [ser1, ser2]
-        p.Alias = [ODM.Alias(Context="ClinicalTrials.gov", Name="trace-protocol")]
+        p.Alias = [ODM.Alias(Context="ClinicalTrials.gov",
+                             Name="trace-protocol")]
         description_dict = p.Description.to_dict()
         print(description_dict)
-        is_valid = self.validator.check_conformance(description_dict, "Description")
+        is_valid = self.validator.check_conformance(
+            description_dict, "Description")
         self.assertTrue(is_valid)
         protocol_dict = p.to_dict()
         print(protocol_dict)
@@ -62,9 +69,10 @@ class TestCheckODM(TestCase):
 
     def test_StudEventDef(self):
         attrs = {"OID": "ODM.SE.BASELINE", "Name": "Baseline Visit", "Repeating": "No", "Type": "Scheduled",
-         "Category": "Pre-treatment"}
+                 "Category": "Pre-treatment"}
         sed = ODM.StudyEventDef(**attrs)
-        tt1 = ODM.TranslatedText(_content="this is the first test description", lang="en")
+        tt1 = ODM.TranslatedText(
+            _content="this is the first test description", lang="en")
         sed.Description = ODM.Description()
         sed.Description.TranslatedText = [tt1]
         fr1 = ODM.FormRef(FormOID="ODM.F.VS", Mandatory="Yes", OrderNumber="1")
@@ -80,15 +88,20 @@ class TestCheckODM(TestCase):
         self.assertTrue(is_valid)
 
     def test_FormDef(self):
-        formdef = ODM.FormDef(OID="ODM.F.VS", Name="Vital Signs Form", Repeating="Yes")
-        tt1 = ODM.TranslatedText(_content="this is the first test description", lang="en")
+        formdef = ODM.FormDef(
+            OID="ODM.F.VS", Name="Vital Signs Form", Repeating="Yes")
+        tt1 = ODM.TranslatedText(
+            _content="this is the first test description", lang="en")
         formdef.Description = ODM.Description()
         formdef.Description.TranslatedText = [tt1]
-        igr = ODM.ItemGroupRef(ItemGroupOID="ODM.IG.COMMON", Mandatory="Yes", OrderNumber="1")
+        igr = ODM.ItemGroupRef(ItemGroupOID="ODM.IG.COMMON",
+                               Mandatory="Yes", OrderNumber="1")
         formdef.ItemGroupRef.append(igr)
-        igr = ODM.ItemGroupRef(ItemGroupOID="ODM.IG.VS_GENERAL", Mandatory="Yes", OrderNumber="2")
+        igr = ODM.ItemGroupRef(
+            ItemGroupOID="ODM.IG.VS_GENERAL", Mandatory="Yes", OrderNumber="2")
         formdef.ItemGroupRef.append(igr)
-        igr = ODM.ItemGroupRef(ItemGroupOID="ODM.IG.VS", Mandatory="Yes", OrderNumber="3")
+        igr = ODM.ItemGroupRef(ItemGroupOID="ODM.IG.VS",
+                               Mandatory="Yes", OrderNumber="3")
         formdef.ItemGroupRef.append(igr)
         formdef.Alias.append(ODM.Alias(Context="SDTMIG", Name="VS"))
         fd_dict = formdef.to_dict()
@@ -98,13 +111,16 @@ class TestCheckODM(TestCase):
 
     def test_ItemGroupDef(self):
         attrs = {"OID": "IG.VS", "Name": "VS", "Repeating": "Yes", "Domain": "VS", "Name": "VS", "SASDatasetName": "VS",
-                "IsReferenceData": "No", "Purpose": "Tabulation"}
+                 "IsReferenceData": "No", "Purpose": "Tabulation"}
         igd = ODM.ItemGroupDef(**attrs)
-        tt = ODM.TranslatedText(_content="this is the first test description", lang="en")
+        tt = ODM.TranslatedText(
+            _content="this is the first test description", lang="en")
         igd.Description = ODM.Description()
         igd.Description.TranslatedText = [tt]
-        ir1 = ODM.ItemRef(ItemOID="IT.STUDYID", Mandatory="Yes", OrderNumber="1")
-        ir2 = ODM.ItemRef(ItemOID="IT.VS.VSTEST", Mandatory="No", OrderNumber="2")
+        ir1 = ODM.ItemRef(ItemOID="IT.STUDYID",
+                          Mandatory="Yes", OrderNumber="1")
+        ir2 = ODM.ItemRef(ItemOID="IT.VS.VSTEST",
+                          Mandatory="No", OrderNumber="2")
         igd.ItemRef = [ir1, ir2]
         igd_dict = igd.to_dict()
         print(igd_dict)
@@ -117,8 +133,10 @@ class TestCheckODM(TestCase):
         tt2 = ODM.TranslatedText(_content="code de test invalide", lang="fr")
         rc.ErrorMessage.TranslatedText = [tt1, tt2]
         rc.CheckValue = [ODM.CheckValue(_content="DIABP")]
-        rc.FormalExpression = [ODM.FormalExpression(Context="Python 3.7", _content="print('hello world')")]
-        rc.MeasurementUnitRef = ODM.MeasurementUnitRef(MeasurementUnitOID="ODM.MU.UNITS")
+        rc.FormalExpression = [ODM.FormalExpression(
+            Context="Python 3.7", _content="print('hello world')")]
+        rc.MeasurementUnitRef = ODM.MeasurementUnitRef(
+            MeasurementUnitOID="ODM.MU.UNITS")
         rc_dict = rc.to_dict()
         print(rc_dict)
         is_valid = self.validator.check_conformance(rc_dict, "RangeCheck")
@@ -126,11 +144,14 @@ class TestCheckODM(TestCase):
 
     def test_ItemDef(self):
         attrs = {"OID": "ODM.IT.AE.AEYN", "Name": "Any AEs?", "DataType": "text", "Length": "1", "SASFieldName": "AEYN",
-                "SDSVarName": "AEYN", "Origin": "CRF", "Comment": "Data management field"}
+                 "SDSVarName": "AEYN", "Origin": "CRF", "Comment": "Data management field"}
         item = ODM.ItemDef(**attrs)
-        item.Description.TranslatedText = [ODM.TranslatedText(_content="this is the first test description", lang="en")]
-        item.Question.TranslatedText = [ODM.TranslatedText(_content="Any AEs?", lang="en")]
-        item.CodeListRef = ODM.CodeListRef(CodeListOID="CL.NY_SUB_Y_N_2011-10-24")
+        item.Description.TranslatedText = [ODM.TranslatedText(
+            _content="this is the first test description", lang="en")]
+        item.Question.TranslatedText = [
+            ODM.TranslatedText(_content="Any AEs?", lang="en")]
+        item.CodeListRef = ODM.CodeListRef(
+            CodeListOID="CL.NY_SUB_Y_N_2011-10-24")
         item_dict = item.to_dict()
         print(item_dict)
         is_valid = self.validator.check_conformance(item_dict, "ItemDef")
@@ -149,7 +170,8 @@ class TestCheckODM(TestCase):
         self.assertTrue(is_valid)
 
     def test_CodeList(self):
-        attrs = {"OID": "ODM.CL.LBTESTCD", "Name": "Laboratory Test Code", "DataType": "text"}
+        attrs = {"OID": "ODM.CL.LBTESTCD",
+                 "Name": "Laboratory Test Code", "DataType": "text"}
         cl = ODM.CodeList(**attrs)
         eni = ODM.EnumeratedItem(CodedValue="HGB", OrderNumber=1)
         eni.Alias = [ODM.Alias(Context="nci:ExtCodeID", Name="C64848")]
@@ -161,9 +183,11 @@ class TestCheckODM(TestCase):
         self.assertTrue(is_valid)
 
     def test_ExternalCodeList(self):
-        attrs = {"OID": "ODM.CL.LBTESTCD", "Name": "Laboratory Test Code", "DataType": "text"}
+        attrs = {"OID": "ODM.CL.LBTESTCD",
+                 "Name": "Laboratory Test Code", "DataType": "text"}
         cl = ODM.CodeList(**attrs)
-        excl = ODM.ExternalCodeList(Dictionary="MedDRA", Version="23.0", href="https://www.meddra.org/")
+        excl = ODM.ExternalCodeList(
+            Dictionary="MedDRA", Version="23.0", href="https://www.meddra.org/")
         cl.ExternalCodeList = excl
         cl_dict = cl.to_dict()
         is_valid = self.validator.check_conformance(cl_dict, "CodeList")
@@ -173,24 +197,31 @@ class TestCheckODM(TestCase):
         attrs = {"OID": "ODM.CD.BRTHMO", "Name": "Skip BRTHMO when no BRTHYR"}
         cd = ODM.ConditionDef(**attrs)
         cd.Description = ODM.Description()
-        cd.Description.TranslatedText = [ODM.TranslatedText(_content="Skip the BRTHMO field when BRTHYR length NE 4", lang="en")]
-        cd.FormalExpression = [ODM.FormalExpression(Context="Python 3.7", _content="BRTHYR != 4")]
+        cd.Description.TranslatedText = [ODM.TranslatedText(
+            _content="Skip the BRTHMO field when BRTHYR length NE 4", lang="en")]
+        cd.FormalExpression = [ODM.FormalExpression(
+            Context="Python 3.7", _content="BRTHYR != 4")]
         cd_dict = cd.to_dict()
         print(cd_dict)
         is_valid = self.validator.check_conformance(cd_dict, "ConditionDef")
         self.assertTrue(is_valid)
 
     def test_MethodDef(self):
-        attrs = {"OID": "ODM.MT.AGE", "Name": "Algorithm to derive AGE", "Type": "Computation"}
+        attrs = {"OID": "ODM.MT.AGE",
+                 "Name": "Algorithm to derive AGE", "Type": "Computation"}
         method = ODM.MethodDef(**attrs)
         method.Description = ODM.Description()
-        method.Description.TranslatedText.append(ODM.TranslatedText(_content="Age at Screening Date (Screening Date - Birth date)", lang="en"))
-        method.FormalExpression.append(ODM.FormalExpression(Context="Python 3.7", _content="print('hello world')"))
-        is_valid = self.validator.check_conformance(method.to_dict(), "MethodDef")
+        method.Description.TranslatedText.append(ODM.TranslatedText(
+            _content="Age at Screening Date (Screening Date - Birth date)", lang="en"))
+        method.FormalExpression.append(ODM.FormalExpression(
+            Context="Python 3.7", _content="print('hello world')"))
+        is_valid = self.validator.check_conformance(
+            method.to_dict(), "MethodDef")
         self.assertTrue(is_valid)
 
     def test_OID_unique(self):
-        attrs = {"OID": "MDV.TRACE-XML-ODM-01", "Name": "TRACE-XML MDV", "Description": "Trace-XML Example"}
+        attrs = {"OID": "MDV.TRACE-XML-ODM-01",
+                 "Name": "TRACE-XML MDV", "Description": "Trace-XML Example"}
         self.mdv = ODM.MetaDataVersion(**attrs)
         self.mdv.Protocol = self.add_protocol()
         self.mdv.StudyEventDef = self.add_SED()
@@ -205,7 +236,8 @@ class TestCheckODM(TestCase):
         self.assertTrue(oid_checker.check_oid_refs())
 
     def test_unused_OID(self):
-        attrs = {"OID": "MDV.TRACE-XML-ODM-01", "Name": "TRACE-XML MDV", "Description": "Trace-XML Example"}
+        attrs = {"OID": "MDV.TRACE-XML-ODM-01",
+                 "Name": "TRACE-XML MDV", "Description": "Trace-XML Example"}
         self.mdv = ODM.MetaDataVersion(**attrs)
         self.mdv.Protocol = self.add_protocol()
         self.mdv.StudyEventDef = self.add_SED()
@@ -225,7 +257,8 @@ class TestCheckODM(TestCase):
         self.assertDictEqual(orphans, expected_orphans)
 
     def test_MetaDataVersion(self):
-        attrs = {"OID": "MDV.TRACE-XML-ODM-01", "Name": "TRACE-XML MDV", "Description": "Trace-XML Example"}
+        attrs = {"OID": "MDV.TRACE-XML-ODM-01",
+                 "Name": "TRACE-XML MDV", "Description": "Trace-XML Example"}
         self.mdv = ODM.MetaDataVersion(**attrs)
         self.mdv.Protocol = self.add_protocol()
         self.mdv.StudyEventDef = self.add_SED()
@@ -237,64 +270,84 @@ class TestCheckODM(TestCase):
         self.mdv.ConditionDef = self.add_CD()
         mdv_dict = self.mdv.to_dict()
         print(mdv_dict)
-        is_valid = self.validator.check_conformance(mdv_dict, "MetaDataVersion")
+        is_valid = self.validator.check_conformance(
+            mdv_dict, "MetaDataVersion")
         self.assertTrue(is_valid)
 
     def add_protocol(self):
         p = ODM.Protocol()
-        tt = ODM.TranslatedText(_content="Trace-XML Test CDASH File", lang="en")
+        tt = ODM.TranslatedText(
+            _content="Trace-XML Test CDASH File", lang="en")
         p.Description = ODM.Description()
         p.Description.TranslatedText = [tt]
-        ser1 = ODM.StudyEventRef(StudyEventOID="BASELINE", OrderNumber=1, Mandatory="Yes")
-        ser2 = ODM.StudyEventRef(StudyEventOID="FOLLOW-UP", OrderNumber=2, Mandatory="Yes")
+        ser1 = ODM.StudyEventRef(
+            StudyEventOID="BASELINE", OrderNumber=1, Mandatory="Yes")
+        ser2 = ODM.StudyEventRef(
+            StudyEventOID="FOLLOW-UP", OrderNumber=2, Mandatory="Yes")
         p.StudyEventRef = [ser1, ser2]
-        p.Alias = [ODM.Alias(Context="ClinicalTrials.gov", Name="trace-protocol")]
+        p.Alias = [ODM.Alias(Context="ClinicalTrials.gov",
+                             Name="trace-protocol")]
         return p
 
     def add_SED(self):
         fr1 = ODM.FormRef(FormOID="ODM.F.DM", Mandatory="Yes", OrderNumber=1)
         fr2 = ODM.FormRef(FormOID="ODM.F.VS", Mandatory="Yes", OrderNumber=2)
         fr3 = ODM.FormRef(FormOID="ODM.F.AE", Mandatory="Yes", OrderNumber=3)
-        ser1 = ODM.StudyEventDef(OID="BASELINE", Name="Baseline Visit", Repeating="No", Type="Scheduled")
+        ser1 = ODM.StudyEventDef(
+            OID="BASELINE", Name="Baseline Visit", Repeating="No", Type="Scheduled")
         ser1.FormRef = [fr1, fr2, fr3]
-        ser2 = ODM.StudyEventDef(OID="FOLLOW-UP", Name="Follow-up Visit", Repeating="Yes", Type="Scheduled")
+        ser2 = ODM.StudyEventDef(
+            OID="FOLLOW-UP", Name="Follow-up Visit", Repeating="Yes", Type="Scheduled")
         ser2.FormRef = [fr1, fr2, fr3]
         return [ser1, ser2]
 
     def add_FD(self):
-        igr1 = ODM.ItemGroupRef(ItemGroupOID="ODM.IG.Common", Mandatory="Yes", OrderNumber=1)
+        igr1 = ODM.ItemGroupRef(
+            ItemGroupOID="ODM.IG.Common", Mandatory="Yes", OrderNumber=1)
         #igr2 = ODM.ItemGroupRef(ItemGroupOID="ODM.IG.VS_GENERAL", Mandatory="Yes", OrderNumber=2)
-        igr3 = ODM.ItemGroupRef(ItemGroupOID="ODM.IG.VS", Mandatory="Yes", OrderNumber=3)
+        igr3 = ODM.ItemGroupRef(ItemGroupOID="ODM.IG.VS",
+                                Mandatory="Yes", OrderNumber=3)
         fd1 = ODM.FormDef(OID="ODM.F.VS", Name="Vital Signs", Repeating="No")
         #fd1.ItemGroupRef = [igr1, igr2, igr3]
         fd1.ItemGroupRef = [igr1, igr3]
-        igr4 = ODM.ItemGroupRef(ItemGroupOID="ODM.IG.Common", Mandatory="Yes", OrderNumber=1)
-        igr5 = ODM.ItemGroupRef(ItemGroupOID="ODM.IG.DM", Mandatory="Yes", OrderNumber=2)
+        igr4 = ODM.ItemGroupRef(
+            ItemGroupOID="ODM.IG.Common", Mandatory="Yes", OrderNumber=1)
+        igr5 = ODM.ItemGroupRef(ItemGroupOID="ODM.IG.DM",
+                                Mandatory="Yes", OrderNumber=2)
         fd2 = ODM.FormDef(OID="ODM.F.DM", Name="Demographics", Repeating="No")
         fd2.ItemGroupRef = [igr4, igr5]
-        igr6 = ODM.ItemGroupRef(ItemGroupOID="ODM.IG.Common", Mandatory="Yes", OrderNumber=1)
-        igr7 = ODM.ItemGroupRef(ItemGroupOID="ODM.IG.AE", Mandatory="Yes", OrderNumber=2)
-        fd3 = ODM.FormDef(OID="ODM.F.AE", Name="Adverse Events", Repeating="No")
+        igr6 = ODM.ItemGroupRef(
+            ItemGroupOID="ODM.IG.Common", Mandatory="Yes", OrderNumber=1)
+        igr7 = ODM.ItemGroupRef(ItemGroupOID="ODM.IG.AE",
+                                Mandatory="Yes", OrderNumber=2)
+        fd3 = ODM.FormDef(
+            OID="ODM.F.AE", Name="Adverse Events", Repeating="No")
         fd3.ItemGroupRef = [igr6, igr7]
         return [fd1, fd2, fd3]
 
     def add_IGD(self):
         itr1 = ODM.ItemRef(ItemOID="ODM.IT.VS.VSDAT", Mandatory="Yes")
-        itr2 = ODM.ItemRef(ItemOID="ODM.IT.VS.BP.DIABP.VSORRES", Mandatory="Yes")
-        itr3 = ODM.ItemRef(ItemOID="ODM.IT.VS.BP.SYSBP.VSORRES", Mandatory="Yes")
-        igd1 = ODM.ItemGroupDef(OID="ODM.IG.VS", Name="Vital Sign Measurement", Repeating="Yes")
+        itr2 = ODM.ItemRef(
+            ItemOID="ODM.IT.VS.BP.DIABP.VSORRES", Mandatory="Yes")
+        itr3 = ODM.ItemRef(
+            ItemOID="ODM.IT.VS.BP.SYSBP.VSORRES", Mandatory="Yes")
+        igd1 = ODM.ItemGroupDef(
+            OID="ODM.IG.VS", Name="Vital Sign Measurement", Repeating="Yes")
         igd1.ItemRef = [itr1, itr2, itr3]
         igr4 = ODM.ItemRef(ItemOID="ODM.IT.DM.BRTHYR", Mandatory="Yes")
         igr5 = ODM.ItemRef(ItemOID="ODM.IT.DM.SEX", Mandatory="Yes")
-        igd2 = ODM.ItemGroupDef(OID="ODM.IG.DM", Name="Demographics", Repeating="No")
+        igd2 = ODM.ItemGroupDef(
+            OID="ODM.IG.DM", Name="Demographics", Repeating="No")
         igd2.ItemRef = [igr4, igr5]
         igr6 = ODM.ItemRef(ItemOID="ODM.IT.Common.SubjectID", Mandatory="Yes")
         igr7 = ODM.ItemRef(ItemOID="ODM.IT.Common.Visit", Mandatory="Yes")
-        igd3 = ODM.ItemGroupDef(OID="ODM.IG.Common", Name="Common", Repeating="No")
+        igd3 = ODM.ItemGroupDef(OID="ODM.IG.Common",
+                                Name="Common", Repeating="No")
         igd3.ItemRef = [igr6, igr7]
         igr8 = ODM.ItemRef(ItemOID="ODM.IT.AE.AETERM", Mandatory="Yes")
         igr9 = ODM.ItemRef(ItemOID="ODM.IT.AE.AESEV", Mandatory="Yes")
-        igd4 = ODM.ItemGroupDef(OID="ODM.IG.AE", Name="Adverse Events", Repeating="Yes")
+        igd4 = ODM.ItemGroupDef(
+            OID="ODM.IG.AE", Name="Adverse Events", Repeating="Yes")
         igd4.ItemRef = [igr8, igr9]
         return [igd1, igd2, igd3, igd4]
 
@@ -307,12 +360,14 @@ class TestCheckODM(TestCase):
         q1 = ODM.Question()
         q1.TranslatedText = [ttq1]
         a1 = ODM.Alias(Context="CDASH", Name="VSDAT")
-        itd1 = ODM.ItemDef(OID="ODM.IT.VS.VSDAT", Name="Date", DataType="partialDate")
+        itd1 = ODM.ItemDef(OID="ODM.IT.VS.VSDAT",
+                           Name="Date", DataType="partialDate")
         itd1.Description = desc1
         itd1.Question = q1
         itd1.Alias = [a1]
         # ItemDef 2
-        ttd2 = ODM.TranslatedText(_content="Result of the vital signs measurement as originally received or collected.", lang="en")
+        ttd2 = ODM.TranslatedText(
+            _content="Result of the vital signs measurement as originally received or collected.", lang="en")
         ttq2 = ODM.TranslatedText(_content="Diastolic", lang="en")
         desc2 = ODM.Description()
         desc2.TranslatedText = [ttd2]
@@ -320,7 +375,8 @@ class TestCheckODM(TestCase):
         q2.TranslatedText = [ttq2]
         a2a = ODM.Alias(Context="CDASH", Name="BP.DIABP.VSORRES")
         a2b = ODM.Alias(Context="CDASH/SDTM", Name="VSORRES+VSORRESU")
-        itd2 = ODM.ItemDef(OID="ODM.IT.VS.BP.VSORRESU", Name="BP Units", DataType="text")
+        itd2 = ODM.ItemDef(OID="ODM.IT.VS.BP.VSORRESU",
+                           Name="BP Units", DataType="text")
         itd2.Description = desc2
         itd2.Question = q2
         itd2.Alias = [a2a, a2b]
@@ -331,7 +387,8 @@ class TestCheckODM(TestCase):
         desc3.TranslatedText = [ttd3]
         q3 = ODM.Question()
         q3.TranslatedText = [ttq3]
-        itd3 = ODM.ItemDef(OID="ODM.IT.AE.AETERM", Name="AE Term", DataType="text")
+        itd3 = ODM.ItemDef(OID="ODM.IT.AE.AETERM",
+                           Name="AE Term", DataType="text")
         itd3.Description = desc3
         itd3.Question = q3
         # ItemDef 4
@@ -341,7 +398,8 @@ class TestCheckODM(TestCase):
         desc4.TranslatedText = [ttd4]
         q4 = ODM.Question()
         q4.TranslatedText = [ttq4]
-        itd4 = ODM.ItemDef(OID="ODM.IT.AE.AESEV", Name="AE Severity", DataType="text")
+        itd4 = ODM.ItemDef(OID="ODM.IT.AE.AESEV",
+                           Name="AE Severity", DataType="text")
         itd4.Description = desc4
         itd4.Question = q4
         # ItemDef 5
@@ -351,17 +409,20 @@ class TestCheckODM(TestCase):
         desc5.TranslatedText = [ttd5]
         q5 = ODM.Question()
         q5.TranslatedText = [ttq5]
-        itd5 = ODM.ItemDef(OID="ODM.IT.Common.SubjectID", Name="Subject ID", DataType="text")
+        itd5 = ODM.ItemDef(OID="ODM.IT.Common.SubjectID",
+                           Name="Subject ID", DataType="text")
         itd5.Description = desc5
         itd5.Question = q5
         # ItemDef 6
-        ttd6 = ODM.TranslatedText(_content="Diastolic Blood Pressure Result", lang="en")
+        ttd6 = ODM.TranslatedText(
+            _content="Diastolic Blood Pressure Result", lang="en")
         ttq6 = ODM.TranslatedText(_content="Diastolic BP", lang="en")
         desc6 = ODM.Description()
         desc6.TranslatedText = [ttd6]
         q6 = ODM.Question()
         q6.TranslatedText = [ttq6]
-        itd6 = ODM.ItemDef(OID="ODM.IT.VS.BP.DIABP.VSORRES", Name="DBP Result", DataType="text")
+        itd6 = ODM.ItemDef(OID="ODM.IT.VS.BP.DIABP.VSORRES",
+                           Name="DBP Result", DataType="text")
         itd6.Description = desc6
         itd6.Question = q6
         # ItemDef 7
@@ -371,7 +432,8 @@ class TestCheckODM(TestCase):
         desc7.TranslatedText = [ttd7]
         q7 = ODM.Question()
         q7.TranslatedText = [ttq7]
-        itd7 = ODM.ItemDef(OID="ODM.IT.DM.BRTHYR", Name="Birth Year", DataType="text")
+        itd7 = ODM.ItemDef(OID="ODM.IT.DM.BRTHYR",
+                           Name="Birth Year", DataType="text")
         itd7.Description = desc7
         itd7.Question = q7
         # ItemDef 8
@@ -381,7 +443,8 @@ class TestCheckODM(TestCase):
         desc8.TranslatedText = [ttd8]
         q8 = ODM.Question()
         q8.TranslatedText = [ttq8]
-        itd8 = ODM.ItemDef(OID="ODM.IT.Common.Visit", Name="Visit", DataType="text")
+        itd8 = ODM.ItemDef(OID="ODM.IT.Common.Visit",
+                           Name="Visit", DataType="text")
         itd8.Description = desc8
         itd8.Question = q8
         # ItemDef 9
@@ -395,30 +458,36 @@ class TestCheckODM(TestCase):
         itd9.Description = desc9
         itd9.Question = q9
         # ItemDef 10
-        ttd10 = ODM.TranslatedText(_content="Systolic Blood Pressure Result", lang="en")
+        ttd10 = ODM.TranslatedText(
+            _content="Systolic Blood Pressure Result", lang="en")
         ttq10 = ODM.TranslatedText(_content="Systolic BP", lang="en")
         desc10 = ODM.Description()
         desc10.TranslatedText = [ttd10]
         q10 = ODM.Question()
         q10.TranslatedText = [ttq10]
-        itd10 = ODM.ItemDef(OID="ODM.IT.VS.BP.SYSBP.VSORRES", Name="Systolic BP Result", DataType="text")
+        itd10 = ODM.ItemDef(OID="ODM.IT.VS.BP.SYSBP.VSORRES",
+                            Name="Systolic BP Result", DataType="text")
         itd10.Description = desc10
         itd10.Question = q10
         return [itd1, itd2, itd3, itd4, itd5, itd6, itd7, itd8, itd9, itd10]
 
     def add_CD(self):
-        tt1 = ODM.TranslatedText(_content="Skip the BRTHMO field when BRTHYR length NE 4", lang="en")
+        tt1 = ODM.TranslatedText(
+            _content="Skip the BRTHMO field when BRTHYR length NE 4", lang="en")
         desc = ODM.Description()
         desc.TranslatedText = [tt1]
-        cd = ODM.ConditionDef(OID="ODM.CD.BRTHMO", Name="Skip BRTHMO when no BRTHYR")
+        cd = ODM.ConditionDef(OID="ODM.CD.BRTHMO",
+                              Name="Skip BRTHMO when no BRTHYR")
         cd.Description = desc
         return [cd]
 
     def add_MD(self):
-        tt1 = ODM.TranslatedText(_content="Concatenation of BRTHYR, BRTHMO, and BRTHDY in ISO 8601 format", lang="en")
+        tt1 = ODM.TranslatedText(
+            _content="Concatenation of BRTHYR, BRTHMO, and BRTHDY in ISO 8601 format", lang="en")
         desc = ODM.Description()
         desc.TranslatedText = [tt1]
-        md = ODM.MethodDef(OID="ODM.MT.DOB", Name="Create BRTHDTC from date ELEMENTS", Type="Computation")
+        md = ODM.MethodDef(
+            OID="ODM.MT.DOB", Name="Create BRTHDTC from date ELEMENTS", Type="Computation")
         md.Description = desc
         return [md]
 
@@ -433,6 +502,7 @@ class TestCheckODM(TestCase):
         dc2.TranslatedText = [tt2]
         cli2 = ODM.CodeListItem(CodedValue="Y")
         cli2.Decode = dc2
-        cl = ODM.CodeList(OID="ODM.CL.NY_SUB_Y_N", Name="No Yes Response", DataType="text")
+        cl = ODM.CodeList(OID="ODM.CL.NY_SUB_Y_N",
+                          Name="No Yes Response", DataType="text")
         cl.CodeListItem = [cli1, cli2]
         return [cl]

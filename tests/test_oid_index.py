@@ -30,7 +30,8 @@ class TestOIDIndex(unittest.TestCase):
 
     def test_oid_index_define_igd(self):
         self.define_file = get_data_file_path('defineV21-SDTM.xml')
-        self.loader = LD.ODMLoader(DL.XMLDefineLoader(model_package="define_2_1", ns_uri="http://www.cdisc.org/ns/def/v2.1"))
+        self.loader = LD.ODMLoader(DL.XMLDefineLoader(
+            model_package="define_2_1", ns_uri="http://www.cdisc.org/ns/def/v2.1"))
         self.loader.open_odm_document(self.define_file)
         self.odm = self.loader.root()
         idx = self.odm.build_oid_index()

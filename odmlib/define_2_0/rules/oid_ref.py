@@ -1,4 +1,3 @@
-
 class OIDRef:
     def __init__(self, skip_attrs=[], skip_elems=[]):
         self.oid = {}
@@ -8,12 +7,23 @@ class OIDRef:
         self._init_ref_def()
         self.def_ref = {}
         self._init_def_ref()
-        self.skip_attr = ["FileOID", "PriorFileOID", "StudyOID", "MetaDataVersionOID", "ItemGroupOID"] + skip_attrs
-        self.skip_elem = ["ODM", "Study", "MetaDataVersion", "ItemGroupDef"] + skip_elems
+        self.skip_attr = [
+            "FileOID",
+            "PriorFileOID",
+            "StudyOID",
+            "MetaDataVersionOID",
+            "ItemGroupOID",
+        ] + skip_attrs
+        self.skip_elem = [
+            "ODM",
+            "Study",
+            "MetaDataVersion",
+            "ItemGroupDef",
+        ] + skip_elems
         self.is_verified = False
 
     def add_oid(self, oid, element):
-        """ ODMLIB expects all OIDs to be unique within the scope of an ODM document """
+        """ODMLIB expects all OIDs to be unique within the scope of an ODM document"""
         if oid in self.oid:
             raise ValueError(f"OID {oid} is not unique - element {element}")
         if element not in self.skip_elem:
@@ -34,14 +44,18 @@ class OIDRef:
             for oid in oid_set:
                 if attr not in self.skip_attr:
                     if oid not in self.oid:
-                        raise ValueError(f"OID {oid} referenced in the attribute {attr} is not found.")
+                        raise ValueError(
+                            f"OID {oid} referenced in the attribute {attr} is not found."
+                        )
                     elif self.ref_def.get(attr) != self.oid.get(oid):
-                        raise ValueError(f"OID reference for attribute {attr} element types do not match: "
-                                         f"{self.ref_def.get(attr)} and {self.oid.get(oid)}")
+                        raise ValueError(
+                            f"OID reference for attribute {attr} element types do not match: "
+                            f"{self.ref_def.get(attr)} and {self.oid.get(oid)}"
+                        )
         return True
 
     def check_unreferenced_oids(self):
-        """ identify ELEMENTS that are defined but not used """
+        """identify ELEMENTS that are defined but not used"""
         orphans = {}
         for oid, elem in self.oid.items():
             for ref in self.def_ref[elem]:
@@ -70,7 +84,6 @@ class OIDRef:
         self.oid_ref["CommentOID"] = set()
         self.oid_ref["ArchiveLayoutOID"] = set()
         self.oid_ref["leafID"] = set()
-
 
     def _init_ref_def(self):
         # self.ref_def["MetaDataVersionOID"] = "MetaDataVersion"

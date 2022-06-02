@@ -54,7 +54,9 @@ class ItemRef(ODM.ItemRef):
     RoleCodeListOID = ODM.ItemRef.RoleCodeListOID
     IsNonStandard = T.ValueSetString(namespace="def")
     HasNoData = T.ValueSetString(namespace="def")
-    WhereClauseRef = T.ODMListObject(required=True, element_class=WhereClauseRef, namespace="def")
+    WhereClauseRef = T.ODMListObject(
+        required=True, element_class=WhereClauseRef, namespace="def"
+    )
 
 
 class title(OE.ODMElement):
@@ -153,9 +155,20 @@ class DocumentRef(OE.ODMElement):
 
 class Origin(OE.ODMElement):
     namespace = "def"
-    Type = T.ExtendedValidValues(required=True, valid_values=["Collected", "Derived", "Assigned", "Protocol",
-                                                              "Predecessor", "Not Available"])
-    Source = T.ExtendedValidValues(valid_values=["Subject", "Investigator", "Vendor", "Sponsor"])
+    Type = T.ExtendedValidValues(
+        required=True,
+        valid_values=[
+            "Collected",
+            "Derived",
+            "Assigned",
+            "Protocol",
+            "Predecessor",
+            "Not Available",
+        ],
+    )
+    Source = T.ExtendedValidValues(
+        valid_values=["Subject", "Investigator", "Vendor", "Sponsor"]
+    )
     Description = T.ODMObject(element_class=Description)
     DocumentRef = T.ODMListObject(element_class=DocumentRef, namespace="def")
 
@@ -237,7 +250,9 @@ class AnnotatedCRF(OE.ODMElement):
 
 class SupplementalDoc(OE.ODMElement):
     namespace = "def"
-    DocumentRef = T.ODMListObject(required=True, element_class=DocumentRef, namespace="def")
+    DocumentRef = T.ODMListObject(
+        required=True, element_class=DocumentRef, namespace="def"
+    )
 
 
 class WhereClauseDef(OE.ODMElement):

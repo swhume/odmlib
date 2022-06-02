@@ -12,7 +12,7 @@ class TestInsertItem(unittest.TestCase):
         self.odm_file = get_data_file_path('cdash-odm-test.xml')
         self.odm_file_out = get_data_file_path('cdash-odm-test-insert.xml')
         self.loader = LD.ODMLoader(OL.XMLODMLoader())
-            
+
     def test_insert_item_with_none_element(self):
         attrs = self.set_item_attributes()
         item = ODM.ItemDef(**attrs)
@@ -48,7 +48,8 @@ class TestInsertItem(unittest.TestCase):
     def add_study(self, mdv):
         study_name = ODM.StudyName(_content="ODM XML Test Study Name")
         protocol_name = ODM.ProtocolName(_content="ODM XML Test Study")
-        study_description = ODM.StudyDescription(_content="Testing the generation of an ODM XML file")
+        study_description = ODM.StudyDescription(
+            _content="Testing the generation of an ODM XML file")
         gv = ODM.GlobalVariables()
         gv.StudyName = study_name
         gv.StudyDescription = study_description
@@ -59,7 +60,7 @@ class TestInsertItem(unittest.TestCase):
         return study
 
     def set_item_attributes(self):
-            return {"OID": "ODM.IT.AE.TEST", "Name": "Any AEs?", "DataType": "text", "Length": 1, "SASFieldName": "AEYN",
+        return {"OID": "ODM.IT.AE.TEST", "Name": "Any AEs?", "DataType": "text", "Length": 1, "SASFieldName": "AEYN",
                 "SDSVarName": "AEYN", "Origin": "CRF", "Comment": None}
 
     def get_root_attributes(self):

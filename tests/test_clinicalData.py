@@ -10,7 +10,6 @@ from odmlib.odm_1_3_2.rules import oid_ref as OID
 from tests import get_data_file_path
 
 
-
 class TestClinicalData(TestCase):
     def setUp(self) -> None:
         self.odm_test_file = get_data_file_path('test_clinical_data_01.xml')
@@ -18,37 +17,61 @@ class TestClinicalData(TestCase):
 
     def test_clinical_data_to_xml(self):
         cd = []
-        cd.append(ODM.ClinicalData(StudyOID="P2006-101", MetaDataVersionOID="101.01"))
-        cd[0].SubjectData.append(ODM.SubjectData(SubjectKey="1000", TransactionType="Insert"))
-        cd[0].SubjectData[0].StudyEventData.append(ODM.StudyEventData(StudyEventOID="Screen"))
-        cd[0].SubjectData[0].StudyEventData[0].FormData.append(ODM.FormData(FormOID="DEMOG"))
-        cd[0].SubjectData[0].StudyEventData[0].FormData[0].ItemGroupData.append(ODM.ItemGroupData(ItemGroupOID="DM"))
-        cd[0].SubjectData[0].StudyEventData[0].FormData[0].ItemGroupData[0].ItemData.append(ODM.ItemData(ItemOID="USUBJID", Value="101-001-001"))
-        cd[0].SubjectData[0].StudyEventData[0].FormData[0].ItemGroupData[0].ItemData.append(ODM.ItemData(ItemOID="SEX", Value="F"))
-        cd[0].SubjectData[0].StudyEventData[0].FormData.append(ODM.FormData(FormOID="LABDATA"))
-        cd[0].SubjectData[0].StudyEventData[0].FormData[1].ItemGroupData.append(ODM.ItemGroupData(ItemGroupOID="LB"))
-        cd[0].SubjectData[0].StudyEventData[0].FormData[1].ItemGroupData[0].ItemData.append(ODM.ItemData(ItemOID="LBDTC", Value="2006-07-14T14:48"))
-        cd[0].SubjectData[0].StudyEventData[0].FormData[1].ItemGroupData[0].ItemData.append(ODM.ItemData(ItemOID="LBTESTCD", Value="ALT"))
-        cd[0].SubjectData[0].StudyEventData[0].FormData[1].ItemGroupData[0].ItemData.append(ODM.ItemData(ItemOID="LBORRES", Value="245"))
+        cd.append(ODM.ClinicalData(
+            StudyOID="P2006-101", MetaDataVersionOID="101.01"))
+        cd[0].SubjectData.append(ODM.SubjectData(
+            SubjectKey="1000", TransactionType="Insert"))
+        cd[0].SubjectData[0].StudyEventData.append(
+            ODM.StudyEventData(StudyEventOID="Screen"))
+        cd[0].SubjectData[0].StudyEventData[0].FormData.append(
+            ODM.FormData(FormOID="DEMOG"))
+        cd[0].SubjectData[0].StudyEventData[0].FormData[0].ItemGroupData.append(
+            ODM.ItemGroupData(ItemGroupOID="DM"))
+        cd[0].SubjectData[0].StudyEventData[0].FormData[0].ItemGroupData[0].ItemData.append(
+            ODM.ItemData(ItemOID="USUBJID", Value="101-001-001"))
+        cd[0].SubjectData[0].StudyEventData[0].FormData[0].ItemGroupData[0].ItemData.append(
+            ODM.ItemData(ItemOID="SEX", Value="F"))
+        cd[0].SubjectData[0].StudyEventData[0].FormData.append(
+            ODM.FormData(FormOID="LABDATA"))
+        cd[0].SubjectData[0].StudyEventData[0].FormData[1].ItemGroupData.append(
+            ODM.ItemGroupData(ItemGroupOID="LB"))
+        cd[0].SubjectData[0].StudyEventData[0].FormData[1].ItemGroupData[0].ItemData.append(
+            ODM.ItemData(ItemOID="LBDTC", Value="2006-07-14T14:48"))
+        cd[0].SubjectData[0].StudyEventData[0].FormData[1].ItemGroupData[0].ItemData.append(
+            ODM.ItemData(ItemOID="LBTESTCD", Value="ALT"))
+        cd[0].SubjectData[0].StudyEventData[0].FormData[1].ItemGroupData[0].ItemData.append(
+            ODM.ItemData(ItemOID="LBORRES", Value="245"))
 
-        cd.append(ODM.ClinicalData(StudyOID="P2006-101", MetaDataVersionOID="101.02"))
-        cd[1].SubjectData.append(ODM.SubjectData(SubjectKey="1000", TransactionType="Insert"))
-        cd[1].SubjectData[0].StudyEventData.append(ODM.StudyEventData(StudyEventOID="VISIT_1"))
-        cd[1].SubjectData[0].StudyEventData[0].FormData.append(ODM.FormData(FormOID="AENONSER"))
-        cd[1].SubjectData[0].StudyEventData[0].FormData[0].ItemGroupData.append(ODM.ItemGroupData(ItemGroupOID="AE"))
-        cd[1].SubjectData[0].StudyEventData[0].FormData[0].ItemGroupData[0].ItemData.append(ODM.ItemData(ItemOID="AETERM", Value="Fever"))
-        cd[1].SubjectData[0].StudyEventData[0].FormData[0].ItemGroupData[0].ItemData.append(ODM.ItemData(ItemOID="AESTDTC", Value="2006-08-21"))
-        cd[1].SubjectData[0].StudyEventData[0].FormData.append(ODM.FormData(FormOID="LABDATA"))
-        cd[1].SubjectData[0].StudyEventData[0].FormData[1].ItemGroupData.append(ODM.ItemGroupData(ItemGroupOID="LB"))
-        cd[1].SubjectData[0].StudyEventData[0].FormData[1].ItemGroupData[0].ItemData.append(ODM.ItemData(ItemOID="LBDTC", Value="2006-07-14T14:48"))
-        cd[1].SubjectData[0].StudyEventData[0].FormData[1].ItemGroupData[0].ItemData.append(ODM.ItemData(ItemOID="LBTESTCD", Value="ALT"))
-        cd[1].SubjectData[0].StudyEventData[0].FormData[1].ItemGroupData[0].ItemData.append(ODM.ItemData(ItemOID="LBORRES", Value="300"))
+        cd.append(ODM.ClinicalData(
+            StudyOID="P2006-101", MetaDataVersionOID="101.02"))
+        cd[1].SubjectData.append(ODM.SubjectData(
+            SubjectKey="1000", TransactionType="Insert"))
+        cd[1].SubjectData[0].StudyEventData.append(
+            ODM.StudyEventData(StudyEventOID="VISIT_1"))
+        cd[1].SubjectData[0].StudyEventData[0].FormData.append(
+            ODM.FormData(FormOID="AENONSER"))
+        cd[1].SubjectData[0].StudyEventData[0].FormData[0].ItemGroupData.append(
+            ODM.ItemGroupData(ItemGroupOID="AE"))
+        cd[1].SubjectData[0].StudyEventData[0].FormData[0].ItemGroupData[0].ItemData.append(
+            ODM.ItemData(ItemOID="AETERM", Value="Fever"))
+        cd[1].SubjectData[0].StudyEventData[0].FormData[0].ItemGroupData[0].ItemData.append(
+            ODM.ItemData(ItemOID="AESTDTC", Value="2006-08-21"))
+        cd[1].SubjectData[0].StudyEventData[0].FormData.append(
+            ODM.FormData(FormOID="LABDATA"))
+        cd[1].SubjectData[0].StudyEventData[0].FormData[1].ItemGroupData.append(
+            ODM.ItemGroupData(ItemGroupOID="LB"))
+        cd[1].SubjectData[0].StudyEventData[0].FormData[1].ItemGroupData[0].ItemData.append(
+            ODM.ItemData(ItemOID="LBDTC", Value="2006-07-14T14:48"))
+        cd[1].SubjectData[0].StudyEventData[0].FormData[1].ItemGroupData[0].ItemData.append(
+            ODM.ItemData(ItemOID="LBTESTCD", Value="ALT"))
+        cd[1].SubjectData[0].StudyEventData[0].FormData[1].ItemGroupData[0].ItemData.append(
+            ODM.ItemData(ItemOID="LBORRES", Value="300"))
 
         root = self.create_odm_document(cd)
         odm_xml = root.to_xml()
         self.assertEqual(odm_xml.attrib["FileOID"], "ODM.TEST.CD.001")
-        self.assertListEqual(["ClinicalData", "ClinicalData"], [e.tag for e in odm_xml])
-
+        self.assertListEqual(["ClinicalData", "ClinicalData"], [
+                             e.tag for e in odm_xml])
 
     def test_clinical_data_from_xml(self):
         parser = ODM_PARSER.ODMParser(self.odm_test_file)
@@ -62,7 +85,8 @@ class TestClinicalData(TestCase):
         self.assertEqual(item_data[0]["Value"], "Fever")
 
     def test_load_odm_xml_data(self):
-        loader = LD.ODMLoader(OL.XMLODMLoader(model_package="odm_1_3_2", ns_uri="http://www.cdisc.org/ns/odm/v1.3"))
+        loader = LD.ODMLoader(OL.XMLODMLoader(
+            model_package="odm_1_3_2", ns_uri="http://www.cdisc.org/ns/odm/v1.3"))
         loader.open_odm_document(self.odm_test_file2)
         odm = loader.load_odm()
         self.assertEqual(odm.FileOID, "Study-Virus-20220308071610")
@@ -73,7 +97,8 @@ class TestClinicalData(TestCase):
         self.assertEqual(igd_0.ItemData[2].Value, "1966-02-10")
 
     def test_load_odm_xml_data_iterator(self):
-        loader = LD.ODMLoader(OL.XMLODMLoader(model_package="odm_1_3_2", ns_uri="http://www.cdisc.org/ns/odm/v1.3"))
+        loader = LD.ODMLoader(OL.XMLODMLoader(
+            model_package="odm_1_3_2", ns_uri="http://www.cdisc.org/ns/odm/v1.3"))
         loader.open_odm_document(self.odm_test_file2)
         odm = loader.load_odm()
         self.assertEqual(odm.FileOID, "Study-Virus-20220308071610")
@@ -91,7 +116,8 @@ class TestClinicalData(TestCase):
         self.assertListEqual(subjects, test_subjects)
 
     def test_find_record(self):
-        loader = LD.ODMLoader(OL.XMLODMLoader(model_package="odm_1_3_2", ns_uri="http://www.cdisc.org/ns/odm/v1.3"))
+        loader = LD.ODMLoader(OL.XMLODMLoader(
+            model_package="odm_1_3_2", ns_uri="http://www.cdisc.org/ns/odm/v1.3"))
         loader.open_odm_document(self.odm_test_file)
         odm = loader.load_odm()
         subject = odm.ClinicalData[0].find("SubjectData", "SubjectKey", "1000")
@@ -99,7 +125,8 @@ class TestClinicalData(TestCase):
         self.assertEqual(subject.SubjectKey, "1000")
 
     def test_audit_record(self):
-        ar = ODM.AuditRecord(EditPoint="Monitoring", UsedImputationMethod="Yes", ID="1")
+        ar = ODM.AuditRecord(EditPoint="Monitoring",
+                             UsedImputationMethod="Yes", ID="1")
         ar.UserRef = ODM.UserRef(UserOID="USER.001")
         ar.LocationRef = ODM.LocationRef(LocationOID="SITE.101")
         ar.DateTimeStamp = ODM.DateTimeStamp(_content="2020-12-01T10:28:16")
@@ -108,21 +135,29 @@ class TestClinicalData(TestCase):
         ar_dict = ar.to_dict()
         print(ar_dict)
         self.assertEqual(ar_dict["EditPoint"], "Monitoring")
-        id = ODM.ItemData(ItemOID="IT.AE.AETERM", TransactionType="Insert", Value="Fever")
+        id = ODM.ItemData(ItemOID="IT.AE.AETERM",
+                          TransactionType="Insert", Value="Fever")
         id.AuditRecord = ar
         id_dict = id.to_dict()
-        self.assertEqual(id_dict["AuditRecord"]["UserRef"]["UserOID"], "USER.001")
+        self.assertEqual(id_dict["AuditRecord"]
+                         ["UserRef"]["UserOID"], "USER.001")
 
     def test_annotation(self):
-        annotation = ODM.Annotation(SeqNum="1", TransactionType="Insert", ID="ANN001")
-        annotation.Comment = ODM.Comment(SponsorOrSite="Site", _content="Transferred from EHR")
+        annotation = ODM.Annotation(
+            SeqNum="1", TransactionType="Insert", ID="ANN001")
+        annotation.Comment = ODM.Comment(
+            SponsorOrSite="Site", _content="Transferred from EHR")
         annotation.Flag.append(ODM.Flag())
-        annotation.Flag[0].FlagValue = ODM.FlagValue(CodeListOID="CL.FLAGVALUE", _content="eSource")
-        annotation.Flag[0].FlagType = ODM.FlagType(CodeListOID="CL.FLAGTYPE", _content="eDT")
+        annotation.Flag[0].FlagValue = ODM.FlagValue(
+            CodeListOID="CL.FLAGVALUE", _content="eSource")
+        annotation.Flag[0].FlagType = ODM.FlagType(
+            CodeListOID="CL.FLAGTYPE", _content="eDT")
         annotation_dict = annotation.to_dict()
         print(annotation_dict)
-        self.assertEqual(annotation_dict["Flag"][0]["FlagValue"]["CodeListOID"], "CL.FLAGVALUE")
-        self.assertEqual(annotation.Flag[0].FlagValue.CodeListOID, "CL.FLAGVALUE")
+        self.assertEqual(
+            annotation_dict["Flag"][0]["FlagValue"]["CodeListOID"], "CL.FLAGVALUE")
+        self.assertEqual(
+            annotation.Flag[0].FlagValue.CodeListOID, "CL.FLAGVALUE")
 
     def test_signature(self):
         sig = ODM.Signature(ID="SIG.001.USER.001")
@@ -136,7 +171,8 @@ class TestClinicalData(TestCase):
         self.assertEqual(sig.SignatureRef.SignatureOID, "SIG.001")
 
     def test_audit_records(self):
-        ar = ODM.AuditRecord(EditPoint="Monitoring", UsedImputationMethod="Yes", ID="1")
+        ar = ODM.AuditRecord(EditPoint="Monitoring",
+                             UsedImputationMethod="Yes", ID="1")
         ar.UserRef = ODM.UserRef(UserOID="USER.001")
         ar.LocationRef = ODM.LocationRef(LocationOID="SITE.101")
         ar.DateTimeStamp = ODM.DateTimeStamp(_content="2020-12-01T10:28:16")
@@ -145,7 +181,8 @@ class TestClinicalData(TestCase):
         ars = ODM.AuditRecords()
         ars.AuditRecord.append(ar)
         self.assertEqual(ars.AuditRecord[0].ID, "1")
-        self.assertEqual(ars.AuditRecord[0].LocationRef.LocationOID, "SITE.101")
+        self.assertEqual(
+            ars.AuditRecord[0].LocationRef.LocationOID, "SITE.101")
 
     def test_signatures(self):
         sig = ODM.Signature(ID="SIG.001.USER.001")
@@ -156,21 +193,28 @@ class TestClinicalData(TestCase):
         sigs = ODM.Signatures()
         sigs.Signature.append(sig)
         self.assertEqual(sigs.Signature[0].ID, "SIG.001.USER.001")
-        self.assertEqual(sigs.Signature[0].SignatureRef.SignatureOID, "SIG.001")
+        self.assertEqual(
+            sigs.Signature[0].SignatureRef.SignatureOID, "SIG.001")
 
     def test_annotations(self):
-        annotation = ODM.Annotation(SeqNum="1", TransactionType="Insert", ID="ANN001")
-        annotation.Comment = ODM.Comment(SponsorOrSite="Site", _content="Transferred from EHR")
+        annotation = ODM.Annotation(
+            SeqNum="1", TransactionType="Insert", ID="ANN001")
+        annotation.Comment = ODM.Comment(
+            SponsorOrSite="Site", _content="Transferred from EHR")
         annotation.Flag.append(ODM.Flag())
-        annotation.Flag[0].FlagValue = ODM.FlagValue(CodeListOID="CL.FLAGVALUE", _content="eSource")
-        annotation.Flag[0].FlagType = ODM.FlagType(CodeListOID="CL.FLAGTYPE", _content="eDT")
+        annotation.Flag[0].FlagValue = ODM.FlagValue(
+            CodeListOID="CL.FLAGVALUE", _content="eSource")
+        annotation.Flag[0].FlagType = ODM.FlagType(
+            CodeListOID="CL.FLAGTYPE", _content="eDT")
         anns = ODM.Annotations()
         anns.Annotation.append(annotation)
         self.assertEqual(anns.Annotation[0].ID, "ANN001")
-        self.assertEqual(anns.Annotation[0].Flag[0].FlagValue.CodeListOID, "CL.FLAGVALUE")
+        self.assertEqual(
+            anns.Annotation[0].Flag[0].FlagValue.CodeListOID, "CL.FLAGVALUE")
 
     def test_oid_ref_def_check_missing_mdv(self):
-        loader = LD.ODMLoader(OL.XMLODMLoader(model_package="odm_1_3_2", ns_uri="http://www.cdisc.org/ns/odm/v1.3"))
+        loader = LD.ODMLoader(OL.XMLODMLoader(
+            model_package="odm_1_3_2", ns_uri="http://www.cdisc.org/ns/odm/v1.3"))
         loader.open_odm_document(self.odm_test_file)
         odm = loader.load_odm()
         oid_checker = OID.OIDRef()
@@ -179,7 +223,8 @@ class TestClinicalData(TestCase):
             odm.verify_oids(oid_checker)
 
     def test_oid_ref_def_check_with_mdv(self):
-        loader = LD.ODMLoader(OL.XMLODMLoader(model_package="odm_1_3_2", ns_uri="http://www.cdisc.org/ns/odm/v1.3"))
+        loader = LD.ODMLoader(OL.XMLODMLoader(
+            model_package="odm_1_3_2", ns_uri="http://www.cdisc.org/ns/odm/v1.3"))
         loader.open_odm_document(self.odm_test_file2)
         odm = loader.load_odm()
         oid_checker = OID.OIDRef()
@@ -187,7 +232,8 @@ class TestClinicalData(TestCase):
         self.assertTrue(oid_checker.check_oid_refs())
 
     def test_metadata_conformance_check(self):
-        loader = LD.ODMLoader(OL.XMLODMLoader(model_package="odm_1_3_2", ns_uri="http://www.cdisc.org/ns/odm/v1.3"))
+        loader = LD.ODMLoader(OL.XMLODMLoader(
+            model_package="odm_1_3_2", ns_uri="http://www.cdisc.org/ns/odm/v1.3"))
         loader.open_odm_document(self.odm_test_file2)
         odm = loader.load_odm()
         validator = METADATA.MetadataSchema()

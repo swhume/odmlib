@@ -2,8 +2,10 @@
 class ValueSet:
     _value_set = {
         "MetaDataVersion.DefineVersion": ["2.0.0", "2.0", "2.1.0", "2.1"],
-        "ItemGroupDef.Class": ["SPECIAL PURPOSE", "FINDINGS", "EVENTS", "INTERVENTIONS", "TRIAL DESIGN", "RELATIONSHIP",
-                               "SUBJECT LEVEL ANALYSIS DATASET", "BASIC DATA STRUCTURE", "ADAM OTHER"],
+        "ItemGroupDef.Class": ["SPECIAL PURPOSE", "FINDINGS", "EVENTS",
+                               "INTERVENTIONS", "TRIAL DESIGN", "RELATIONSHIP",
+                               "SUBJECT LEVEL ANALYSIS DATASET",
+                               "BASIC DATA STRUCTURE", "ADAM OTHER"],
         "PDFPageRef.Type": ["NamedDestination", "PhysicalRef"],
         "Origin.Type": ["CRF", "Derived", "Assigned", "Protocol", "eDT", "Predecessor"],
         "RangeCheck.Comparator": ["LT", "LE", "GT", "GE", "EQ", "NE", "IN", "NOTIN"],
@@ -75,4 +77,5 @@ class ValueSet:
         if attribute in cls._value_set:
             return cls._value_set[attribute]
         else:
-            raise ValueError(f"Unknown value {attribute} in ValueSet. Unable to check value.")
+            raise ValueError(
+                f"Unknown value {attribute} in ValueSet. Unable to check value.")

@@ -11,7 +11,9 @@ from tests import get_data_file_path
 
 ODM_XML_FILE = get_data_file_path("simple_create.xml", check_exists=False)
 ODM_JSON_FILE = get_data_file_path("simple_create.json", check_exists=False)
-ODM_SIMPLE_STR_FILE = get_data_file_path("simple_create_from_string.xml", check_exists=False)
+ODM_SIMPLE_STR_FILE = get_data_file_path(
+    "simple_create_from_string.xml", check_exists=False)
+
 
 class MyTestCase(unittest.TestCase):
     def setUp(self) -> None:
@@ -166,8 +168,8 @@ class MyTestCase(unittest.TestCase):
         Clean up the test files.
         """
         for temp_file in [ODM_XML_FILE,
-                          ODM_JSON_FILE, 
-                         ODM_SIMPLE_STR_FILE]:
+                          ODM_JSON_FILE,
+                          ODM_SIMPLE_STR_FILE]:
             if os.path.exists(temp_file):
                 os.remove(temp_file)
 
@@ -192,12 +194,12 @@ class MyTestCase(unittest.TestCase):
         # tests the __len__ in ItemGroupDef
         self.assertEqual(len(igd_list), 1)
 
-
     def test_xml_to_string(self):
 
         loader = LD.ODMLoader(OL.XMLODMLoader(
             model_package="odm_1_3_2", ns_uri="http://www.cdisc.org/ns/odm/v1.3"))
-        loader.open_odm_document(get_data_file_path("simple_create_from_string.xml"))
+        loader.open_odm_document(get_data_file_path(
+            "simple_create_from_string.xml"))
         mdv = loader.MetaDataVersion()
         item_list = mdv.ItemDef
         item = item_list[0]

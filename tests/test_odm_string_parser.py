@@ -2,12 +2,14 @@ import unittest
 import os
 import odmlib.odm_parser as P
 from xml.etree.ElementTree import Element
+
+from tests import get_data_file_path
 ODM_NS = "{http://www.cdisc.org/ns/odm/v1.3}"
 
 
 class TestOdmParserMetaData(unittest.TestCase):
     def setUp(self) -> None:
-        self.odm_file_1 = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'data', 'cdash-odm-test.xml')
+        self.odm_file_1 = get_data_file_path("cdash-odm-test.xml")
         with open(self.odm_file_1, "r", encoding="utf-8") as f:
             self.odm_string = f.read()
         self.parser = P.ODMStringParser(self.odm_string)

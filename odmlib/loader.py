@@ -2,7 +2,8 @@ import odmlib.document_loader as DL
 
 
 class ODMLoader:
-    """ loads an ODM-XML document into the object model """
+    """loads an ODM-XML document into the object model"""
+
     def __init__(self, odm_loader):
         if not isinstance(odm_loader, DL.DocumentLoader):
             raise TypeError("odm_loader argument must implement DocumentLoader")
@@ -38,6 +39,10 @@ class ODMLoader:
             if callable(load_func):
                 return load_func
             else:
-                raise AttributeError(f"{attr} is not callable in the loader {self.loader.__class__.__name__}")
+                raise AttributeError(
+                    f"{attr} is not callable in the loader {self.loader.__class__.__name__}"
+                )
         else:
-            raise AttributeError(f"The {attr} method does not exist in the loader {self.loader.__class__.__name__}")
+            raise AttributeError(
+                f"The {attr} method does not exist in the loader {self.loader.__class__.__name__}"
+            )

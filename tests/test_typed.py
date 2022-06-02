@@ -68,7 +68,7 @@ class TestTyped(unittest.TestCase):
     def test_positive_type(self):
         # testing Length as a positive integer
         attrs = {"OID": "ODM.IT.AE.AEYN", "Name": "Any AEs?", "DataType": "text", "Length": 1, "SASFieldName": "AEYN",
-                "SDSVarName": "AEYN", "Origin": "CRF", "Comment": "Data management field"}
+                 "SDSVarName": "AEYN", "Origin": "CRF", "Comment": "Data management field"}
         item = ODM.ItemDef(**attrs)
         self.assertEqual(item.Length, 1)
         # testing Length = 0 as a positive integer
@@ -87,7 +87,7 @@ class TestTyped(unittest.TestCase):
     def test_non_negative_type(self):
         # testing SignificantDigits as a non-negative integer
         attrs = {"OID": "ODM.IT.AE.AEYN", "Name": "Any AEs?", "DataType": "text", "Length": 1, "SASFieldName": "AEYN",
-                "SDSVarName": "AEYN", "Origin": "CRF", "Comment": "Data management field", "SignificantDigits": 1}
+                 "SDSVarName": "AEYN", "Origin": "CRF", "Comment": "Data management field", "SignificantDigits": 1}
         item = ODM.ItemDef(**attrs)
         self.assertEqual(item.SignificantDigits, 1)
         # testing SignificantDigits = 0 as a non-negative integer
@@ -106,20 +106,20 @@ class TestTyped(unittest.TestCase):
     def test_add_undefined_content(self):
         # use conformance rules to check for unknown objects being added after creation
         attrs = {"OID": "ODM.IT.AE.AEYN", "Name": "Any AEs?", "DataType": "text", "Length": 1, "SASFieldName": "AEYN",
-                "SDSVarName": "AEYN", "Origin": "CRF", "Comment": "Data management field", "SignificantDigits": 1}
+                 "SDSVarName": "AEYN", "Origin": "CRF", "Comment": "Data management field", "SignificantDigits": 1}
         item = ODM.ItemDef(**attrs)
         clr = ODM.CodeListRef(CodeListOID="CL.TEST")
         with self.assertRaises(TypeError):
             item.NewCodeList = clr
         # cannot add unknown attributes or elements during creation, but can afterwards; catch with conformance checks
         attrs = {"OID": "ODM.IT.AE.AEYN", "Name": "Any AEs?", "DataType": "text", "Length": 1, "SASFieldName": "AEYN",
-                "SDSVarName": "AEYN", "Origin": "CRF", "Comment": "Data management field", "SignificantDigits": 1}
+                 "SDSVarName": "AEYN", "Origin": "CRF", "Comment": "Data management field", "SignificantDigits": 1}
         item = ODM.ItemDef(**attrs)
         with self.assertRaises(TypeError):
             item.InSignificantDigits = 1
         # can add all objects during creation and they are validated
         attrs = {"OID": "ODM.IT.AE.AEYN", "Name": "Any AEs?", "DataType": "text", "Length": 1, "SASFieldName": "AEYN",
-                "SDSVarName": "AEYN", "Origin": "CRF", "Comment": "Data management field", "CodeListRef": clr}
+                 "SDSVarName": "AEYN", "Origin": "CRF", "Comment": "Data management field", "CodeListRef": clr}
         item = ODM.ItemDef(**attrs)
         self.assertEqual(item.CodeListRef, clr)
         attrs["CodeListReference"] = clr
@@ -129,18 +129,18 @@ class TestTyped(unittest.TestCase):
         self.assertEqual(item.CodeListRef, clr)
         # test adding the wrong type of object to a list
         attrs = {"OID": "ODM.IT.AE.AEYN", "Name": "Any AEs?", "DataType": "text", "Length": 1, "SASFieldName": "AEYN",
-                "SDSVarName": "AEYN", "Origin": "CRF", "Comment": "Data management field", "Alias": [clr]}
+                 "SDSVarName": "AEYN", "Origin": "CRF", "Comment": "Data management field", "Alias": [clr]}
         with self.assertRaises(TypeError):
             item = ODM.ItemDef(**attrs)
         # test adding the wrong type of object to a list
         alias = ODM.Alias(Context="CDASH", Name="AEYN")
         attrs = {"OID": "ODM.IT.AE.AEYN", "Name": "Any AEs?", "DataType": "text", "Length": 1, "SASFieldName": "AEYN",
-                "SDSVarName": "AEYN", "Origin": "CRF", "Comment": "Data management field", "Alias": alias}
+                 "SDSVarName": "AEYN", "Origin": "CRF", "Comment": "Data management field", "Alias": alias}
         with self.assertRaises(TypeError):
             item = ODM.ItemDef(**attrs)
         # assign wrong type of object to an element
         attrs = {"OID": "ODM.IT.AE.AEYN", "Name": "Any AEs?", "DataType": "text", "Length": 1, "SASFieldName": "AEYN",
-                "SDSVarName": "AEYN", "Origin": "CRF", "Comment": "Data management field", "CodeListRef": alias}
+                 "SDSVarName": "AEYN", "Origin": "CRF", "Comment": "Data management field", "CodeListRef": alias}
         with self.assertRaises(TypeError):
             item = ODM.ItemDef(**attrs)
 
@@ -180,7 +180,7 @@ class TestTyped(unittest.TestCase):
     def test_sasname_type(self):
         # valid test
         attrs = {"OID": "ODM.IT.AE.AEYN", "Name": "Any AEs?", "DataType": "text", "Length": 1, "SASFieldName": "AEYN",
-                "SDSVarName": "AEYN", "Origin": "CRF", "Comment": "Data management field", "SignificantDigits": 1}
+                 "SDSVarName": "AEYN", "Origin": "CRF", "Comment": "Data management field", "SignificantDigits": 1}
         item = ODM.ItemDef(**attrs)
         self.assertEqual(item.SASFieldName, "AEYN")
         # start with an underscore
@@ -230,7 +230,7 @@ class TestTyped(unittest.TestCase):
 
     def test_string_type(self):
         attrs = {"OID": "ODM.IT.AE.AEYN", "Name": "Any AEs?", "DataType": "text", "Length": 1, "SASFieldName": "AEYN",
-                "SDSVarName": "AEYN", "Origin": "CRF", "Comment": "Data management field", "SignificantDigits": 1}
+                 "SDSVarName": "AEYN", "Origin": "CRF", "Comment": "Data management field", "SignificantDigits": 1}
         item = ODM.ItemDef(**attrs)
         self.assertEqual(item.Origin, "CRF")
         # integer
@@ -256,64 +256,82 @@ class TestTyped(unittest.TestCase):
             regex = TextTest(Name="AETERM", Label="help", Range="6-7")
 
     def test_url_type(self):
-        url = TextTest(Name="AETERM", Label="help", Range="4-9", Link="https://cdisc.org")
+        url = TextTest(Name="AETERM", Label="help",
+                       Range="4-9", Link="https://cdisc.org")
         self.assertEqual(url.Link, "https://cdisc.org")
         # not a match
         with self.assertRaises(ValueError):
-            url = TextTest(Name="AETERM", Label="help", Range="4-9", Link="cdisc.org")
+            url = TextTest(Name="AETERM", Label="help",
+                           Range="4-9", Link="cdisc.org")
 
     def test_filename_type(self):
-        archive = ODM.ArchiveLayout(OID="AL.AECRF", PdfFileName="ae_annotated_crf.pdf")
+        archive = ODM.ArchiveLayout(
+            OID="AL.AECRF", PdfFileName="ae_annotated_crf.pdf")
         self.assertEqual(archive.PdfFileName, "ae_annotated_crf.pdf")
         # with path
         with self.assertRaises(ValueError):
-            archive = ODM.ArchiveLayout(OID="AL.AECRF", PdfFileName="c:\\users\\shume\\ae_annotated_crf.pdf")
+            archive = ODM.ArchiveLayout(
+                OID="AL.AECRF", PdfFileName="c:\\users\\shume\\ae_annotated_crf.pdf")
         # with space
-        archive = ODM.ArchiveLayout(OID="AL.AECRF", PdfFileName="ae_annotated crf.pdf")
+        archive = ODM.ArchiveLayout(
+            OID="AL.AECRF", PdfFileName="ae_annotated crf.pdf")
         self.assertEqual(archive.PdfFileName, "ae_annotated crf.pdf")
         # with invalid character
         with self.assertRaises(ValueError):
-            archive = ODM.ArchiveLayout(OID="AL.AECRF", PdfFileName="ae_annotated>crf.pdf")
+            archive = ODM.ArchiveLayout(
+                OID="AL.AECRF", PdfFileName="ae_annotated>crf.pdf")
 
     def test_incomplete_datetime_type(self):
         # valid incomplete datetime 2004-12-01T01:01:01Z and 2004---15T-:05:-
-        idatetime = TextTest(Name="AETERM", Label="help", Range="4-9", TestDateTime="2004-12-01T01:01:01Z")
+        idatetime = TextTest(Name="AETERM", Label="help",
+                             Range="4-9", TestDateTime="2004-12-01T01:01:01Z")
         self.assertEqual(idatetime.TestDateTime, "2004-12-01T01:01:01Z")
-        idatetime = TextTest(Name="AETERM", Label="help", Range="4-9", TestDateTime="2004---15T-:05:-")
+        idatetime = TextTest(Name="AETERM", Label="help",
+                             Range="4-9", TestDateTime="2004---15T-:05:-")
         self.assertEqual(idatetime.TestDateTime, "2004---15T-:05:-")
         # invalid incomplete datetime
         with self.assertRaises(ValueError):
-            idatetime = TextTest(Name="AETERM", Label="help", Range="4-7", TestDateTime="2004---15T-:05")
+            idatetime = TextTest(Name="AETERM", Label="help",
+                                 Range="4-7", TestDateTime="2004---15T-:05")
 
     def test_incomplete_date_type(self):
         # valid incomplete date 2004-12-20 and 2004---15 and ------
-        idate = TextTest(Name="AETERM", Label="help", Range="4-9", TestDate="2004-12-20")
+        idate = TextTest(Name="AETERM", Label="help",
+                         Range="4-9", TestDate="2004-12-20")
         self.assertEqual(idate.TestDate, "2004-12-20")
-        idate = TextTest(Name="AETERM", Label="help", Range="4-9", TestDate="2004---15")
+        idate = TextTest(Name="AETERM", Label="help",
+                         Range="4-9", TestDate="2004---15")
         self.assertEqual(idate.TestDate, "2004---15")
-        idate = TextTest(Name="AETERM", Label="help", Range="4-7", TestDate="-----")
+        idate = TextTest(Name="AETERM", Label="help",
+                         Range="4-7", TestDate="-----")
         self.assertEqual(idate.TestDate, "-----")
         # invalid incomplete date
         with self.assertRaises(ValueError):
-            idate = TextTest(Name="AETERM", Label="help", Range="4-7", TestDate="----32")
+            idate = TextTest(Name="AETERM", Label="help",
+                             Range="4-7", TestDate="----32")
 
     def test_incomplete_time_type(self):
         # valid incomplete time 2004-12-01T01:01:01Z and 2004---15T-:05:-
-        itime = TextTest(Name="AETERM", Label="help", Range="4-9", TestTime="01:01:01Z")
+        itime = TextTest(Name="AETERM", Label="help",
+                         Range="4-9", TestTime="01:01:01Z")
         self.assertEqual(itime.TestTime, "01:01:01Z")
-        itime = TextTest(Name="AETERM", Label="help", Range="4-9", TestTime="-:05:-")
+        itime = TextTest(Name="AETERM", Label="help",
+                         Range="4-9", TestTime="-:05:-")
         self.assertEqual(itime.TestTime, "-:05:-")
         # invalid incomplete datetime
         with self.assertRaises(ValueError):
-            itime = TextTest(Name="AETERM", Label="help", Range="4-7", TestTime="-:05")
+            itime = TextTest(Name="AETERM", Label="help",
+                             Range="4-7", TestTime="-:05")
 
     def test_partial_datetime_type(self):
         # valid partial datetime
-        pdatetime = PartialDateTest(Name="AETERM", TestDateTime="2004-12-01T01:01:01Z")
+        pdatetime = PartialDateTest(
+            Name="AETERM", TestDateTime="2004-12-01T01:01:01Z")
         self.assertEqual(pdatetime.TestDateTime, "2004-12-01T01:01:01Z")
         pdatetime = PartialDateTest(Name="AETERM", TestDateTime="2004-12")
         self.assertEqual(pdatetime.TestDateTime, "2004-12")
-        pdatetime = PartialDateTest(Name="AETERM", TestDateTime="2004-12-05T12")
+        pdatetime = PartialDateTest(
+            Name="AETERM", TestDateTime="2004-12-05T12")
         self.assertEqual(pdatetime.TestDateTime, "2004-12-05T12")
         # invalid partial datetime
         with self.assertRaises(ValueError):

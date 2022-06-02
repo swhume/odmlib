@@ -9,7 +9,8 @@ class TestCodeList(TestCase):
         self.cl = DEFINE.CodeList(**attrs)
 
     def test_add_code_list_item(self):
-        cli1 = DEFINE.CodeListItem(CodedValue="HGB", ExtendedValue="Yes", OrderNumber="1")
+        cli1 = DEFINE.CodeListItem(
+            CodedValue="HGB", ExtendedValue="Yes", OrderNumber="1")
         cli1.Alias.append(DEFINE.Alias(Context="nci:ExtCodeID", Name="C64848"))
         self.cl.CodeListItem.append(cli1)
         cli2 = DEFINE.CodeListItem(CodedValue="VITB12", OrderNumber="2")
@@ -23,7 +24,8 @@ class TestCodeList(TestCase):
         self.assertDictEqual(cl_dict, self.expected_cli_dict())
 
     def test_add_enumerated_item(self):
-        eni1 = DEFINE.EnumeratedItem(CodedValue="HGB", ExtendedValue="Yes", OrderNumber=1)
+        eni1 = DEFINE.EnumeratedItem(
+            CodedValue="HGB", ExtendedValue="Yes", OrderNumber=1)
         eni1.Alias = [DEFINE.Alias(Context="nci:ExtCodeID", Name="C64848")]
         self.cl.EnumeratedItem.append(eni1)
         eni2 = DEFINE.EnumeratedItem(CodedValue="VITB12", OrderNumber=2)
@@ -37,18 +39,22 @@ class TestCodeList(TestCase):
         self.assertDictEqual(ei_dict, self.expected_eni_dict())
 
     def test_external_code_list(self):
-        self.cl.ExternalCodeList = DEFINE.ExternalCodeList(Dictionary="MedDRA", Version="23.0", href="https://www.meddra.org/")
+        self.cl.ExternalCodeList = DEFINE.ExternalCodeList(
+            Dictionary="MedDRA", Version="23.0", href="https://www.meddra.org/")
         ex_dict = self.cl.to_dict()
         self.assertDictEqual(ex_dict, self.expected_ex_dict())
 
     def test_add_description(self):
-        tt1 = DEFINE.TranslatedText(_content="this is the first test description", lang="en")
-        tt2 = DEFINE.TranslatedText(_content="this is the second test description", lang="en")
+        tt1 = DEFINE.TranslatedText(
+            _content="this is the first test description", lang="en")
+        tt2 = DEFINE.TranslatedText(
+            _content="this is the second test description", lang="en")
         desc = DEFINE.Description()
         desc.TranslatedText = [tt1, tt2]
         self.cl.Description = desc
         self.assertEqual(len(self.cl.Description.TranslatedText), 2)
-        self.assertEqual(self.cl.Description.TranslatedText[1]._content, 'this is the second test description')
+        self.assertEqual(
+            self.cl.Description.TranslatedText[1]._content, 'this is the second test description')
 
     def test_add_alias(self):
         alias = DEFINE.Alias(Context="nci:ExtCodeID", Name="C64848")
@@ -109,7 +115,8 @@ class TestCodeList(TestCase):
     def test_to_xml_external_code_list(self):
         attrs = self._set_attributes()
         cl = DEFINE.CodeList(**attrs)
-        excl = DEFINE.ExternalCodeList(Dictionary="MedDRA", Version="23.0", href="https://www.meddra.org/")
+        excl = DEFINE.ExternalCodeList(
+            Dictionary="MedDRA", Version="23.0", href="https://www.meddra.org/")
         cl.ExternalCodeList = excl
         cl_xml = cl.to_xml()
         self.assertEqual(cl_xml.attrib["OID"], "ODM.CL.LBTESTCD")
@@ -152,4 +159,3 @@ class TestCodeList(TestCase):
                                               {'Context': 'nci:ExtCodeID', 'Name': 'C65047'}]
                                     }]
                 }
-

@@ -2,8 +2,10 @@ import odmlib.odm_element as OE
 import odmlib.typed as T
 import odmlib.ns_registry as NS
 
-NS.NamespaceRegistry(prefix="odm", uri="http://www.cdisc.org/ns/odm/v2.0", is_default=True)
-NS.NamespaceRegistry(prefix="xs", uri="http://www.w3.org/2001/XMLSchema-instance")
+NS.NamespaceRegistry(
+    prefix="odm", uri="http://www.cdisc.org/ns/odm/v2.0", is_default=True)
+NS.NamespaceRegistry(
+    prefix="xs", uri="http://www.w3.org/2001/XMLSchema-instance")
 NS.NamespaceRegistry(prefix="xml", uri="http://www.w3.org/XML/1998/namespace")
 NS.NamespaceRegistry(prefix="xlink", uri="http://www.w3.org/1999/xlink")
 
@@ -15,7 +17,8 @@ class TranslatedText(OE.ODMElement):
 
 
 class Description(OE.ODMElement):
-    TranslatedText = T.ODMListObject(required=True, element_class=TranslatedText)
+    TranslatedText = T.ODMListObject(
+        required=True, element_class=TranslatedText)
 
 
 class Alias(OE.ODMElement):
@@ -90,12 +93,10 @@ class StudyEventDef(OE.ODMElement):
         return iter(self.FormRef)
 
 
-
 class ArchiveLayout(OE.ODMElement):
     OID = T.OID(required=True)
     PdfFileName = T.FileName(required=True)
     PresentationOID = T.OIDRef(required=False)
-
 
     def __len__(self):
         return len(self.ItemGroupRef)
@@ -180,7 +181,8 @@ class ItemGroupDef(OE.ODMElement):
 
 
 class Question(OE.ODMElement):
-    TranslatedText = T.ODMListObject(required=True, element_class=TranslatedText)
+    TranslatedText = T.ODMListObject(
+        required=True, element_class=TranslatedText)
 
 
 class ExternalQuestion(OE.ODMElement):
@@ -203,7 +205,8 @@ class FormalExpression(OE.ODMElement):
 
 
 class ErrorMessage(OE.ODMElement):
-    TranslatedText = T.ODMListObject(required=True, element_class=TranslatedText)
+    TranslatedText = T.ODMListObject(
+        required=True, element_class=TranslatedText)
 
 
 class RangeCheck(OE.ODMElement):
@@ -220,7 +223,10 @@ class CodeListRef(OE.ODMElement):
 
 
 class ItemDef(OE.ODMElement):
-    """ represents ODM v2.0 ItemDef and can serialize as JSON or XML - ordering of properties matters """
+    """ 
+    represents ODM v2.0 ItemDef and can serialize as JSON or XML 
+    - ordering of properties matters
+    """
     OID = T.OID(required=True)
     Name = T.Name(required=True)
     DataType = T.ValueSetString(required=True)
@@ -239,7 +245,8 @@ class ItemDef(OE.ODMElement):
 
 
 class Decode(OE.ODMElement):
-    TranslatedText = T.ODMListObject(required=True, element_class=TranslatedText)
+    TranslatedText = T.ODMListObject(
+        required=True, element_class=TranslatedText)
 
 
 class CodeListItem(OE.ODMElement):
@@ -335,8 +342,6 @@ class ExceptionEvent(OE.ODMElement):
     StudyEventRef = T.ODMListObject(element_class=StudyEventRef)
 
 
-
-
 class Arm(OE.ODMElement):
     OID = T.OID(required=True)
     Name = T.Name(required=True)
@@ -384,7 +389,8 @@ class Branching(OE.ODMElement):
     OID = T.OID(required=True)
     Name = T.Name(required=True)
     Type = T.ValueSetString(required=True)
-    TargetTransition = T.ODMListObject(element_class=TargetTransition, required=True)
+    TargetTransition = T.ODMListObject(
+        element_class=TargetTransition, required=True)
     DefaultTransition = T.ODMListObject(element_class=DefaultTransition)
 
 
@@ -451,10 +457,14 @@ class DurationTimingConstraint(OE.ODMElement):
 class StudyTiming(OE.ODMElement):
     OID = T.OID(required=True)
     Name = T.Name(required=True)
-    AbsoluteTimingConstraint = T.ODMListObject(element_class=AbsoluteTimingConstraint)
-    RelativeTimingConstraint = T.ODMListObject(element_class=RelativeTimingConstraint)
-    TransitionTimingConstraint = T.ODMObject(element_class=TransitionTimingConstraint)
-    DurationTimingConstraint = T.ODMListObject(element_class=DurationTimingConstraint)
+    AbsoluteTimingConstraint = T.ODMListObject(
+        element_class=AbsoluteTimingConstraint)
+    RelativeTimingConstraint = T.ODMListObject(
+        element_class=RelativeTimingConstraint)
+    TransitionTimingConstraint = T.ODMObject(
+        element_class=TransitionTimingConstraint)
+    DurationTimingConstraint = T.ODMListObject(
+        element_class=DurationTimingConstraint)
 
 
 class StudyEventGroupDef(OE.ODMElement):
@@ -597,7 +607,8 @@ class Location(OE.ODMElement):
     OID = T.OID(required=True)
     Name = T.Name(required=True)
     LocationType = T.ValueSetString()
-    MetaDataVersionRef = T.ODMListObject(required=True, element_class=MetaDataVersionRef)
+    MetaDataVersionRef = T.ODMListObject(
+        required=True, element_class=MetaDataVersionRef)
 
 
 class Meaning(OE.ODMElement):
@@ -628,7 +639,8 @@ class Study(OE.ODMElement):
     StudyName = T.String(required=True)
     ProtocolName = T.String(required=True)
     Description = T.ODMObject(required=True, element_class=Description)
-    MetaDataVersion = T.ODMListObject(required=False, element_class=MetaDataVersion)
+    MetaDataVersion = T.ODMListObject(
+        required=False, element_class=MetaDataVersion)
 
 
 class ODM(OE.ODMElement):
@@ -648,8 +660,7 @@ class ODM(OE.ODMElement):
     ID = T.ID()
     Study = T.ODMListObject(element_class=Study)
     AdminData = T.ODMListObject(element_class=AdminData)
-    #ReferenceData = T.ODMListObject(element_class=referencedata.ReferenceData)
-    #ClinicalData = T.ODMListObject(element_class=clinicaldata.ClinicalData)
-    #Association = T.ODMListObject(element_class=association.Association)
-    #ds_Signature = T.ODMListObject(element_class=dssignature.ds_Signature)
-
+    # ReferenceData = T.ODMListObject(element_class=referencedata.ReferenceData)
+    # ClinicalData = T.ODMListObject(element_class=clinicaldata.ClinicalData)
+    # Association = T.ODMListObject(element_class=association.Association)
+    # ds_Signature = T.ODMListObject(element_class=dssignature.ds_Signature)

@@ -1,13 +1,13 @@
 from xml.etree import ElementTree
 import xml.etree.ElementTree as ET
 from xml.etree.ElementTree import Element
-from typing import List, Optional
+from typing import List
 import xmlschema as XSD
 import odmlib.ns_registry as NS
 from abc import ABC, abstractmethod
 import json
 
-ODM_NS = {'odm': 'http://www.cdisc.org/ns/odm/v1.3'}
+ODM_NS = {"odm": "http://www.cdisc.org/ns/odm/v1.3"}
 ODM_PREFIX = "odm:"
 
 
@@ -15,12 +15,14 @@ class SchemaValidator(ABC):
     @abstractmethod
     def validate_tree(self, tree):
         raise NotImplementedError(
-            "Attempted to execute an abstract method validate_tree in the Validator class")
+            "Attempted to execute an abstract method validate_tree in the Validator class"
+        )
 
     @abstractmethod
     def validate_file(self, xml_file):
         raise NotImplementedError(
-            "Attempted to execute an abstract method validate_file in the Validator class")
+            "Attempted to execute an abstract method validate_file in the Validator class"
+        )
 
 
 class OdmlibSchemaValidationError(Exception):
@@ -48,19 +50,25 @@ class BaseParser:
         if ns_registry:
             self.nsr = ns_registry
         else:
-            self.nsr = NS.NamespaceRegistry(prefix="odm", uri="http://www.cdisc.org/ns/odm/v1.3", is_default=True)
+            self.nsr = NS.NamespaceRegistry(
+                prefix="odm", uri="http://www.cdisc.org/ns/odm/v1.3", is_default=True
+            )
 
     def register_namespaces(self):
         for prefix, url in self.nsr.namespaces.items():
             ET.register_namespace(prefix, url)
 
     def __getattr__(self, item):
-        """ enables the parser to dynamically parse any element given it's parent """
+        """enables the parser to dynamically parse any element given it's parent"""
+
         def parse_method(*args, parent, ns_prefix="odm", **kwargs):
             elem_list = []
-            for elem in parent.findall(ns_prefix + ":" + item, self.nsr.get_ns_entry_dict(ns_prefix)):
+            for elem in parent.findall(
+                ns_prefix + ":" + item, self.nsr.get_ns_entry_dict(ns_prefix)
+            ):
                 elem_list.append({**elem.attrib, "elem": elem})
             return elem_list
+
         return parse_method
 
 
@@ -124,7 +132,7 @@ class ODMStringParser(BaseParser, ElementParser):
 
     def parse_tree(self) -> ElementTree:
         self.register_namespaces()
-        #return ET.ElementTree(ET.fromstring(self.odm_string))
+        # return ET.ElementTree(ET.fromstring(self.odm_string))
         return ET.fromstring(self.odm_string)
 
 

@@ -81,7 +81,7 @@ class ODMElement(metaclass=ODMMeta):
             if name not in self.__class__.__dict__.keys():
                 # strip out non-default elementtree namespaces from the XML to work with just the name e.g. xml:lang
                 if "}" in name:
-                    name = name[name.find("}") + 1 :]
+                    name = name[name.find("}") + 1:]
                 else:
                     raise TypeError(
                         f"Unknown keyword argument {name} in {self.__class__.__name__}"
@@ -158,7 +158,7 @@ class ODMElement(metaclass=ODMMeta):
         # add text to element if it exists
         if "_content" in self.__dict__:
             odm_elem.text = self.__dict__["_content"]
-        for name, obj in self.__dict__.items():
+        for _name, obj in self.__dict__.items():
             # process each element in a list of ELEMENTS
             if isinstance(obj, list) and obj:
                 for o in obj:
@@ -338,10 +338,10 @@ class ODMElement(metaclass=ODMMeta):
         elem_list = [elem for elem in self._elems if elem in obj_list]
         if obj_list != elem_list:
             raise ValueError(
-                f"The order of elements in {self.__class__.__name__} "\
-                    f"should be {', '.join([key for key in self._elems.keys()])}"
+                f"The order of elements in {self.__class__.__name__} "
+                f"should be {', '.join([key for key in self._elems.keys()])}"
             )
-        for attr, obj in odm_content.items():
+        for _attr, obj in odm_content.items():
             if isinstance(obj, ODMElement):
                 obj.verify_order()
             elif isinstance(obj, list):
@@ -351,7 +351,7 @@ class ODMElement(metaclass=ODMMeta):
 
     def reorder_object(self):
         ordered_obj = OrderedDict()
-        for model_elem_name, model_elem_obj in self._elems.items():
+        for model_elem_name, _model_elem_obj in self._elems.items():
             if model_elem_name in self.__dict__:
                 obj = self.__dict__.pop(model_elem_name)
                 ordered_obj[model_elem_name] = obj

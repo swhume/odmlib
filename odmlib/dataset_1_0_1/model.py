@@ -1,4 +1,3 @@
-import odmlib.odm_1_3_2.model as ODM
 import odmlib.odm_element as OE
 import odmlib.typed as T
 import odmlib.ns_registry as NS

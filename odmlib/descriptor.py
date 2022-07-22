@@ -1,18 +1,28 @@
-
-
 class Descriptor:
-    def __init__(self, name=None, required=False, element_class=None, valid_values=[], namespace="odm"):
+    def __init__(
+        self,
+        name=None,
+        required=False,
+        element_class=None,
+        valid_values=None,
+        namespace="odm",
+    ):
         self.name = name
         self.required = required
         self.element_class = element_class
-        self.valid_values = valid_values
+        self.valid_values = valid_values if valid_values else []
+        self.namespace = namespace
         self.namespace = namespace
 
     def __get__(self, instance, cls):
         if instance is None:
             return self
-        elif (self.name not in instance.__dict__) and (self.name != self.__dict__["name"]):
-            raise ValueError(f"Missing attribute or element {self.name} in {cls.__name__}")
+        elif (self.name not in instance.__dict__) and (
+            self.name != self.__dict__["name"]
+        ):
+            raise ValueError(
+                f"Missing attribute or element {self.name} in {cls.__name__}"
+            )
         else:
             if self.name not in instance.__dict__:
                 if isinstance(self, list):

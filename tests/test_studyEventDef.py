@@ -9,12 +9,15 @@ class TestStudyEventDef(TestCase):
         self.sed = ODM.StudyEventDef(**attrs)
 
     def test_add_description(self):
-        tt1 = ODM.TranslatedText(_content="this is the first test description", lang="en")
-        tt2 = ODM.TranslatedText(_content="this is the second test description", lang="en")
+        tt1 = ODM.TranslatedText(
+            _content="this is the first test description", lang="en")
+        tt2 = ODM.TranslatedText(
+            _content="this is the second test description", lang="en")
         self.sed.Description = ODM.Description()
         self.sed.Description.TranslatedText = [tt1, tt2]
         self.assertEqual(len(self.sed.Description.TranslatedText), 2)
-        self.assertEqual(self.sed.Description.TranslatedText[1]._content, 'this is the second test description')
+        self.assertEqual(
+            self.sed.Description.TranslatedText[1]._content, 'this is the second test description')
 
     def test_add_bad_attribute(self):
         attrs = self.set_attributes()
@@ -40,7 +43,8 @@ class TestStudyEventDef(TestCase):
     def test_to_json(self):
         attrs = self.set_attributes()
         sed = ODM.StudyEventDef(**attrs)
-        tt1 = ODM.TranslatedText(_content="this is the first test description", lang="en")
+        tt1 = ODM.TranslatedText(
+            _content="this is the first test description", lang="en")
         desc = ODM.Description()
         desc.TranslatedText = [tt1]
         sed.Description = desc
@@ -59,7 +63,8 @@ class TestStudyEventDef(TestCase):
     def test_to_dict(self):
         attrs = self.set_attributes()
         sed = ODM.StudyEventDef(**attrs)
-        tt1 = ODM.TranslatedText(_content="this is the first test description", lang="en")
+        tt1 = ODM.TranslatedText(
+            _content="this is the first test description", lang="en")
         desc = ODM.Description()
         desc.TranslatedText = [tt1]
         sed.Description = desc
@@ -76,7 +81,8 @@ class TestStudyEventDef(TestCase):
     def test_to_xml(self):
         attrs = self.set_attributes()
         sed = ODM.StudyEventDef(**attrs)
-        tt1 = ODM.TranslatedText(_content="this is the first test description", lang="en")
+        tt1 = ODM.TranslatedText(
+            _content="this is the first test description", lang="en")
         desc = ODM.Description()
         desc.TranslatedText = [tt1]
         sed.Description = desc
@@ -90,13 +96,15 @@ class TestStudyEventDef(TestCase):
         self.assertEqual(sed_xml.attrib["OID"], "ODM.SE.BASELINE")
         fr = sed_xml.findall("FormRef")
         self.assertEqual(len(fr), 3)
-        self.assertEqual(fr[0].attrib, {"FormOID": "ODM.F.VS", "Mandatory": "Yes", "OrderNumber": "1"})
+        self.assertEqual(
+            fr[0].attrib, {"FormOID": "ODM.F.VS", "Mandatory": "Yes", "OrderNumber": "1"})
 
     def test_studyeventdef_slice(self):
         """ test the ability to reference a specific or slice of FormRefs """
         attrs = self.set_attributes()
         sed = ODM.StudyEventDef(**attrs)
-        tt1 = ODM.TranslatedText(_content="this is the first test description", lang="en")
+        tt1 = ODM.TranslatedText(
+            _content="this is the first test description", lang="en")
         desc = ODM.Description()
         desc.TranslatedText = [tt1]
         sed.Description = desc
@@ -123,7 +131,8 @@ class TestStudyEventDef(TestCase):
     def expected_dict():
         return {'OID': 'ODM.SE.BASELINE', 'Name': 'Baseline Visit', 'Repeating': 'No', 'Type': 'Scheduled',
                 'Category': 'Pre-treatment', 'FormRef': [{'FormOID': 'ODM.F.VS', 'Mandatory': 'Yes', 'OrderNumber': 1},
-                                                  {'FormOID': 'ODM.F.DM', 'Mandatory': 'Yes', 'OrderNumber': 2},
-                                                  {'FormOID': 'ODM.F.MH', 'Mandatory': 'Yes', 'OrderNumber': 3}],
+                                                         {'FormOID': 'ODM.F.DM',
+                                                             'Mandatory': 'Yes', 'OrderNumber': 2},
+                                                         {'FormOID': 'ODM.F.MH', 'Mandatory': 'Yes', 'OrderNumber': 3}],
                 'Description': {'TranslatedText': [{'lang': 'en', '_content': 'this is the first test description'}]},
                 'Alias': [{'Context': 'SDTMIG', 'Name': 'VS'}]}

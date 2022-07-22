@@ -2,12 +2,14 @@ import unittest
 import os
 import odmlib.odm_parser as P
 from xml.etree.ElementTree import Element
+
+from tests import get_data_file_path
 ODM_NS = "{http://www.cdisc.org/ns/odm/v1.3}"
 
 
 class TestOdmParserMetaData(unittest.TestCase):
     def setUp(self) -> None:
-        self.odm_file_1 = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'data', 'cdash-odm-test.xml')
+        self.odm_file_1 = get_data_file_path("cdash-odm-test.xml")
         with open(self.odm_file_1, "r", encoding="utf-8") as f:
             self.odm_string = f.read()
         self.parser = P.ODMStringParser(self.odm_string)
@@ -17,12 +19,12 @@ class TestOdmParserMetaData(unittest.TestCase):
     def test_MetaDataVersion(self):
         self.assertTrue(isinstance(self.mdv, list))
         self.assertDictEqual(self.mdv[0].attrib, {"Name": "TRACE-XML MDV", "OID": "MDV.TRACE-XML-ODM-01"})
-        self.assertEqual(81, len([e.tag for e in self.mdv[0].getchildren()]))
+        self.assertEqual(81, len([e.tag for e in self.mdv[0]]))
 
     def test_Protocol(self):
         protocol = self.parser.Protocol(parent=self.mdv[0])
         self.assertIsInstance(protocol[0]["elem"], Element)
-        self.assertListEqual([ODM_NS + "StudyEventRef"], [e.tag for e in protocol[0]["elem"].getchildren()])
+        self.assertListEqual([ODM_NS + "StudyEventRef"], [e.tag for e in protocol[0]["elem"]])
 
     def test_StudyEventRef(self):
         protocol = self.parser.Protocol(parent=self.mdv[0])
@@ -39,7 +41,7 @@ class TestOdmParserMetaData(unittest.TestCase):
         fr = self.parser.FormRef(parent=sed[0]["elem"])
         self.assertEqual(fr[0]["FormOID"], "ODM.F.DM")
         fr_list = [ODM_NS + "FormRef", ODM_NS + "FormRef", ODM_NS + "FormRef"]
-        self.assertListEqual(fr_list, [e.tag for e in sed[0]["elem"].getchildren()])
+        self.assertListEqual(fr_list, [e.tag for e in sed[0]["elem"]])
 
     def test_FormDef(self):
         fd = self.parser.FormDef(parent=self.mdv[0])

@@ -1,10 +1,11 @@
-import odmlib.odm_1_3_2.model as ODM
 import odmlib.odm_element as OE
 import odmlib.typed as T
 import odmlib.ns_registry as NS
 
 
-NS.NamespaceRegistry(prefix="odm", uri="http://www.cdisc.org/ns/odm/v1.3", is_default=True)
+NS.NamespaceRegistry(
+    prefix="odm", uri="http://www.cdisc.org/ns/odm/v1.3", is_default=True
+)
 NS.NamespaceRegistry(prefix="xs", uri="http://www.w3.org/2001/XMLSchema-instance")
 NS.NamespaceRegistry(prefix="xml", uri="http://www.w3.org/XML/1998/namespace")
 NS.NamespaceRegistry(prefix="data", uri="http://www.cdisc.org/ns/Dataset-XML/v1.0")
@@ -50,7 +51,9 @@ class ODM(OE.ODMElement):
     PriorFileOID = T.OIDRef(required=False)
     AsOfDateTime = T.DateTimeString(required=False)
     ODMVersion = T.ValueSetString(required=False)
-    DatasetXMLVersion = T.ExtendedValidValues(required=True, valid_values=["1.0.0", "1.0.1"])
+    DatasetXMLVersion = T.ExtendedValidValues(
+        required=True, valid_values=["1.0.0", "1.0.1"]
+    )
     Originator = T.String(required=False)
     SourceSystem = T.String(required=False)
     SourceSystemVersion = T.String(required=False)

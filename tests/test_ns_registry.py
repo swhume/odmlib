@@ -9,39 +9,52 @@ import os
 
 class TestNamespaceRegistry(TestCase):
     def setUp(self) -> None:
-        NS.NamespaceRegistry(prefix="odm", uri="http://www.cdisc.org/ns/odm/v1.3", is_default=True, is_reset=True)
-        NS.NamespaceRegistry(prefix="xs", uri="http://www.w3.org/2001/XMLSchema-instance")
-        NS.NamespaceRegistry(prefix="xml", uri="http://www.w3.org/XML/1998/namespace")
-        NS.NamespaceRegistry(prefix="xlink", uri="http://www.w3.org/1999/xlink")
+        NS.NamespaceRegistry(
+            prefix="odm", uri="http://www.cdisc.org/ns/odm/v1.3", is_default=True, is_reset=True)
+        NS.NamespaceRegistry(
+            prefix="xs", uri="http://www.w3.org/2001/XMLSchema-instance")
+        NS.NamespaceRegistry(
+            prefix="xml", uri="http://www.w3.org/XML/1998/namespace")
+        NS.NamespaceRegistry(
+            prefix="xlink", uri="http://www.w3.org/1999/xlink")
 
     def test_get_ns_prefix(self):
-        nsr = NS.NamespaceRegistry(prefix="def", uri="http://www.cdisc.org/ns/def/v2.0")
-        def_prefix = nsr.get_prefix_ns_from_uri("http://www.cdisc.org/ns/def/v2.0")
+        nsr = NS.NamespaceRegistry(
+            prefix="def", uri="http://www.cdisc.org/ns/def/v2.0")
+        def_prefix = nsr.get_prefix_ns_from_uri(
+            "http://www.cdisc.org/ns/def/v2.0")
         self.assertEqual("def", def_prefix)
 
     def test_get_ns_prefix_missing(self):
-        nsr = NS.NamespaceRegistry(prefix="def", uri="http://www.cdisc.org/ns/def/v2.0")
+        nsr = NS.NamespaceRegistry(
+            prefix="def", uri="http://www.cdisc.org/ns/def/v2.0")
         with self.assertRaises(ValueError):
-            def_prefix = nsr.get_prefix_ns_from_uri("http://www.cdisc.org/ns/def/v3.0")
+            def_prefix = nsr.get_prefix_ns_from_uri(
+                "http://www.cdisc.org/ns/def/v3.0")
 
     def test_get_ns_entry_dict(self):
-        nsr = NS.NamespaceRegistry(prefix="def", uri="http://www.cdisc.org/ns/def/v2.0")
+        nsr = NS.NamespaceRegistry(
+            prefix="def", uri="http://www.cdisc.org/ns/def/v2.0")
         def_ns_dict = nsr.get_ns_entry_dict("def")
         expected_dict = {"def": "http://www.cdisc.org/ns/def/v2.0"}
         self.assertDictEqual(expected_dict, def_ns_dict)
 
     def test_get_ns_entry_dict_missing(self):
-        nsr = NS.NamespaceRegistry(prefix="def", uri="http://www.cdisc.org/ns/def/v2.0")
+        nsr = NS.NamespaceRegistry(
+            prefix="def", uri="http://www.cdisc.org/ns/def/v2.0")
         missing_ns_dict = nsr.get_ns_entry_dict("ct")
         expected_dict = {}
         self.assertDictEqual(expected_dict, missing_ns_dict)
 
     def test_update_registry(self):
-        nsr = NS.NamespaceRegistry(prefix="def", uri="http://www.cdisc.org/ns/def/v2.0")
+        nsr = NS.NamespaceRegistry(
+            prefix="def", uri="http://www.cdisc.org/ns/def/v2.0")
         expected_ns = self.get_ns_defaults()
-        expected_ns.update({'odm': 'http://www.cdisc.org/ns/odm/v1.3', 'def': 'http://www.cdisc.org/ns/def/v2.0'})
+        expected_ns.update({'odm': 'http://www.cdisc.org/ns/odm/v1.3',
+                           'def': 'http://www.cdisc.org/ns/def/v2.0'})
         self.assertDictEqual(expected_ns, nsr.namespaces)
-        nsr = NS.NamespaceRegistry(prefix="nciodm", uri="http://ncicb.nci.nih.gov/xml/odm/EVS/CDISC")
+        nsr = NS.NamespaceRegistry(
+            prefix="nciodm", uri="http://ncicb.nci.nih.gov/xml/odm/EVS/CDISC")
         expected_ns = self.get_ns_defaults()
         expected_ns.update({'odm': 'http://www.cdisc.org/ns/odm/v1.3', 'def': 'http://www.cdisc.org/ns/def/v2.0',
                             'nciodm': 'http://ncicb.nci.nih.gov/xml/odm/EVS/CDISC'})
@@ -55,8 +68,10 @@ class TestNamespaceRegistry(TestCase):
 
     def test_remove_registry_entry(self):
         # tests a singleton so each test builds on the previous one
-        NS.NamespaceRegistry(prefix="def", uri="http://www.cdisc.org/ns/def/v2.0")
-        nsr = NS.NamespaceRegistry(prefix="nciodm", uri="http://ncicb.nci.nih.gov/xml/odm/EVS/CDISC")
+        NS.NamespaceRegistry(
+            prefix="def", uri="http://www.cdisc.org/ns/def/v2.0")
+        nsr = NS.NamespaceRegistry(
+            prefix="nciodm", uri="http://ncicb.nci.nih.gov/xml/odm/EVS/CDISC")
         expected_ns = self.get_ns_defaults()
         expected_ns.update({'odm': 'http://www.cdisc.org/ns/odm/v1.3',
                             'def': 'http://www.cdisc.org/ns/def/v2.0',
@@ -69,17 +84,22 @@ class TestNamespaceRegistry(TestCase):
         self.assertDictEqual(expected_ns, nsr.namespaces)
 
     def test_default_ns(self):
-        NS.NamespaceRegistry(prefix="def", uri="http://www.cdisc.org/ns/def/v2.0")
-        nsr = NS.NamespaceRegistry(prefix="nciodm", uri="http://ncicb.nci.nih.gov/xml/odm/EVS/CDISC")
+        NS.NamespaceRegistry(
+            prefix="def", uri="http://www.cdisc.org/ns/def/v2.0")
+        nsr = NS.NamespaceRegistry(
+            prefix="nciodm", uri="http://ncicb.nci.nih.gov/xml/odm/EVS/CDISC")
         expected_ns = self.get_ns_defaults()
         expected_ns.update({'odm': 'http://www.cdisc.org/ns/odm/v1.3', 'def': 'http://www.cdisc.org/ns/def/v2.0',
                             'nciodm': 'http://ncicb.nci.nih.gov/xml/odm/EVS/CDISC'})
         self.assertDictEqual(expected_ns, nsr.namespaces)
-        self.assertDictEqual({'odm': 'http://www.cdisc.org/ns/odm/v1.3'}, nsr.default_namespace)
+        self.assertDictEqual(
+            {'odm': 'http://www.cdisc.org/ns/odm/v1.3'}, nsr.default_namespace)
 
     def test_odm_ns_entries(self):
-        NS.NamespaceRegistry(prefix="def", uri="http://www.cdisc.org/ns/def/v2.0")
-        nsr = NS.NamespaceRegistry(prefix="nciodm", uri="http://ncicb.nci.nih.gov/xml/odm/EVS/CDISC")
+        NS.NamespaceRegistry(
+            prefix="def", uri="http://www.cdisc.org/ns/def/v2.0")
+        nsr = NS.NamespaceRegistry(
+            prefix="nciodm", uri="http://ncicb.nci.nih.gov/xml/odm/EVS/CDISC")
         expected_ns = self.get_ns_defaults()
         expected_ns.update({'odm': 'http://www.cdisc.org/ns/odm/v1.3', 'def': 'http://www.cdisc.org/ns/def/v2.0',
                             'nciodm': 'http://ncicb.nci.nih.gov/xml/odm/EVS/CDISC'})
@@ -103,19 +123,25 @@ class TestNamespaceRegistry(TestCase):
 
     def test_bad_ns_url(self):
         with self.assertRaises(ValueError):
-            nsr = NS.NamespaceRegistry(prefix="def", uri="www.cdisc.org/ns/def/v2.0")
+            nsr = NS.NamespaceRegistry(
+                prefix="def", uri="www.cdisc.org/ns/def/v2.0")
 
     def test_odm_ns_attributes(self):
-        odm_test_file = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'data', 'test_odm_namespace.xml')
-        NS.NamespaceRegistry(prefix="def", uri="http://www.cdisc.org/ns/def/v2.0")
-        NS.NamespaceRegistry(prefix="nciodm", uri="http://ncicb.nci.nih.gov/xml/odm/EVS/CDISC")
-        NS.NamespaceRegistry(prefix="xsi", uri="http://www.w3.org/2001/XMLSchema-instance")
+        odm_test_file = os.path.join(os.path.dirname(
+            os.path.realpath(__file__)), 'data', 'test_odm_namespace.xml')
+        NS.NamespaceRegistry(
+            prefix="def", uri="http://www.cdisc.org/ns/def/v2.0")
+        NS.NamespaceRegistry(
+            prefix="nciodm", uri="http://ncicb.nci.nih.gov/xml/odm/EVS/CDISC")
+        NS.NamespaceRegistry(
+            prefix="xsi", uri="http://www.w3.org/2001/XMLSchema-instance")
         root = self.add_root()
         odm_xml = root.to_xml()
         nsr = NS.NamespaceRegistry()
         nsr.set_odm_namespace_attributes(odm_xml)
         tree = ET.ElementTree(odm_xml)
-        tree.write(odm_test_file, xml_declaration=True, encoding='utf-8', method='xml', short_empty_elements=True)
+        tree.write(odm_test_file, xml_declaration=True,
+                   encoding='utf-8', method='xml', short_empty_elements=True)
         self.assertEqual("ODM.MDV.TEST.001", root.FileOID)
         loader = LD.ODMLoader(DL.XMLDefineLoader())
         odm_root = loader.open_odm_document(odm_test_file)
@@ -132,9 +158,6 @@ class TestNamespaceRegistry(TestCase):
                             'xmlns:nciodm=http://ncicb.nci.nih.gov/xml/odm/EVS/CDISC',
                             'xmlns:xsi=http://www.w3.org/2001/XMLSchema-instance']
         self.assertListEqual(namespaces, expected_ns_list)
-
-
-
 
     def add_root(self):
         attrs = self.get_root_attributes()

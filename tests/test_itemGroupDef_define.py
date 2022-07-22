@@ -12,9 +12,12 @@ class TestItemGroupDef(TestCase):
     def setUp(self) -> None:
         attrs = self.set_itemgroupdef_attributes()
         self.igd = DEFINE.ItemGroupDef(**attrs)
-        self.test_file = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'data', 'define2-0-0-sdtm-test.xml')
-        self.nsr = NS.NamespaceRegistry(prefix="odm", uri="http://www.cdisc.org/ns/odm/v1.3", is_default=True)
-        self.nsr = NS.NamespaceRegistry(prefix="def", uri="http://www.cdisc.org/ns/def/v2.0")
+        self.test_file = os.path.join(os.path.dirname(
+            os.path.realpath(__file__)), 'data', 'define2-0-0-sdtm-test.xml')
+        self.nsr = NS.NamespaceRegistry(
+            prefix="odm", uri="http://www.cdisc.org/ns/odm/v1.3", is_default=True)
+        self.nsr = NS.NamespaceRegistry(
+            prefix="def", uri="http://www.cdisc.org/ns/def/v2.0")
 
     def test_item_group_valid_kwargs_only(self):
         attrs = self.set_itemgroupdef_attributes()
@@ -22,26 +25,35 @@ class TestItemGroupDef(TestCase):
         self.assertEqual(igd.OID, "IG.VS")
 
     def test_add_description(self):
-        tt1 = DEFINE.TranslatedText(_content="this is the first test description", lang="en")
-        tt2 = DEFINE.TranslatedText(_content="this is the second test description", lang="en")
+        tt1 = DEFINE.TranslatedText(
+            _content="this is the first test description", lang="en")
+        tt2 = DEFINE.TranslatedText(
+            _content="this is the second test description", lang="en")
         self.igd.Description = DEFINE.Description()
         self.igd.Description.TranslatedText = [tt1, tt2]
         self.assertEqual(len(self.igd.Description.TranslatedText), 2)
-        self.assertEqual(self.igd.Description.TranslatedText[1]._content, 'this is the second test description')
+        self.assertEqual(
+            self.igd.Description.TranslatedText[1]._content, 'this is the second test description')
 
     def test_add_item_ref(self):
-        self.igd.ItemRef.append(DEFINE.ItemRef(ItemOID="IT.STUDYID", Mandatory="Yes", OrderNumber=1))
-        self.igd.ItemRef.append(DEFINE.ItemRef(ItemOID="IT.VS.VSTEST", Mandatory="No", OrderNumber=2))
-        self.igd.ItemRef.append(DEFINE.ItemRef(ItemOID="IT.VS.VSORRES", Mandatory="Yes", OrderNumber=3, MethodOID="MT.METHODFEX"))
+        self.igd.ItemRef.append(DEFINE.ItemRef(
+            ItemOID="IT.STUDYID", Mandatory="Yes", OrderNumber=1))
+        self.igd.ItemRef.append(DEFINE.ItemRef(
+            ItemOID="IT.VS.VSTEST", Mandatory="No", OrderNumber=2))
+        self.igd.ItemRef.append(DEFINE.ItemRef(
+            ItemOID="IT.VS.VSORRES", Mandatory="Yes", OrderNumber=3, MethodOID="MT.METHODFEX"))
         self.assertEqual(self.igd.ItemRef[0].ItemOID, "IT.STUDYID")
         self.assertEqual(self.igd.ItemRef[2].MethodOID, "MT.METHODFEX")
 
     def test_add_item_ref_list(self):
-        ir1 = DEFINE.ItemRef(ItemOID="IT.STUDYID", Mandatory="Yes", OrderNumber=1)
+        ir1 = DEFINE.ItemRef(ItemOID="IT.STUDYID",
+                             Mandatory="Yes", OrderNumber=1)
         self.igd.ItemRef.append(ir1)
-        ir2 = DEFINE.ItemRef(ItemOID="IT.VS.VSTEST", Mandatory="No", OrderNumber=2)
+        ir2 = DEFINE.ItemRef(ItemOID="IT.VS.VSTEST",
+                             Mandatory="No", OrderNumber=2)
         self.igd.ItemRef.append(ir2)
-        ir3 = DEFINE.ItemRef(ItemOID="IT.VS.VSORRES", Mandatory="Yes", OrderNumber=3, MethodOID="MT.METHODFEX")
+        ir3 = DEFINE.ItemRef(ItemOID="IT.VS.VSORRES", Mandatory="Yes",
+                             OrderNumber=3, MethodOID="MT.METHODFEX")
         self.igd.ItemRef.append(ir3)
         self.assertEqual(self.igd.ItemRef[0].ItemOID, "IT.STUDYID")
         self.assertEqual(self.igd.ItemRef[2].MethodOID, "MT.METHODFEX")
@@ -52,10 +64,12 @@ class TestItemGroupDef(TestCase):
 
     def test_add_item_ref_invalid_kwarg(self):
         with self.assertRaises(TypeError):
-            self.igd.ItemRef = [DEFINE.ItemRef(ItemOID="IT.STUDYID", Mandatory="Yes", InValid="Yes")]
+            self.igd.ItemRef = [DEFINE.ItemRef(
+                ItemOID="IT.STUDYID", Mandatory="Yes", InValid="Yes")]
 
     def test_item_ref_exists(self):
-        self.igd.ItemRef = [DEFINE.ItemRef(ItemOID="IT.VS.VSTESTCD", Mandatory="Yes", OrderNumber=4)]
+        self.igd.ItemRef = [DEFINE.ItemRef(
+            ItemOID="IT.VS.VSTESTCD", Mandatory="Yes", OrderNumber=4)]
         self.assertEqual(self.igd.ItemRef[0].ItemOID, "IT.VS.VSTESTCD")
 
     def test_add_alias(self):
@@ -68,11 +82,14 @@ class TestItemGroupDef(TestCase):
     def test_to_json(self):
         attrs = self.set_itemgroupdef_attributes()
         igd = DEFINE.ItemGroupDef(**attrs)
-        tt = DEFINE.TranslatedText(_content="this is the first test description", lang="en")
+        tt = DEFINE.TranslatedText(
+            _content="this is the first test description", lang="en")
         igd.Description = DEFINE.Description()
         igd.Description.TranslatedText = [tt]
-        ir1 = DEFINE.ItemRef(ItemOID="IT.STUDYID", Mandatory="Yes", OrderNumber=1)
-        ir2 = DEFINE.ItemRef(ItemOID="IT.VS.VSTEST", Mandatory="No", OrderNumber=2)
+        ir1 = DEFINE.ItemRef(ItemOID="IT.STUDYID",
+                             Mandatory="Yes", OrderNumber=1)
+        ir2 = DEFINE.ItemRef(ItemOID="IT.VS.VSTEST",
+                             Mandatory="No", OrderNumber=2)
         igd.ItemRef = [ir1, ir2]
         igd_json = igd.to_json()
         igd_dict = json.loads(igd_json)
@@ -83,16 +100,20 @@ class TestItemGroupDef(TestCase):
     def test_to_xml(self):
         attrs = self.set_itemgroupdef_attributes()
         igd = DEFINE.ItemGroupDef(**attrs)
-        tt = DEFINE.TranslatedText(_content="this is the first test description", lang="en")
+        tt = DEFINE.TranslatedText(
+            _content="this is the first test description", lang="en")
         desc = DEFINE.Description()
         desc.TranslatedText = [tt]
         igd.Description = desc
-        ir1 = DEFINE.ItemRef(ItemOID="IT.STUDYID", Mandatory="Yes", OrderNumber=1)
-        ir2 = DEFINE.ItemRef(ItemOID="IT.VS.VSTEST", Mandatory="No", OrderNumber=2)
+        ir1 = DEFINE.ItemRef(ItemOID="IT.STUDYID",
+                             Mandatory="Yes", OrderNumber=1)
+        ir2 = DEFINE.ItemRef(ItemOID="IT.VS.VSTEST",
+                             Mandatory="No", OrderNumber=2)
         igd.ItemRef = [ir1, ir2]
         igd_xml = igd.to_xml()
         self.assertEqual(igd_xml.attrib["OID"], "IG.VS")
-        self.assertListEqual(["Description", "ItemRef", "ItemRef"], [e.tag for e in igd_xml.getchildren()])
+        self.assertListEqual(["Description", "ItemRef", "ItemRef"], [
+                             e.tag for e in igd_xml])
 
     def test_itemgroupdef_round_trip(self):
         """ system test to create and serialize an ItemGroupDef object """
@@ -152,7 +173,8 @@ class TestItemGroupDef(TestCase):
         :param item_refs: list of ItemRef dictionaries containing ItemRef attributes
         """
         for it in item_refs:
-            attrs = {"ItemOID": it.oid, "Mandatory": it.mandatory, "OrderNumber": it.order_number}
+            attrs = {"ItemOID": it.oid, "Mandatory": it.mandatory,
+                     "OrderNumber": it.order_number}
             if it.key_sequence:
                 attrs["KeySequence"] = it.key_sequence
             if it.method:
@@ -168,25 +190,33 @@ class TestItemGroupDef(TestCase):
                 "IsReferenceData": "No", "Purpose": "Tabulation", "Class": "FINDINGS", "ArchiveLocationID": "LF.VS",
                 "Structure": "One record per vital sign measurement per visit per subject"}
 
-
     def set_itemrefs(self):
         """
         set some ItemRef element attributes using test data
         :return: return a list of ItemRef named tuples
         """
         itemrefs = []
-        itemrefs.append(DEFINE.ItemRef(ItemOID="IT.STUDYID", Mandatory="Yes", OrderNumber=1, KeySequence=1))
-        itemrefs.append(DEFINE.ItemRef(ItemOID="IT.TA.DOMAIN", Mandatory="Yes", OrderNumber=2))
-        itemrefs.append(DEFINE.ItemRef(ItemOID="IT.TA.ARMCD", Mandatory="Yes", OrderNumber=3, KeySequence=2))
-        itemrefs.append(DEFINE.ItemRef(ItemOID="IT.TA.ARM", Mandatory="Yes", OrderNumber=4))
-        itemrefs.append(DEFINE.ItemRef(ItemOID="IT.TA.TAETORD", Mandatory="Yes", OrderNumber=5, KeySequence=3))
-        itemrefs.append(DEFINE.ItemRef(ItemOID="IT.TA.ETCD", Mandatory="Yes", OrderNumber=6))
-        itemrefs.append(DEFINE.ItemRef(ItemOID="IT.TA.ELEMENT", Mandatory="No", OrderNumber=7))
-        itemrefs.append(DEFINE.ItemRef(ItemOID="IT.TA.TABRANCH", Mandatory="No", OrderNumber=8))
-        itemrefs.append(DEFINE.ItemRef(ItemOID="IT.TA.TATRANS", Mandatory="No", OrderNumber=9))
-        itemrefs.append(DEFINE.ItemRef(ItemOID="IT.TA.EPOCH", Mandatory="No", OrderNumber=10))
+        itemrefs.append(DEFINE.ItemRef(ItemOID="IT.STUDYID",
+                        Mandatory="Yes", OrderNumber=1, KeySequence=1))
+        itemrefs.append(DEFINE.ItemRef(ItemOID="IT.TA.DOMAIN",
+                        Mandatory="Yes", OrderNumber=2))
+        itemrefs.append(DEFINE.ItemRef(ItemOID="IT.TA.ARMCD",
+                        Mandatory="Yes", OrderNumber=3, KeySequence=2))
+        itemrefs.append(DEFINE.ItemRef(ItemOID="IT.TA.ARM",
+                        Mandatory="Yes", OrderNumber=4))
+        itemrefs.append(DEFINE.ItemRef(ItemOID="IT.TA.TAETORD",
+                        Mandatory="Yes", OrderNumber=5, KeySequence=3))
+        itemrefs.append(DEFINE.ItemRef(ItemOID="IT.TA.ETCD",
+                        Mandatory="Yes", OrderNumber=6))
+        itemrefs.append(DEFINE.ItemRef(ItemOID="IT.TA.ELEMENT",
+                        Mandatory="No", OrderNumber=7))
+        itemrefs.append(DEFINE.ItemRef(
+            ItemOID="IT.TA.TABRANCH", Mandatory="No", OrderNumber=8))
+        itemrefs.append(DEFINE.ItemRef(ItemOID="IT.TA.TATRANS",
+                        Mandatory="No", OrderNumber=9))
+        itemrefs.append(DEFINE.ItemRef(ItemOID="IT.TA.EPOCH",
+                        Mandatory="No", OrderNumber=10))
         return itemrefs
-
 
     def create_odm_document(self, igd):
         """
@@ -203,7 +233,6 @@ class TestItemGroupDef(TestCase):
         self.write_odm_file(odm_elem, self.odm_test_file)
         return odm_elem
 
-
     def create_root(self):
         """
         create the ODM root element object with test data
@@ -214,7 +243,6 @@ class TestItemGroupDef(TestCase):
                 "SourceSystemVersion": "0.1", "def:Context": "Other"}
         root = DEFINE.ODM("DEFINE.TEST.IGD.001", **root)
         return root
-
 
     def create_study(self):
         """
@@ -227,16 +255,14 @@ class TestItemGroupDef(TestCase):
         study.ProtocolName = "ODM ItemGroupDef"
         return study
 
-
     def create_mdv(self):
         """
         create the ODM MetaDataVersion object instantiated with test data
         :return: ODM MetaDataVersion element object
         """
         mdv = DEFINE.MetaDataVersion("MDV.TEST.IGD.001", "ItemGroupDefTest001", "ItemGroupDef Test 001",
-                                                  "2.1.0")
+                                     "2.1.0")
         return mdv
-
 
     def write_odm_file(self, odm, odm_file):
         """
@@ -246,7 +272,6 @@ class TestItemGroupDef(TestCase):
         """
         tree = ET.ElementTree(odm)
         tree.write(odm_file, xml_declaration=True)
-
 
     def set_datetime(self):
         """return the current datetime in ISO 8601 format"""

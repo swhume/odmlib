@@ -9,33 +9,46 @@ class TestFormDef(TestCase):
         self.formdef = ODM.FormDef(**attrs)
 
     def test_add_description(self):
-        tt1 = ODM.TranslatedText(_content="this is the first test description", lang="en")
-        tt2 = ODM.TranslatedText(_content="this is the second test description", lang="en")
+        tt1 = ODM.TranslatedText(
+            _content="this is the first test description", lang="en")
+        tt2 = ODM.TranslatedText(
+            _content="this is the second test description", lang="en")
         self.formdef.Description = ODM.Description()
         self.formdef.Description.TranslatedText = [tt1, tt2]
         self.assertEqual(len(self.formdef.Description.TranslatedText), 2)
-        self.assertEqual(self.formdef.Description.TranslatedText[1]._content, 'this is the second test description')
+        self.assertEqual(
+            self.formdef.Description.TranslatedText[1]._content, 'this is the second test description')
 
     def test_add_item_group_ref(self):
-        igr = ODM.ItemGroupRef(ItemGroupOID="ODM.IG.COMMON", Mandatory="Yes", OrderNumber=1)
+        igr = ODM.ItemGroupRef(ItemGroupOID="ODM.IG.COMMON",
+                               Mandatory="Yes", OrderNumber=1)
         self.formdef.ItemGroupRef.append(igr)
-        igr = ODM.ItemGroupRef(ItemGroupOID="ODM.IG.VS_GENERAL", Mandatory="Yes", OrderNumber=2)
+        igr = ODM.ItemGroupRef(
+            ItemGroupOID="ODM.IG.VS_GENERAL", Mandatory="Yes", OrderNumber=2)
         self.formdef.ItemGroupRef.append(igr)
-        igr = ODM.ItemGroupRef(ItemGroupOID="ODM.IG.VS", Mandatory="Yes", OrderNumber=3)
+        igr = ODM.ItemGroupRef(ItemGroupOID="ODM.IG.VS",
+                               Mandatory="Yes", OrderNumber=3)
         self.formdef.ItemGroupRef.append(igr)
-        self.assertEqual(self.formdef.ItemGroupRef[0].ItemGroupOID, "ODM.IG.COMMON")
+        self.assertEqual(
+            self.formdef.ItemGroupRef[0].ItemGroupOID, "ODM.IG.COMMON")
         self.assertEqual(self.formdef.ItemGroupRef[2].OrderNumber, 3)
 
     def test_append_item_group_ref(self):
-        fd = ODM.FormDef(OID="ODM.F.VS", Name="Vital Signs Form", Repeating="Yes")
+        fd = ODM.FormDef(
+            OID="ODM.F.VS", Name="Vital Signs Form", Repeating="Yes")
         fd.Description = ODM.Description()
-        fd.Description.TranslatedText.append(ODM.TranslatedText(_content="this is the first test description", lang="en"))
-        fd.ItemGroupRef.append(ODM.ItemGroupRef(ItemGroupOID="ODM.IG.COMMON", Mandatory="Yes", OrderNumber=1))
-        fd.ItemGroupRef.append(ODM.ItemGroupRef(ItemGroupOID="ODM.IG.VS_GENERAL", Mandatory="Yes", OrderNumber=2))
-        fd.ItemGroupRef.append(ODM.ItemGroupRef(ItemGroupOID="ODM.IG.VS", Mandatory="Yes", OrderNumber=3))
+        fd.Description.TranslatedText.append(ODM.TranslatedText(
+            _content="this is the first test description", lang="en"))
+        fd.ItemGroupRef.append(ODM.ItemGroupRef(
+            ItemGroupOID="ODM.IG.COMMON", Mandatory="Yes", OrderNumber=1))
+        fd.ItemGroupRef.append(ODM.ItemGroupRef(
+            ItemGroupOID="ODM.IG.VS_GENERAL", Mandatory="Yes", OrderNumber=2))
+        fd.ItemGroupRef.append(ODM.ItemGroupRef(
+            ItemGroupOID="ODM.IG.VS", Mandatory="Yes", OrderNumber=3))
         self.assertEqual(fd.ItemGroupRef[0].ItemGroupOID, "ODM.IG.COMMON")
         self.assertEqual(fd.ItemGroupRef[2].OrderNumber, 3)
-        self.assertEqual(fd.Description.TranslatedText[0]._content, "this is the first test description")
+        self.assertEqual(
+            fd.Description.TranslatedText[0]._content, "this is the first test description")
 
     def test_add_alias(self):
         self.formdef.Alias.append(ODM.Alias(Context="SDTMIG", Name="VS"))
@@ -44,24 +57,30 @@ class TestFormDef(TestCase):
         self.assertEqual(self.formdef.Alias[1].Context, "CDASHIG")
 
     def test_add_not_alias(self):
-        item = ODM.ItemDef(OID="ODM.IT.VSPOS", Name="VS Position", DataType="text")
+        item = ODM.ItemDef(OID="ODM.IT.VSPOS",
+                           Name="VS Position", DataType="text")
         with self.assertRaises(TypeError):
             self.formdef.Alias = [item]
         self.formdef.Alias.append(ODM.Alias(Context="SDTMIG", Name="VS"))
         # list accepts invalid objects
-        self.formdef.Alias.append(ODM.ItemDef(OID="ODM.IT.VSDT", Name="VS Date", DataType="text"))
+        self.formdef.Alias.append(ODM.ItemDef(
+            OID="ODM.IT.VSDT", Name="VS Date", DataType="text"))
         self.assertEqual(len(self.formdef.Alias), 2)
         self.assertEqual(self.formdef.Alias[0].Context, "SDTMIG")
 
     def test_to_json(self):
         attrs = self.set_formdef_attributes()
         fd = ODM.FormDef(**attrs)
-        tt = ODM.TranslatedText(_content="this is the first test description", lang="en")
+        tt = ODM.TranslatedText(
+            _content="this is the first test description", lang="en")
         fd.Description = ODM.Description()
         fd.Description.TranslatedText = [tt]
-        fd.ItemGroupRef.append(ODM.ItemGroupRef(ItemGroupOID="ODM.IG.COMMON", Mandatory="Yes", OrderNumber=1))
-        fd.ItemGroupRef.append(ODM.ItemGroupRef(ItemGroupOID="ODM.IG.VS_GENERAL", Mandatory="Yes", OrderNumber=2))
-        fd.ItemGroupRef.append(ODM.ItemGroupRef(ItemGroupOID="ODM.IG.VS", Mandatory="Yes", OrderNumber=3))
+        fd.ItemGroupRef.append(ODM.ItemGroupRef(
+            ItemGroupOID="ODM.IG.COMMON", Mandatory="Yes", OrderNumber=1))
+        fd.ItemGroupRef.append(ODM.ItemGroupRef(
+            ItemGroupOID="ODM.IG.VS_GENERAL", Mandatory="Yes", OrderNumber=2))
+        fd.ItemGroupRef.append(ODM.ItemGroupRef(
+            ItemGroupOID="ODM.IG.VS", Mandatory="Yes", OrderNumber=3))
         fd.Alias.append(ODM.Alias(Context="SDTMIG", Name="VS"))
         fd_json = fd.to_json()
         fd_dict = json.loads(fd_json)
@@ -73,10 +92,14 @@ class TestFormDef(TestCase):
         attrs = self.set_formdef_attributes()
         fd = ODM.FormDef(**attrs)
         fd.Description = ODM.Description()
-        fd.Description.TranslatedText.append(ODM.TranslatedText(_content="this is the first test description", lang="en"))
-        fd.ItemGroupRef.append(ODM.ItemGroupRef(ItemGroupOID="ODM.IG.COMMON", Mandatory="Yes", OrderNumber=1))
-        fd.ItemGroupRef.append(ODM.ItemGroupRef(ItemGroupOID="ODM.IG.VS_GENERAL", Mandatory="Yes", OrderNumber=2))
-        fd.ItemGroupRef.append(ODM.ItemGroupRef(ItemGroupOID="ODM.IG.VS", Mandatory="Yes", OrderNumber=3))
+        fd.Description.TranslatedText.append(ODM.TranslatedText(
+            _content="this is the first test description", lang="en"))
+        fd.ItemGroupRef.append(ODM.ItemGroupRef(
+            ItemGroupOID="ODM.IG.COMMON", Mandatory="Yes", OrderNumber=1))
+        fd.ItemGroupRef.append(ODM.ItemGroupRef(
+            ItemGroupOID="ODM.IG.VS_GENERAL", Mandatory="Yes", OrderNumber=2))
+        fd.ItemGroupRef.append(ODM.ItemGroupRef(
+            ItemGroupOID="ODM.IG.VS", Mandatory="Yes", OrderNumber=3))
         fd.Alias.append(ODM.Alias(Context="SDTMIG", Name="VS"))
         fd_dict = fd.to_dict()
         self.assertEqual(fd_dict["OID"], "ODM.F.VS")
@@ -86,16 +109,21 @@ class TestFormDef(TestCase):
         attrs = self.set_formdef_attributes()
         fd = ODM.FormDef(**attrs)
         fd.Description = ODM.Description()
-        fd.Description.TranslatedText.append(ODM.TranslatedText(_content="this is the first test description", lang="en"))
-        fd.ItemGroupRef.append(ODM.ItemGroupRef(ItemGroupOID="ODM.IG.COMMON", Mandatory="Yes", OrderNumber=1))
-        fd.ItemGroupRef.append(ODM.ItemGroupRef(ItemGroupOID="ODM.IG.VS_GENERAL", Mandatory="Yes", OrderNumber=2))
-        fd.ItemGroupRef.append(ODM.ItemGroupRef(ItemGroupOID="ODM.IG.VS", Mandatory="Yes", OrderNumber=3))
+        fd.Description.TranslatedText.append(ODM.TranslatedText(
+            _content="this is the first test description", lang="en"))
+        fd.ItemGroupRef.append(ODM.ItemGroupRef(
+            ItemGroupOID="ODM.IG.COMMON", Mandatory="Yes", OrderNumber=1))
+        fd.ItemGroupRef.append(ODM.ItemGroupRef(
+            ItemGroupOID="ODM.IG.VS_GENERAL", Mandatory="Yes", OrderNumber=2))
+        fd.ItemGroupRef.append(ODM.ItemGroupRef(
+            ItemGroupOID="ODM.IG.VS", Mandatory="Yes", OrderNumber=3))
         fd.Alias.append(ODM.Alias(Context="SDTMIG", Name="VS"))
         fd_xml = fd.to_xml()
         self.assertEqual(fd_xml.attrib["OID"], "ODM.F.VS")
         igr = fd_xml.findall("ItemGroupRef")
         self.assertEqual(len(igr), 3)
-        self.assertEqual(igr[0].attrib, {"ItemGroupOID": "ODM.IG.COMMON", "Mandatory": "Yes", "OrderNumber": "1"})
+        self.assertEqual(igr[0].attrib, {
+                         "ItemGroupOID": "ODM.IG.COMMON", "Mandatory": "Yes", "OrderNumber": "1"})
 
     @staticmethod
     def set_formdef_attributes():
@@ -109,7 +137,8 @@ class TestFormDef(TestCase):
     def expected_dict():
         return {'OID': 'ODM.F.VS', 'Name': 'Vital Signs Form', 'Repeating': 'Yes',
                 'ItemGroupRef': [{'ItemGroupOID': 'ODM.IG.COMMON', 'Mandatory': 'Yes', 'OrderNumber': 1},
-                                 {'ItemGroupOID': 'ODM.IG.VS_GENERAL', 'Mandatory': 'Yes', 'OrderNumber': 2},
+                                 {'ItemGroupOID': 'ODM.IG.VS_GENERAL',
+                                     'Mandatory': 'Yes', 'OrderNumber': 2},
                                  {'ItemGroupOID': 'ODM.IG.VS', 'Mandatory': 'Yes', 'OrderNumber': 3}],
                 'Description': {'TranslatedText':
                                 [{'_content': 'this is the first test description', 'lang': 'en'}]},

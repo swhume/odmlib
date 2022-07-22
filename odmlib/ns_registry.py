@@ -2,7 +2,8 @@ import validators
 
 
 class Borg:
-    """ borg provides a set of global attributes for the Namespace Registry singleton """
+    """borg provides a set of global attributes for the Namespace Registry singleton"""
+
     namespaces = {}
     default_namespace = {}
 
@@ -42,7 +43,9 @@ class NamespaceRegistry(Borg):
             else:
                 return "{" + self.namespaces[prefix] + "}" + name
         else:
-            raise ValueError(f"Error: Namespace with prefix {prefix} has not been registered")
+            raise ValueError(
+                f"Error: Namespace with prefix {prefix} has not been registered"
+            )
 
     def get_prefix_ns_from_uri(self, uri):
         for prefix, ns_uri in self.namespaces.items():
@@ -51,18 +54,18 @@ class NamespaceRegistry(Borg):
         raise ValueError(f"Error: Namespace with URI {uri} has not been registered")
 
     def set_odm_namespace_attributes(self, odm_elem):
-        """ add NS attributes to the ODM XML element object """
+        """add NS attributes to the ODM XML element object"""
         odm_elem.attrib["xmlns"] = list(self.default_namespace.values())[0]
         for prefix, uri in self.namespaces.items():
             if prefix != list(self.default_namespace.keys())[0]:
                 odm_elem.attrib["xmlns:" + prefix] = uri
 
     def set_odm_namespace_attributes_string(self, odm_str):
-        """ add NS attributes to the ODM XML element object """
-        ns_str = "<ODM xmlns=\"" + list(self.default_namespace.values())[0] + "\""
+        """add NS attributes to the ODM XML element object"""
+        ns_str = '<ODM xmlns="' + list(self.default_namespace.values())[0] + '"'
         for prefix, uri in self.namespaces.items():
             if prefix != list(self.default_namespace.keys())[0]:
-                ns_str += " xmlns:" + prefix + "=\"" + uri + "\""
+                ns_str += " xmlns:" + prefix + '="' + uri + '"'
         odm_ns_str = odm_str.replace("<ODM", ns_str)
         return odm_ns_str
 

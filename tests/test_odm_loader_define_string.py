@@ -3,10 +3,12 @@ import odmlib.define_loader as OL
 import odmlib.loader as LD
 import os
 
+from tests import get_data_file_path
+
 
 class TestDefineLoaderString(TestCase):
     def setUp(self) -> None:
-        self.odm_file = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'data', 'define2-0-0-sdtm-test.xml')
+        self.odm_file = get_data_file_path("define2-0-0-sdtm-test.xml")
         with open(self.odm_file, "r", encoding="utf-8") as f:
             self.odm_string = f.read()
         self.loader = LD.ODMLoader(OL.XMLDefineLoader())
@@ -43,13 +45,13 @@ class TestDefineLoaderString(TestCase):
         root = self.loader.load_odm_string(self.odm_string)
         odm = self.loader.create_odmlib(root)
         odm_json = odm.to_json()
-        odm_json_file = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'data', 'sdtm_define2_test.json')
+        odm_json_file = get_data_file_path("sdtm_define2_test.json")
         with open(odm_json_file, "w") as odm_in:
             odm_in.write(odm_json)
         json_loader = LD.ODMLoader(OL.JSONDefineLoader())
         odm_dict = json_loader.open_odm_document(odm_json_file)
         rt_odm = json_loader.create_odmlib(odm_dict, "ODM")
-        def_xml_file = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'data', 'sdtm_def_test_roundtrip.xml')
+        def_xml_file = get_data_file_path("sdtm_def_test_roundtrip.xml")
         rt_odm.write_xml(def_xml_file)
         root2 = self.loader.open_odm_document(def_xml_file)
         odm2 = self.loader.create_odmlib(root2)

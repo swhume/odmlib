@@ -4,10 +4,12 @@ import odmlib.loader as LD
 import os
 import json
 
+from tests import get_data_file_path
+
 
 class TestJsonFromXml(TestCase):
     def setUp(self) -> None:
-        self.odm_file = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'data', 'cdash-odm-test.xml')
+        self.odm_file = get_data_file_path("cdash-odm-test.xml")
         self.loader = LD.ODMLoader(OL.XMLODMLoader())
 
     def test_open_odm_document(self):
@@ -20,8 +22,9 @@ class TestJsonFromXml(TestCase):
         root = self.loader.open_odm_document(self.odm_file)
         odm = self.loader.create_odmlib(root)
         odm_json = odm.to_json()
-        odm_json_file = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'data', 'cdash_odm_test.json')
+        odm_json_file = get_data_file_path("cdash_odm_test.json", check_exists=False)
         with open(odm_json_file, "w") as odm_in:
             odm_in.write(odm_json)
         odm_dict = json.loads(odm_json)
-        self.assertEqual(odm_dict["Study"][0]["MetaDataVersion"][0]["ItemDef"][0]["OID"], "ODM.IT.Common.StudyID")
+        self.assertEqual(odm_dict["Study"][0]["MetaDataVersion"]
+                         [0]["ItemDef"][0]["OID"], "ODM.IT.Common.StudyID")

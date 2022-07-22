@@ -3,7 +3,9 @@ import odmlib.typed as T
 import odmlib.ns_registry as NS
 
 
-NS.NamespaceRegistry(prefix="odm", uri="http://www.cdisc.org/ns/odm/v1.3", is_default=True)
+NS.NamespaceRegistry(
+    prefix="odm", uri="http://www.cdisc.org/ns/odm/v1.3", is_default=True
+)
 NS.NamespaceRegistry(prefix="nciodm", uri="http://ncicb.nci.nih.gov/xml/odm/EVS/CDISC")
 NS.NamespaceRegistry(prefix="xs", uri="http://www.w3.org/2001/XMLSchema-instance")
 NS.NamespaceRegistry(prefix="xml", uri="http://www.w3.org/XML/1998/namespace")
@@ -62,8 +64,12 @@ class EnumeratedItem(OE.ODMElement):
     CodedValue = T.String(required=True)
     ExtCodeID = T.String(required=True, namespace="nciodm")
     CDISCSynonym = T.ODMListObject(element_class=CDISCSynonym, namespace="nciodm")
-    CDISCDefinition = T.ODMObject(required=True, element_class=CDISCDefinition, namespace="nciodm")
-    PreferredTerm = T.ODMObject(required=True, element_class=PreferredTerm, namespace="nciodm")
+    CDISCDefinition = T.ODMObject(
+        required=True, element_class=CDISCDefinition, namespace="nciodm"
+    )
+    PreferredTerm = T.ODMObject(
+        required=True, element_class=PreferredTerm, namespace="nciodm"
+    )
 
 
 class CodeList(OE.ODMElement):
@@ -74,9 +80,15 @@ class CodeList(OE.ODMElement):
     CodeListExtensible = T.ValueSetString(required=True, namespace="nciodm")
     Description = T.ODMObject(element_class=Description)
     EnumeratedItem = T.ODMListObject(element_class=EnumeratedItem)
-    CDISCSubmissionValue = T.ODMObject(required=True, element_class=CDISCSubmissionValue, namespace="nciodm")
-    CDISCSynonym = T.ODMObject(required=True, element_class=CDISCSynonym, namespace="nciodm")
-    PreferredTerm = T.ODMObject(required=True, element_class=PreferredTerm, namespace="nciodm")
+    CDISCSubmissionValue = T.ODMObject(
+        required=True, element_class=CDISCSubmissionValue, namespace="nciodm"
+    )
+    CDISCSynonym = T.ODMObject(
+        required=True, element_class=CDISCSynonym, namespace="nciodm"
+    )
+    PreferredTerm = T.ODMObject(
+        required=True, element_class=PreferredTerm, namespace="nciodm"
+    )
 
 
 class MetaDataVersion(OE.ODMElement):

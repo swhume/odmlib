@@ -3,11 +3,21 @@ import odmlib.odm_loader as OL
 import odmlib.loader as LD
 import os
 
+from tests import get_data_file_path
+
 
 class TestODMLoader(TestCase):
     def setUp(self) -> None:
-        self.odm_file = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'data', 'cdash-odm-test.xml')
+        self.odm_file = get_data_file_path("cdash-odm-test.xml")
         self.loader = LD.ODMLoader(OL.XMLODMLoader())
+
+    def tearDown(self) -> None:
+        odm_json_file = get_data_file_path("cdash_odm_test.json", check_exists=False)
+        if os.path.exists(odm_json_file):
+            os.remove(odm_json_file)
+        odm_xml_file = get_data_file_path("cdash_odm_test_roundtrip.xml", check_exists=False)
+        if os.path.exists(odm_xml_file):
+            os.remove(odm_xml_file)
 
     def test_open_odm_document(self):
         root = self.loader.open_odm_document(self.odm_file)
@@ -58,13 +68,13 @@ class TestODMLoader(TestCase):
         root = self.loader.open_odm_document(self.odm_file)
         odm = self.loader.create_odmlib(root)
         odm_json = odm.to_json()
-        odm_json_file = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'data', 'cdash_odm_test.json')
+        odm_json_file = get_data_file_path("cdash_odm_test.json", check_exists=False)
         with open(odm_json_file, "w") as odm_in:
             odm_in.write(odm_json)
         json_loader = LD.ODMLoader(OL.JSONODMLoader())
         odm_dict = json_loader.open_odm_document(odm_json_file)
         rt_odm = json_loader.create_odmlib(odm_dict, "ODM")
-        odm_xml_file = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'data', 'cdash_odm_test_roundtrip.xml')
+        odm_xml_file = get_data_file_path("cdash_odm_test_roundtrip.xml", check_exists=False)
         rt_odm.write_xml(odm_xml_file)
         root2 = self.loader.open_odm_document(odm_xml_file)
         odm2 = self.loader.create_odmlib(root2)

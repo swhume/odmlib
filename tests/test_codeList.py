@@ -37,18 +37,22 @@ class TestCodeList(TestCase):
         self.assertDictEqual(ei_dict, self.expected_eni_dict())
 
     def test_external_code_list(self):
-        self.cl.ExternalCodeList = ODM.ExternalCodeList(Dictionary="MedDRA", Version="23.0", href="https://www.meddra.org/")
+        self.cl.ExternalCodeList = ODM.ExternalCodeList(
+            Dictionary="MedDRA", Version="23.0", href="https://www.meddra.org/")
         ex_dict = self.cl.to_dict()
         self.assertDictEqual(ex_dict, self.expected_ex_dict())
 
     def test_add_description(self):
-        tt1 = ODM.TranslatedText(_content="this is the first test description", lang="en")
-        tt2 = ODM.TranslatedText(_content="this is the second test description", lang="en")
+        tt1 = ODM.TranslatedText(
+            _content="this is the first test description", lang="en")
+        tt2 = ODM.TranslatedText(
+            _content="this is the second test description", lang="en")
         desc = ODM.Description()
         desc.TranslatedText = [tt1, tt2]
         self.cl.Description = desc
         self.assertEqual(len(self.cl.Description.TranslatedText), 2)
-        self.assertEqual(self.cl.Description.TranslatedText[1]._content, 'this is the second test description')
+        self.assertEqual(
+            self.cl.Description.TranslatedText[1]._content, 'this is the second test description')
 
     def test_add_alias(self):
         alias = ODM.Alias(Context="nci:ExtCodeID", Name="C64848")
@@ -109,13 +113,13 @@ class TestCodeList(TestCase):
     def test_to_xml_external_code_list(self):
         attrs = self._set_attributes()
         cl = ODM.CodeList(**attrs)
-        excl = ODM.ExternalCodeList(Dictionary="MedDRA", Version="23.0", href="https://www.meddra.org/")
+        excl = ODM.ExternalCodeList(
+            Dictionary="MedDRA", Version="23.0", href="https://www.meddra.org/")
         cl.ExternalCodeList = excl
         cl_xml = cl.to_xml()
         self.assertEqual(cl_xml.attrib["OID"], "ODM.CL.LBTESTCD")
         ecl = cl_xml.find("ExternalCodeList")
         self.assertEqual(ecl.attrib["Dictionary"], "MedDRA")
-
 
     def _set_attributes(self):
         """
@@ -153,4 +157,3 @@ class TestCodeList(TestCase):
                                               {'Context': 'nci:ExtCodeID', 'Name': 'C65047'}]
                                     }]
                 }
-

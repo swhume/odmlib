@@ -10,7 +10,7 @@ import xml.etree.ElementTree as ET
 class ODMMeta(type):
     @classmethod
     def __prepare__(cls, name, bases):
-        """ preserves the order of declarations in each class """
+        """preserves the order of declarations in each class"""
         return OrderedDict()
 
     def __new__(cls, clsname, bases, clsdict):
@@ -35,7 +35,7 @@ class ODMMeta(type):
         # for name in fields:
         #     clsdict[name].name = name
 
-        #clsdict["_fields"] = fields
+        # clsdict["_fields"] = fields
         # the default class namespace is odm
         if "namespace" not in clsdict:
             clsdict["namespace"] = "odm"
@@ -51,7 +51,6 @@ class ODMMeta(type):
 
 
 class ODMWriter:
-
     @staticmethod
     def write_odm(odm_file, odm_elem):
         """
@@ -64,7 +63,13 @@ class ODMWriter:
         # workaround for elementtree NS bug - NamespaceRegistry assumes at least 1 default NS has been set
         nsr = NS.NamespaceRegistry()
         nsr.set_odm_namespace_attributes(root)
-        tree.write(odm_file, xml_declaration=True, encoding='utf-8', method='xml', short_empty_elements=True)
+        tree.write(
+            odm_file,
+            xml_declaration=True,
+            encoding="utf-8",
+            method="xml",
+            short_empty_elements=True,
+        )
 
 
 class ODMElement(metaclass=ODMMeta):
@@ -76,18 +81,29 @@ class ODMElement(metaclass=ODMMeta):
             if name not in self.__class__.__dict__.keys():
                 # strip out non-default elementtree namespaces from the XML to work with just the name e.g. xml:lang
                 if "}" in name:
-                    name = name[name.find('}') + 1:]
+                    name = name[name.find("}") + 1:]
                 else:
-                    raise TypeError(f"Unknown keyword argument {name} in {self.__class__.__name__}")
+                    raise TypeError(
+                        f"Unknown keyword argument {name} in {self.__class__.__name__}"
+                    )
             setattr(self, name, val)
         for attr, obj in self.__class__.__dict__.items():
-            if isinstance(obj, DESC.Descriptor) and (not isinstance(obj, T.ODMObject)) and (attr not in self.__dict__) and obj.required:
-                raise ValueError(f"Missing required keyword argument {attr} in {self.__class__.__name__}")
+            if (
+                isinstance(obj, DESC.Descriptor)
+                and (not isinstance(obj, T.ODMObject))
+                and (attr not in self.__dict__)
+                and obj.required
+            ):
+                raise ValueError(
+                    f"Missing required keyword argument {attr} in {self.__class__.__name__}"
+                )
 
     def __setattr__(self, key, value):
-        """ ensure the object being added is a type that belongs to the class """
+        """ensure the object being added is a type that belongs to the class"""
         if not hasattr(self, key):
-            raise TypeError(f"Assignment error: {self.__class__.__name__} does not have a defined attribute {key}")
+            raise TypeError(
+                f"Assignment error: {self.__class__.__name__} does not have a defined attribute {key}"
+            )
         super().__setattr__(key, value)
 
     def to_json(self):
@@ -109,23 +125,40 @@ class ODMElement(metaclass=ODMMeta):
         # create attributes
         attrs = {}
         for attr, obj in self.__dict__.items():
-            if not isinstance(obj, (ODMElement, list)) and attr != "_content" and obj is not None:
+            if (
+                not isinstance(obj, (ODMElement, list))
+                and attr != "_content"
+                and obj is not None
+            ):
                 # add namespace if not the default namespace
                 if attr in self.__class__.__dict__["_attr_ns"]:
-                    attrs[self.__class__.__dict__["_attr_ns"][attr] + ":" + attr] = str(obj)
+                    attrs[self.__class__.__dict__["_attr_ns"][attr] + ":" + attr] = str(
+                        obj
+                    )
                 else:
                     attrs[attr] = str(obj)
 
         # create element
         if isinstance(parent_elem, ET.Element):
-            odm_elem = ET.SubElement(parent_elem, self.__class__.__name__ if self.namespace == "odm" else self.namespace + ":" + self.__class__.__name__, attrs)
+            odm_elem = ET.SubElement(
+                parent_elem,
+                self.__class__.__name__
+                if self.namespace == "odm"
+                else self.namespace + ":" + self.__class__.__name__,
+                attrs,
+            )
         else:
-            odm_elem = ET.Element(self.__class__.__name__ if self.namespace == "odm" else self.namespace + ":" + self.__class__.__name__, attrs)
+            odm_elem = ET.Element(
+                self.__class__.__name__
+                if self.namespace == "odm"
+                else self.namespace + ":" + self.__class__.__name__,
+                attrs,
+            )
             top_elem = odm_elem
         # add text to element if it exists
         if "_content" in self.__dict__:
             odm_elem.text = self.__dict__["_content"]
-        for name, obj in self.__dict__.items():
+        for _name, obj in self.__dict__.items():
             # process each element in a list of ELEMENTS
             if isinstance(obj, list) and obj:
                 for o in obj:
@@ -136,7 +169,7 @@ class ODMElement(metaclass=ODMMeta):
 
     def to_xml_string(self):
         elem = self.to_xml()
-        xml_str = ET.tostring(elem, encoding='utf8', method='xml')
+        xml_str = ET.tostring(elem, encoding="utf8", method="xml")
         return xml_str.decode("utf-8")
 
     def to_dict(self):
@@ -147,14 +180,18 @@ class ODMElement(metaclass=ODMMeta):
         """
         # Note: namespaces used in the XML serialization are not part of the dictionary or json serializations
         property_dict = {}
-        odm_content = {attr: obj for attr, obj in self.__dict__.items() if attr not in ["_fields", "_attr_ns", "_elems", "_attrs"]}
+        odm_content = {
+            attr: obj
+            for attr, obj in self.__dict__.items()
+            if attr not in ["_fields", "_attr_ns", "_elems", "_attrs"]
+        }
         for attr, obj in odm_content.items():
             if isinstance(obj, ODMElement):
-                property_dict[attr] = obj.to_dict()                    # element
+                property_dict[attr] = obj.to_dict()  # element
             elif isinstance(obj, list):
-                property_dict[attr] = [o.to_dict() for o in obj]       # list of ELEMENTS
+                property_dict[attr] = [o.to_dict() for o in obj]  # list of ELEMENTS
             elif obj is not None:
-                property_dict[attr] = obj                              # attributes
+                property_dict[attr] = obj  # attributes
         return property_dict
 
     def __repr__(self):
@@ -208,7 +245,7 @@ class ODMElement(metaclass=ODMMeta):
 
         :param odm_file: string ODM filename and path
         """
-        with open(odm_file, 'w') as outfile:
+        with open(odm_file, "w") as outfile:
             json.dump(self.to_dict(), outfile)
 
     def build_oid_index(self):
@@ -222,13 +259,17 @@ class ODMElement(metaclass=ODMMeta):
 
         :return oid_index: object that provices a dictionary lookup based on OID
         """
-        odm_content = {attr: obj for attr, obj in self.__dict__.items() if attr not in ["_fields", "_attr_ns", "_elems", "_attrs"]}
+        odm_content = {
+            attr: obj
+            for attr, obj in self.__dict__.items()
+            if attr not in ["_fields", "_attr_ns", "_elems", "_attrs"]
+        }
         for attr, obj in odm_content.items():
             if isinstance(obj, ODMElement):
-                obj._init_oid_index(idx)                    # element
+                obj._init_oid_index(idx)  # element
             elif isinstance(obj, list):
                 for o in obj:
-                    o._init_oid_index(idx)                  # list of ELEMENTS
+                    o._init_oid_index(idx)  # list of ELEMENTS
             else:
                 if attr == "OID" or "OID" in attr:
                     idx.add_oid(obj, self)
@@ -254,13 +295,17 @@ class ODMElement(metaclass=ODMMeta):
 
         :param oid_checker: object used to check OIDs for uniqueness and Def/Ref check
         """
-        odm_content = {attr: obj for attr, obj in self.__dict__.items() if attr not in ["_fields", "_attr_ns", "_elems", "_attrs"]}
+        odm_content = {
+            attr: obj
+            for attr, obj in self.__dict__.items()
+            if attr not in ["_fields", "_attr_ns", "_elems", "_attrs"]
+        }
         for attr, obj in odm_content.items():
             if isinstance(obj, ODMElement):
-                obj._init_oid_check(oid_checker)                    # element
+                obj._init_oid_check(oid_checker)  # element
             elif isinstance(obj, list):
                 for o in obj:
-                    o._init_oid_check(oid_checker)                  # list of ELEMENTS
+                    o._init_oid_check(oid_checker)  # list of ELEMENTS
             else:
                 # assumes consistency in OID naming. Exceptions: FileOID and PriorFileOID in ODM
                 if attr == "OID":
@@ -280,12 +325,23 @@ class ODMElement(metaclass=ODMMeta):
         return result
 
     def verify_order(self):
-        odm_content = {attr: obj for attr, obj in self.__dict__.items() if attr not in ["_fields", "_attr_ns", "_elems", "_attrs"]}
-        obj_list = [key for key in list(self.__dict__.keys()) if key != "_content" and key not in self._attrs]
+        odm_content = {
+            attr: obj
+            for attr, obj in self.__dict__.items()
+            if attr not in ["_fields", "_attr_ns", "_elems", "_attrs"]
+        }
+        obj_list = [
+            key
+            for key in list(self.__dict__.keys())
+            if key != "_content" and key not in self._attrs
+        ]
         elem_list = [elem for elem in self._elems if elem in obj_list]
         if obj_list != elem_list:
-            raise ValueError(f"The order of elements in {self.__class__.__name__} should be {', '.join([key for key in self._elems.keys()])}")
-        for attr, obj in odm_content.items():
+            raise ValueError(
+                f"The order of elements in {self.__class__.__name__} "
+                f"should be {', '.join([key for key in self._elems.keys()])}"
+            )
+        for _attr, obj in odm_content.items():
             if isinstance(obj, ODMElement):
                 obj.verify_order()
             elif isinstance(obj, list):
@@ -295,10 +351,9 @@ class ODMElement(metaclass=ODMMeta):
 
     def reorder_object(self):
         ordered_obj = OrderedDict()
-        for model_elem_name, model_elem_obj in self._elems.items():
+        for model_elem_name, _model_elem_obj in self._elems.items():
             if model_elem_name in self.__dict__:
                 obj = self.__dict__.pop(model_elem_name)
                 ordered_obj[model_elem_name] = obj
         for name, elem in ordered_obj.items():
             self.__dict__[name] = elem
-

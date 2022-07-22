@@ -4,18 +4,23 @@ import odmlib.odm_parser as P
 import odmlib.ns_registry as NS
 import odmlib.define_loader as OL
 import odmlib.loader as LD
+from tests import get_data_file_path
 
 ODM_NS = "{http://www.cdisc.org/ns/odm/v1.3}"
 
 
 class TestDefine21LoaderMetaData(unittest.TestCase):
     def setUp(self) -> None:
-        self.odm_file_1 = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'data', 'defineV21-SDTM-metadata.xml')
-        NS.NamespaceRegistry(prefix="odm", uri="http://www.cdisc.org/ns/odm/v1.3", is_default=True)
-        NS.NamespaceRegistry(prefix="def", uri="http://www.cdisc.org/ns/def/v2.1")
-        self.nsr = NS.NamespaceRegistry(prefix="nciodm", uri="http://ncicb.nci.nih.gov/xml/odm/EVS/CDISC")
+        self.odm_file_1 = get_data_file_path('defineV21-SDTM-metadata.xml')
+        NS.NamespaceRegistry(
+            prefix="odm", uri="http://www.cdisc.org/ns/odm/v1.3", is_default=True)
+        NS.NamespaceRegistry(
+            prefix="def", uri="http://www.cdisc.org/ns/def/v2.1")
+        self.nsr = NS.NamespaceRegistry(
+            prefix="nciodm", uri="http://ncicb.nci.nih.gov/xml/odm/EVS/CDISC")
         self.parser = P.ODMParser(self.odm_file_1, self.nsr)
-        self.loader = LD.ODMLoader(OL.XMLDefineLoader(model_package="define_2_1", ns_uri="http://www.cdisc.org/ns/def/v2.1"))
+        self.loader = LD.ODMLoader(OL.XMLDefineLoader(
+            model_package="define_2_1", ns_uri="http://www.cdisc.org/ns/def/v2.1"))
         self.root = self.loader.create_document(self.odm_file_1)
         self.odm = self.loader.load_odm()
         self.parser.parse()
@@ -26,12 +31,13 @@ class TestDefine21LoaderMetaData(unittest.TestCase):
         # elementree does not support using the suffix for accessing attributes not in the default ns
         mdv_dict = {"OID": "MDV.CDISC01_1.1.SDTMIG.3.1.2.SDTM.1.2_X",
                     "Name": "Study CDISC01_1, Data Definitions V-1",
-                    "Description": "Data Definitions for CDISC01-01 SDTM datasets. This metadata version contains only a subset of datasets compared to the prior version.",
+                    "Description": "Data Definitions for CDISC01-01 SDTM datasets. This metadata " \
+                    "version contains only a subset of datasets compared to the prior version.",
                     "{http://www.cdisc.org/ns/def/v2.1}DefineVersion": "2.1.0"}
         self.assertDictEqual(self.mdv[0].attrib, mdv_dict)
         self.assertEqual(mdv_dict["{http://www.cdisc.org/ns/def/v2.1}DefineVersion"],
                          self.mdv[0].attrib["{http://www.cdisc.org/ns/def/v2.1}DefineVersion"])
-        # self.assertEqual(769, len([e.tag for e in self.mdv[0].getchildren()]))
+        self.assertEqual(337, len([e.tag for e in self.mdv[0]]))
 
     def test_Standards(self):
         # self.assertTrue(isinstance(self.mdv[0].Standards.Standard, list))

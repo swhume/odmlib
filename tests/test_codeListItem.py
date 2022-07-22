@@ -14,10 +14,12 @@ class TestCodeListItem(TestCase):
         decode.TranslatedText.append(tt1)
         self.cli.Decode = decode
         self.assertEqual(len(self.cli.Decode.TranslatedText), 1)
-        self.assertEqual(self.cli.Decode.TranslatedText[0]._content, 'Hemoglobin')
+        self.assertEqual(
+            self.cli.Decode.TranslatedText[0]._content, 'Hemoglobin')
 
     def test_add_alias(self):
-        self.cli.Alias.append(ODM.Alias(Context="nci:ExtCodeID", Name="C64848"))
+        self.cli.Alias.append(
+            ODM.Alias(Context="nci:ExtCodeID", Name="C64848"))
         self.assertEqual(self.cli.Alias[0].Name, "C64848")
 
     def test_missing_attribute(self):

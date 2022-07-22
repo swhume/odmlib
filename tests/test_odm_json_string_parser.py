@@ -1,11 +1,13 @@
 import unittest
 import os
 import odmlib.odm_parser as P
+from tests import get_data_file_path
 
 
 class TestOdmParserMetaData(unittest.TestCase):
     def setUp(self) -> None:
-        self.odm_file_1 = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'data', 'cdash_odm_test.json')
+        # this file is generated sometimes
+        self.odm_file_1 = get_data_file_path("cdash_odm_test.json")
         with open(self.odm_file_1, "r", encoding="utf-8") as f:
             self.odm_string = f.read()
         self.parser = P.ODMJSONStringParser(self.odm_string)

@@ -9,7 +9,8 @@ class TestEnumeratedItem(TestCase):
         self.eni = ODM.EnumeratedItem(**attrs)
 
     def test_add_alias(self):
-        self.eni.Alias.append(ODM.Alias(Context="nci:ExtCodeID", Name="C64848"))
+        self.eni.Alias.append(
+            ODM.Alias(Context="nci:ExtCodeID", Name="C64848"))
         self.assertEqual(self.eni.Alias[0].Context, "nci:ExtCodeID")
         self.assertEqual(self.eni.Alias[0].Name, "C64848")
 

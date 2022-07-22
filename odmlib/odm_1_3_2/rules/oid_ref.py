@@ -1,6 +1,5 @@
-
 class OIDRef:
-    def __init__(self, skip_attrs=[], skip_elems=[]):
+    def __init__(self, skip_attrs=None, skip_elems=None):
         self.oid = {}
         self.oid_ref = {}
         self._init_oid_ref()
@@ -8,12 +7,13 @@ class OIDRef:
         self._init_ref_def()
         self.def_ref = {}
         self._init_def_ref()
-        self.skip_attr = ["FileOID", "PriorFileOID"] + skip_attrs
-        self.skip_elem = ["ODM"] + skip_elems
+        self.skip_attr = (skip_attrs if skip_attrs else []) + ["FileOID", "PriorFileOID"]
+        self.skip_elem = (skip_elems if skip_elems else []) + ["ODM"]
+        self.is_verified = False
         self.is_verified = False
 
     def add_oid(self, oid, element):
-        """ odmlib expects all OIDs to be unique within the scope of an ODM document """
+        """odmlib expects all OIDs to be unique within the scope of an ODM document"""
         if oid in self.oid:
             raise ValueError(f"OID {oid} is not unique - element {element}")
         if element not in self.skip_elem:
@@ -34,14 +34,18 @@ class OIDRef:
         for attr, oid_set in self.oid_ref.items():
             for oid in oid_set:
                 if oid not in self.oid:
-                    raise ValueError(f"OID {oid} referenced in the attribute {attr} is not found.")
+                    raise ValueError(
+                        f"OID {oid} referenced in the attribute {attr} is not found."
+                    )
                 elif self.ref_def.get(attr) != self.oid.get(oid):
-                    raise ValueError(f"OID reference for attribute {attr} element types do not match: "
-                                     f"{self.ref_def.get(attr)} and {self.oid.get(oid)}")
+                    raise ValueError(
+                        f"OID reference for attribute {attr} element types do not match: "
+                        f"{self.ref_def.get(attr)} and {self.oid.get(oid)}"
+                    )
         return True
 
     def check_unreferenced_oids(self):
-        """ identify ELEMENTS that are defined but not used """
+        """identify ELEMENTS that are defined but not used"""
         orphans = {}
         for oid, elem in self.oid.items():
             for ref in self.def_ref[elem]:
@@ -115,4 +119,10 @@ class OIDRef:
         self.def_ref["Association"] = ["StudyOID", "MetaDataVersionOID"]
         self.def_ref["ReferenceData"] = ["StudyOID", "MetaDataVersionOID"]
         self.def_ref["ClinicalData"] = ["StudyOID", "MetaDataVersionOID"]
-        self.def_ref["KeySet"] = ["StudyOID", "StudyEventOID", "FormOID", "ItemGroupOID", "ItemOID "]
+        self.def_ref["KeySet"] = [
+            "StudyOID",
+            "StudyEventOID",
+            "FormOID",
+            "ItemGroupOID",
+            "ItemOID ",
+        ]

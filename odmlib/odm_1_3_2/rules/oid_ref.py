@@ -1,5 +1,5 @@
 class OIDRef:
-    def __init__(self, skip_attrs=[], skip_elems=[]):
+    def __init__(self, skip_attrs=None, skip_elems=None):
         self.oid = {}
         self.oid_ref = {}
         self._init_oid_ref()
@@ -7,8 +7,9 @@ class OIDRef:
         self._init_ref_def()
         self.def_ref = {}
         self._init_def_ref()
-        self.skip_attr = ["FileOID", "PriorFileOID"] + skip_attrs
-        self.skip_elem = ["ODM"] + skip_elems
+        self.skip_attr = (skip_attrs if skip_attrs else []) + ["FileOID", "PriorFileOID"]
+        self.skip_elem = (skip_elems if skip_elems else []) + ["ODM"]
+        self.is_verified = False
         self.is_verified = False
 
     def add_oid(self, oid, element):

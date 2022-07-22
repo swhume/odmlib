@@ -1,12 +1,15 @@
+import importlib
 from setuptools import setup
 import pathlib
 
 HERE = pathlib.Path(__file__).parent
 README = (HERE / "README.md").read_text()
 
+module = importlib.import_module("odmlib")
+
 setup(
     name='odmlib',
-    version='0.1.4',
+    version=module.__version__,
     packages=['odmlib', 'tests', 'odmlib.odm_1_3_2',
               'odmlib.odm_1_3_2.rules', 'odmlib.define_2_0',
               'odmlib.define_2_0.rules', 'odmlib.define_2_1',

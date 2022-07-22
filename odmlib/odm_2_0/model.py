@@ -223,8 +223,8 @@ class CodeListRef(OE.ODMElement):
 
 
 class ItemDef(OE.ODMElement):
-    """ 
-    represents ODM v2.0 ItemDef and can serialize as JSON or XML 
+    """
+    represents ODM v2.0 ItemDef and can serialize as JSON or XML
     - ordering of properties matters
     """
     OID = T.OID(required=True)

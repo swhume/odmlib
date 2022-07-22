@@ -5,7 +5,7 @@ import odmlib.odm_parser as P
 import odmlib.ns_registry as NS
 import json
 import importlib
-import xml.etree.ElementTree as ET
+
 
 ODM_PREFIX = "odm:"
 ODM_NS = {"odm": "http://www.cdisc.org/ns/odm/v1.3"}
@@ -28,12 +28,12 @@ class JSONODMLoader(DL.DocumentLoader):
         for k, v in odm_obj_items:
             if type(v).__name__ == "ODMObject":
                 if k in odm_dict:
-                    odm_child_obj = self.load_document(odm_dict[k], k)
+                    odm_child_obj = self.load_document(odm_dict[k], k)    # noqa: F841
                     exec("odm_obj." + k + " = odm_child_obj")
             elif type(v).__name__ == "ODMListObject":
                 if k in odm_dict:
                     for val in odm_dict[k]:
-                        odm_child_obj = self.load_document(val, k)
+                        odm_child_obj = self.load_document(val, k)    # noqa: F841
                         eval("odm_obj." + k + ".append(odm_child_obj)")
         return odm_obj
 
@@ -108,12 +108,12 @@ class XMLODMLoader(DL.DocumentLoader):
                 namespace = self.nsr.get_ns_entry_dict(v.namespace)
                 e = elem.find(v.namespace + ":" + k, namespace)
                 if e is not None:
-                    odm_child_obj = self.load_document(e)
+                    odm_child_obj = self.load_document(e)   # noqa: F841
                     exec("odm_obj." + k + " = odm_child_obj")
             elif type(v).__name__ == "ODMListObject":
                 namespace = self.nsr.get_ns_entry_dict(v.namespace)
                 for e in elem.findall(v.namespace + ":" + k, namespace):
-                    odm_child_obj = self.load_document(e)
+                    odm_child_obj = self.load_document(e)   # noqa: F841
                     eval("odm_obj." + k + ".append(odm_child_obj)")
         return odm_obj
 

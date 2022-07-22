@@ -683,11 +683,6 @@ class MetadataSchema(ConformanceChecker):
                 "CreationDateTime": {"type": "string", "required": True},
                 "PriorFileOID": {"type": "string"},
                 "AsOfDateTime": {"type": "string"},
-                "FileType": {
-                    "type": "string",
-                    "required": True,
-                    "allowed": ["Snapshot", "Transactional"],
-                },
                 "ODMVersion": {"type": "string", "allowed": ["1.3.2", "1.3"]},
                 "Originator": {"type": "string"},
                 "SourceSystem": {"type": "string"},

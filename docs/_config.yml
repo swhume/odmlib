@@ -1,1 +1,5 @@
-theme: jekyll-theme-hacker
+title: odmlib
+description: Python package for working with CDISC ODM
+show_downloads: false
+google_analytics:
+theme: jekyll-theme-midnight

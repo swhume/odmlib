@@ -18,6 +18,17 @@ class Description(OE.ODMElement):
     TranslatedText = T.ODMListObject(required=True, element_class=TranslatedText)
 
 
+class Coding(OE.ODMElement):
+    Code = T.String(required=False)
+    System = T.String(required=True)
+    SystemName = T.String()
+    SystemVersion = T.String()
+    Label = T.String()
+    href = T.String()
+    ref = T.String()
+    CommentOID = T.OIDRef()
+
+
 class Alias(OE.ODMElement):
     Context = T.String(required=True)
     Name = T.String(required=True)
@@ -53,6 +64,17 @@ class Protocol(OE.ODMElement):
     Alias = T.ODMListObject(element_class=Alias)
 
 
+class ItemGroupRef(OE.ODMElement):
+    ItemGroupOID = T.OID(required=True)
+    OrderNumber = T.Integer(required=False)
+    Mandatory = T.ValueSetString(required=True)
+    CollectionExceptionConditionOID = T.OIDRef()
+
+
+class WorkflowRef(OE.ODMElement):
+    WorkflowOID = T.OID(required=True)
+
+
 class StudyEventDef(OE.ODMElement):
     """ represents ODM v2.0 StudyEventDef and can serialize as JSON or XML """
     OID = T.OID(required=True)
@@ -77,13 +99,6 @@ class StudyEventDef(OE.ODMElement):
 
     def __iter__(self):
         return iter(self.FormRef)
-
-
-class ItemGroupRef(OE.ODMElement):
-    ItemGroupOID = T.OID(required=True)
-    OrderNumber = T.Integer(required=False)
-    Mandatory = T.ValueSetString(required=True)
-    CollectionExceptionConditionOID = T.OIDRef()
 
 
 class ArchiveLayout(OE.ODMElement):
@@ -141,6 +156,7 @@ class ItemRef(OE.ODMElement):
     Mandatory = T.ValueSetString(required=True)
     KeySequence = T.Integer(required=False)
     MethodOID = T.String(required=False)
+    PreSpecifiedValue = T.String(required=False)
     Role = T.String()
     RoleCodeListOID = T.String()
     CollectionExceptionConditionOID = T.String()
@@ -160,6 +176,7 @@ class ItemGroupDef(OE.ODMElement):
     Description = T.ODMObject(element_class=Description)
     ItemGroupRef = T.ODMListObject(element_class=ItemGroupRef)
     ItemRef = T.ODMListObject(element_class=ItemRef)
+    Coding = T.ODMListObject(element_class=Coding)
     WorkflowRef = T.ODMListObject(element_class=WorkflowRef)
     Origin = T.ODMListObject(element_class=Origin)
     Alias = T.ODMListObject(element_class=Alias)
@@ -175,6 +192,10 @@ class ItemGroupDef(OE.ODMElement):
 
 
 class Question(OE.ODMElement):
+    TranslatedText = T.ODMListObject(required=True, element_class=TranslatedText)
+
+
+class Prompt(OE.ODMElement):
     TranslatedText = T.ODMListObject(required=True, element_class=TranslatedText)
 
 
@@ -226,10 +247,12 @@ class ItemDef(OE.ODMElement):
     CommentOID = T.String()
     Description = T.ODMObject(element_class=Description)
     Question = T.ODMObject(element_class=Question)
+    Prompt = T.ODMObject(element_class=Prompt)
     ExternalQuestion = T.ODMObject(element_class=ExternalQuestion)
     MeasurementUnitRef = T.ODMListObject(element_class=MeasurementUnitRef)
     RangeCheck = T.ODMListObject(element_class=RangeCheck)
     CodeListRef = T.ODMObject(element_class=CodeListRef)
+    Coding = T.ODMListObject(element_class=Coding)
     Alias = T.ODMListObject(element_class=Alias)
 
 
@@ -242,23 +265,10 @@ class CodeListItem(OE.ODMElement):
     CodedValue = T.String(required=True)
     Rank = T.Float(required=False)
     OrderNumber = T.Integer(required=False)
+    Description = T.ODMObject(element_class=Description)
     Decode = T.ODMObject(element_class=Decode)
+    Coding = T.ODMListObject(element_class=Coding)
     Alias = T.ODMListObject(element_class=Alias)
-
-
-class EnumeratedItem(OE.ODMElement):
-    """ represents ODM EnumeratedItem element that is a child of CodeList and can serialize as JSON or XML """
-    CodedValue = T.String(required=True)
-    Rank = T.Float(required=False)
-    OrderNumber = T.Integer(required=False)
-    Alias = T.ODMListObject(element_class=Alias)
-
-
-class ExternalCodeList(OE.ODMElement):
-    Dictionary = T.String(required=False)
-    Version = T.String(required=False)
-    ref = T.String(required=False)
-    href = T.String(required=False)
 
 
 class CodeList(OE.ODMElement):
@@ -266,11 +276,9 @@ class CodeList(OE.ODMElement):
     OID = T.OID(required=True)
     Name = T.Name(required=True)
     DataType = T.ValueSetString(required=True)
-    SASFormatName = T.SASFormat()
     Description = T.ODMObject(element_class=Description)
     CodeListItem = T.ODMListObject(element_class=CodeListItem)
-    EnumeratedItem = T.ODMListObject(element_class=EnumeratedItem)
-    ExternalCodeList = T.ODMObject(element_class=ExternalCodeList)
+    Coding = T.ODMListObject(element_class=Coding)
     Alias = T.ODMListObject(element_class=Alias)
 
 
@@ -328,10 +336,6 @@ class ExceptionEvent(OE.ODMElement):
     WorkflowRef = T.ODMObject(element_class=WorkflowRef)
     StudyEventGroupRef = T.ODMListObject(element_class=StudyEventGroupRef)
     StudyEventRef = T.ODMListObject(element_class=StudyEventRef)
-
-
-class WorkflowRef(OE.ODMElement):
-    WorkflowOID = T.OID(required=True)
 
 
 class Arm(OE.ODMElement):

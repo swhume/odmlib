@@ -18,6 +18,34 @@ class Description(OE.ODMElement):
     TranslatedText = T.ODMListObject(required=True, element_class=TranslatedText)
 
 
+class Title(OE.ODMElement):
+    _content = T.String(required=False)
+
+
+class Leaf(OE.ODMElement):
+    ID = T.ID(required=True)
+    href = T.String(required=True, namespace="xlink")
+    Title = T.ODMObject(element_class=Title)
+
+
+class PDFPageRef(OE.ODMElement):
+    Type = T.ValueSetString(required=True)
+    PageRefs = T.String()
+    FirstPage = T.PositiveInteger()
+    LastPage = T.PositiveInteger()
+
+
+class DocumentRef(OE.ODMElement):
+    leafID = T.IDRef(required=True)
+    PDFPageRef = T.ODMListObject(element_class=PDFPageRef, namespace="def")
+
+
+class CommentDef(OE.ODMElement):
+    OID = T.OID(required=True)
+    Description = T.ODMObject(element_class=Description)
+    DocumentRef = T.ODMObject(element_class=DocumentRef)
+
+
 class Coding(OE.ODMElement):
     Code = T.String(required=False)
     System = T.String(required=True)
@@ -52,7 +80,7 @@ class Include(OE.ODMElement):
 
 
 class StudyEventRef(OE.ODMElement):
-    StudyEventOID = T.OID(required=True)
+    StudyEventOID = T.OIDRef(required=True)
     OrderNumber = T.Integer(required=False)
     Mandatory = T.ValueSetString(required=True)
     CollectionExceptionConditionOID = T.OIDRef()
@@ -65,14 +93,14 @@ class Protocol(OE.ODMElement):
 
 
 class ItemGroupRef(OE.ODMElement):
-    ItemGroupOID = T.OID(required=True)
+    ItemGroupOID = T.OIDRef(required=True)
     OrderNumber = T.Integer(required=False)
     Mandatory = T.ValueSetString(required=True)
     CollectionExceptionConditionOID = T.OIDRef()
 
 
 class WorkflowRef(OE.ODMElement):
-    WorkflowOID = T.OID(required=True)
+    WorkflowOID = T.OIDRef(required=True)
 
 
 class StudyEventDef(OE.ODMElement):
@@ -82,6 +110,7 @@ class StudyEventDef(OE.ODMElement):
     Repeating = T.ValueSetString(required=True)
     Type = T.ValueSetString(required=True)
     Category = T.String(required=False)
+    CommentOID = T.OIDRef(required=False)
     Description = T.ODMObject(element_class=Description)
     ItemGroupRef = T.ODMListObject(element_class=ItemGroupRef)
     WorkflowRef = T.ODMListObject(element_class=WorkflowRef)
@@ -106,7 +135,6 @@ class ArchiveLayout(OE.ODMElement):
     PdfFileName = T.FileName(required=True)
     PresentationOID = T.OIDRef(required=False)
 
-
     def __len__(self):
         return len(self.ItemGroupRef)
 
@@ -115,18 +143,6 @@ class ArchiveLayout(OE.ODMElement):
 
     def __iter__(self):
         return iter(self.ItemGroupRef)
-
-
-class PDFPageRef(OE.ODMElement):
-    Type = T.ValueSetString(required=True)
-    PageRefs = T.String()
-    FirstPage = T.PositiveInteger()
-    LastPage = T.PositiveInteger()
-
-
-class DocumentRef(OE.ODMElement):
-    leafID = T.String(required=True)
-    PDFPageRef = T.ODMListObject(element_class=PDFPageRef, namespace="def")
 
 
 class SourceItem(OE.ODMElement):
@@ -151,15 +167,21 @@ class Origin(OE.ODMElement):
 
 
 class ItemRef(OE.ODMElement):
-    ItemOID = T.String(required=True)
-    OrderNumber = T.Integer(required=False)
+    ItemOID = T.OIDRef(required=True)
     Mandatory = T.ValueSetString(required=True)
+    Core = T.ValueSetString(required=False)
+    OrderNumber = T.PositiveInteger(required=False)
     KeySequence = T.Integer(required=False)
+    IsNonStandard = T.ValueSetString(required=False)
+    HasNoData = T.ValueSetString(required=False)
     MethodOID = T.String(required=False)
+    UnitsItemOID = T.String(required=False)
     PreSpecifiedValue = T.String(required=False)
-    Role = T.String()
-    RoleCodeListOID = T.String()
-    CollectionExceptionConditionOID = T.String()
+    Repeat = T.ValueSetString(required=False)
+    Other = T.ValueSetString(required=False)
+    Role = T.String(required=False)
+    RoleCodeListOID = T.String(required=False)
+    CollectionExceptionConditionOID = T.String(required=False)
 
 
 class ItemGroupDef(OE.ODMElement):
@@ -167,12 +189,16 @@ class ItemGroupDef(OE.ODMElement):
     OID = T.OID(required=True)
     Name = T.Name(required=True)
     Repeating = T.ValueSetString(required=True)
-    Type = T.ValueSetString()
+    RepeatingLimit = T.PositiveInteger(required=False)
     IsReferenceData = T.ValueSetString(required=False)
-    DatasetName = T.Name()
-    Domain = T.String()
-    Purpose = T.String()
-    CommentOID = T.OIDRef()
+    DatasetName = T.Name(required=False)
+    Domain = T.String(required=False)
+    Type = T.ValueSetString(required=True)
+    Purpose = T.String(required=False)
+    StandardOID = T.OIDRef(required=False)
+    IsNonStandard = T.ValueSetString(required=False)
+    HasNoData = T.ValueSetString(required=False)
+    CommentOID = T.OIDRef(required=False)
     Description = T.ODMObject(element_class=Description)
     ItemGroupRef = T.ODMListObject(element_class=ItemGroupRef)
     ItemRef = T.ODMListObject(element_class=ItemRef)
@@ -191,6 +217,10 @@ class ItemGroupDef(OE.ODMElement):
         return iter(self.ItemRef)
 
 
+class Definition(OE.ODMElement):
+    TranslatedText = T.ODMListObject(required=True, element_class=TranslatedText)
+
+
 class Question(OE.ODMElement):
     TranslatedText = T.ODMListObject(required=True, element_class=TranslatedText)
 
@@ -199,14 +229,16 @@ class Prompt(OE.ODMElement):
     TranslatedText = T.ODMListObject(required=True, element_class=TranslatedText)
 
 
-class ExternalQuestion(OE.ODMElement):
-    Dictionary = T.String(required=False)
-    Version = T.String(required=False)
-    Code = T.String(required=False)
+class CRFCompletionInstructions(OE.ODMElement):
+    TranslatedText = T.ODMListObject(required=True, element_class=TranslatedText)
 
 
-class MeasurementUnitRef(OE.ODMElement):
-    MeasurementUnitOID = T.String(required=True)
+class ImplementationNotes(OE.ODMElement):
+    TranslatedText = T.ODMListObject(required=True, element_class=TranslatedText)
+
+
+class CDISCNotes(OE.ODMElement):
+    TranslatedText = T.ODMListObject(required=True, element_class=TranslatedText)
 
 
 class CheckValue(OE.ODMElement):
@@ -232,7 +264,7 @@ class RangeCheck(OE.ODMElement):
 
 
 class CodeListRef(OE.ODMElement):
-    CodeListOID = T.String("CodeListOID", required=True)
+    CodeListOID = T.OIDRef("CodeListOID", required=True)
 
 
 class ItemDef(OE.ODMElement):
@@ -244,12 +276,14 @@ class ItemDef(OE.ODMElement):
     FractionDigits = T.NonNegativeInteger()
     DatasetVarName = T.Name()
     SDSVarName = T.SASName()
-    CommentOID = T.String()
+    CommentOID = T.OIDRef()
     Description = T.ODMObject(element_class=Description)
+    Definition = T.ODMObject(element_class=Definition)
     Question = T.ODMObject(element_class=Question)
     Prompt = T.ODMObject(element_class=Prompt)
-    ExternalQuestion = T.ODMObject(element_class=ExternalQuestion)
-    MeasurementUnitRef = T.ODMListObject(element_class=MeasurementUnitRef)
+    CRFCompletionInstructions = T.ODMObject(element_class=CRFCompletionInstructions)
+    ImplementationNotes = T.ODMObject(element_class=ImplementationNotes)
+    CDISCNotes = T.ODMObject(element_class=CDISCNotes)
     RangeCheck = T.ODMListObject(element_class=RangeCheck)
     CodeListRef = T.ODMObject(element_class=CodeListRef)
     Coding = T.ODMListObject(element_class=Coding)
@@ -264,7 +298,9 @@ class CodeListItem(OE.ODMElement):
     """ represents ODM CodeListItem element that is a child of CodeList and can serialize as JSON or XML """
     CodedValue = T.String(required=True)
     Rank = T.Float(required=False)
-    OrderNumber = T.Integer(required=False)
+    Other = T.ValueSetString(required=False)
+    OrderNumber = T.PositiveInteger(required=False)
+    CommentOID = T.OIDRef(required=False)
     Description = T.ODMObject(element_class=Description)
     Decode = T.ODMObject(element_class=Decode)
     Coding = T.ODMListObject(element_class=Coding)
@@ -276,6 +312,9 @@ class CodeList(OE.ODMElement):
     OID = T.OID(required=True)
     Name = T.Name(required=True)
     DataType = T.ValueSetString(required=True)
+    CommentOID = T.OIDRef()
+    StandardOID = T.OIDRef(required=False)
+    IsNonStandard = T.ValueSetString(required=False)
     Description = T.ODMObject(element_class=Description)
     CodeListItem = T.ODMListObject(element_class=CodeListItem)
     Coding = T.ODMListObject(element_class=Coding)
@@ -285,6 +324,7 @@ class CodeList(OE.ODMElement):
 class ConditionDef(OE.ODMElement):
     OID = T.OID(required=True)
     Name = T.Name(required=True)
+    CommentOID = T.OIDRef()
     Description = T.ODMObject(element_class=Description)
     FormalExpression = T.ODMListObject(element_class=FormalExpression)
     Alias = T.ODMListObject(element_class=Alias)
@@ -314,6 +354,7 @@ class MethodDef(OE.ODMElement):
     OID = T.OID(required=True)
     Name = T.Name(required=True)
     Type = T.ValueSetString(required=True)
+    CommentOID = T.OIDRef()
     Description = T.ODMObject(required=True, element_class=Description)
     MethodSignature = T.ODMObject(element_class=MethodSignature)
     FormalExpression = T.ODMListObject(element_class=FormalExpression)
@@ -649,8 +690,7 @@ class ODM(OE.ODMElement):
     ID = T.ID()
     Study = T.ODMListObject(element_class=Study)
     AdminData = T.ODMListObject(element_class=AdminData)
-    #ReferenceData = T.ODMListObject(element_class=referencedata.ReferenceData)
-    #ClinicalData = T.ODMListObject(element_class=clinicaldata.ClinicalData)
-    #Association = T.ODMListObject(element_class=association.Association)
-    #ds_Signature = T.ODMListObject(element_class=dssignature.ds_Signature)
-
+    # ReferenceData = T.ODMListObject(element_class=referencedata.ReferenceData)
+    # ClinicalData = T.ODMListObject(element_class=clinicaldata.ClinicalData)
+    # Association = T.ODMListObject(element_class=association.Association)
+    # ds_Signature = T.ODMListObject(element_class=dssignature.ds_Signature)

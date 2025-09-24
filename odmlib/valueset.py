@@ -1,9 +1,14 @@
 
 class ValueSet:
     _value_set = {
+        "ODM.FileType": ["Snapshot", "Transactional", "Query"],
+        "ODM.Granularity": ["All", "Metadata", "AdminData", "ReferenceData", "AllClinicalData", "SingleSite",
+                            "SingleSubject"],
+        "ODM.Context": ["Archive", "Submission", "Exchange", "Other"],
+        "ODM.Archival": ["Yes", "No"],
+        # May be better to convert the ODMVersion into a RegEx: 2.0(.(0|([1-9][0-9]*)))?(-([0-9a-zA-Z])+)*
+        "ODM.ODMVersion": ["1.2", "1.2.1", "1.3", "1.3.1", "1.3.2", "2.0"],
         "MetaDataVersion.DefineVersion": ["2.0.0", "2.0", "2.1.0", "2.1"],
-        "ItemGroupDef.Class": ["SPECIAL PURPOSE", "FINDINGS", "EVENTS", "INTERVENTIONS", "TRIAL DESIGN", "RELATIONSHIP",
-                               "SUBJECT LEVEL ANALYSIS DATASET", "BASIC DATA STRUCTURE", "ADAM OTHER"],
         "PDFPageRef.Type": ["NamedDestination", "PhysicalRef"],
         "Origin.Type": ["CRF", "Derived", "Assigned", "Protocol", "eDT", "Predecessor"],
         "RangeCheck.Comparator": ["LT", "LE", "GT", "GE", "EQ", "NE", "IN", "NOTIN"],
@@ -18,6 +23,8 @@ class ValueSet:
         "ItemGroupDef.IsNonStandard": ["Yes"],
         "ItemGroupDef.HasNoData": ["Yes"],
         "ItemGroupDef.Type": ["Form", "Section", "Dataset", "Concept"],
+        "ItemGroupDef.Class": ["SPECIAL PURPOSE", "FINDINGS", "EVENTS", "INTERVENTIONS", "TRIAL DESIGN", "RELATIONSHIP",
+                               "SUBJECT LEVEL ANALYSIS DATASET", "BASIC DATA STRUCTURE", "ADAM OTHER"],
         "FormRef.Mandatory": ["Yes", "No"],
         "ItemGroupRef.Mandatory": ["Yes", "No"],
         "ItemRef.Mandatory": ["Yes", "No"],
@@ -39,12 +46,6 @@ class ValueSet:
         "CodeListItem.Other": ["Yes"],
         "MethodDef.Type": ["Computation", "Imputation", "Transpose", "Preload", "Other"],
         "StudyEventDef.Type": ["Scheduled", "Unscheduled", "Common"],
-        "ODM.FileType": ["Snapshot", "Transactional", "Query"],
-        "ODM.Granularity": ["All", "Metadata", "AdminData", "ReferenceData", "AllClinicalData", "SingleSite",
-                            "SingleSubject"],
-        "ODM.Archival": ["Yes", "No"],
-        "ODM.ODMVersion": ["1.2", "1.2.1", "1.3", "1.3.1", "1.3.2", "2.0"],
-        "ODM.Context": ["Archive", "Submission", "Exchange", "Other"],
         "User.UserType": ["Sponsor", "Investigator", "Lab", "Other"],
         "Location.LocationType": ["Sponsor", "Site", "CRO", "Lab", "Other"],
         "SignatureDef.Methodology": ["Digital", "Electronic"],

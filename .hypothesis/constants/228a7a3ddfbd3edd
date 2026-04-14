@@ -1,0 +1,4 @@
+# file: /Users/dmoreland/projects/odmlib/odmlib/dataset_json/model.py
+# hypothesis_version: 6.151.14
+
+['1.1.0', 'Dataset', 'DatasetJSON', 'ItemMetadata', 'OID', 'asOfDateTime', 'clinicalData', 'creationDateTime', 'datasetJSONVersion', 'displayFormat', 'fileOID', 'itemGroupData', 'itemGroupDataSeq', 'items', 'keySequence', 'label', 'length', 'metaDataRef', 'metaDataVersionOID', 'name', 'originator', 'records', 'sourceSystem', 'sourceSystemVersion', 'studyOID', 'type', 'utf-8', 'w']

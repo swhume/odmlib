@@ -1,0 +1,4 @@
+# file: /Users/dmoreland/projects/odmlib/odmlib/define_2_0/rules/oid_ref.py
+# hypothesis_version: 6.151.14
+
+['ArchiveLayoutOID', 'ArchiveLocationID', 'CodeList', 'CodeListOID', 'CommentDef', 'CommentOID', 'FileOID', 'FormOID', 'ItemDef', 'ItemGroupDef', 'ItemGroupOID', 'ItemOID', 'MetaDataVersion', 'MetaDataVersionOID', 'MethodDef', 'MethodOID', 'ODM', 'OID', 'PriorFileOID', 'Study', 'StudyEventOID', 'StudyOID', 'ValueListDef', 'ValueListOID', 'WhereClauseDef', 'WhereClauseOID', 'leaf', 'leafID']

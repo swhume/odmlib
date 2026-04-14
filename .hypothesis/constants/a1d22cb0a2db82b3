@@ -1,0 +1,4 @@
+# file: /Users/dmoreland/projects/odmlib/odmlib/odm_1_3_2/rules/oid_ref.py
+# hypothesis_version: 6.151.14
+
+['AdminData', 'ArchiveLayout', 'ArchiveLayoutOID', 'Association', 'ClinicalData', 'CodeList', 'CodeListOID', 'ConditionDef', 'FileOID', 'FlagType', 'FlagValue', 'FormData', 'FormDef', 'FormOID', 'InvestigatorRef', 'ItemData', 'ItemDef', 'ItemGroupData', 'ItemGroupDef', 'ItemGroupOID', 'ItemOID', 'KeySet', 'Location', 'LocationOID', 'MeasurementUnit', 'MeasurementUnitOID', 'MetaDataVersion', 'MetaDataVersionOID', 'MethodDef', 'MethodOID', 'ODM', 'OID', 'Presentation', 'PresentationOID', 'PriorFileOID', 'ReferenceData', 'RoleCodeListOID', 'SignatureOID', 'SignatureRef', 'SiteRef', 'Study', 'StudyEventData', 'StudyEventDef', 'StudyEventOID', 'StudyOID', 'User', 'UserOID', 'UserRef']

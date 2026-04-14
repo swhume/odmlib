@@ -1,0 +1,4 @@
+# file: /Users/dmoreland/projects/odmlib/odmlib/dataset_json/converter.py
+# hypothesis_version: 6.151.14
+
+['.', '1.0.1', 'AsOfDateTime', 'ClinicalData', 'CreationDateTime', 'DataType', 'Description', 'FileOID', 'ItemData', 'ItemDef', 'ItemGroupData', 'ItemGroupDef', 'Length', 'MetaDataVersionOID', 'Name', 'OID', 'Originator', 'Snapshot', 'SourceSystem', 'SourceSystemVersion', 'StudyOID', 'TranslatedText', 'URI', 'Value', '_content', 'base64Binary', 'boolean', 'date', 'datetime', 'decimal', 'double', 'durationDatetime', 'float', 'hexBinary', 'incompleteDatetime', 'integer', 'intervalDatetime', 'partialDate', 'partialDatetime', 'partialTime', 'string', 'text', 'time']

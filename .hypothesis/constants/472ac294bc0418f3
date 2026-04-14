@@ -1,0 +1,4 @@
+# file: /Users/dmoreland/projects/odmlib/odmlib/typed.py
+# hypothesis_version: 6.151.14
+
+['%Y-%m-%d', '-', '.', 'element_class', 'float', 'namespace']

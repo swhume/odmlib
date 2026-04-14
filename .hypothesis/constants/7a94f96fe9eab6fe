@@ -1,0 +1,4 @@
+# file: /Users/dmoreland/projects/odmlib/odmlib/builder.py
+# hypothesis_version: 6.151.14
+
+['CodedValue', 'Decode', 'en', 'odm_1_3_2']

@@ -1,0 +1,4 @@
+# file: /Users/dmoreland/projects/odmlib/odmlib/oid_generator.py
+# hypothesis_version: 6.151.14
+
+['Arm', 'ArmOID', 'ConditionDef', 'ConditionOID', 'Def', 'EndConditionOID', 'Epoch', 'EpochOID', 'OID', 'StartConditionOID', 'StudyEventGroupDef', 'StudyEventGroupOID', 'Transition', 'TransitionOID', 'WorkflowDef', 'WorkflowOID', '_attrs']

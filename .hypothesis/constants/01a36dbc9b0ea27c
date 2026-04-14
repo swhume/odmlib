@@ -1,0 +1,4 @@
+# file: /Users/dmoreland/projects/odmlib/odmlib/dataset_json_1_1/model.py
+# hypothesis_version: 6.151.14
+
+['Empty NDJSON file', 'OID', 'URI', '_', 'boolean', 'columns', 'date', 'datetime', 'decimal', 'double', 'dsjson', 'float', 'integer', 'r', 'records', 'rows', 'sourceSystem', 'string', 'time', 'w']

@@ -1,0 +1,4 @@
+# file: /Users/dmoreland/projects/odmlib/odmlib/odm_element.py
+# hypothesis_version: 6.151.14
+
+['(', '(OID=', ')', ', ', ':', 'OID', '_attr_ns', '_attrs', '_content', '_elems', '_fields', 'namespace', 'odm', 'utf-8', 'utf8', 'w', 'xml', '}']

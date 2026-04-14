@@ -1,0 +1,4 @@
+# file: /Users/dmoreland/projects/odmlib/odmlib/define_2_1/model.py
+# hypothesis_version: 6.151.14
+
+['1.3.2', 'Assigned', 'Collected', 'Derived', 'Investigator', 'Not Available', 'Predecessor', 'Protocol', 'Snapshot', 'Sponsor', 'Subject', 'Vendor', 'def', 'xlink']

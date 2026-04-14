@@ -1,0 +1,4 @@
+# file: /Users/dmoreland/projects/odmlib/odmlib/oid_generator_config.py
+# hypothesis_version: 6.151.14
+
+['EndOID', 'FileOID', 'ItemGroupDef', 'ItemGroupOID', 'MetaDataVersion', 'MetaDataVersionOID', 'ODM', 'PriorFileOID', 'SourceOID', 'StartOID', 'StructuralElementOID', 'Study', 'StudyOID', 'TargetOID', 'TargetTransitionOID', 'arm_1_0', 'define_2_0', 'define_2_1', 'odm_1_3_2', 'odm_2_0']

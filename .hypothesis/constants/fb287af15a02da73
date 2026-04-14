@@ -1,0 +1,4 @@
+# file: /Users/dmoreland/projects/odmlib/odmlib/ns_registry.py
+# hypothesis_version: 6.151.14
+
+[' xmlns:', '"', '<ODM', '<ODM xmlns="', '=', '="', 'xmlns', 'xmlns:', 'xmlns=', '{', '}']

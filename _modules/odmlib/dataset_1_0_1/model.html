@@ -1,0 +1,284 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>odmlib.dataset_1_0_1.model &mdash; odmlib 0.2.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=9edc463e" />
+
+  
+      <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../_static/documentation_options.js?v=938c9ccc"></script>
+      <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            odmlib
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">User Guides</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../guides/getting_started.html">Getting Started with odmlib</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../guides/reading_documents.html">Reading ODM Documents</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../guides/permissive_loading.html">Permissive Loading Mode</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../guides/creating_documents.html">Creating ODM Documents</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../guides/validation.html">Validating ODM Documents</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../guides/model_reference.html">Model Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../guides/interoperability.html">Interoperability: Dataset-JSON and Pandas</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../guides/dataset_json.html">Working with Dataset-JSON v1.1</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules.html">odmlib</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../odmlib.odm_1_3_2.html">odm_1_3_2 package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../odmlib.odm_2_0.html">odm_2_0 package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../odmlib.define_2_0.html">define_2_0 package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../odmlib.define_2_1.html">define_2_1 package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../odmlib.dataset_1_0_1.html">odmlib.dataset_1_0_1 module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../odmlib.ct_1_1_1.html">odmlib.ct_1_1_1 module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../odmlib.arm_1_0.html">odmlib.arm_1_0 module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../odmlib.dataset_json_1_1.html">odmlib.dataset_json_1_1</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../odmlib.dataframe.html">odmlib.dataframe</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Project</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../changelog.html">Changelog</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">odmlib</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">odmlib.dataset_1_0_1.model</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for odmlib.dataset_1_0_1.model</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">odmlib.odm_1_3_2.model</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ODM</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">odmlib.odm_element</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">OE</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">odmlib.typed</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">T</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">odmlib.ns_registry</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">NS</span>
+
+
+<span class="n">NS</span><span class="o">.</span><span class="n">NamespaceRegistry</span><span class="p">(</span><span class="n">prefix</span><span class="o">=</span><span class="s2">&quot;odm&quot;</span><span class="p">,</span> <span class="n">uri</span><span class="o">=</span><span class="s2">&quot;http://www.cdisc.org/ns/odm/v1.3&quot;</span><span class="p">,</span> <span class="n">is_default</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">NS</span><span class="o">.</span><span class="n">NamespaceRegistry</span><span class="p">(</span><span class="n">prefix</span><span class="o">=</span><span class="s2">&quot;xs&quot;</span><span class="p">,</span> <span class="n">uri</span><span class="o">=</span><span class="s2">&quot;http://www.w3.org/2001/XMLSchema-instance&quot;</span><span class="p">)</span>
+<span class="n">NS</span><span class="o">.</span><span class="n">NamespaceRegistry</span><span class="p">(</span><span class="n">prefix</span><span class="o">=</span><span class="s2">&quot;xml&quot;</span><span class="p">,</span> <span class="n">uri</span><span class="o">=</span><span class="s2">&quot;http://www.w3.org/XML/1998/namespace&quot;</span><span class="p">)</span>
+<span class="n">NS</span><span class="o">.</span><span class="n">NamespaceRegistry</span><span class="p">(</span><span class="n">prefix</span><span class="o">=</span><span class="s2">&quot;data&quot;</span><span class="p">,</span> <span class="n">uri</span><span class="o">=</span><span class="s2">&quot;http://www.cdisc.org/ns/Dataset-XML/v1.0&quot;</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="ItemData">
+<a class="viewcode-back" href="../../../odmlib.dataset_1_0_1.html#odmlib.dataset_1_0_1.model.ItemData">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">ItemData</span><span class="p">(</span><span class="n">OE</span><span class="o">.</span><span class="n">ODMElement</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;A single data value for one item (variable) in a Dataset-XML document.</span>
+
+<span class="sd">    Each ItemData element holds the actual collected or derived value for</span>
+<span class="sd">    one variable in a row of tabular clinical data.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        ItemOID (str, required): OID reference to the corresponding ItemDef</span>
+<span class="sd">            in the associated ODM metadata.</span>
+<span class="sd">        Value (str): The actual data value for this item. May be omitted</span>
+<span class="sd">            when the item has no value for this row.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">ItemOID</span> <span class="o">=</span> <span class="n">T</span><span class="o">.</span><span class="n">OIDRef</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">Value</span> <span class="o">=</span> <span class="n">T</span><span class="o">.</span><span class="n">String</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="ItemGroupData">
+<a class="viewcode-back" href="../../../odmlib.dataset_1_0_1.html#odmlib.dataset_1_0_1.model.ItemGroupData">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">ItemGroupData</span><span class="p">(</span><span class="n">OE</span><span class="o">.</span><span class="n">ODMElement</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;One row (record) of data within a Dataset-XML dataset.</span>
+
+<span class="sd">    Corresponds to a single observation row in a tabular dataset. Contains</span>
+<span class="sd">    one ItemData child for every variable in that row that has a value.</span>
+<span class="sd">    The ``data:ItemGroupDataSeq`` attribute provides the row number for</span>
+<span class="sd">    ordering records within the dataset.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        ItemGroupOID (str, required): OID reference to the ItemGroupDef that</span>
+<span class="sd">            describes the dataset structure.</span>
+<span class="sd">        ItemGroupDataSeq (int, required): Sequential row number for ordering</span>
+<span class="sd">            records; stored in the ``data:`` namespace.</span>
+<span class="sd">        ItemData (list): Zero or more ItemData children, each carrying one</span>
+<span class="sd">            variable value for this row.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">ItemGroupOID</span> <span class="o">=</span> <span class="n">T</span><span class="o">.</span><span class="n">OIDRef</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">ItemGroupDataSeq</span> <span class="o">=</span> <span class="n">T</span><span class="o">.</span><span class="n">PositiveInteger</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">namespace</span><span class="o">=</span><span class="s2">&quot;data&quot;</span><span class="p">)</span>
+    <span class="n">ItemData</span> <span class="o">=</span> <span class="n">T</span><span class="o">.</span><span class="n">ODMListObject</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">element_class</span><span class="o">=</span><span class="n">ItemData</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ItemData</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">position</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">ItemData</span><span class="p">[</span><span class="n">position</span><span class="p">]</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__iter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">iter</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ItemData</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="ClinicalData">
+<a class="viewcode-back" href="../../../odmlib.dataset_1_0_1.html#odmlib.dataset_1_0_1.model.ClinicalData">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">ClinicalData</span><span class="p">(</span><span class="n">OE</span><span class="o">.</span><span class="n">ODMElement</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;A container for subject-level (clinical) tabular data in a Dataset-XML file.</span>
+
+<span class="sd">    ClinicalData groups all ItemGroupData rows that belong to the same study</span>
+<span class="sd">    and metadata version. It is used for SDTM/ADaM datasets containing</span>
+<span class="sd">    actual subject observations.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        StudyOID (str, required): OID reference to the Study in the</span>
+<span class="sd">            associated ODM metadata.</span>
+<span class="sd">        MetaDataVersionOID (str, required): OID reference to the</span>
+<span class="sd">            MetaDataVersion that describes the dataset structure.</span>
+<span class="sd">        ItemGroupData (list): Zero or more ItemGroupData rows.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">StudyOID</span> <span class="o">=</span> <span class="n">T</span><span class="o">.</span><span class="n">OIDRef</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">MetaDataVersionOID</span> <span class="o">=</span> <span class="n">T</span><span class="o">.</span><span class="n">OIDRef</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">ItemGroupData</span> <span class="o">=</span> <span class="n">T</span><span class="o">.</span><span class="n">ODMListObject</span><span class="p">(</span><span class="n">element_class</span><span class="o">=</span><span class="n">ItemGroupData</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="ReferenceData">
+<a class="viewcode-back" href="../../../odmlib.dataset_1_0_1.html#odmlib.dataset_1_0_1.model.ReferenceData">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">ReferenceData</span><span class="p">(</span><span class="n">OE</span><span class="o">.</span><span class="n">ODMElement</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;A container for reference (non-subject) tabular data in a Dataset-XML file.</span>
+
+<span class="sd">    ReferenceData is used for datasets that contain study-level reference</span>
+<span class="sd">    information rather than per-subject observations, such as trial design</span>
+<span class="sd">    or arm/epoch lookup tables.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        StudyOID (str, required): OID reference to the Study in the</span>
+<span class="sd">            associated ODM metadata.</span>
+<span class="sd">        MetaDataVersionOID (str, required): OID reference to the</span>
+<span class="sd">            MetaDataVersion that describes the dataset structure.</span>
+<span class="sd">        ItemGroupData (list): Zero or more ItemGroupData rows.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">StudyOID</span> <span class="o">=</span> <span class="n">T</span><span class="o">.</span><span class="n">OIDRef</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">MetaDataVersionOID</span> <span class="o">=</span> <span class="n">T</span><span class="o">.</span><span class="n">OIDRef</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">ItemGroupData</span> <span class="o">=</span> <span class="n">T</span><span class="o">.</span><span class="n">ODMListObject</span><span class="p">(</span><span class="n">element_class</span><span class="o">=</span><span class="n">ItemGroupData</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="ODM">
+<a class="viewcode-back" href="../../../odmlib.dataset_1_0_1.html#odmlib.dataset_1_0_1.model.ODM">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">ODM</span><span class="p">(</span><span class="n">OE</span><span class="o">.</span><span class="n">ODMElement</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;The root element of a Dataset-XML 1.0.1 document.</span>
+
+<span class="sd">    A Dataset-XML file carries tabular clinical or reference data for</span>
+<span class="sd">    submission. It references ODM metadata via StudyOID and</span>
+<span class="sd">    MetaDataVersionOID and uses namespace</span>
+<span class="sd">    ``http://www.cdisc.org/ns/Dataset-XML/v1.0`` (prefix ``data:``) for</span>
+<span class="sd">    Dataset-XML-specific attributes such as ``ItemGroupDataSeq``.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        Description (str): Human-readable description of the file.</span>
+<span class="sd">        FileType (str, required): &quot;Snapshot&quot; or &quot;Transactional&quot;.</span>
+<span class="sd">        FileOID (str, required): Globally unique OID for this specific file.</span>
+<span class="sd">        CreationDateTime (str, required): ISO 8601 datetime when the file</span>
+<span class="sd">            was created.</span>
+<span class="sd">        PriorFileOID (str): OID of the preceding file in a sequence.</span>
+<span class="sd">        AsOfDateTime (str): ISO 8601 datetime indicating currency of the</span>
+<span class="sd">            data.</span>
+<span class="sd">        ODMVersion (str): Version of the base ODM standard being used.</span>
+<span class="sd">        DatasetXMLVersion (str, required): Version of the Dataset-XML</span>
+<span class="sd">            standard; one of &quot;1.0.0&quot; or &quot;1.0.1&quot;.</span>
+<span class="sd">        Originator (str): Organization that created the file.</span>
+<span class="sd">        SourceSystem (str): Software system that generated the file.</span>
+<span class="sd">        SourceSystemVersion (str): Version of the source system.</span>
+<span class="sd">        schemaLocation (str): xs:schemaLocation attribute for schema</span>
+<span class="sd">            validation.</span>
+<span class="sd">        ReferenceData (list): Zero or more ReferenceData sections.</span>
+<span class="sd">        ClinicalData: A single ClinicalData section.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">Description</span> <span class="o">=</span> <span class="n">T</span><span class="o">.</span><span class="n">String</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">FileType</span> <span class="o">=</span> <span class="n">T</span><span class="o">.</span><span class="n">ValueSetString</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">FileOID</span> <span class="o">=</span> <span class="n">T</span><span class="o">.</span><span class="n">OID</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">CreationDateTime</span> <span class="o">=</span> <span class="n">T</span><span class="o">.</span><span class="n">DateTimeString</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">PriorFileOID</span> <span class="o">=</span> <span class="n">T</span><span class="o">.</span><span class="n">OIDRef</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">AsOfDateTime</span> <span class="o">=</span> <span class="n">T</span><span class="o">.</span><span class="n">DateTimeString</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">ODMVersion</span> <span class="o">=</span> <span class="n">T</span><span class="o">.</span><span class="n">ValueSetString</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">DatasetXMLVersion</span> <span class="o">=</span> <span class="n">T</span><span class="o">.</span><span class="n">ExtendedValidValues</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">valid_values</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;1.0.0&quot;</span><span class="p">,</span> <span class="s2">&quot;1.0.1&quot;</span><span class="p">])</span>
+    <span class="n">Originator</span> <span class="o">=</span> <span class="n">T</span><span class="o">.</span><span class="n">String</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">SourceSystem</span> <span class="o">=</span> <span class="n">T</span><span class="o">.</span><span class="n">String</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">SourceSystemVersion</span> <span class="o">=</span> <span class="n">T</span><span class="o">.</span><span class="n">String</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">schemaLocation</span> <span class="o">=</span> <span class="n">T</span><span class="o">.</span><span class="n">String</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">namespace</span><span class="o">=</span><span class="s2">&quot;xs&quot;</span><span class="p">)</span>
+    <span class="n">ReferenceData</span> <span class="o">=</span> <span class="n">T</span><span class="o">.</span><span class="n">ODMListObject</span><span class="p">(</span><span class="n">element_class</span><span class="o">=</span><span class="n">ReferenceData</span><span class="p">)</span>
+    <span class="n">ClinicalData</span> <span class="o">=</span> <span class="n">T</span><span class="o">.</span><span class="n">ODMObject</span><span class="p">(</span><span class="n">element_class</span><span class="o">=</span><span class="n">ClinicalData</span><span class="p">)</span></div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2020, Sam Hume.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

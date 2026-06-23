@@ -1,0 +1,385 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>odmlib.dataset_json_1_1.converter &mdash; odmlib 0.2.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=9edc463e" />
+
+  
+      <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../_static/documentation_options.js?v=938c9ccc"></script>
+      <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            odmlib
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">User Guides</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../guides/getting_started.html">Getting Started with odmlib</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../guides/reading_documents.html">Reading ODM Documents</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../guides/permissive_loading.html">Permissive Loading Mode</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../guides/creating_documents.html">Creating ODM Documents</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../guides/validation.html">Validating ODM Documents</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../guides/model_reference.html">Model Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../guides/interoperability.html">Interoperability: Dataset-JSON and Pandas</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../guides/dataset_json.html">Working with Dataset-JSON v1.1</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules.html">odmlib</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../odmlib.odm_1_3_2.html">odm_1_3_2 package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../odmlib.odm_2_0.html">odm_2_0 package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../odmlib.define_2_0.html">define_2_0 package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../odmlib.define_2_1.html">define_2_1 package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../odmlib.dataset_1_0_1.html">odmlib.dataset_1_0_1 module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../odmlib.ct_1_1_1.html">odmlib.ct_1_1_1 module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../odmlib.arm_1_0.html">odmlib.arm_1_0 module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../odmlib.dataset_json_1_1.html">odmlib.dataset_json_1_1</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../odmlib.dataframe.html">odmlib.dataframe</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Project</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../changelog.html">Changelog</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">odmlib</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">odmlib.dataset_json_1_1.converter</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for odmlib.dataset_json_1_1.converter</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Converters between Dataset-XML 1.0.1 and Dataset-JSON v1.1.</span>
+
+<span class="sd">Provides utilities to convert between odmlib Dataset-XML objects and</span>
+<span class="sd">the ODMElement-based Dataset-JSON v1.1 model. Produces **one</span>
+<span class="sd">DatasetJSON per ItemGroupOID** (one dataset per file), matching the</span>
+<span class="sd">Dataset-JSON v1.1 specification.</span>
+
+<span class="sd">Functions:</span>
+<span class="sd">    :func:`dataset_xml_to_dataset_json` -- Dataset-XML → dict of DatasetJSON</span>
+<span class="sd">    :func:`dataset_json_to_dataset_xml` -- DatasetJSON → Dataset-XML ODM object</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">datetime</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Optional</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">odmlib.dataset_json_1_1.model</span><span class="w"> </span><span class="kn">import</span> <span class="n">DatasetJSON</span><span class="p">,</span> <span class="n">Column</span>
+
+
+<span class="c1"># ---------------------------------------------------------------------------</span>
+<span class="c1"># Mapping from ODM DataType to Dataset-JSON type</span>
+<span class="c1"># ---------------------------------------------------------------------------</span>
+
+<span class="n">_ODM_TO_DSJ_TYPE</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;text&quot;</span><span class="p">:</span> <span class="s2">&quot;string&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;string&quot;</span><span class="p">:</span> <span class="s2">&quot;string&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;integer&quot;</span><span class="p">:</span> <span class="s2">&quot;integer&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;float&quot;</span><span class="p">:</span> <span class="s2">&quot;float&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;double&quot;</span><span class="p">:</span> <span class="s2">&quot;double&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;decimal&quot;</span><span class="p">:</span> <span class="s2">&quot;decimal&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;date&quot;</span><span class="p">:</span> <span class="s2">&quot;date&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;time&quot;</span><span class="p">:</span> <span class="s2">&quot;time&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;datetime&quot;</span><span class="p">:</span> <span class="s2">&quot;datetime&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;boolean&quot;</span><span class="p">:</span> <span class="s2">&quot;boolean&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;URI&quot;</span><span class="p">:</span> <span class="s2">&quot;URI&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;partialDate&quot;</span><span class="p">:</span> <span class="s2">&quot;string&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;partialTime&quot;</span><span class="p">:</span> <span class="s2">&quot;string&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;partialDatetime&quot;</span><span class="p">:</span> <span class="s2">&quot;string&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;durationDatetime&quot;</span><span class="p">:</span> <span class="s2">&quot;string&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;intervalDatetime&quot;</span><span class="p">:</span> <span class="s2">&quot;string&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;incompleteDatetime&quot;</span><span class="p">:</span> <span class="s2">&quot;string&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;base64Binary&quot;</span><span class="p">:</span> <span class="s2">&quot;string&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;hexBinary&quot;</span><span class="p">:</span> <span class="s2">&quot;string&quot;</span><span class="p">,</span>
+<span class="p">}</span>
+
+
+<div class="viewcode-block" id="dataset_xml_to_dataset_json">
+<a class="viewcode-back" href="../../../odmlib.dataset_json_1_1.html#odmlib.dataset_json_1_1.dataset_xml_to_dataset_json">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">dataset_xml_to_dataset_json</span><span class="p">(</span>
+    <span class="n">odm_obj</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
+    <span class="n">define_mdv</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">DatasetJSON</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Convert a Dataset-XML 1.0.1 ODM object to Dataset-JSON v1.1.</span>
+
+<span class="sd">    Produces **one DatasetJSON per ItemGroupOID**, matching the</span>
+<span class="sd">    Dataset-JSON v1.1 specification (one dataset per file).</span>
+
+<span class="sd">    Multiple ``ItemGroupData`` rows with the same ``ItemGroupOID`` are</span>
+<span class="sd">    merged into one DatasetJSON. The column set is the union of all</span>
+<span class="sd">    ``ItemOID`` values observed across all rows for that group.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        odm_obj: An ODM root object from the ``dataset_1_0_1`` model.</span>
+<span class="sd">        define_mdv: Optional ``MetaDataVersion`` from a loaded</span>
+<span class="sd">            Define-XML document. When provided, column labels, types,</span>
+<span class="sd">            and lengths are read from ItemDef elements.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        dict[str, DatasetJSON]: Mapping of dataset name to DatasetJSON.</span>
+<span class="sd">            Dataset name is derived from the ItemGroupOID suffix</span>
+<span class="sd">            (e.g., ``&quot;IG.AE&quot;`` → ``&quot;AE&quot;``).</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">now</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">(</span><span class="n">datetime</span><span class="o">.</span><span class="n">timezone</span><span class="o">.</span><span class="n">utc</span><span class="p">)</span><span class="o">.</span><span class="n">isoformat</span><span class="p">()</span>
+
+    <span class="n">clinical</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">odm_obj</span><span class="p">,</span> <span class="s2">&quot;ClinicalData&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">clinical</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">{}</span>
+
+    <span class="n">study_oid</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">clinical</span><span class="p">,</span> <span class="s2">&quot;StudyOID&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+    <span class="n">mdv_oid</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">clinical</span><span class="p">,</span> <span class="s2">&quot;MetaDataVersionOID&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+
+    <span class="c1"># Group ItemGroupData records by ItemGroupOID</span>
+    <span class="n">datasets_by_oid</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">list</span><span class="p">[</span><span class="n">Any</span><span class="p">]]</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">for</span> <span class="n">igd</span> <span class="ow">in</span> <span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="n">clinical</span><span class="p">,</span> <span class="s2">&quot;ItemGroupData&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">or</span> <span class="p">[]):</span>
+        <span class="n">oid</span> <span class="o">=</span> <span class="n">igd</span><span class="o">.</span><span class="n">ItemGroupOID</span>
+        <span class="k">if</span> <span class="n">oid</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">datasets_by_oid</span><span class="p">:</span>
+            <span class="n">datasets_by_oid</span><span class="p">[</span><span class="n">oid</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">datasets_by_oid</span><span class="p">[</span><span class="n">oid</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">igd</span><span class="p">)</span>
+
+    <span class="n">result</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">DatasetJSON</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">for</span> <span class="n">oid</span><span class="p">,</span> <span class="n">igd_list</span> <span class="ow">in</span> <span class="n">datasets_by_oid</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="c1"># Collect the union of all ItemOIDs, preserving insertion order</span>
+        <span class="n">item_oids</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">seen</span><span class="p">:</span> <span class="nb">set</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">igd</span> <span class="ow">in</span> <span class="n">igd_list</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">item_data</span> <span class="ow">in</span> <span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="n">igd</span><span class="p">,</span> <span class="s2">&quot;ItemData&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">or</span> <span class="p">[]):</span>
+                <span class="k">if</span> <span class="n">item_data</span><span class="o">.</span><span class="n">ItemOID</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">seen</span><span class="p">:</span>
+                    <span class="n">item_oids</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">item_data</span><span class="o">.</span><span class="n">ItemOID</span><span class="p">)</span>
+                    <span class="n">seen</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">item_data</span><span class="o">.</span><span class="n">ItemOID</span><span class="p">)</span>
+
+        <span class="c1"># Build Column metadata</span>
+        <span class="n">columns</span> <span class="o">=</span> <span class="p">[</span><span class="n">_make_column</span><span class="p">(</span><span class="n">ioid</span><span class="p">,</span> <span class="n">define_mdv</span><span class="p">)</span> <span class="k">for</span> <span class="n">ioid</span> <span class="ow">in</span> <span class="n">item_oids</span><span class="p">]</span>
+
+        <span class="c1"># Extract rows</span>
+        <span class="n">rows</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">igd</span> <span class="ow">in</span> <span class="n">igd_list</span><span class="p">:</span>
+            <span class="n">rows</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">_extract_row_values</span><span class="p">(</span><span class="n">igd</span><span class="p">,</span> <span class="n">item_oids</span><span class="p">))</span>
+
+        <span class="c1"># Derive dataset name from OID</span>
+        <span class="n">ds_name</span> <span class="o">=</span> <span class="n">oid</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="k">if</span> <span class="s2">&quot;.&quot;</span> <span class="ow">in</span> <span class="n">oid</span> <span class="k">else</span> <span class="n">oid</span>
+        <span class="n">ds_label</span> <span class="o">=</span> <span class="n">_get_itemgroup_label</span><span class="p">(</span><span class="n">oid</span><span class="p">,</span> <span class="n">define_mdv</span><span class="p">)</span>
+
+        <span class="n">ds</span> <span class="o">=</span> <span class="n">DatasetJSON</span><span class="p">(</span>
+            <span class="n">datasetJSONCreationDateTime</span><span class="o">=</span><span class="n">now</span><span class="p">,</span>
+            <span class="n">datasetJSONVersion</span><span class="o">=</span><span class="s2">&quot;1.1.0&quot;</span><span class="p">,</span>
+            <span class="n">fileOID</span><span class="o">=</span><span class="nb">getattr</span><span class="p">(</span><span class="n">odm_obj</span><span class="p">,</span> <span class="s2">&quot;FileOID&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
+            <span class="n">originator</span><span class="o">=</span><span class="nb">getattr</span><span class="p">(</span><span class="n">odm_obj</span><span class="p">,</span> <span class="s2">&quot;Originator&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
+            <span class="n">studyOID</span><span class="o">=</span><span class="n">study_oid</span><span class="p">,</span>
+            <span class="n">metaDataVersionOID</span><span class="o">=</span><span class="n">mdv_oid</span><span class="p">,</span>
+            <span class="n">itemGroupOID</span><span class="o">=</span><span class="n">oid</span><span class="p">,</span>
+            <span class="n">records</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">rows</span><span class="p">),</span>
+            <span class="n">name</span><span class="o">=</span><span class="n">ds_name</span><span class="p">,</span>
+            <span class="n">label</span><span class="o">=</span><span class="n">ds_label</span> <span class="ow">or</span> <span class="n">ds_name</span><span class="p">,</span>
+            <span class="n">columns</span><span class="o">=</span><span class="n">columns</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="k">if</span> <span class="n">rows</span><span class="p">:</span>
+            <span class="n">ds</span><span class="o">.</span><span class="n">rows</span> <span class="o">=</span> <span class="n">rows</span>
+        <span class="n">result</span><span class="p">[</span><span class="n">ds_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">ds</span>
+
+    <span class="k">return</span> <span class="n">result</span></div>
+
+
+
+<div class="viewcode-block" id="dataset_json_to_dataset_xml">
+<a class="viewcode-back" href="../../../odmlib.dataset_json_1_1.html#odmlib.dataset_json_1_1.dataset_json_to_dataset_xml">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">dataset_json_to_dataset_xml</span><span class="p">(</span>
+    <span class="n">dataset_json</span><span class="p">:</span> <span class="n">DatasetJSON</span><span class="p">,</span>
+    <span class="n">dataset_xml_model</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
+    <span class="n">study_oid</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">mdv_oid</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Convert a Dataset-JSON v1.1 DatasetJSON to a Dataset-XML ODM object.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        dataset_json: A :class:`~odmlib.dataset_json_1_1.model.DatasetJSON`.</span>
+<span class="sd">        dataset_xml_model: The ``odmlib.dataset_1_0_1.model`` module</span>
+<span class="sd">            containing ``ODM``, ``ClinicalData``, ``ItemGroupData``,</span>
+<span class="sd">            and ``ItemData`` classes.</span>
+<span class="sd">        study_oid: Study OID override. If None, uses</span>
+<span class="sd">            ``dataset_json.studyOID``.</span>
+<span class="sd">        mdv_oid: MetaDataVersion OID override. If None, uses</span>
+<span class="sd">            ``dataset_json.metaDataVersionOID``.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        An odmlib ODM root object with ClinicalData.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">now</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">(</span><span class="n">datetime</span><span class="o">.</span><span class="n">timezone</span><span class="o">.</span><span class="n">utc</span><span class="p">)</span><span class="o">.</span><span class="n">isoformat</span><span class="p">()</span>
+
+    <span class="n">odm</span> <span class="o">=</span> <span class="n">dataset_xml_model</span><span class="o">.</span><span class="n">ODM</span><span class="p">(</span>
+        <span class="n">FileOID</span><span class="o">=</span><span class="n">dataset_json</span><span class="o">.</span><span class="n">fileOID</span> <span class="ow">or</span> <span class="s2">&quot;FILE.001&quot;</span><span class="p">,</span>
+        <span class="n">FileType</span><span class="o">=</span><span class="s2">&quot;Snapshot&quot;</span><span class="p">,</span>
+        <span class="n">CreationDateTime</span><span class="o">=</span><span class="n">dataset_json</span><span class="o">.</span><span class="n">datasetJSONCreationDateTime</span> <span class="ow">or</span> <span class="n">now</span><span class="p">,</span>
+        <span class="n">DatasetXMLVersion</span><span class="o">=</span><span class="s2">&quot;1.0.1&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="n">s_oid</span> <span class="o">=</span> <span class="n">study_oid</span> <span class="ow">or</span> <span class="n">dataset_json</span><span class="o">.</span><span class="n">studyOID</span> <span class="ow">or</span> <span class="s2">&quot;STUDY.001&quot;</span>
+    <span class="n">m_oid</span> <span class="o">=</span> <span class="n">mdv_oid</span> <span class="ow">or</span> <span class="n">dataset_json</span><span class="o">.</span><span class="n">metaDataVersionOID</span> <span class="ow">or</span> <span class="s2">&quot;MDV.001&quot;</span>
+
+    <span class="n">clinical</span> <span class="o">=</span> <span class="n">dataset_xml_model</span><span class="o">.</span><span class="n">ClinicalData</span><span class="p">(</span>
+        <span class="n">StudyOID</span><span class="o">=</span><span class="n">s_oid</span><span class="p">,</span>
+        <span class="n">MetaDataVersionOID</span><span class="o">=</span><span class="n">m_oid</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">odm</span><span class="o">.</span><span class="n">ClinicalData</span> <span class="o">=</span> <span class="n">clinical</span>
+
+    <span class="n">col_names</span> <span class="o">=</span> <span class="n">dataset_json</span><span class="o">.</span><span class="n">column_names</span>
+    <span class="n">col_oids</span> <span class="o">=</span> <span class="p">[</span><span class="n">col</span><span class="o">.</span><span class="n">itemOID</span> <span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="n">dataset_json</span><span class="o">.</span><span class="n">columns</span><span class="p">]</span>
+    <span class="n">rows</span> <span class="o">=</span> <span class="n">dataset_json</span><span class="o">.</span><span class="n">rows</span> <span class="k">if</span> <span class="n">dataset_json</span><span class="o">.</span><span class="n">rows</span> <span class="k">else</span> <span class="p">[]</span>
+
+    <span class="k">for</span> <span class="n">seq</span><span class="p">,</span> <span class="n">row</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">rows</span><span class="p">,</span> <span class="n">start</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+        <span class="n">igd</span> <span class="o">=</span> <span class="n">dataset_xml_model</span><span class="o">.</span><span class="n">ItemGroupData</span><span class="p">(</span>
+            <span class="n">ItemGroupOID</span><span class="o">=</span><span class="n">dataset_json</span><span class="o">.</span><span class="n">itemGroupOID</span><span class="p">,</span>
+            <span class="n">ItemGroupDataSeq</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">seq</span><span class="p">),</span>
+        <span class="p">)</span>
+        <span class="k">for</span> <span class="n">col_oid</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">col_oids</span><span class="p">,</span> <span class="n">row</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">value</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">igd</span><span class="o">.</span><span class="n">ItemData</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                    <span class="n">dataset_xml_model</span><span class="o">.</span><span class="n">ItemData</span><span class="p">(</span>
+                        <span class="n">ItemOID</span><span class="o">=</span><span class="n">col_oid</span><span class="p">,</span>
+                        <span class="n">Value</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">value</span><span class="p">),</span>
+                    <span class="p">)</span>
+                <span class="p">)</span>
+        <span class="n">clinical</span><span class="o">.</span><span class="n">ItemGroupData</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">igd</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">odm</span></div>
+
+
+
+<span class="c1"># ---------------------------------------------------------------------------</span>
+<span class="c1"># Internal helpers</span>
+<span class="c1"># ---------------------------------------------------------------------------</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_make_column</span><span class="p">(</span><span class="n">item_oid</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">define_mdv</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Column</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Create a Column for an ItemOID, enriched from Define-XML if available.&quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">define_mdv</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">item_defs</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">define_mdv</span><span class="p">,</span> <span class="s2">&quot;ItemDef&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">or</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">item_def</span> <span class="ow">in</span> <span class="n">item_defs</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">item_def</span><span class="p">,</span> <span class="s2">&quot;OID&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="o">==</span> <span class="n">item_oid</span><span class="p">:</span>
+                <span class="n">kwargs</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+                    <span class="s2">&quot;itemOID&quot;</span><span class="p">:</span> <span class="n">item_oid</span><span class="p">,</span>
+                    <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">item_def</span><span class="p">,</span> <span class="s2">&quot;Name&quot;</span><span class="p">,</span> <span class="n">item_oid</span><span class="p">),</span>
+                    <span class="s2">&quot;label&quot;</span><span class="p">:</span> <span class="n">_get_description_text</span><span class="p">(</span><span class="n">item_def</span><span class="p">),</span>
+                    <span class="s2">&quot;dataType&quot;</span><span class="p">:</span> <span class="n">_map_data_type</span><span class="p">(</span>
+                        <span class="nb">getattr</span><span class="p">(</span><span class="n">item_def</span><span class="p">,</span> <span class="s2">&quot;DataType&quot;</span><span class="p">,</span> <span class="s2">&quot;string&quot;</span><span class="p">)</span>
+                    <span class="p">),</span>
+                <span class="p">}</span>
+                <span class="n">length</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">item_def</span><span class="p">,</span> <span class="s2">&quot;Length&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">length</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;length&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">length</span>
+                <span class="n">display_fmt</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">item_def</span><span class="p">,</span> <span class="s2">&quot;DisplayFormat&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">display_fmt</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;displayFormat&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">display_fmt</span>
+                <span class="k">return</span> <span class="n">Column</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+    <span class="c1"># Fallback: minimal metadata derived from the OID</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="n">item_oid</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="k">if</span> <span class="s2">&quot;.&quot;</span> <span class="ow">in</span> <span class="n">item_oid</span> <span class="k">else</span> <span class="n">item_oid</span>
+    <span class="k">return</span> <span class="n">Column</span><span class="p">(</span><span class="n">itemOID</span><span class="o">=</span><span class="n">item_oid</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">dataType</span><span class="o">=</span><span class="s2">&quot;string&quot;</span><span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_get_itemgroup_label</span><span class="p">(</span><span class="n">item_group_oid</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">define_mdv</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return the label for an ItemGroupDef from Define-XML, or empty string.&quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">define_mdv</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="s2">&quot;&quot;</span>
+    <span class="n">ig_defs</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">define_mdv</span><span class="p">,</span> <span class="s2">&quot;ItemGroupDef&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">or</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">ig_def</span> <span class="ow">in</span> <span class="n">ig_defs</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">ig_def</span><span class="p">,</span> <span class="s2">&quot;OID&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="o">==</span> <span class="n">item_group_oid</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">_get_description_text</span><span class="p">(</span><span class="n">ig_def</span><span class="p">)</span>
+    <span class="k">return</span> <span class="s2">&quot;&quot;</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_get_description_text</span><span class="p">(</span><span class="n">element</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Extract description text from an odmlib element&#39;s Description child.&quot;&quot;&quot;</span>
+    <span class="n">desc</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">element</span><span class="p">,</span> <span class="s2">&quot;Description&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">desc</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">desc</span><span class="p">,</span> <span class="s2">&quot;TranslatedText&quot;</span><span class="p">):</span>
+        <span class="n">tt_list</span> <span class="o">=</span> <span class="n">desc</span><span class="o">.</span><span class="n">TranslatedText</span>
+        <span class="k">if</span> <span class="n">tt_list</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">tt_list</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="s2">&quot;_content&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="s2">&quot;&quot;</span>
+    <span class="k">return</span> <span class="s2">&quot;&quot;</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_map_data_type</span><span class="p">(</span><span class="n">odm_type</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Map an ODM DataType string to a Dataset-JSON type string.&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">_ODM_TO_DSJ_TYPE</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">odm_type</span><span class="p">,</span> <span class="s2">&quot;string&quot;</span><span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_extract_row_values</span><span class="p">(</span><span class="n">igd</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">item_oids</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">Any</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Extract an ordered list of values from an ItemGroupData row.&quot;&quot;&quot;</span>
+    <span class="n">oid_to_value</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">for</span> <span class="n">item_data</span> <span class="ow">in</span> <span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="n">igd</span><span class="p">,</span> <span class="s2">&quot;ItemData&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">or</span> <span class="p">[]):</span>
+        <span class="n">oid_to_value</span><span class="p">[</span><span class="n">item_data</span><span class="o">.</span><span class="n">ItemOID</span><span class="p">]</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">item_data</span><span class="p">,</span> <span class="s2">&quot;Value&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+    <span class="k">return</span> <span class="p">[</span><span class="n">oid_to_value</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">oid</span><span class="p">)</span> <span class="k">for</span> <span class="n">oid</span> <span class="ow">in</span> <span class="n">item_oids</span><span class="p">]</span>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2020, Sam Hume.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

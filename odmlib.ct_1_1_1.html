@@ -1,0 +1,1557 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>odmlib.ct_1_1_1 module &mdash; odmlib 0.2.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=9edc463e" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=938c9ccc"></script>
+      <script src="_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="odmlib.arm_1_0 module" href="odmlib.arm_1_0.html" />
+    <link rel="prev" title="odmlib.dataset_1_0_1 module" href="odmlib.dataset_1_0_1.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            odmlib
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">User Guides</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="guides/getting_started.html">Getting Started with odmlib</a></li>
+<li class="toctree-l1"><a class="reference internal" href="guides/reading_documents.html">Reading ODM Documents</a></li>
+<li class="toctree-l1"><a class="reference internal" href="guides/permissive_loading.html">Permissive Loading Mode</a></li>
+<li class="toctree-l1"><a class="reference internal" href="guides/creating_documents.html">Creating ODM Documents</a></li>
+<li class="toctree-l1"><a class="reference internal" href="guides/validation.html">Validating ODM Documents</a></li>
+<li class="toctree-l1"><a class="reference internal" href="guides/model_reference.html">Model Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="guides/interoperability.html">Interoperability: Dataset-JSON and Pandas</a></li>
+<li class="toctree-l1"><a class="reference internal" href="guides/dataset_json.html">Working with Dataset-JSON v1.1</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="modules.html">odmlib</a></li>
+<li class="toctree-l1"><a class="reference internal" href="odmlib.odm_1_3_2.html">odm_1_3_2 package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="odmlib.odm_2_0.html">odm_2_0 package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="odmlib.define_2_0.html">define_2_0 package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="odmlib.define_2_1.html">define_2_1 package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="odmlib.dataset_1_0_1.html">odmlib.dataset_1_0_1 module</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">odmlib.ct_1_1_1 module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#odmlib.ct_1_1_1.model.TranslatedText"><code class="docutils literal notranslate"><span class="pre">TranslatedText</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#odmlib.ct_1_1_1.model.TranslatedText.lang"><code class="docutils literal notranslate"><span class="pre">TranslatedText.lang</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#odmlib.ct_1_1_1.model.TranslatedText._content"><code class="docutils literal notranslate"><span class="pre">TranslatedText._content</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id0"><code class="docutils literal notranslate"><span class="pre">TranslatedText.lang</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#odmlib.ct_1_1_1.model.TranslatedText.namespace"><code class="docutils literal notranslate"><span class="pre">TranslatedText.namespace</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#odmlib.ct_1_1_1.model.Alias"><code class="docutils literal notranslate"><span class="pre">Alias</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#odmlib.ct_1_1_1.model.Alias.Context"><code class="docutils literal notranslate"><span class="pre">Alias.Context</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#odmlib.ct_1_1_1.model.Alias.Name"><code class="docutils literal notranslate"><span class="pre">Alias.Name</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id1"><code class="docutils literal notranslate"><span class="pre">Alias.Context</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id2"><code class="docutils literal notranslate"><span class="pre">Alias.Name</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#odmlib.ct_1_1_1.model.Alias.namespace"><code class="docutils literal notranslate"><span class="pre">Alias.namespace</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#odmlib.ct_1_1_1.model.StudyDescription"><code class="docutils literal notranslate"><span class="pre">StudyDescription</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#odmlib.ct_1_1_1.model.StudyDescription._content"><code class="docutils literal notranslate"><span class="pre">StudyDescription._content</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#odmlib.ct_1_1_1.model.StudyDescription.namespace"><code class="docutils literal notranslate"><span class="pre">StudyDescription.namespace</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#odmlib.ct_1_1_1.model.ProtocolName"><code class="docutils literal notranslate"><span class="pre">ProtocolName</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#odmlib.ct_1_1_1.model.ProtocolName._content"><code class="docutils literal notranslate"><span class="pre">ProtocolName._content</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#odmlib.ct_1_1_1.model.ProtocolName.namespace"><code class="docutils literal notranslate"><span class="pre">ProtocolName.namespace</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#odmlib.ct_1_1_1.model.StudyName"><code class="docutils literal notranslate"><span class="pre">StudyName</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#odmlib.ct_1_1_1.model.StudyName._content"><code class="docutils literal notranslate"><span class="pre">StudyName._content</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#odmlib.ct_1_1_1.model.StudyName.namespace"><code class="docutils literal notranslate"><span class="pre">StudyName.namespace</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#odmlib.ct_1_1_1.model.GlobalVariables"><code class="docutils literal notranslate"><span class="pre">GlobalVariables</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#odmlib.ct_1_1_1.model.GlobalVariables.StudyName"><code class="docutils literal notranslate"><span class="pre">GlobalVariables.StudyName</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#odmlib.ct_1_1_1.model.GlobalVariables.StudyDescription"><code class="docutils literal notranslate"><span class="pre">GlobalVariables.StudyDescription</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#odmlib.ct_1_1_1.model.GlobalVariables.ProtocolName"><code class="docutils literal notranslate"><span class="pre">GlobalVariables.ProtocolName</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id3"><code class="docutils literal notranslate"><span class="pre">GlobalVariables.StudyName</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id4"><code class="docutils literal notranslate"><span class="pre">GlobalVariables.StudyDescription</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id5"><code class="docutils literal notranslate"><span class="pre">GlobalVariables.ProtocolName</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#odmlib.ct_1_1_1.model.GlobalVariables.namespace"><code class="docutils literal notranslate"><span class="pre">GlobalVariables.namespace</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#odmlib.ct_1_1_1.model.Description"><code class="docutils literal notranslate"><span class="pre">Description</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#odmlib.ct_1_1_1.model.Description.TranslatedText"><code class="docutils literal notranslate"><span class="pre">Description.TranslatedText</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id6"><code class="docutils literal notranslate"><span class="pre">Description.TranslatedText</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#odmlib.ct_1_1_1.model.Description.namespace"><code class="docutils literal notranslate"><span class="pre">Description.namespace</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#odmlib.ct_1_1_1.model.CDISCSynonym"><code class="docutils literal notranslate"><span class="pre">CDISCSynonym</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#odmlib.ct_1_1_1.model.CDISCSynonym._content"><code class="docutils literal notranslate"><span class="pre">CDISCSynonym._content</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#odmlib.ct_1_1_1.model.CDISCSynonym.namespace"><code class="docutils literal notranslate"><span class="pre">CDISCSynonym.namespace</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#odmlib.ct_1_1_1.model.CDISCDefinition"><code class="docutils literal notranslate"><span class="pre">CDISCDefinition</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#odmlib.ct_1_1_1.model.CDISCDefinition._content"><code class="docutils literal notranslate"><span class="pre">CDISCDefinition._content</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#odmlib.ct_1_1_1.model.CDISCDefinition.namespace"><code class="docutils literal notranslate"><span class="pre">CDISCDefinition.namespace</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#odmlib.ct_1_1_1.model.CDISCSubmissionValue"><code class="docutils literal notranslate"><span class="pre">CDISCSubmissionValue</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#odmlib.ct_1_1_1.model.CDISCSubmissionValue._content"><code class="docutils literal notranslate"><span class="pre">CDISCSubmissionValue._content</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#odmlib.ct_1_1_1.model.CDISCSubmissionValue.namespace"><code class="docutils literal notranslate"><span class="pre">CDISCSubmissionValue.namespace</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#odmlib.ct_1_1_1.model.PreferredTerm"><code class="docutils literal notranslate"><span class="pre">PreferredTerm</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#odmlib.ct_1_1_1.model.PreferredTerm._content"><code class="docutils literal notranslate"><span class="pre">PreferredTerm._content</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#odmlib.ct_1_1_1.model.PreferredTerm.namespace"><code class="docutils literal notranslate"><span class="pre">PreferredTerm.namespace</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#odmlib.ct_1_1_1.model.EnumeratedItem"><code class="docutils literal notranslate"><span class="pre">EnumeratedItem</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#odmlib.ct_1_1_1.model.EnumeratedItem.CodedValue"><code class="docutils literal notranslate"><span class="pre">EnumeratedItem.CodedValue</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#odmlib.ct_1_1_1.model.EnumeratedItem.ExtCodeID"><code class="docutils literal notranslate"><span class="pre">EnumeratedItem.ExtCodeID</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#odmlib.ct_1_1_1.model.EnumeratedItem.CDISCSynonym"><code class="docutils literal notranslate"><span class="pre">EnumeratedItem.CDISCSynonym</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#odmlib.ct_1_1_1.model.EnumeratedItem.CDISCDefinition"><code class="docutils literal notranslate"><span class="pre">EnumeratedItem.CDISCDefinition</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#odmlib.ct_1_1_1.model.EnumeratedItem.PreferredTerm"><code class="docutils literal notranslate"><span class="pre">EnumeratedItem.PreferredTerm</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id7"><code class="docutils literal notranslate"><span class="pre">EnumeratedItem.CodedValue</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id8"><code class="docutils literal notranslate"><span class="pre">EnumeratedItem.ExtCodeID</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id9"><code class="docutils literal notranslate"><span class="pre">EnumeratedItem.CDISCSynonym</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id10"><code class="docutils literal notranslate"><span class="pre">EnumeratedItem.CDISCDefinition</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id11"><code class="docutils literal notranslate"><span class="pre">EnumeratedItem.PreferredTerm</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#odmlib.ct_1_1_1.model.EnumeratedItem.namespace"><code class="docutils literal notranslate"><span class="pre">EnumeratedItem.namespace</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#odmlib.ct_1_1_1.model.CodeList"><code class="docutils literal notranslate"><span class="pre">CodeList</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#odmlib.ct_1_1_1.model.CodeList.OID"><code class="docutils literal notranslate"><span class="pre">CodeList.OID</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#odmlib.ct_1_1_1.model.CodeList.Name"><code class="docutils literal notranslate"><span class="pre">CodeList.Name</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#odmlib.ct_1_1_1.model.CodeList.DataType"><code class="docutils literal notranslate"><span class="pre">CodeList.DataType</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#odmlib.ct_1_1_1.model.CodeList.ExtCodeID"><code class="docutils literal notranslate"><span class="pre">CodeList.ExtCodeID</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#odmlib.ct_1_1_1.model.CodeList.CodeListExtensible"><code class="docutils literal notranslate"><span class="pre">CodeList.CodeListExtensible</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#odmlib.ct_1_1_1.model.CodeList.Description"><code class="docutils literal notranslate"><span class="pre">CodeList.Description</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#odmlib.ct_1_1_1.model.CodeList.EnumeratedItem"><code class="docutils literal notranslate"><span class="pre">CodeList.EnumeratedItem</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#odmlib.ct_1_1_1.model.CodeList.CDISCSubmissionValue"><code class="docutils literal notranslate"><span class="pre">CodeList.CDISCSubmissionValue</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#odmlib.ct_1_1_1.model.CodeList.CDISCSynonym"><code class="docutils literal notranslate"><span class="pre">CodeList.CDISCSynonym</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#odmlib.ct_1_1_1.model.CodeList.PreferredTerm"><code class="docutils literal notranslate"><span class="pre">CodeList.PreferredTerm</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id12"><code class="docutils literal notranslate"><span class="pre">CodeList.OID</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id15"><code class="docutils literal notranslate"><span class="pre">CodeList.Name</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id16"><code class="docutils literal notranslate"><span class="pre">CodeList.DataType</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id17"><code class="docutils literal notranslate"><span class="pre">CodeList.ExtCodeID</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id18"><code class="docutils literal notranslate"><span class="pre">CodeList.CodeListExtensible</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id19"><code class="docutils literal notranslate"><span class="pre">CodeList.Description</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id20"><code class="docutils literal notranslate"><span class="pre">CodeList.EnumeratedItem</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id21"><code class="docutils literal notranslate"><span class="pre">CodeList.CDISCSubmissionValue</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id22"><code class="docutils literal notranslate"><span class="pre">CodeList.CDISCSynonym</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id23"><code class="docutils literal notranslate"><span class="pre">CodeList.PreferredTerm</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#odmlib.ct_1_1_1.model.CodeList.namespace"><code class="docutils literal notranslate"><span class="pre">CodeList.namespace</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#odmlib.ct_1_1_1.model.MetaDataVersion"><code class="docutils literal notranslate"><span class="pre">MetaDataVersion</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#odmlib.ct_1_1_1.model.MetaDataVersion.OID"><code class="docutils literal notranslate"><span class="pre">MetaDataVersion.OID</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#odmlib.ct_1_1_1.model.MetaDataVersion.Name"><code class="docutils literal notranslate"><span class="pre">MetaDataVersion.Name</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#odmlib.ct_1_1_1.model.MetaDataVersion.Description"><code class="docutils literal notranslate"><span class="pre">MetaDataVersion.Description</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#odmlib.ct_1_1_1.model.MetaDataVersion.CodeList"><code class="docutils literal notranslate"><span class="pre">MetaDataVersion.CodeList</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id24"><code class="docutils literal notranslate"><span class="pre">MetaDataVersion.OID</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id27"><code class="docutils literal notranslate"><span class="pre">MetaDataVersion.Name</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id28"><code class="docutils literal notranslate"><span class="pre">MetaDataVersion.Description</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id29"><code class="docutils literal notranslate"><span class="pre">MetaDataVersion.CodeList</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#odmlib.ct_1_1_1.model.MetaDataVersion.namespace"><code class="docutils literal notranslate"><span class="pre">MetaDataVersion.namespace</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#odmlib.ct_1_1_1.model.Study"><code class="docutils literal notranslate"><span class="pre">Study</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#odmlib.ct_1_1_1.model.Study.OID"><code class="docutils literal notranslate"><span class="pre">Study.OID</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#odmlib.ct_1_1_1.model.Study.GlobalVariables"><code class="docutils literal notranslate"><span class="pre">Study.GlobalVariables</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#odmlib.ct_1_1_1.model.Study.MetaDataVersion"><code class="docutils literal notranslate"><span class="pre">Study.MetaDataVersion</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id30"><code class="docutils literal notranslate"><span class="pre">Study.OID</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id31"><code class="docutils literal notranslate"><span class="pre">Study.GlobalVariables</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id32"><code class="docutils literal notranslate"><span class="pre">Study.MetaDataVersion</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#odmlib.ct_1_1_1.model.Study.namespace"><code class="docutils literal notranslate"><span class="pre">Study.namespace</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#odmlib.ct_1_1_1.model.ODM"><code class="docutils literal notranslate"><span class="pre">ODM</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#odmlib.ct_1_1_1.model.ODM.Description"><code class="docutils literal notranslate"><span class="pre">ODM.Description</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#odmlib.ct_1_1_1.model.ODM.FileType"><code class="docutils literal notranslate"><span class="pre">ODM.FileType</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#odmlib.ct_1_1_1.model.ODM.Granularity"><code class="docutils literal notranslate"><span class="pre">ODM.Granularity</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#odmlib.ct_1_1_1.model.ODM.FileOID"><code class="docutils literal notranslate"><span class="pre">ODM.FileOID</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#odmlib.ct_1_1_1.model.ODM.CreationDateTime"><code class="docutils literal notranslate"><span class="pre">ODM.CreationDateTime</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#odmlib.ct_1_1_1.model.ODM.AsOfDateTime"><code class="docutils literal notranslate"><span class="pre">ODM.AsOfDateTime</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#odmlib.ct_1_1_1.model.ODM.ODMVersion"><code class="docutils literal notranslate"><span class="pre">ODM.ODMVersion</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#odmlib.ct_1_1_1.model.ODM.Originator"><code class="docutils literal notranslate"><span class="pre">ODM.Originator</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#odmlib.ct_1_1_1.model.ODM.SourceSystem"><code class="docutils literal notranslate"><span class="pre">ODM.SourceSystem</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#odmlib.ct_1_1_1.model.ODM.SourceSystemVersion"><code class="docutils literal notranslate"><span class="pre">ODM.SourceSystemVersion</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#odmlib.ct_1_1_1.model.ODM.schemaLocation"><code class="docutils literal notranslate"><span class="pre">ODM.schemaLocation</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#odmlib.ct_1_1_1.model.ODM.Study"><code class="docutils literal notranslate"><span class="pre">ODM.Study</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id33"><code class="docutils literal notranslate"><span class="pre">ODM.Description</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id34"><code class="docutils literal notranslate"><span class="pre">ODM.FileType</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id35"><code class="docutils literal notranslate"><span class="pre">ODM.Granularity</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id36"><code class="docutils literal notranslate"><span class="pre">ODM.FileOID</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id39"><code class="docutils literal notranslate"><span class="pre">ODM.CreationDateTime</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id40"><code class="docutils literal notranslate"><span class="pre">ODM.AsOfDateTime</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id41"><code class="docutils literal notranslate"><span class="pre">ODM.ODMVersion</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id42"><code class="docutils literal notranslate"><span class="pre">ODM.Originator</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id43"><code class="docutils literal notranslate"><span class="pre">ODM.SourceSystem</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id44"><code class="docutils literal notranslate"><span class="pre">ODM.SourceSystemVersion</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id45"><code class="docutils literal notranslate"><span class="pre">ODM.schemaLocation</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id46"><code class="docutils literal notranslate"><span class="pre">ODM.Study</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#odmlib.ct_1_1_1.model.ODM.namespace"><code class="docutils literal notranslate"><span class="pre">ODM.namespace</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="odmlib.arm_1_0.html">odmlib.arm_1_0 module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="odmlib.dataset_json_1_1.html">odmlib.dataset_json_1_1</a></li>
+<li class="toctree-l1"><a class="reference internal" href="odmlib.dataframe.html">odmlib.dataframe</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Project</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="changelog.html">Changelog</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">odmlib</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">odmlib.ct_1_1_1 module</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/odmlib.ct_1_1_1.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-odmlib.ct_1_1_1.model">
+<span id="odmlib-ct-1-1-1-module"></span><h1>odmlib.ct_1_1_1 module<a class="headerlink" href="#module-odmlib.ct_1_1_1.model" title="Link to this heading"></a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="odmlib.ct_1_1_1.model.TranslatedText">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">odmlib.ct_1_1_1.model.</span></span><span class="sig-name descname"><span class="pre">TranslatedText</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/odmlib/ct_1_1_1/model.html#TranslatedText"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#odmlib.ct_1_1_1.model.TranslatedText" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">ODMElement</span></code></p>
+<p>A piece of text in a specific language, used inside Description elements.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>kwargs</strong> (<em>Any</em>)</p>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="odmlib.ct_1_1_1.model.TranslatedText.lang">
+<span class="sig-name descname"><span class="pre">lang</span></span><a class="headerlink" href="#odmlib.ct_1_1_1.model.TranslatedText.lang" title="Link to this definition"></a></dt>
+<dd><p>BCP 47 language tag (xml:lang attribute), e.g. “en”.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)">str</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="odmlib.ct_1_1_1.model.TranslatedText._content">
+<span class="sig-name descname"><span class="pre">_content</span></span><a class="headerlink" href="#odmlib.ct_1_1_1.model.TranslatedText._content" title="Link to this definition"></a></dt>
+<dd><p>The actual text content.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)">str</a>, required</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id0">
+<span class="sig-name descname"><span class="pre">lang</span></span><a class="headerlink" href="#id0" title="Link to this definition"></a></dt>
+<dd><p>Descriptor for string-valued ODM attributes.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="odmlib.ct_1_1_1.model.TranslatedText.namespace">
+<span class="sig-name descname"><span class="pre">namespace</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'odm'</span></span><a class="headerlink" href="#odmlib.ct_1_1_1.model.TranslatedText.namespace" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="odmlib.ct_1_1_1.model.Alias">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">odmlib.ct_1_1_1.model.</span></span><span class="sig-name descname"><span class="pre">Alias</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/odmlib/ct_1_1_1/model.html#Alias"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#odmlib.ct_1_1_1.model.Alias" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">ODMElement</span></code></p>
+<p>An alternative name or identifier for a CT-XML element in an external context.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>kwargs</strong> (<em>Any</em>)</p>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="odmlib.ct_1_1_1.model.Alias.Context">
+<span class="sig-name descname"><span class="pre">Context</span></span><a class="headerlink" href="#odmlib.ct_1_1_1.model.Alias.Context" title="Link to this definition"></a></dt>
+<dd><p>The context in which the alias applies,
+e.g. the name of an external system or coding standard.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)">str</a>, required</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="odmlib.ct_1_1_1.model.Alias.Name">
+<span class="sig-name descname"><span class="pre">Name</span></span><a class="headerlink" href="#odmlib.ct_1_1_1.model.Alias.Name" title="Link to this definition"></a></dt>
+<dd><p>The alias value in that context.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)">str</a>, required</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id1">
+<span class="sig-name descname"><span class="pre">Context</span></span><a class="headerlink" href="#id1" title="Link to this definition"></a></dt>
+<dd><p>Descriptor for string-valued ODM attributes.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id2">
+<span class="sig-name descname"><span class="pre">Name</span></span><a class="headerlink" href="#id2" title="Link to this definition"></a></dt>
+<dd><p>Descriptor for string-valued ODM attributes.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="odmlib.ct_1_1_1.model.Alias.namespace">
+<span class="sig-name descname"><span class="pre">namespace</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'odm'</span></span><a class="headerlink" href="#odmlib.ct_1_1_1.model.Alias.namespace" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="odmlib.ct_1_1_1.model.StudyDescription">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">odmlib.ct_1_1_1.model.</span></span><span class="sig-name descname"><span class="pre">StudyDescription</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/odmlib/ct_1_1_1/model.html#StudyDescription"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#odmlib.ct_1_1_1.model.StudyDescription" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">ODMElement</span></code></p>
+<p>A plain-text description of the study in a CT-XML GlobalVariables element.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>kwargs</strong> (<em>Any</em>)</p>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="odmlib.ct_1_1_1.model.StudyDescription._content">
+<span class="sig-name descname"><span class="pre">_content</span></span><a class="headerlink" href="#odmlib.ct_1_1_1.model.StudyDescription._content" title="Link to this definition"></a></dt>
+<dd><p>The study description text.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)">str</a>, required</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="odmlib.ct_1_1_1.model.StudyDescription.namespace">
+<span class="sig-name descname"><span class="pre">namespace</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'odm'</span></span><a class="headerlink" href="#odmlib.ct_1_1_1.model.StudyDescription.namespace" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="odmlib.ct_1_1_1.model.ProtocolName">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">odmlib.ct_1_1_1.model.</span></span><span class="sig-name descname"><span class="pre">ProtocolName</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/odmlib/ct_1_1_1/model.html#ProtocolName"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#odmlib.ct_1_1_1.model.ProtocolName" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">ODMElement</span></code></p>
+<p>The name of the protocol associated with a CT-XML study.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>kwargs</strong> (<em>Any</em>)</p>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="odmlib.ct_1_1_1.model.ProtocolName._content">
+<span class="sig-name descname"><span class="pre">_content</span></span><a class="headerlink" href="#odmlib.ct_1_1_1.model.ProtocolName._content" title="Link to this definition"></a></dt>
+<dd><p>The protocol name string.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)">str</a>, required</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="odmlib.ct_1_1_1.model.ProtocolName.namespace">
+<span class="sig-name descname"><span class="pre">namespace</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'odm'</span></span><a class="headerlink" href="#odmlib.ct_1_1_1.model.ProtocolName.namespace" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="odmlib.ct_1_1_1.model.StudyName">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">odmlib.ct_1_1_1.model.</span></span><span class="sig-name descname"><span class="pre">StudyName</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/odmlib/ct_1_1_1/model.html#StudyName"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#odmlib.ct_1_1_1.model.StudyName" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">ODMElement</span></code></p>
+<p>The short name of the study in a CT-XML GlobalVariables element.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>kwargs</strong> (<em>Any</em>)</p>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="odmlib.ct_1_1_1.model.StudyName._content">
+<span class="sig-name descname"><span class="pre">_content</span></span><a class="headerlink" href="#odmlib.ct_1_1_1.model.StudyName._content" title="Link to this definition"></a></dt>
+<dd><p>The study name string.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)">str</a>, required</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="odmlib.ct_1_1_1.model.StudyName.namespace">
+<span class="sig-name descname"><span class="pre">namespace</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'odm'</span></span><a class="headerlink" href="#odmlib.ct_1_1_1.model.StudyName.namespace" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="odmlib.ct_1_1_1.model.GlobalVariables">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">odmlib.ct_1_1_1.model.</span></span><span class="sig-name descname"><span class="pre">GlobalVariables</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/odmlib/ct_1_1_1/model.html#GlobalVariables"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#odmlib.ct_1_1_1.model.GlobalVariables" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">ODMElement</span></code></p>
+<p>Study-level identification variables for a CT-XML document.</p>
+<p>Holds the study name, description, and protocol name that identify
+the controlled terminology package.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>kwargs</strong> (<em>Any</em>)</p>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="odmlib.ct_1_1_1.model.GlobalVariables.StudyName">
+<span class="sig-name descname"><span class="pre">StudyName</span></span><a class="headerlink" href="#odmlib.ct_1_1_1.model.GlobalVariables.StudyName" title="Link to this definition"></a></dt>
+<dd><p>Short name of the study/package.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="odmlib.ct_1_1_1.model.GlobalVariables.StudyDescription">
+<span class="sig-name descname"><span class="pre">StudyDescription</span></span><a class="headerlink" href="#odmlib.ct_1_1_1.model.GlobalVariables.StudyDescription" title="Link to this definition"></a></dt>
+<dd><p>Description of the study/package.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="odmlib.ct_1_1_1.model.GlobalVariables.ProtocolName">
+<span class="sig-name descname"><span class="pre">ProtocolName</span></span><a class="headerlink" href="#odmlib.ct_1_1_1.model.GlobalVariables.ProtocolName" title="Link to this definition"></a></dt>
+<dd><p>Name of the associated protocol.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id3">
+<span class="sig-name descname"><span class="pre">StudyName</span></span><a class="headerlink" href="#id3" title="Link to this definition"></a></dt>
+<dd><p>Descriptor for a single child ODM element.</p>
+<p>Stores a reference to the element class and validates type on
+assignment. When accessed on an unset optional attribute, instantiates
+the element class with no arguments.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>element_class</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#type" title="(in Python v3.14)"><em>type</em></a>) – The expected child element class.</p></li>
+<li><p><strong>namespace</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – XML namespace prefix (default: “odm”).</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id4">
+<span class="sig-name descname"><span class="pre">StudyDescription</span></span><a class="headerlink" href="#id4" title="Link to this definition"></a></dt>
+<dd><p>Descriptor for a single child ODM element.</p>
+<p>Stores a reference to the element class and validates type on
+assignment. When accessed on an unset optional attribute, instantiates
+the element class with no arguments.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>element_class</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#type" title="(in Python v3.14)"><em>type</em></a>) – The expected child element class.</p></li>
+<li><p><strong>namespace</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – XML namespace prefix (default: “odm”).</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id5">
+<span class="sig-name descname"><span class="pre">ProtocolName</span></span><a class="headerlink" href="#id5" title="Link to this definition"></a></dt>
+<dd><p>Descriptor for a single child ODM element.</p>
+<p>Stores a reference to the element class and validates type on
+assignment. When accessed on an unset optional attribute, instantiates
+the element class with no arguments.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>element_class</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#type" title="(in Python v3.14)"><em>type</em></a>) – The expected child element class.</p></li>
+<li><p><strong>namespace</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – XML namespace prefix (default: “odm”).</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="odmlib.ct_1_1_1.model.GlobalVariables.namespace">
+<span class="sig-name descname"><span class="pre">namespace</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'odm'</span></span><a class="headerlink" href="#odmlib.ct_1_1_1.model.GlobalVariables.namespace" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="odmlib.ct_1_1_1.model.Description">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">odmlib.ct_1_1_1.model.</span></span><span class="sig-name descname"><span class="pre">Description</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/odmlib/ct_1_1_1/model.html#Description"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#odmlib.ct_1_1_1.model.Description" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">ODMElement</span></code></p>
+<p>A human-readable description composed of one or more language-tagged text blocks.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>kwargs</strong> (<em>Any</em>)</p>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="odmlib.ct_1_1_1.model.Description.TranslatedText">
+<span class="sig-name descname"><span class="pre">TranslatedText</span></span><a class="headerlink" href="#odmlib.ct_1_1_1.model.Description.TranslatedText" title="Link to this definition"></a></dt>
+<dd><p>One or more TranslatedText children
+providing the description in different languages.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)">list</a>, required</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id6">
+<span class="sig-name descname"><span class="pre">TranslatedText</span></span><a class="headerlink" href="#id6" title="Link to this definition"></a></dt>
+<dd><p>Descriptor for a list of child ODM elements.</p>
+<p>Validates that all items assigned to the list are instances of
+the expected element class. Stored as a plain list in the instance.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>element_class</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#type" title="(in Python v3.14)"><em>type</em></a>) – The class that all list items must be.</p></li>
+<li><p><strong>namespace</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – XML namespace prefix (default: “odm”).</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="odmlib.ct_1_1_1.model.Description.namespace">
+<span class="sig-name descname"><span class="pre">namespace</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'odm'</span></span><a class="headerlink" href="#odmlib.ct_1_1_1.model.Description.namespace" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="odmlib.ct_1_1_1.model.CDISCSynonym">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">odmlib.ct_1_1_1.model.</span></span><span class="sig-name descname"><span class="pre">CDISCSynonym</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/odmlib/ct_1_1_1/model.html#CDISCSynonym"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#odmlib.ct_1_1_1.model.CDISCSynonym" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">ODMElement</span></code></p>
+<p>A CDISC synonym for a controlled terminology term.</p>
+<p>Multiple CDISCSynonym elements may appear within a single EnumeratedItem
+or CodeList to list all recognized synonyms.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>kwargs</strong> (<em>Any</em>)</p>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="odmlib.ct_1_1_1.model.CDISCSynonym._content">
+<span class="sig-name descname"><span class="pre">_content</span></span><a class="headerlink" href="#odmlib.ct_1_1_1.model.CDISCSynonym._content" title="Link to this definition"></a></dt>
+<dd><p>The synonym text string.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)">str</a>, required</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="odmlib.ct_1_1_1.model.CDISCSynonym.namespace">
+<span class="sig-name descname"><span class="pre">namespace</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'odm'</span></span><a class="headerlink" href="#odmlib.ct_1_1_1.model.CDISCSynonym.namespace" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="odmlib.ct_1_1_1.model.CDISCDefinition">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">odmlib.ct_1_1_1.model.</span></span><span class="sig-name descname"><span class="pre">CDISCDefinition</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/odmlib/ct_1_1_1/model.html#CDISCDefinition"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#odmlib.ct_1_1_1.model.CDISCDefinition" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">ODMElement</span></code></p>
+<p>The CDISC-authored definition of a controlled terminology term.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>kwargs</strong> (<em>Any</em>)</p>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="odmlib.ct_1_1_1.model.CDISCDefinition._content">
+<span class="sig-name descname"><span class="pre">_content</span></span><a class="headerlink" href="#odmlib.ct_1_1_1.model.CDISCDefinition._content" title="Link to this definition"></a></dt>
+<dd><p>The full definition text for the term as
+published by CDISC.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)">str</a>, required</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="odmlib.ct_1_1_1.model.CDISCDefinition.namespace">
+<span class="sig-name descname"><span class="pre">namespace</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'odm'</span></span><a class="headerlink" href="#odmlib.ct_1_1_1.model.CDISCDefinition.namespace" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="odmlib.ct_1_1_1.model.CDISCSubmissionValue">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">odmlib.ct_1_1_1.model.</span></span><span class="sig-name descname"><span class="pre">CDISCSubmissionValue</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/odmlib/ct_1_1_1/model.html#CDISCSubmissionValue"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#odmlib.ct_1_1_1.model.CDISCSubmissionValue" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">ODMElement</span></code></p>
+<p>The CDISC submission value (the value to use in regulatory submissions) for a CodeList.</p>
+<p>Appears as a child of CodeList to provide the canonical submission
+value for the entire controlled terminology concept.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>kwargs</strong> (<em>Any</em>)</p>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="odmlib.ct_1_1_1.model.CDISCSubmissionValue._content">
+<span class="sig-name descname"><span class="pre">_content</span></span><a class="headerlink" href="#odmlib.ct_1_1_1.model.CDISCSubmissionValue._content" title="Link to this definition"></a></dt>
+<dd><p>The submission value string.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)">str</a>, required</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="odmlib.ct_1_1_1.model.CDISCSubmissionValue.namespace">
+<span class="sig-name descname"><span class="pre">namespace</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'odm'</span></span><a class="headerlink" href="#odmlib.ct_1_1_1.model.CDISCSubmissionValue.namespace" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="odmlib.ct_1_1_1.model.PreferredTerm">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">odmlib.ct_1_1_1.model.</span></span><span class="sig-name descname"><span class="pre">PreferredTerm</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/odmlib/ct_1_1_1/model.html#PreferredTerm"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#odmlib.ct_1_1_1.model.PreferredTerm" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">ODMElement</span></code></p>
+<p>The NCI preferred term for a controlled terminology concept.</p>
+<p>The preferred term is the primary human-readable label used by NCI/EVS
+for this concept.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>kwargs</strong> (<em>Any</em>)</p>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="odmlib.ct_1_1_1.model.PreferredTerm._content">
+<span class="sig-name descname"><span class="pre">_content</span></span><a class="headerlink" href="#odmlib.ct_1_1_1.model.PreferredTerm._content" title="Link to this definition"></a></dt>
+<dd><p>The NCI preferred term string.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)">str</a>, required</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="odmlib.ct_1_1_1.model.PreferredTerm.namespace">
+<span class="sig-name descname"><span class="pre">namespace</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'odm'</span></span><a class="headerlink" href="#odmlib.ct_1_1_1.model.PreferredTerm.namespace" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="odmlib.ct_1_1_1.model.EnumeratedItem">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">odmlib.ct_1_1_1.model.</span></span><span class="sig-name descname"><span class="pre">EnumeratedItem</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/odmlib/ct_1_1_1/model.html#EnumeratedItem"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#odmlib.ct_1_1_1.model.EnumeratedItem" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">ODMElement</span></code></p>
+<p>A single coded term (enumerated value) in a CT-XML CodeList.</p>
+<p>Represents one controlled terminology concept with its NCI code,
+CDISC synonyms, definition, and NCI preferred term. Uses the
+<code class="docutils literal notranslate"><span class="pre">nciodm:</span></code> namespace for NCI-specific attributes and child elements.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>kwargs</strong> (<em>Any</em>)</p>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="odmlib.ct_1_1_1.model.EnumeratedItem.CodedValue">
+<span class="sig-name descname"><span class="pre">CodedValue</span></span><a class="headerlink" href="#odmlib.ct_1_1_1.model.EnumeratedItem.CodedValue" title="Link to this definition"></a></dt>
+<dd><p>The submission value for this term
+(the value written into datasets).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)">str</a>, required</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="odmlib.ct_1_1_1.model.EnumeratedItem.ExtCodeID">
+<span class="sig-name descname"><span class="pre">ExtCodeID</span></span><a class="headerlink" href="#odmlib.ct_1_1_1.model.EnumeratedItem.ExtCodeID" title="Link to this definition"></a></dt>
+<dd><p>NCI concept code for this term
+(nciodm:ExtCodeID attribute).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)">str</a>, required</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="odmlib.ct_1_1_1.model.EnumeratedItem.CDISCSynonym">
+<span class="sig-name descname"><span class="pre">CDISCSynonym</span></span><a class="headerlink" href="#odmlib.ct_1_1_1.model.EnumeratedItem.CDISCSynonym" title="Link to this definition"></a></dt>
+<dd><p>Zero or more CDISC synonyms
+(nciodm:CDISCSynonym elements).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)">list</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="odmlib.ct_1_1_1.model.EnumeratedItem.CDISCDefinition">
+<span class="sig-name descname"><span class="pre">CDISCDefinition</span></span><a class="headerlink" href="#odmlib.ct_1_1_1.model.EnumeratedItem.CDISCDefinition" title="Link to this definition"></a></dt>
+<dd><p>CDISC definition of this term
+(nciodm:CDISCDefinition element).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>required</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="odmlib.ct_1_1_1.model.EnumeratedItem.PreferredTerm">
+<span class="sig-name descname"><span class="pre">PreferredTerm</span></span><a class="headerlink" href="#odmlib.ct_1_1_1.model.EnumeratedItem.PreferredTerm" title="Link to this definition"></a></dt>
+<dd><p>NCI preferred term
+(nciodm:PreferredTerm element).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>required</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id7">
+<span class="sig-name descname"><span class="pre">CodedValue</span></span><a class="headerlink" href="#id7" title="Link to this definition"></a></dt>
+<dd><p>Descriptor for string-valued ODM attributes.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id8">
+<span class="sig-name descname"><span class="pre">ExtCodeID</span></span><a class="headerlink" href="#id8" title="Link to this definition"></a></dt>
+<dd><p>Descriptor for string-valued ODM attributes.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id9">
+<span class="sig-name descname"><span class="pre">CDISCSynonym</span></span><a class="headerlink" href="#id9" title="Link to this definition"></a></dt>
+<dd><p>Descriptor for a list of child ODM elements.</p>
+<p>Validates that all items assigned to the list are instances of
+the expected element class. Stored as a plain list in the instance.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>element_class</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#type" title="(in Python v3.14)"><em>type</em></a>) – The class that all list items must be.</p></li>
+<li><p><strong>namespace</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – XML namespace prefix (default: “odm”).</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id10">
+<span class="sig-name descname"><span class="pre">CDISCDefinition</span></span><a class="headerlink" href="#id10" title="Link to this definition"></a></dt>
+<dd><p>Descriptor for a single child ODM element.</p>
+<p>Stores a reference to the element class and validates type on
+assignment. When accessed on an unset optional attribute, instantiates
+the element class with no arguments.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>element_class</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#type" title="(in Python v3.14)"><em>type</em></a>) – The expected child element class.</p></li>
+<li><p><strong>namespace</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – XML namespace prefix (default: “odm”).</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id11">
+<span class="sig-name descname"><span class="pre">PreferredTerm</span></span><a class="headerlink" href="#id11" title="Link to this definition"></a></dt>
+<dd><p>Descriptor for a single child ODM element.</p>
+<p>Stores a reference to the element class and validates type on
+assignment. When accessed on an unset optional attribute, instantiates
+the element class with no arguments.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>element_class</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#type" title="(in Python v3.14)"><em>type</em></a>) – The expected child element class.</p></li>
+<li><p><strong>namespace</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – XML namespace prefix (default: “odm”).</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="odmlib.ct_1_1_1.model.EnumeratedItem.namespace">
+<span class="sig-name descname"><span class="pre">namespace</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'odm'</span></span><a class="headerlink" href="#odmlib.ct_1_1_1.model.EnumeratedItem.namespace" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="odmlib.ct_1_1_1.model.CodeList">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">odmlib.ct_1_1_1.model.</span></span><span class="sig-name descname"><span class="pre">CodeList</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/odmlib/ct_1_1_1/model.html#CodeList"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#odmlib.ct_1_1_1.model.CodeList" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">ODMElement</span></code></p>
+<p>A CDISC controlled terminology code list in a CT-XML 1.1.1 document.</p>
+<p>Represents a single controlled terminology concept (e.g. the RACE
+code list) with all its coded values. NCI-specific metadata
+(ExtCodeID, CodeListExtensible, CDISCSubmissionValue, CDISCSynonym,
+PreferredTerm) uses the <code class="docutils literal notranslate"><span class="pre">nciodm:</span></code> namespace.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>kwargs</strong> (<em>Any</em>)</p>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="odmlib.ct_1_1_1.model.CodeList.OID">
+<span class="sig-name descname"><span class="pre">OID</span></span><a class="headerlink" href="#odmlib.ct_1_1_1.model.CodeList.OID" title="Link to this definition"></a></dt>
+<dd><p>Unique identifier for this code list.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)">str</a>, required</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="odmlib.ct_1_1_1.model.CodeList.Name">
+<span class="sig-name descname"><span class="pre">Name</span></span><a class="headerlink" href="#odmlib.ct_1_1_1.model.CodeList.Name" title="Link to this definition"></a></dt>
+<dd><p>Human-readable name of the code list.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)">str</a>, required</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="odmlib.ct_1_1_1.model.CodeList.DataType">
+<span class="sig-name descname"><span class="pre">DataType</span></span><a class="headerlink" href="#odmlib.ct_1_1_1.model.CodeList.DataType" title="Link to this definition"></a></dt>
+<dd><p>Data type of the coded values
+(e.g. “text”).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)">str</a>, required</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="odmlib.ct_1_1_1.model.CodeList.ExtCodeID">
+<span class="sig-name descname"><span class="pre">ExtCodeID</span></span><a class="headerlink" href="#odmlib.ct_1_1_1.model.CodeList.ExtCodeID" title="Link to this definition"></a></dt>
+<dd><p>NCI concept code for the code list
+itself (nciodm:ExtCodeID attribute).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)">str</a>, required</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="odmlib.ct_1_1_1.model.CodeList.CodeListExtensible">
+<span class="sig-name descname"><span class="pre">CodeListExtensible</span></span><a class="headerlink" href="#odmlib.ct_1_1_1.model.CodeList.CodeListExtensible" title="Link to this definition"></a></dt>
+<dd><p>Whether sponsors may add
+additional terms (“Yes” or “No”)
+(nciodm:CodeListExtensible attribute).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)">str</a>, required</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="odmlib.ct_1_1_1.model.CodeList.Description">
+<span class="sig-name descname"><span class="pre">Description</span></span><a class="headerlink" href="#odmlib.ct_1_1_1.model.CodeList.Description" title="Link to this definition"></a></dt>
+<dd><p>Optional human-readable description.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="odmlib.ct_1_1_1.model.CodeList.EnumeratedItem">
+<span class="sig-name descname"><span class="pre">EnumeratedItem</span></span><a class="headerlink" href="#odmlib.ct_1_1_1.model.CodeList.EnumeratedItem" title="Link to this definition"></a></dt>
+<dd><p>The coded terms that belong to this code list.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)">list</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="odmlib.ct_1_1_1.model.CodeList.CDISCSubmissionValue">
+<span class="sig-name descname"><span class="pre">CDISCSubmissionValue</span></span><a class="headerlink" href="#odmlib.ct_1_1_1.model.CodeList.CDISCSubmissionValue" title="Link to this definition"></a></dt>
+<dd><p>The canonical submission value for
+the overall code list concept (nciodm:CDISCSubmissionValue).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>required</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="odmlib.ct_1_1_1.model.CodeList.CDISCSynonym">
+<span class="sig-name descname"><span class="pre">CDISCSynonym</span></span><a class="headerlink" href="#odmlib.ct_1_1_1.model.CodeList.CDISCSynonym" title="Link to this definition"></a></dt>
+<dd><p>A CDISC synonym for the code list concept
+(nciodm:CDISCSynonym).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>required</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="odmlib.ct_1_1_1.model.CodeList.PreferredTerm">
+<span class="sig-name descname"><span class="pre">PreferredTerm</span></span><a class="headerlink" href="#odmlib.ct_1_1_1.model.CodeList.PreferredTerm" title="Link to this definition"></a></dt>
+<dd><p>NCI preferred term for the code list
+concept (nciodm:PreferredTerm).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>required</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id12">
+<span class="sig-name descname"><span class="pre">OID</span></span><a class="headerlink" href="#id12" title="Link to this definition"></a></dt>
+<dd><p>Descriptor for OID (Object Identifier) attributes.</p>
+<p>OIDs uniquely identify definition elements within a MetaDataVersion.
+Used on the <code class="docutils literal notranslate"><span class="pre">OID</span></code> attribute of <a href="#id13"><span class="problematic" id="id14">*</span></a>Def elements (e.g., <code class="docutils literal notranslate"><span class="pre">ItemDef.OID</span></code>).</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id15">
+<span class="sig-name descname"><span class="pre">Name</span></span><a class="headerlink" href="#id15" title="Link to this definition"></a></dt>
+<dd><p>Descriptor for the Name attribute of ODM elements.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id16">
+<span class="sig-name descname"><span class="pre">DataType</span></span><a class="headerlink" href="#id16" title="Link to this definition"></a></dt>
+<dd><p>String descriptor that validates against a dynamically-loaded set of permitted values.</p>
+<p>Combines string type validation with value set membership checking.
+Used for attributes like FileType, Repeating, Mandatory, DataType, etc.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id17">
+<span class="sig-name descname"><span class="pre">ExtCodeID</span></span><a class="headerlink" href="#id17" title="Link to this definition"></a></dt>
+<dd><p>Descriptor for string-valued ODM attributes.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id18">
+<span class="sig-name descname"><span class="pre">CodeListExtensible</span></span><a class="headerlink" href="#id18" title="Link to this definition"></a></dt>
+<dd><p>String descriptor that validates against a dynamically-loaded set of permitted values.</p>
+<p>Combines string type validation with value set membership checking.
+Used for attributes like FileType, Repeating, Mandatory, DataType, etc.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id19">
+<span class="sig-name descname"><span class="pre">Description</span></span><a class="headerlink" href="#id19" title="Link to this definition"></a></dt>
+<dd><p>Descriptor for a single child ODM element.</p>
+<p>Stores a reference to the element class and validates type on
+assignment. When accessed on an unset optional attribute, instantiates
+the element class with no arguments.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>element_class</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#type" title="(in Python v3.14)"><em>type</em></a>) – The expected child element class.</p></li>
+<li><p><strong>namespace</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – XML namespace prefix (default: “odm”).</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id20">
+<span class="sig-name descname"><span class="pre">EnumeratedItem</span></span><a class="headerlink" href="#id20" title="Link to this definition"></a></dt>
+<dd><p>Descriptor for a list of child ODM elements.</p>
+<p>Validates that all items assigned to the list are instances of
+the expected element class. Stored as a plain list in the instance.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>element_class</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#type" title="(in Python v3.14)"><em>type</em></a>) – The class that all list items must be.</p></li>
+<li><p><strong>namespace</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – XML namespace prefix (default: “odm”).</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id21">
+<span class="sig-name descname"><span class="pre">CDISCSubmissionValue</span></span><a class="headerlink" href="#id21" title="Link to this definition"></a></dt>
+<dd><p>Descriptor for a single child ODM element.</p>
+<p>Stores a reference to the element class and validates type on
+assignment. When accessed on an unset optional attribute, instantiates
+the element class with no arguments.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>element_class</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#type" title="(in Python v3.14)"><em>type</em></a>) – The expected child element class.</p></li>
+<li><p><strong>namespace</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – XML namespace prefix (default: “odm”).</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id22">
+<span class="sig-name descname"><span class="pre">CDISCSynonym</span></span><a class="headerlink" href="#id22" title="Link to this definition"></a></dt>
+<dd><p>Descriptor for a single child ODM element.</p>
+<p>Stores a reference to the element class and validates type on
+assignment. When accessed on an unset optional attribute, instantiates
+the element class with no arguments.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>element_class</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#type" title="(in Python v3.14)"><em>type</em></a>) – The expected child element class.</p></li>
+<li><p><strong>namespace</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – XML namespace prefix (default: “odm”).</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id23">
+<span class="sig-name descname"><span class="pre">PreferredTerm</span></span><a class="headerlink" href="#id23" title="Link to this definition"></a></dt>
+<dd><p>Descriptor for a single child ODM element.</p>
+<p>Stores a reference to the element class and validates type on
+assignment. When accessed on an unset optional attribute, instantiates
+the element class with no arguments.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>element_class</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#type" title="(in Python v3.14)"><em>type</em></a>) – The expected child element class.</p></li>
+<li><p><strong>namespace</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – XML namespace prefix (default: “odm”).</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="odmlib.ct_1_1_1.model.CodeList.namespace">
+<span class="sig-name descname"><span class="pre">namespace</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'odm'</span></span><a class="headerlink" href="#odmlib.ct_1_1_1.model.CodeList.namespace" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="odmlib.ct_1_1_1.model.MetaDataVersion">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">odmlib.ct_1_1_1.model.</span></span><span class="sig-name descname"><span class="pre">MetaDataVersion</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/odmlib/ct_1_1_1/model.html#MetaDataVersion"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#odmlib.ct_1_1_1.model.MetaDataVersion" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">ODMElement</span></code></p>
+<p>A versioned container for all controlled terminology code lists in a CT-XML document.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>kwargs</strong> (<em>Any</em>)</p>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="odmlib.ct_1_1_1.model.MetaDataVersion.OID">
+<span class="sig-name descname"><span class="pre">OID</span></span><a class="headerlink" href="#odmlib.ct_1_1_1.model.MetaDataVersion.OID" title="Link to this definition"></a></dt>
+<dd><p>Unique identifier for this metadata version.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)">str</a>, required</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="odmlib.ct_1_1_1.model.MetaDataVersion.Name">
+<span class="sig-name descname"><span class="pre">Name</span></span><a class="headerlink" href="#odmlib.ct_1_1_1.model.MetaDataVersion.Name" title="Link to this definition"></a></dt>
+<dd><p>Human-readable name.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)">str</a>, required</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="odmlib.ct_1_1_1.model.MetaDataVersion.Description">
+<span class="sig-name descname"><span class="pre">Description</span></span><a class="headerlink" href="#odmlib.ct_1_1_1.model.MetaDataVersion.Description" title="Link to this definition"></a></dt>
+<dd><p>Optional plain-text description of this version.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)">str</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="odmlib.ct_1_1_1.model.MetaDataVersion.CodeList">
+<span class="sig-name descname"><span class="pre">CodeList</span></span><a class="headerlink" href="#odmlib.ct_1_1_1.model.MetaDataVersion.CodeList" title="Link to this definition"></a></dt>
+<dd><p>Zero or more CodeList elements defining the
+controlled terminology for this version.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)">list</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id24">
+<span class="sig-name descname"><span class="pre">OID</span></span><a class="headerlink" href="#id24" title="Link to this definition"></a></dt>
+<dd><p>Descriptor for OID (Object Identifier) attributes.</p>
+<p>OIDs uniquely identify definition elements within a MetaDataVersion.
+Used on the <code class="docutils literal notranslate"><span class="pre">OID</span></code> attribute of <a href="#id25"><span class="problematic" id="id26">*</span></a>Def elements (e.g., <code class="docutils literal notranslate"><span class="pre">ItemDef.OID</span></code>).</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id27">
+<span class="sig-name descname"><span class="pre">Name</span></span><a class="headerlink" href="#id27" title="Link to this definition"></a></dt>
+<dd><p>Descriptor for the Name attribute of ODM elements.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id28">
+<span class="sig-name descname"><span class="pre">Description</span></span><a class="headerlink" href="#id28" title="Link to this definition"></a></dt>
+<dd><p>Descriptor for string-valued ODM attributes.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id29">
+<span class="sig-name descname"><span class="pre">CodeList</span></span><a class="headerlink" href="#id29" title="Link to this definition"></a></dt>
+<dd><p>Descriptor for a list of child ODM elements.</p>
+<p>Validates that all items assigned to the list are instances of
+the expected element class. Stored as a plain list in the instance.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>element_class</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#type" title="(in Python v3.14)"><em>type</em></a>) – The class that all list items must be.</p></li>
+<li><p><strong>namespace</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – XML namespace prefix (default: “odm”).</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="odmlib.ct_1_1_1.model.MetaDataVersion.namespace">
+<span class="sig-name descname"><span class="pre">namespace</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'odm'</span></span><a class="headerlink" href="#odmlib.ct_1_1_1.model.MetaDataVersion.namespace" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="odmlib.ct_1_1_1.model.Study">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">odmlib.ct_1_1_1.model.</span></span><span class="sig-name descname"><span class="pre">Study</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/odmlib/ct_1_1_1/model.html#Study"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#odmlib.ct_1_1_1.model.Study" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">ODMElement</span></code></p>
+<p>The study element in a CT-XML 1.1.1 document.</p>
+<p>Identifies the controlled terminology package and contains the
+GlobalVariables and one or more MetaDataVersion elements with the
+code lists.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>kwargs</strong> (<em>Any</em>)</p>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="odmlib.ct_1_1_1.model.Study.OID">
+<span class="sig-name descname"><span class="pre">OID</span></span><a class="headerlink" href="#odmlib.ct_1_1_1.model.Study.OID" title="Link to this definition"></a></dt>
+<dd><p>Unique identifier for the study/package.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)">str</a>, required</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="odmlib.ct_1_1_1.model.Study.GlobalVariables">
+<span class="sig-name descname"><span class="pre">GlobalVariables</span></span><a class="headerlink" href="#odmlib.ct_1_1_1.model.Study.GlobalVariables" title="Link to this definition"></a></dt>
+<dd><p>Study identification variables (name,
+description, protocol name).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>required</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="odmlib.ct_1_1_1.model.Study.MetaDataVersion">
+<span class="sig-name descname"><span class="pre">MetaDataVersion</span></span><a class="headerlink" href="#odmlib.ct_1_1_1.model.Study.MetaDataVersion" title="Link to this definition"></a></dt>
+<dd><p>Zero or more versioned containers of
+controlled terminology code lists.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)">list</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id30">
+<span class="sig-name descname"><span class="pre">OID</span></span><a class="headerlink" href="#id30" title="Link to this definition"></a></dt>
+<dd><p>Descriptor for string-valued ODM attributes.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id31">
+<span class="sig-name descname"><span class="pre">GlobalVariables</span></span><a class="headerlink" href="#id31" title="Link to this definition"></a></dt>
+<dd><p>Descriptor for a single child ODM element.</p>
+<p>Stores a reference to the element class and validates type on
+assignment. When accessed on an unset optional attribute, instantiates
+the element class with no arguments.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>element_class</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#type" title="(in Python v3.14)"><em>type</em></a>) – The expected child element class.</p></li>
+<li><p><strong>namespace</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – XML namespace prefix (default: “odm”).</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id32">
+<span class="sig-name descname"><span class="pre">MetaDataVersion</span></span><a class="headerlink" href="#id32" title="Link to this definition"></a></dt>
+<dd><p>Descriptor for a list of child ODM elements.</p>
+<p>Validates that all items assigned to the list are instances of
+the expected element class. Stored as a plain list in the instance.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>element_class</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#type" title="(in Python v3.14)"><em>type</em></a>) – The class that all list items must be.</p></li>
+<li><p><strong>namespace</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – XML namespace prefix (default: “odm”).</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="odmlib.ct_1_1_1.model.Study.namespace">
+<span class="sig-name descname"><span class="pre">namespace</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'odm'</span></span><a class="headerlink" href="#odmlib.ct_1_1_1.model.Study.namespace" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="odmlib.ct_1_1_1.model.ODM">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">odmlib.ct_1_1_1.model.</span></span><span class="sig-name descname"><span class="pre">ODM</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/odmlib/ct_1_1_1/model.html#ODM"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#odmlib.ct_1_1_1.model.ODM" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">ODMElement</span></code></p>
+<p>The root element of a CT-XML 1.1.1 controlled terminology document.</p>
+<p>A CT-XML file distributes CDISC/NCI controlled terminology packages.
+It uses the base ODM namespace (<code class="docutils literal notranslate"><span class="pre">http://www.cdisc.org/ns/odm/v1.3</span></code>)
+and the NCI extension namespace
+(<code class="docutils literal notranslate"><span class="pre">http://ncicb.nci.nih.gov/xml/odm/EVS/CDISC</span></code>, prefix <code class="docutils literal notranslate"><span class="pre">nciodm:</span></code>).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>kwargs</strong> (<em>Any</em>)</p>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="odmlib.ct_1_1_1.model.ODM.Description">
+<span class="sig-name descname"><span class="pre">Description</span></span><a class="headerlink" href="#odmlib.ct_1_1_1.model.ODM.Description" title="Link to this definition"></a></dt>
+<dd><p>Human-readable description of the file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)">str</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="odmlib.ct_1_1_1.model.ODM.FileType">
+<span class="sig-name descname"><span class="pre">FileType</span></span><a class="headerlink" href="#odmlib.ct_1_1_1.model.ODM.FileType" title="Link to this definition"></a></dt>
+<dd><p>“Snapshot” or “Transactional”.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)">str</a>, required</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="odmlib.ct_1_1_1.model.ODM.Granularity">
+<span class="sig-name descname"><span class="pre">Granularity</span></span><a class="headerlink" href="#odmlib.ct_1_1_1.model.ODM.Granularity" title="Link to this definition"></a></dt>
+<dd><p>Level of data included.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)">str</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="odmlib.ct_1_1_1.model.ODM.FileOID">
+<span class="sig-name descname"><span class="pre">FileOID</span></span><a class="headerlink" href="#odmlib.ct_1_1_1.model.ODM.FileOID" title="Link to this definition"></a></dt>
+<dd><p>Globally unique OID for this file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)">str</a>, required</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="odmlib.ct_1_1_1.model.ODM.CreationDateTime">
+<span class="sig-name descname"><span class="pre">CreationDateTime</span></span><a class="headerlink" href="#odmlib.ct_1_1_1.model.ODM.CreationDateTime" title="Link to this definition"></a></dt>
+<dd><p>ISO 8601 datetime of file creation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)">str</a>, required</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="odmlib.ct_1_1_1.model.ODM.AsOfDateTime">
+<span class="sig-name descname"><span class="pre">AsOfDateTime</span></span><a class="headerlink" href="#odmlib.ct_1_1_1.model.ODM.AsOfDateTime" title="Link to this definition"></a></dt>
+<dd><p>ISO 8601 datetime indicating currency of the
+terminology.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)">str</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="odmlib.ct_1_1_1.model.ODM.ODMVersion">
+<span class="sig-name descname"><span class="pre">ODMVersion</span></span><a class="headerlink" href="#odmlib.ct_1_1_1.model.ODM.ODMVersion" title="Link to this definition"></a></dt>
+<dd><p>Version of the ODM standard.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)">str</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="odmlib.ct_1_1_1.model.ODM.Originator">
+<span class="sig-name descname"><span class="pre">Originator</span></span><a class="headerlink" href="#odmlib.ct_1_1_1.model.ODM.Originator" title="Link to this definition"></a></dt>
+<dd><p>Organization that produced the file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)">str</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="odmlib.ct_1_1_1.model.ODM.SourceSystem">
+<span class="sig-name descname"><span class="pre">SourceSystem</span></span><a class="headerlink" href="#odmlib.ct_1_1_1.model.ODM.SourceSystem" title="Link to this definition"></a></dt>
+<dd><p>Software system that generated the file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)">str</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="odmlib.ct_1_1_1.model.ODM.SourceSystemVersion">
+<span class="sig-name descname"><span class="pre">SourceSystemVersion</span></span><a class="headerlink" href="#odmlib.ct_1_1_1.model.ODM.SourceSystemVersion" title="Link to this definition"></a></dt>
+<dd><p>Version of the source system.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)">str</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="odmlib.ct_1_1_1.model.ODM.schemaLocation">
+<span class="sig-name descname"><span class="pre">schemaLocation</span></span><a class="headerlink" href="#odmlib.ct_1_1_1.model.ODM.schemaLocation" title="Link to this definition"></a></dt>
+<dd><p>xs:schemaLocation for schema validation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)">str</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="odmlib.ct_1_1_1.model.ODM.Study">
+<span class="sig-name descname"><span class="pre">Study</span></span><a class="headerlink" href="#odmlib.ct_1_1_1.model.ODM.Study" title="Link to this definition"></a></dt>
+<dd><p>One or more Study elements containing code lists.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)">list</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id33">
+<span class="sig-name descname"><span class="pre">Description</span></span><a class="headerlink" href="#id33" title="Link to this definition"></a></dt>
+<dd><p>Descriptor for string-valued ODM attributes.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id34">
+<span class="sig-name descname"><span class="pre">FileType</span></span><a class="headerlink" href="#id34" title="Link to this definition"></a></dt>
+<dd><p>String descriptor that validates against a dynamically-loaded set of permitted values.</p>
+<p>Combines string type validation with value set membership checking.
+Used for attributes like FileType, Repeating, Mandatory, DataType, etc.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id35">
+<span class="sig-name descname"><span class="pre">Granularity</span></span><a class="headerlink" href="#id35" title="Link to this definition"></a></dt>
+<dd><p>String descriptor that validates against a dynamically-loaded set of permitted values.</p>
+<p>Combines string type validation with value set membership checking.
+Used for attributes like FileType, Repeating, Mandatory, DataType, etc.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id36">
+<span class="sig-name descname"><span class="pre">FileOID</span></span><a class="headerlink" href="#id36" title="Link to this definition"></a></dt>
+<dd><p>Descriptor for OID (Object Identifier) attributes.</p>
+<p>OIDs uniquely identify definition elements within a MetaDataVersion.
+Used on the <code class="docutils literal notranslate"><span class="pre">OID</span></code> attribute of <a href="#id37"><span class="problematic" id="id38">*</span></a>Def elements (e.g., <code class="docutils literal notranslate"><span class="pre">ItemDef.OID</span></code>).</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id39">
+<span class="sig-name descname"><span class="pre">CreationDateTime</span></span><a class="headerlink" href="#id39" title="Link to this definition"></a></dt>
+<dd><p>Descriptor for ISO 8601 datetime strings.</p>
+<p>Validates format: <code class="docutils literal notranslate"><span class="pre">YYYY-MM-DDTHH:MM:SS[.sss][Z|±HH:MM]</span></code></p>
+<p>Used for <code class="docutils literal notranslate"><span class="pre">CreationDateTime</span></code>, <code class="docutils literal notranslate"><span class="pre">AsOfDateTime</span></code>, and similar attributes.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id40">
+<span class="sig-name descname"><span class="pre">AsOfDateTime</span></span><a class="headerlink" href="#id40" title="Link to this definition"></a></dt>
+<dd><p>Descriptor for ISO 8601 datetime strings.</p>
+<p>Validates format: <code class="docutils literal notranslate"><span class="pre">YYYY-MM-DDTHH:MM:SS[.sss][Z|±HH:MM]</span></code></p>
+<p>Used for <code class="docutils literal notranslate"><span class="pre">CreationDateTime</span></code>, <code class="docutils literal notranslate"><span class="pre">AsOfDateTime</span></code>, and similar attributes.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id41">
+<span class="sig-name descname"><span class="pre">ODMVersion</span></span><a class="headerlink" href="#id41" title="Link to this definition"></a></dt>
+<dd><p>String descriptor that validates against a dynamically-loaded set of permitted values.</p>
+<p>Combines string type validation with value set membership checking.
+Used for attributes like FileType, Repeating, Mandatory, DataType, etc.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id42">
+<span class="sig-name descname"><span class="pre">Originator</span></span><a class="headerlink" href="#id42" title="Link to this definition"></a></dt>
+<dd><p>Descriptor for string-valued ODM attributes.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id43">
+<span class="sig-name descname"><span class="pre">SourceSystem</span></span><a class="headerlink" href="#id43" title="Link to this definition"></a></dt>
+<dd><p>Descriptor for string-valued ODM attributes.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id44">
+<span class="sig-name descname"><span class="pre">SourceSystemVersion</span></span><a class="headerlink" href="#id44" title="Link to this definition"></a></dt>
+<dd><p>Descriptor for string-valued ODM attributes.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id45">
+<span class="sig-name descname"><span class="pre">schemaLocation</span></span><a class="headerlink" href="#id45" title="Link to this definition"></a></dt>
+<dd><p>Descriptor for string-valued ODM attributes.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id46">
+<span class="sig-name descname"><span class="pre">Study</span></span><a class="headerlink" href="#id46" title="Link to this definition"></a></dt>
+<dd><p>Descriptor for a list of child ODM elements.</p>
+<p>Validates that all items assigned to the list are instances of
+the expected element class. Stored as a plain list in the instance.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>element_class</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#type" title="(in Python v3.14)"><em>type</em></a>) – The class that all list items must be.</p></li>
+<li><p><strong>namespace</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – XML namespace prefix (default: “odm”).</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="odmlib.ct_1_1_1.model.ODM.namespace">
+<span class="sig-name descname"><span class="pre">namespace</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'odm'</span></span><a class="headerlink" href="#odmlib.ct_1_1_1.model.ODM.namespace" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="odmlib.dataset_1_0_1.html" class="btn btn-neutral float-left" title="odmlib.dataset_1_0_1 module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="odmlib.arm_1_0.html" class="btn btn-neutral float-right" title="odmlib.arm_1_0 module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2020, Sam Hume.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

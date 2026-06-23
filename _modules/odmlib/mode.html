@@ -1,0 +1,255 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>odmlib.mode &mdash; odmlib 0.2.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=938c9ccc"></script>
+      <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            odmlib
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">User Guides</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../guides/getting_started.html">Getting Started with odmlib</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../guides/reading_documents.html">Reading ODM Documents</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../guides/permissive_loading.html">Permissive Loading Mode</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../guides/creating_documents.html">Creating ODM Documents</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../guides/validation.html">Validating ODM Documents</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../guides/model_reference.html">Model Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../guides/interoperability.html">Interoperability: Dataset-JSON and Pandas</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../guides/dataset_json.html">Working with Dataset-JSON v1.1</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../modules.html">odmlib</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../odmlib.odm_1_3_2.html">odm_1_3_2 package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../odmlib.odm_2_0.html">odm_2_0 package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../odmlib.define_2_0.html">define_2_0 package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../odmlib.define_2_1.html">define_2_1 package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../odmlib.dataset_1_0_1.html">odmlib.dataset_1_0_1 module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../odmlib.ct_1_1_1.html">odmlib.ct_1_1_1 module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../odmlib.arm_1_0.html">odmlib.arm_1_0 module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../odmlib.dataset_json_1_1.html">odmlib.dataset_json_1_1</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../odmlib.dataframe.html">odmlib.dataframe</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Project</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../changelog.html">Changelog</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">odmlib</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">odmlib.mode</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for odmlib.mode</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Validation mode control for odmlib.</span>
+
+<span class="sd">This module provides a context-managed permissive loading mode that allows</span>
+<span class="sd">non-conformant ODM/Define-XML files to be loaded into the object model for</span>
+<span class="sd">inspection and repair. The mode uses ``contextvars.ContextVar`` with a ``Flag``</span>
+<span class="sd">enum for graduated control over which validations to bypass.</span>
+
+<span class="sd">Quick start::</span>
+
+<span class="sd">    from odmlib import permissive</span>
+
+<span class="sd">    with permissive():</span>
+<span class="sd">        loader.open_odm_document(&quot;broken.xml&quot;)</span>
+<span class="sd">        odm = loader.root()</span>
+
+<span class="sd">    # Mode is back to strict — fix issues, then validate</span>
+<span class="sd">    errors = odm.validate(collect_errors=True)</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">contextvars</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">contextlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">contextmanager</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">enum</span><span class="w"> </span><span class="kn">import</span> <span class="n">Flag</span><span class="p">,</span> <span class="n">auto</span>
+
+
+<div class="viewcode-block" id="ValidationMode">
+<a class="viewcode-back" href="../../modules.html#odmlib.mode.ValidationMode">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">ValidationMode</span><span class="p">(</span><span class="n">Flag</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Flag enum controlling which validation categories are enforced.</span>
+
+<span class="sd">    Members can be combined with ``|`` to create targeted relaxation::</span>
+
+<span class="sd">        ValidationMode.SKIP_REQUIRED | ValidationMode.SKIP_VALUESET</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">STRICT</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;All validation enforced (default, preserves existing behavior).&quot;&quot;&quot;</span>
+
+    <span class="n">SKIP_REQUIRED</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Omit required-attribute checks during construction and access.&quot;&quot;&quot;</span>
+
+    <span class="n">SKIP_VALUESET</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Omit ``ValidValues`` and ``ExtendedValidValues`` enforcement.&quot;&quot;&quot;</span>
+
+    <span class="n">SKIP_TYPE</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Omit type checks and unknown-attribute rejection.&quot;&quot;&quot;</span>
+
+    <span class="n">SKIP_FORMAT</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Omit format validators (datetime, SAS name, email, URL, etc.).&quot;&quot;&quot;</span>
+
+    <span class="n">PERMISSIVE</span> <span class="o">=</span> <span class="n">SKIP_REQUIRED</span> <span class="o">|</span> <span class="n">SKIP_VALUESET</span> <span class="o">|</span> <span class="n">SKIP_TYPE</span> <span class="o">|</span> <span class="n">SKIP_FORMAT</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Composite flag that skips all validation categories.&quot;&quot;&quot;</span></div>
+
+
+
+<span class="n">_validation_mode</span><span class="p">:</span> <span class="n">contextvars</span><span class="o">.</span><span class="n">ContextVar</span><span class="p">[</span><span class="n">ValidationMode</span><span class="p">]</span> <span class="o">=</span> <span class="n">contextvars</span><span class="o">.</span><span class="n">ContextVar</span><span class="p">(</span>
+    <span class="s2">&quot;odmlib_validation_mode&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="n">ValidationMode</span><span class="o">.</span><span class="n">STRICT</span>
+<span class="p">)</span>
+
+
+<div class="viewcode-block" id="get_mode">
+<a class="viewcode-back" href="../../modules.html#odmlib.mode.get_mode">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_mode</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">ValidationMode</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return the current validation mode from the ContextVar.&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">_validation_mode</span><span class="o">.</span><span class="n">get</span><span class="p">()</span></div>
+
+
+
+<div class="viewcode-block" id="set_mode">
+<a class="viewcode-back" href="../../modules.html#odmlib.mode.set_mode">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">set_mode</span><span class="p">(</span><span class="n">mode</span><span class="p">:</span> <span class="n">ValidationMode</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">contextvars</span><span class="o">.</span><span class="n">Token</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Set the validation mode and return a reset token.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        mode: The validation mode to activate.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        A ``contextvars.Token`` that can be passed to</span>
+<span class="sd">        ``_validation_mode.reset()`` to restore the previous mode.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">_validation_mode</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">mode</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="is_permissive">
+<a class="viewcode-back" href="../../modules.html#odmlib.mode.is_permissive">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">is_permissive</span><span class="p">(</span><span class="n">flag</span><span class="p">:</span> <span class="n">ValidationMode</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Check whether a specific validation flag is active.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        flag: The validation category to check (e.g.,</span>
+<span class="sd">            ``ValidationMode.SKIP_REQUIRED``).</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        ``True`` if the flag is active in the current mode.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="nb">bool</span><span class="p">(</span><span class="n">get_mode</span><span class="p">()</span> <span class="o">&amp;</span> <span class="n">flag</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="permissive">
+<a class="viewcode-back" href="../../modules.html#odmlib.mode.permissive">[docs]</a>
+<span class="nd">@contextmanager</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">permissive</span><span class="p">(</span><span class="n">mode</span><span class="p">:</span> <span class="n">ValidationMode</span> <span class="o">=</span> <span class="n">ValidationMode</span><span class="o">.</span><span class="n">PERMISSIVE</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Context manager that activates a permissive validation mode.</span>
+
+<span class="sd">    On entry, sets the validation mode to *mode*. On exit (including on</span>
+<span class="sd">    exception), restores the previous mode via token reset.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        mode: The validation mode to activate. Defaults to</span>
+<span class="sd">            ``ValidationMode.PERMISSIVE`` (skip all validation).</span>
+
+<span class="sd">    Example::</span>
+
+<span class="sd">        from odmlib import permissive, ValidationMode</span>
+
+<span class="sd">        # Skip everything</span>
+<span class="sd">        with permissive():</span>
+<span class="sd">            ...</span>
+
+<span class="sd">        # Skip only required checks</span>
+<span class="sd">        with permissive(ValidationMode.SKIP_REQUIRED):</span>
+<span class="sd">            ...</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">token</span> <span class="o">=</span> <span class="n">_validation_mode</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">mode</span><span class="p">)</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">yield</span>
+    <span class="k">finally</span><span class="p">:</span>
+        <span class="n">_validation_mode</span><span class="o">.</span><span class="n">reset</span><span class="p">(</span><span class="n">token</span><span class="p">)</span></div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2020, Sam Hume.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

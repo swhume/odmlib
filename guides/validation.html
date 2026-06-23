@@ -1,0 +1,391 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Validating ODM Documents &mdash; odmlib 0.2.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=938c9ccc"></script>
+      <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Model Reference" href="model_reference.html" />
+    <link rel="prev" title="Creating ODM Documents" href="creating_documents.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            odmlib
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">User Guides</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="getting_started.html">Getting Started with odmlib</a></li>
+<li class="toctree-l1"><a class="reference internal" href="reading_documents.html">Reading ODM Documents</a></li>
+<li class="toctree-l1"><a class="reference internal" href="permissive_loading.html">Permissive Loading Mode</a></li>
+<li class="toctree-l1"><a class="reference internal" href="creating_documents.html">Creating ODM Documents</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Validating ODM Documents</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#element-order-verification">Element Order Verification</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#scope-and-limitations">Scope and limitations</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#relationship-to-serialization">Relationship to serialization</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#oid-uniqueness-and-reference-integrity">OID Uniqueness and Reference Integrity</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#using-the-dynamic-oid-checker-recommended">Using the Dynamic OID Checker (recommended)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#using-the-manual-oid-checker-deprecated">Using the Manual OID Checker (deprecated)</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#conformance-validation">Conformance Validation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#combined-validation-with-error-collection">Combined Validation with Error Collection</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#xml-schema-xsd-validation">XML Schema (XSD) Validation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#understanding-error-types">Understanding Error Types</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="model_reference.html">Model Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="interoperability.html">Interoperability: Dataset-JSON and Pandas</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dataset_json.html">Working with Dataset-JSON v1.1</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../modules.html">odmlib</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../odmlib.odm_1_3_2.html">odm_1_3_2 package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../odmlib.odm_2_0.html">odm_2_0 package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../odmlib.define_2_0.html">define_2_0 package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../odmlib.define_2_1.html">define_2_1 package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../odmlib.dataset_1_0_1.html">odmlib.dataset_1_0_1 module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../odmlib.ct_1_1_1.html">odmlib.ct_1_1_1 module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../odmlib.arm_1_0.html">odmlib.arm_1_0 module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../odmlib.dataset_json_1_1.html">odmlib.dataset_json_1_1</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../odmlib.dataframe.html">odmlib.dataframe</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Project</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../changelog.html">Changelog</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">odmlib</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Validating ODM Documents</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/guides/validation.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="validating-odm-documents">
+<h1>Validating ODM Documents<a class="headerlink" href="#validating-odm-documents" title="Link to this heading"></a></h1>
+<p>odmlib provides several validation mechanisms for ODM documents.</p>
+<section id="element-order-verification">
+<h2>Element Order Verification<a class="headerlink" href="#element-order-verification" title="Link to this heading"></a></h2>
+<p>ODM specifies the required order of child elements in XML.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p><code class="docutils literal notranslate"><span class="pre">write_xml()</span></code> and <code class="docutils literal notranslate"><span class="pre">to_xml()</span></code> always emit children in the model
+declaration order defined in the model module (e.g.
+<code class="docutils literal notranslate"><span class="pre">odmlib/odm_1_3_2/model.py</span></code>), regardless of the order in which you
+assigned the children on the instance. You <strong>do not</strong> need to call
+<code class="docutils literal notranslate"><span class="pre">reorder_object()</span></code> before serializing — the serializer drives the
+order from the metaclass-captured <code class="docutils literal notranslate"><span class="pre">_elems</span></code>, which mirrors the
+schema content model.</p>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">verify_order()</span></code> / <code class="docutils literal notranslate"><span class="pre">reorder_object()</span></code> API is still useful when
+you want to fail-fast on object construction order (e.g. so unit tests
+catch a stale build script that assigns children out of order), or when
+you mutate the in-memory <code class="docutils literal notranslate"><span class="pre">__dict__</span></code> ordering for some other reason.</p>
+<p>odmlib can verify and fix element ordering:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">odmlib.exceptions</span><span class="w"> </span><span class="kn">import</span> <span class="n">OdmlibElementOrderError</span>
+
+<span class="c1"># Check order (raises OdmlibElementOrderError if out of order)</span>
+<span class="k">try</span><span class="p">:</span>
+    <span class="n">odm</span><span class="o">.</span><span class="n">verify_order</span><span class="p">()</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Element order is correct&quot;</span><span class="p">)</span>
+<span class="k">except</span> <span class="n">OdmlibElementOrderError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Order error: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="c1"># Fix automatically (issues OdmlibWarning)</span>
+    <span class="k">with</span> <span class="n">warnings</span><span class="o">.</span><span class="n">catch_warnings</span><span class="p">():</span>
+        <span class="n">warnings</span><span class="o">.</span><span class="n">simplefilter</span><span class="p">(</span><span class="s2">&quot;ignore&quot;</span><span class="p">)</span>
+        <span class="n">odm</span><span class="o">.</span><span class="n">reorder_object</span><span class="p">()</span>
+</pre></div>
+</div>
+<section id="scope-and-limitations">
+<h3>Scope and limitations<a class="headerlink" href="#scope-and-limitations" title="Link to this heading"></a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">verify_order()</span></code> is a method on <code class="xref py py-class docutils literal notranslate"><span class="pre">ODMElement</span></code>,
+so it works on any odmlib model object — the <code class="docutils literal notranslate"><span class="pre">ODM</span></code> root, <code class="docutils literal notranslate"><span class="pre">Study</span></code>,
+<code class="docutils literal notranslate"><span class="pre">MetaDataVersion</span></code>, <code class="docutils literal notranslate"><span class="pre">ItemGroupDef</span></code>, leaf elements, and so on. It
+recurses through every <code class="docutils literal notranslate"><span class="pre">ODMElement</span></code> child and every entry of every
+<code class="docutils literal notranslate"><span class="pre">ODMListObject</span></code> list, so a single call on the odmlib root covers the
+whole document.</p>
+<p>It does <strong>not</strong> work on <a class="reference external" href="https://docs.python.org/3/library/xml.etree.elementtree.html#xml.etree.ElementTree.Element" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">xml.etree.ElementTree.Element</span></code></a> — that
+is the parsed XML representation, not an odmlib object. If you only
+have an ElementTree, load it through
+<code class="xref py py-class docutils literal notranslate"><span class="pre">XMLODMLoader</span></code> (or
+<code class="xref py py-class docutils literal notranslate"><span class="pre">XMLDefineLoader</span></code> for Define-XML) first.</p>
+<p>A few limitations to keep in mind:</p>
+<ul class="simple">
+<li><p><strong>Custom extensions must redeclare base children.</strong> Each class’s
+child-element ordering comes from the descriptors declared in its
+own class body, captured into <code class="docutils literal notranslate"><span class="pre">_elems</span></code> by <code class="docutils literal notranslate"><span class="pre">ODMMeta</span></code>. If you
+subclass an existing model class to extend it, you must redeclare
+the base children in schema order — see
+<code class="docutils literal notranslate"><span class="pre">odmlib/define_2_1/model.py</span></code> for the canonical pattern (the
+<code class="docutils literal notranslate"><span class="pre">ItemGroupDef</span></code> extension assigns <code class="docutils literal notranslate"><span class="pre">Description</span> <span class="pre">=</span> <span class="pre">ODM.ItemGroupDef.Description</span></code>
+etc. to lock in the order). If a base child is missing from the
+subclass body, <code class="docutils literal notranslate"><span class="pre">verify_order()</span></code> will treat it as unexpected.</p></li>
+<li><p><strong>Permissive mode can produce false positives.</strong> When loading a
+non-conformant document with
+<a class="reference internal" href="../modules.html#odmlib.mode.ValidationMode.SKIP_TYPE" title="odmlib.mode.ValidationMode.SKIP_TYPE"><code class="xref py py-class docutils literal notranslate"><span class="pre">SKIP_TYPE</span></code></a> active, unknown
+attributes are accepted into the instance <code class="docutils literal notranslate"><span class="pre">__dict__</span></code> directly.
+Those keys are not in <code class="docutils literal notranslate"><span class="pre">_elems</span></code> and will trip <code class="docutils literal notranslate"><span class="pre">verify_order()</span></code>.
+Run order verification only after you have cleaned up any
+unknown-attribute artefacts. See <a class="reference internal" href="permissive_loading.html"><span class="doc">Permissive Loading Mode</span></a> for the
+load-fix-validate workflow.</p></li>
+<li><p><strong>List-internal order is not checked.</strong> <code class="docutils literal notranslate"><span class="pre">verify_order()</span></code> only
+checks the order of different <em>kinds</em> of child elements relative to
+each other (e.g., <code class="docutils literal notranslate"><span class="pre">Description</span></code> before <code class="docutils literal notranslate"><span class="pre">ItemRef</span></code>). It does not
+check whether two <code class="docutils literal notranslate"><span class="pre">ItemRef</span></code> entries inside an <code class="docutils literal notranslate"><span class="pre">ItemGroupDef</span></code>
+appear in the right order — ODM typically relies on <code class="docutils literal notranslate"><span class="pre">OrderNumber</span></code>
+attributes for that, not list position.</p></li>
+<li><p><strong>Completeness is not checked.</strong> <code class="docutils literal notranslate"><span class="pre">verify_order()</span></code> does not detect
+missing required children. Use
+<code class="xref py py-meth docutils literal notranslate"><span class="pre">verify_conformance()</span></code> (Cerberus
+schema check) for that, or <code class="xref py py-meth docutils literal notranslate"><span class="pre">validate()</span></code>
+to combine both.</p></li>
+</ul>
+</section>
+<section id="relationship-to-serialization">
+<h3>Relationship to serialization<a class="headerlink" href="#relationship-to-serialization" title="Link to this heading"></a></h3>
+<p>Different serializers handle child order differently:</p>
+<ul class="simple">
+<li><p><code class="xref py py-meth docutils literal notranslate"><span class="pre">to_xml()</span></code> /
+<code class="xref py py-meth docutils literal notranslate"><span class="pre">write_xml()</span></code> emit children in
+<code class="docutils literal notranslate"><span class="pre">_elems</span></code> (model declaration) order regardless of <code class="docutils literal notranslate"><span class="pre">__dict__</span></code>
+insertion order. <strong>You do not need to run ``verify_order()`` /
+``reorder_object()`` before XML serialization.</strong></p></li>
+<li><p><code class="xref py py-meth docutils literal notranslate"><span class="pre">to_dict()</span></code> /
+<code class="xref py py-meth docutils literal notranslate"><span class="pre">to_json()</span></code> walk <code class="docutils literal notranslate"><span class="pre">__dict__</span></code>
+directly, so they reflect whatever order the instance accumulated.
+If a stable, schema-aligned key order matters for downstream
+consumers of your JSON/dict output, run <code class="docutils literal notranslate"><span class="pre">verify_order()</span></code> (and
+<code class="docutils literal notranslate"><span class="pre">reorder_object()</span></code> if it fails) before calling them.</p></li>
+</ul>
+</section>
+</section>
+<section id="oid-uniqueness-and-reference-integrity">
+<h2>OID Uniqueness and Reference Integrity<a class="headerlink" href="#oid-uniqueness-and-reference-integrity" title="Link to this heading"></a></h2>
+<p>odmlib can verify that all OIDs are unique and that all OID references
+point to valid definitions:</p>
+<section id="using-the-dynamic-oid-checker-recommended">
+<h3>Using the Dynamic OID Checker (recommended)<a class="headerlink" href="#using-the-dynamic-oid-checker-recommended" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">odmlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">create_oid_checker</span>
+
+<span class="c1"># Create a dynamic checker for ODM 1.3.2</span>
+<span class="n">checker</span> <span class="o">=</span> <span class="n">create_oid_checker</span><span class="p">(</span><span class="s2">&quot;odm_1_3_2&quot;</span><span class="p">)</span>
+
+<span class="c1"># Verify OIDs (raises OdmlibOIDError on failure)</span>
+<span class="n">is_valid</span> <span class="o">=</span> <span class="n">odm</span><span class="o">.</span><span class="n">verify_oids</span><span class="p">(</span><span class="n">checker</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;OIDs valid: </span><span class="si">{</span><span class="n">is_valid</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="c1"># Find unreferenced definitions (e.g., unused code lists)</span>
+<span class="n">unreferenced</span> <span class="o">=</span> <span class="n">odm</span><span class="o">.</span><span class="n">unreferenced_oids</span><span class="p">(</span><span class="n">checker</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">oid</span> <span class="ow">in</span> <span class="n">unreferenced</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unreferenced: </span><span class="si">{</span><span class="n">oid</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="using-the-manual-oid-checker-deprecated">
+<h3>Using the Manual OID Checker (deprecated)<a class="headerlink" href="#using-the-manual-oid-checker-deprecated" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">odmlib.odm_1_3_2.rules.oid_ref</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">OR</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
+
+<span class="k">with</span> <span class="n">warnings</span><span class="o">.</span><span class="n">catch_warnings</span><span class="p">():</span>
+    <span class="n">warnings</span><span class="o">.</span><span class="n">simplefilter</span><span class="p">(</span><span class="s2">&quot;ignore&quot;</span><span class="p">,</span> <span class="ne">DeprecationWarning</span><span class="p">)</span>
+    <span class="n">checker</span> <span class="o">=</span> <span class="n">OR</span><span class="o">.</span><span class="n">OIDRef</span><span class="p">()</span>
+
+<span class="n">is_valid</span> <span class="o">=</span> <span class="n">odm</span><span class="o">.</span><span class="n">verify_oids</span><span class="p">(</span><span class="n">checker</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="conformance-validation">
+<h2>Conformance Validation<a class="headerlink" href="#conformance-validation" title="Link to this heading"></a></h2>
+<p>Cerberus-based schema validation checks structural conformance:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">odmlib.odm_1_3_2.rules.metadata_schema</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">SC</span>
+
+<span class="n">validator</span> <span class="o">=</span> <span class="n">SC</span><span class="o">.</span><span class="n">MetadataSchema</span><span class="p">()</span>
+<span class="n">result</span> <span class="o">=</span> <span class="n">mdv</span><span class="o">.</span><span class="n">verify_conformance</span><span class="p">(</span><span class="n">validator</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Conformance result: </span><span class="si">{</span><span class="n">result</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="combined-validation-with-error-collection">
+<h2>Combined Validation with Error Collection<a class="headerlink" href="#combined-validation-with-error-collection" title="Link to this heading"></a></h2>
+<p>Use the <code class="docutils literal notranslate"><span class="pre">validate()</span></code> method to run all checks and collect all errors
+instead of failing on the first one:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">odmlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">create_oid_checker</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">odmlib.odm_1_3_2.rules.metadata_schema</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">SC</span>
+
+<span class="n">checker</span> <span class="o">=</span> <span class="n">create_oid_checker</span><span class="p">(</span><span class="s2">&quot;odm_1_3_2&quot;</span><span class="p">)</span>
+<span class="n">validator</span> <span class="o">=</span> <span class="n">SC</span><span class="o">.</span><span class="n">MetadataSchema</span><span class="p">()</span>
+
+<span class="n">errors</span> <span class="o">=</span> <span class="n">odm</span><span class="o">.</span><span class="n">validate</span><span class="p">(</span>
+    <span class="n">collect_errors</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">oid_checker</span><span class="o">=</span><span class="n">checker</span><span class="p">,</span>
+    <span class="n">conformance_checker</span><span class="o">=</span><span class="n">validator</span>
+<span class="p">)</span>
+
+<span class="k">if</span> <span class="ow">not</span> <span class="n">errors</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Document is valid&quot;</span><span class="p">)</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="k">for</span> <span class="n">err</span> <span class="ow">in</span> <span class="n">errors</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error: </span><span class="si">{</span><span class="n">err</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>This pattern is particularly useful after permissive loading, where a
+non-conformant document has been loaded with validation bypassed.  After
+fixing known issues, use <code class="docutils literal notranslate"><span class="pre">validate(collect_errors=True)</span></code> to confirm all
+problems have been resolved.  See <a class="reference internal" href="permissive_loading.html"><span class="doc">Permissive Loading Mode</span></a> for the
+complete workflow.</p>
+</section>
+<section id="xml-schema-xsd-validation">
+<h2>XML Schema (XSD) Validation<a class="headerlink" href="#xml-schema-xsd-validation" title="Link to this heading"></a></h2>
+<p>Use <code class="xref py py-class docutils literal notranslate"><span class="pre">ODMSchemaValidator</span></code> to validate an
+ODM/Define-XML document against the official CDISC XSD bundled with
+odmlib:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">odmlib.odm_parser</span><span class="w"> </span><span class="kn">import</span> <span class="n">ODMSchemaValidator</span><span class="p">,</span> <span class="n">ODMParser</span>
+
+<span class="c1"># ODM 1.3.2</span>
+<span class="n">validator</span> <span class="o">=</span> <span class="n">ODMSchemaValidator</span><span class="p">(</span><span class="n">standard</span><span class="o">=</span><span class="s2">&quot;odm&quot;</span><span class="p">,</span> <span class="n">version</span><span class="o">=</span><span class="s2">&quot;1.3.2&quot;</span><span class="p">)</span>
+
+<span class="c1"># ODM 2.0</span>
+<span class="n">validator</span> <span class="o">=</span> <span class="n">ODMSchemaValidator</span><span class="p">(</span><span class="n">standard</span><span class="o">=</span><span class="s2">&quot;odm&quot;</span><span class="p">,</span> <span class="n">version</span><span class="o">=</span><span class="s2">&quot;2.0&quot;</span><span class="p">)</span>
+
+<span class="c1"># Define-XML 2.0 / 2.1</span>
+<span class="n">validator</span> <span class="o">=</span> <span class="n">ODMSchemaValidator</span><span class="p">(</span><span class="n">standard</span><span class="o">=</span><span class="s2">&quot;define&quot;</span><span class="p">,</span> <span class="n">version</span><span class="o">=</span><span class="s2">&quot;2.1&quot;</span><span class="p">)</span>
+
+<span class="c1"># Validate a file directly (raises OdmlibSchemaValidationError on failure)</span>
+<span class="n">validator</span><span class="o">.</span><span class="n">validate_file</span><span class="p">(</span><span class="s2">&quot;study.xml&quot;</span><span class="p">)</span>
+
+<span class="c1"># Or validate an already-parsed ElementTree (returns bool)</span>
+<span class="n">tree</span> <span class="o">=</span> <span class="n">ODMParser</span><span class="p">(</span><span class="s2">&quot;study.xml&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">parse_tree</span><span class="p">()</span>
+<span class="n">is_valid</span> <span class="o">=</span> <span class="n">validator</span><span class="o">.</span><span class="n">validate_tree</span><span class="p">(</span><span class="n">tree</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>For a custom or local XSD that is not bundled with odmlib, pass an
+explicit <code class="docutils literal notranslate"><span class="pre">xsd_file</span></code> path:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">validator</span> <span class="o">=</span> <span class="n">ODMSchemaValidator</span><span class="p">(</span><span class="n">xsd_file</span><span class="o">=</span><span class="s2">&quot;/path/to/custom.xsd&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The supported <code class="docutils literal notranslate"><span class="pre">(standard,</span> <span class="pre">version)</span></code> combinations are listed in
+<code class="xref py py-data docutils literal notranslate"><span class="pre">odmlib.schema_manager._MAIN_SCHEMA</span></code>.</p>
+</section>
+<section id="understanding-error-types">
+<h2>Understanding Error Types<a class="headerlink" href="#understanding-error-types" title="Link to this heading"></a></h2>
+<p>odmlib uses a custom exception hierarchy:</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Exception</p></th>
+<th class="head"><p>When raised</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="xref py py-exc docutils literal notranslate"><span class="pre">OdmlibError</span></code></p></td>
+<td><p>Base class for all odmlib errors</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-exc docutils literal notranslate"><span class="pre">OdmlibTypeError</span></code></p></td>
+<td><p>Type validation failure (wrong type assigned to attribute)</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-exc docutils literal notranslate"><span class="pre">OdmlibValidationError</span></code></p></td>
+<td><p>Value validation failure (invalid format, out of range)</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-exc docutils literal notranslate"><span class="pre">OdmlibRequiredAttributeError</span></code></p></td>
+<td><p>Required attribute missing during construction</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-exc docutils literal notranslate"><span class="pre">OdmlibElementOrderError</span></code></p></td>
+<td><p>Element order does not match ODM specification</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-exc docutils literal notranslate"><span class="pre">OdmlibOIDError</span></code></p></td>
+<td><p>OID uniqueness or ref/def integrity failure</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-exc docutils literal notranslate"><span class="pre">OdmlibLoaderStateError</span></code></p></td>
+<td><p>Loader used before document opened</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-exc docutils literal notranslate"><span class="pre">OdmlibNamespaceError</span></code></p></td>
+<td><p>Invalid namespace URI or unregistered prefix</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="creating_documents.html" class="btn btn-neutral float-left" title="Creating ODM Documents" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="model_reference.html" class="btn btn-neutral float-right" title="Model Reference" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2020, Sam Hume.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,806 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>odm_element &mdash; odmlib 0.2.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=938c9ccc"></script>
+      <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            odmlib
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">User Guides</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../guides/getting_started.html">Getting Started with odmlib</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guides/reading_documents.html">Reading ODM Documents</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guides/permissive_loading.html">Permissive Loading Mode</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guides/creating_documents.html">Creating ODM Documents</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guides/validation.html">Validating ODM Documents</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guides/model_reference.html">Model Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guides/interoperability.html">Interoperability: Dataset-JSON and Pandas</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guides/dataset_json.html">Working with Dataset-JSON v1.1</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../modules.html">odmlib</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../odmlib.odm_1_3_2.html">odm_1_3_2 package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../odmlib.odm_2_0.html">odm_2_0 package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../odmlib.define_2_0.html">define_2_0 package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../odmlib.define_2_1.html">define_2_1 package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../odmlib.dataset_1_0_1.html">odmlib.dataset_1_0_1 module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../odmlib.ct_1_1_1.html">odmlib.ct_1_1_1 module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../odmlib.arm_1_0.html">odmlib.arm_1_0 module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../odmlib.dataset_json_1_1.html">odmlib.dataset_json_1_1</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../odmlib.dataframe.html">odmlib.dataframe</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Project</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../changelog.html">Changelog</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">odmlib</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">Module code</a></li>
+      <li class="breadcrumb-item active">odm_element</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for odm_element</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Core metaclass, writer, and base element class for odmlib ODM models.</span>
+
+<span class="sd">This module provides three central components:</span>
+
+<span class="sd">- :class:`ODMMeta` -- metaclass that processes descriptor-based class definitions</span>
+<span class="sd">- :class:`ODMWriter` -- utility class for writing ElementTree XML to file</span>
+<span class="sd">- :class:`ODMElement` -- base class for all ODM element model objects</span>
+
+<span class="sd">All model classes (e.g., ``Study``, ``ItemDef``, ``MetaDataVersion``) inherit</span>
+<span class="sd">from :class:`ODMElement` and use descriptors from :mod:`odmlib.typed` to define</span>
+<span class="sd">their attributes and child elements.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">List</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">odmlib.descriptor</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">DESC</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">odmlib.typed</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">T</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">odmlib.ns_registry</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">NS</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">odmlib.oid_index</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">IDX</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">collections</span><span class="w"> </span><span class="kn">import</span> <span class="n">OrderedDict</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">json</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">xml.etree.ElementTree</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ET</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">odmlib.exceptions</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">OdmlibError</span><span class="p">,</span>
+    <span class="n">OdmlibTypeError</span><span class="p">,</span>
+    <span class="n">OdmlibRequiredAttributeError</span><span class="p">,</span>
+    <span class="n">OdmlibElementOrderError</span><span class="p">,</span>
+    <span class="n">OdmlibWarning</span><span class="p">,</span>
+    <span class="n">ErrorCollector</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">odmlib.mode</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">_mode</span>
+
+
+<div class="viewcode-block" id="ODMMeta">
+<a class="viewcode-back" href="../modules.html#odm_element.ODMMeta">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">ODMMeta</span><span class="p">(</span><span class="nb">type</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Metaclass for all ODM element classes.</span>
+
+<span class="sd">    Processes class definitions to:</span>
+
+<span class="sd">    - Preserve attribute declaration order (using OrderedDict)</span>
+<span class="sd">    - Separate XML attributes (``_attrs``) from child elements (``_elems``)</span>
+<span class="sd">    - Track non-default namespace prefixes (``_attr_ns``)</span>
+<span class="sd">    - Build the ``_fields`` list of all declared properties</span>
+<span class="sd">    - Set the default ``namespace`` to &quot;odm&quot; if not specified</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__prepare__</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">bases</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot; preserves the order of declarations in each class &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">OrderedDict</span><span class="p">()</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__new__</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">clsname</span><span class="p">,</span> <span class="n">bases</span><span class="p">,</span> <span class="n">clsdict</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Create a new ODM element class.</span>
+
+<span class="sd">        Scans ``clsdict`` for :class:`~odmlib.typed.ODMObject`,</span>
+<span class="sd">        :class:`~odmlib.typed.ODMListObject`, and other</span>
+<span class="sd">        :class:`~odmlib.descriptor.Descriptor` instances. Populates</span>
+<span class="sd">        ``_fields``, ``_elems``, ``_attrs``, and ``_attr_ns`` on the</span>
+<span class="sd">        new class. Sets ``namespace`` to ``&quot;odm&quot;`` if not declared.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            clsname (str): Name of the class being created.</span>
+<span class="sd">            bases (tuple): Base classes.</span>
+<span class="sd">            clsdict (OrderedDict): Class namespace dictionary (ordered).</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            type: The newly constructed class object.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># variables created in classes become the class attributes</span>
+        <span class="c1"># fields = [key for key, val in clsdict.items() if isinstance(val, (DESC.Descriptor, ODMMeta))]</span>
+        <span class="n">clsdict</span><span class="p">[</span><span class="s2">&quot;_fields&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">clsdict</span><span class="p">[</span><span class="s2">&quot;_elems&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">clsdict</span><span class="p">[</span><span class="s2">&quot;_attrs&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">clsdict</span><span class="p">[</span><span class="s2">&quot;_attr_ns&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">clsdict</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="p">(</span><span class="n">T</span><span class="o">.</span><span class="n">ODMObject</span><span class="p">,</span> <span class="n">T</span><span class="o">.</span><span class="n">ODMListObject</span><span class="p">)):</span>
+                <span class="n">clsdict</span><span class="p">[</span><span class="s2">&quot;_elems&quot;</span><span class="p">][</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">val</span>
+                <span class="n">clsdict</span><span class="p">[</span><span class="n">key</span><span class="p">]</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">key</span>
+                <span class="n">clsdict</span><span class="p">[</span><span class="s2">&quot;_fields&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="p">(</span><span class="n">DESC</span><span class="o">.</span><span class="n">Descriptor</span><span class="p">,</span> <span class="n">ODMMeta</span><span class="p">)):</span>
+                <span class="n">clsdict</span><span class="p">[</span><span class="s2">&quot;_attrs&quot;</span><span class="p">][</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">val</span>
+                <span class="n">clsdict</span><span class="p">[</span><span class="n">key</span><span class="p">]</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">key</span>
+                <span class="n">clsdict</span><span class="p">[</span><span class="s2">&quot;_fields&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">val</span><span class="o">.</span><span class="n">namespace</span> <span class="o">!=</span> <span class="s2">&quot;odm&quot;</span><span class="p">:</span>
+                    <span class="n">clsdict</span><span class="p">[</span><span class="s2">&quot;_attr_ns&quot;</span><span class="p">][</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">val</span><span class="o">.</span><span class="n">namespace</span>
+
+        <span class="c1"># for name in fields:</span>
+        <span class="c1">#     clsdict[name].name = name</span>
+
+        <span class="c1">#clsdict[&quot;_fields&quot;] = fields</span>
+        <span class="c1"># the default class namespace is odm</span>
+        <span class="k">if</span> <span class="s2">&quot;namespace&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">clsdict</span><span class="p">:</span>
+            <span class="n">clsdict</span><span class="p">[</span><span class="s2">&quot;namespace&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;odm&quot;</span>
+        <span class="c1"># elems = {key: val for key, val in clsdict.items() if isinstance(val, (T.ODMObject, T.ODMListObject))}</span>
+        <span class="c1"># clsdict[&quot;_elems&quot;] = elems</span>
+        <span class="c1"># add attribute non-default namespaces</span>
+        <span class="c1"># ns = {key: val.namespace for key, val in clsdict.items() if isinstance(val, (DESC.Descriptor, ODMMeta))</span>
+        <span class="c1">#       if val.namespace != &quot;odm&quot;}</span>
+        <span class="c1"># clsdict[&quot;_attr_ns&quot;] = ns</span>
+
+        <span class="n">clsobj</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__new__</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">clsname</span><span class="p">,</span> <span class="n">bases</span><span class="p">,</span> <span class="nb">dict</span><span class="p">(</span><span class="n">clsdict</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">clsobj</span></div>
+
+
+
+<div class="viewcode-block" id="ODMWriter">
+<a class="viewcode-back" href="../modules.html#odm_element.ODMWriter">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">ODMWriter</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Writes an odmlib ElementTree hierarchy to an XML file.</span>
+
+<span class="sd">    Handles namespace registration and XML declaration.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="ODMWriter.write_odm">
+<a class="viewcode-back" href="../modules.html#odm_element.ODMWriter.write_odm">[docs]</a>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">write_odm</span><span class="p">(</span><span class="n">odm_file</span><span class="p">,</span> <span class="n">odm_elem</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        after converting ODMLIB to ElementTree, write the ElementTree to an ODM file</span>
+<span class="sd">        :param odm_file: path and file to write the ODM XML</span>
+<span class="sd">        :param odm_elem: Element object to write to ODM (presumably an ODM root)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">tree</span> <span class="o">=</span> <span class="n">ET</span><span class="o">.</span><span class="n">ElementTree</span><span class="p">(</span><span class="n">odm_elem</span><span class="p">)</span>
+        <span class="n">root</span> <span class="o">=</span> <span class="n">tree</span><span class="o">.</span><span class="n">getroot</span><span class="p">()</span>
+        <span class="c1"># workaround for elementtree NS bug - NamespaceRegistry assumes at least 1 default NS has been set</span>
+        <span class="n">nsr</span> <span class="o">=</span> <span class="n">NS</span><span class="o">.</span><span class="n">NamespaceRegistry</span><span class="p">()</span>
+        <span class="n">nsr</span><span class="o">.</span><span class="n">set_odm_namespace_attributes</span><span class="p">(</span><span class="n">root</span><span class="p">)</span>
+        <span class="n">tree</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">odm_file</span><span class="p">,</span> <span class="n">xml_declaration</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s1">&#39;UTF-8&#39;</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;xml&#39;</span><span class="p">,</span> <span class="n">short_empty_elements</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="ODMElement">
+<a class="viewcode-back" href="../modules.html#odm_element.ODMElement">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">ODMElement</span><span class="p">(</span><span class="n">metaclass</span><span class="o">=</span><span class="n">ODMMeta</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Base class for all ODM element model objects.</span>
+
+<span class="sd">    Provides XML and JSON serialization, OID validation, conformance</span>
+<span class="sd">    checking, and element ordering verification. All model classes</span>
+<span class="sd">    (e.g., Study, ItemDef, MetaDataVersion) inherit from this class.</span>
+
+<span class="sd">    Serialization:</span>
+<span class="sd">        - :meth:`to_xml` -- generate ElementTree XML</span>
+<span class="sd">        - :meth:`to_xml_string` -- XML as a string</span>
+<span class="sd">        - :meth:`to_dict` -- Python dict (namespace info stripped)</span>
+<span class="sd">        - :meth:`to_json` -- JSON string</span>
+<span class="sd">        - :meth:`write_xml` -- write XML to file</span>
+<span class="sd">        - :meth:`write_json` -- write JSON to file</span>
+
+<span class="sd">    Validation:</span>
+<span class="sd">        - :meth:`verify_oids` -- OID uniqueness and ref/def integrity</span>
+<span class="sd">        - :meth:`verify_conformance` -- Cerberus schema conformance</span>
+<span class="sd">        - :meth:`verify_order` -- element order per ODM spec</span>
+<span class="sd">        - :meth:`validate` -- combined validation with error collection</span>
+
+<span class="sd">    Finding elements:</span>
+<span class="sd">        - :meth:`find` -- find first child element by attribute value</span>
+<span class="sd">        - :meth:`find_all` -- find all matching child elements</span>
+<span class="sd">        - :meth:`find_by` -- find by multiple attribute criteria</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="ODMElement.__init__">
+<a class="viewcode-back" href="../modules.html#odm_element.ODMElement.__init__">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialize an ODM element with keyword arguments.</span>
+
+<span class="sd">        Sets attributes and child elements on the instance using the</span>
+<span class="sd">        provided keyword arguments. Validates that all required attributes</span>
+<span class="sd">        are present after construction.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            **kwargs: Attribute names and values for this element.</span>
+<span class="sd">                Names must match declared descriptors on the class.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            OdmlibTypeError: If an unknown keyword argument is provided.</span>
+<span class="sd">            OdmlibRequiredAttributeError: If a required attribute is missing.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__dict__</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                <span class="c1"># strip out non-default elementtree namespaces from the XML to work with just the name e.g. xml:lang</span>
+                <span class="k">if</span> <span class="s2">&quot;}&quot;</span> <span class="ow">in</span> <span class="n">name</span><span class="p">:</span>
+                    <span class="n">name</span> <span class="o">=</span> <span class="n">name</span><span class="p">[</span><span class="n">name</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;}&#39;</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">:]</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="ow">not</span> <span class="n">_mode</span><span class="o">.</span><span class="n">is_permissive</span><span class="p">(</span><span class="n">_mode</span><span class="o">.</span><span class="n">ValidationMode</span><span class="o">.</span><span class="n">SKIP_TYPE</span><span class="p">):</span>
+                        <span class="k">raise</span> <span class="n">OdmlibTypeError</span><span class="p">(</span>
+                            <span class="sa">f</span><span class="s2">&quot;Unknown keyword argument </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2"> in </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                            <span class="n">attribute</span><span class="o">=</span><span class="n">name</span><span class="p">,</span>
+                            <span class="n">element_type</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span>
+                            <span class="n">hint</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;Valid attributes for </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">: &quot;</span>
+                                 <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">k</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">k</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__dict__</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="ow">not</span><span class="w"> </span><span class="n">k</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;_&#39;</span><span class="p">))</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                        <span class="p">)</span>
+                    <span class="k">continue</span>
+            <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">val</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">_mode</span><span class="o">.</span><span class="n">is_permissive</span><span class="p">(</span><span class="n">_mode</span><span class="o">.</span><span class="n">ValidationMode</span><span class="o">.</span><span class="n">SKIP_REQUIRED</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">attr</span><span class="p">,</span> <span class="n">obj</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__dict__</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">DESC</span><span class="o">.</span><span class="n">Descriptor</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">T</span><span class="o">.</span><span class="n">ODMObject</span><span class="p">))</span> <span class="ow">and</span> <span class="p">(</span><span class="n">attr</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span><span class="p">)</span> <span class="ow">and</span> <span class="n">obj</span><span class="o">.</span><span class="n">required</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="n">OdmlibRequiredAttributeError</span><span class="p">(</span>
+                        <span class="sa">f</span><span class="s2">&quot;Missing required keyword argument </span><span class="si">{</span><span class="n">attr</span><span class="si">}</span><span class="s2"> in </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                        <span class="n">attribute</span><span class="o">=</span><span class="n">attr</span><span class="p">,</span>
+                        <span class="n">element_type</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span>
+                        <span class="n">hint</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;Attribute &#39;</span><span class="si">{</span><span class="n">attr</span><span class="si">}</span><span class="s2">&#39; is required when constructing </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                    <span class="p">)</span></div>
+
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__setattr__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Set an attribute, validating it belongs to this class.</span>
+
+<span class="sd">        Delegates to the descriptor protocol after confirming ``key``</span>
+<span class="sd">        is a declared field on this class.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            key (str): Attribute name.</span>
+<span class="sd">            value: Value to assign.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            OdmlibTypeError: If ``key`` is not a declared attribute on this class.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot; ensure the object being added is a type that belongs to the class &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">any</span><span class="p">(</span><span class="n">key</span> <span class="ow">in</span> <span class="bp">cls</span><span class="o">.</span><span class="vm">__dict__</span> <span class="k">for</span> <span class="bp">cls</span> <span class="ow">in</span> <span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="vm">__mro__</span><span class="p">):</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">_mode</span><span class="o">.</span><span class="n">is_permissive</span><span class="p">(</span><span class="n">_mode</span><span class="o">.</span><span class="n">ValidationMode</span><span class="o">.</span><span class="n">SKIP_TYPE</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="n">OdmlibTypeError</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;Assignment error: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2"> does not have a defined attribute </span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                    <span class="n">attribute</span><span class="o">=</span><span class="n">key</span><span class="p">,</span>
+                    <span class="n">element_type</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span>
+                <span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
+                <span class="k">return</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__setattr__</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+
+<div class="viewcode-block" id="ODMElement.to_json">
+<a class="viewcode-back" href="../modules.html#odm_element.ODMElement.to_json">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">to_json</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        transforms odmlib hierarchy into a dict and converts that to JSON and returns it</span>
+
+<span class="sd">        :return: JSON representation of odmlib hierarchy</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">to_dict</span><span class="p">())</span></div>
+
+
+<div class="viewcode-block" id="ODMElement.to_xml">
+<a class="viewcode-back" href="../modules.html#odm_element.ODMElement.to_xml">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">to_xml</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parent_elem</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ET</span><span class="o">.</span><span class="n">Element</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">top_elem</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ET</span><span class="o">.</span><span class="n">Element</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ET</span><span class="o">.</span><span class="n">Element</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Generate ElementTree XML from the odmlib object hierarchy.</span>
+
+<span class="sd">        Children are emitted in the model declaration order recorded in</span>
+<span class="sd">        ``_elems`` by :class:`ODMMeta` (i.e. the order in which descriptors</span>
+<span class="sd">        appear in the class body of the relevant model module). Attribute</span>
+<span class="sd">        insertion order on the instance does not affect the output, so users</span>
+<span class="sd">        do not need to call :meth:`reorder_object` before serializing.</span>
+
+<span class="sd">        Optional children that were never assigned are silently skipped.</span>
+
+<span class="sd">        :param parent_elem: (obj) Element that is the parent of the element to be created</span>
+<span class="sd">        :param top_elem: (obj) Topmost element that has been created</span>
+<span class="sd">        :return: top_elem: (obj) Topmost element created during the recursive calls</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># create attributes</span>
+        <span class="n">attrs</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">attr</span><span class="p">,</span> <span class="n">obj</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="p">(</span><span class="n">ODMElement</span><span class="p">,</span> <span class="nb">list</span><span class="p">))</span> <span class="ow">and</span> <span class="n">attr</span> <span class="o">!=</span> <span class="s2">&quot;_content&quot;</span> <span class="ow">and</span> <span class="n">obj</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="c1"># add namespace if not the default namespace</span>
+                <span class="k">if</span> <span class="n">attr</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__dict__</span><span class="p">[</span><span class="s2">&quot;_attr_ns&quot;</span><span class="p">]:</span>
+                    <span class="n">attrs</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__dict__</span><span class="p">[</span><span class="s2">&quot;_attr_ns&quot;</span><span class="p">][</span><span class="n">attr</span><span class="p">]</span> <span class="o">+</span> <span class="s2">&quot;:&quot;</span> <span class="o">+</span> <span class="n">attr</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">attrs</span><span class="p">[</span><span class="n">attr</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
+
+        <span class="c1"># create element</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">parent_elem</span><span class="p">,</span> <span class="n">ET</span><span class="o">.</span><span class="n">Element</span><span class="p">):</span>
+            <span class="n">odm_elem</span> <span class="o">=</span> <span class="n">ET</span><span class="o">.</span><span class="n">SubElement</span><span class="p">(</span><span class="n">parent_elem</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">namespace</span> <span class="o">==</span> <span class="s2">&quot;odm&quot;</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">namespace</span> <span class="o">+</span> <span class="s2">&quot;:&quot;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span> <span class="n">attrs</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">odm_elem</span> <span class="o">=</span> <span class="n">ET</span><span class="o">.</span><span class="n">Element</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">namespace</span> <span class="o">==</span> <span class="s2">&quot;odm&quot;</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">namespace</span> <span class="o">+</span> <span class="s2">&quot;:&quot;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span> <span class="n">attrs</span><span class="p">)</span>
+            <span class="n">top_elem</span> <span class="o">=</span> <span class="n">odm_elem</span>
+        <span class="c1"># add text to element if it exists</span>
+        <span class="k">if</span> <span class="s2">&quot;_content&quot;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span><span class="p">:</span>
+            <span class="n">odm_elem</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span><span class="p">[</span><span class="s2">&quot;_content&quot;</span><span class="p">]</span>
+        <span class="c1"># emit children in model declaration order (driven by _elems), not __dict__ insertion order,</span>
+        <span class="c1"># so the schema&#39;s required element ordering is preserved regardless of how the user assigned attributes.</span>
+        <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_elems</span><span class="p">:</span>
+            <span class="n">obj</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span> <span class="ow">and</span> <span class="n">obj</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">o</span> <span class="ow">in</span> <span class="n">obj</span><span class="p">:</span>
+                    <span class="n">o</span><span class="o">.</span><span class="n">to_xml</span><span class="p">(</span><span class="n">odm_elem</span><span class="p">,</span> <span class="n">top_elem</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">ODMElement</span><span class="p">):</span>
+                <span class="n">obj</span><span class="o">.</span><span class="n">to_xml</span><span class="p">(</span><span class="n">odm_elem</span><span class="p">,</span> <span class="n">top_elem</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">top_elem</span></div>
+
+
+<div class="viewcode-block" id="ODMElement.to_xml_string">
+<a class="viewcode-back" href="../modules.html#odm_element.ODMElement.to_xml_string">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">to_xml_string</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Convert this element to an XML string.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            str: UTF-8 XML representation of this element.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">elem</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">to_xml</span><span class="p">()</span>
+        <span class="n">xml_str</span> <span class="o">=</span> <span class="n">ET</span><span class="o">.</span><span class="n">tostring</span><span class="p">(</span><span class="n">elem</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s1">&#39;UTF-8&#39;</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;xml&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">xml_str</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="ODMElement.to_dict">
+<a class="viewcode-back" href="../modules.html#odm_element.ODMElement.to_dict">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">to_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        transform odmlib object hierarchy into a Python dictionary and return it</span>
+
+<span class="sd">        :return: dictionary serialization of odmlib hierarchy</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Note: namespaces used in the XML serialization are not part of the dictionary or json serializations</span>
+        <span class="n">property_dict</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">odm_content</span> <span class="o">=</span> <span class="p">{</span><span class="n">attr</span><span class="p">:</span> <span class="n">obj</span> <span class="k">for</span> <span class="n">attr</span><span class="p">,</span> <span class="n">obj</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">attr</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;_fields&quot;</span><span class="p">,</span> <span class="s2">&quot;_attr_ns&quot;</span><span class="p">,</span> <span class="s2">&quot;_elems&quot;</span><span class="p">,</span> <span class="s2">&quot;_attrs&quot;</span><span class="p">]}</span>
+        <span class="k">for</span> <span class="n">attr</span><span class="p">,</span> <span class="n">obj</span> <span class="ow">in</span> <span class="n">odm_content</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">ODMElement</span><span class="p">):</span>
+                <span class="n">property_dict</span><span class="p">[</span><span class="n">attr</span><span class="p">]</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">to_dict</span><span class="p">()</span>                    <span class="c1"># element</span>
+            <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+                <span class="n">property_dict</span><span class="p">[</span><span class="n">attr</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">o</span><span class="o">.</span><span class="n">to_dict</span><span class="p">()</span> <span class="k">for</span> <span class="n">o</span> <span class="ow">in</span> <span class="n">obj</span><span class="p">]</span>       <span class="c1"># list of ELEMENTS</span>
+            <span class="k">elif</span> <span class="n">obj</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">property_dict</span><span class="p">[</span><span class="n">attr</span><span class="p">]</span> <span class="o">=</span> <span class="n">obj</span>                              <span class="c1"># attributes</span>
+        <span class="k">return</span> <span class="n">property_dict</span></div>
+
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return a developer-readable representation of this element.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            str: Class name with declared field names listed.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">args</span> <span class="o">=</span> <span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">name</span> <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_fields</span><span class="p">)</span>
+        <span class="k">return</span> <span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span> <span class="o">+</span> <span class="s2">&quot;(&quot;</span> <span class="o">+</span> <span class="n">args</span> <span class="o">+</span> <span class="s2">&quot;)&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return a human-readable representation of this element.</span>
+
+<span class="sd">        Returns the element&#39;s text content if present, or its OID value</span>
+<span class="sd">        if it has one, otherwise falls back to a field name listing.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            str: Human-readable string for this element.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="s2">&quot;_content&quot;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_fields</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_content</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_content</span>
+        <span class="k">elif</span> <span class="s2">&quot;OID&quot;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_fields</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">OID</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span> <span class="o">+</span> <span class="s2">&quot;(OID=&quot;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">OID</span> <span class="o">+</span> <span class="s2">&quot;)&quot;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">args</span> <span class="o">=</span> <span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">name</span> <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_fields</span><span class="p">)</span>
+            <span class="k">return</span> <span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span> <span class="o">+</span> <span class="s2">&quot;(&quot;</span> <span class="o">+</span> <span class="n">args</span> <span class="o">+</span> <span class="s2">&quot;)&quot;</span>
+
+<div class="viewcode-block" id="ODMElement.find">
+<a class="viewcode-back" href="../modules.html#odm_element.ODMElement.find">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">find</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">attr</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">val</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ODMElement</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the first odmlib object where attribute ``attr`` equals ``val``.</span>
+
+<span class="sd">        Searches within the child element(s) named ``obj_name`` on this element.</span>
+<span class="sd">        For list elements (ODMListObject), returns the first match.</span>
+<span class="sd">        For single elements (ODMObject), returns the element if it matches.</span>
+
+<span class="sd">        :param obj_name: text name of the ODM Element (case sensitive)</span>
+<span class="sd">        :param attr: text name of the ODM Element Attribute (case sensitive)</span>
+<span class="sd">        :param val: attribute value to search for</span>
+<span class="sd">        :return: first matching odmlib object, or None if not found</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">obj_list</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj_name</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj_list</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">o</span> <span class="ow">in</span> <span class="n">obj_list</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">o</span><span class="o">.</span><span class="vm">__dict__</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">attr</span><span class="p">)</span> <span class="o">==</span> <span class="n">val</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="n">o</span>
+            <span class="k">return</span> <span class="kc">None</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">obj_list</span><span class="o">.</span><span class="vm">__dict__</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">attr</span><span class="p">)</span> <span class="o">==</span> <span class="n">val</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">obj_list</span>
+            <span class="k">return</span> <span class="kc">None</span></div>
+
+
+<div class="viewcode-block" id="ODMElement.find_all">
+<a class="viewcode-back" href="../modules.html#odm_element.ODMElement.find_all">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">find_all</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">attr</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">val</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">ODMElement</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return all odmlib objects where attribute ``attr`` equals ``val``.</span>
+
+<span class="sd">        Like find(), but returns all matches instead of just the first.</span>
+
+<span class="sd">        :param obj_name: text name of the ODM Element (case sensitive)</span>
+<span class="sd">        :param attr: text name of the ODM Element Attribute (case sensitive)</span>
+<span class="sd">        :param val: attribute value to search for</span>
+<span class="sd">        :return: list of matching odmlib objects (empty list if no matches)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">obj_list</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj_name</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj_list</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+            <span class="k">return</span> <span class="p">[</span><span class="n">o</span> <span class="k">for</span> <span class="n">o</span> <span class="ow">in</span> <span class="n">obj_list</span> <span class="k">if</span> <span class="n">o</span><span class="o">.</span><span class="vm">__dict__</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">attr</span><span class="p">)</span> <span class="o">==</span> <span class="n">val</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">obj_list</span><span class="o">.</span><span class="vm">__dict__</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">attr</span><span class="p">)</span> <span class="o">==</span> <span class="n">val</span><span class="p">:</span>
+                <span class="k">return</span> <span class="p">[</span><span class="n">obj_list</span><span class="p">]</span>
+            <span class="k">return</span> <span class="p">[]</span></div>
+
+
+<div class="viewcode-block" id="ODMElement.find_by">
+<a class="viewcode-back" href="../modules.html#odm_element.ODMElement.find_by">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">find_by</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ODMElement</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the first odmlib object matching all keyword criteria.</span>
+
+<span class="sd">        A more ergonomic alternative to find() for multi-attribute lookups.</span>
+
+<span class="sd">        :param obj_name: text name of the ODM Element (case sensitive)</span>
+<span class="sd">        :param kwargs: attribute name=value pairs to match</span>
+<span class="sd">        :return: first matching odmlib object, or None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">obj_list</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj_name</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj_list</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+            <span class="n">obj_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">obj_list</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">o</span> <span class="ow">in</span> <span class="n">obj_list</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">all</span><span class="p">(</span><span class="n">o</span><span class="o">.</span><span class="vm">__dict__</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">k</span><span class="p">)</span> <span class="o">==</span> <span class="n">v</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">items</span><span class="p">()):</span>
+                <span class="k">return</span> <span class="n">o</span>
+        <span class="k">return</span> <span class="kc">None</span></div>
+
+
+<div class="viewcode-block" id="ODMElement.write_xml">
+<a class="viewcode-back" href="../modules.html#odm_element.ODMElement.write_xml">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">write_xml</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">odm_file</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">odm_writer</span><span class="p">:</span> <span class="nb">type</span> <span class="o">=</span> <span class="n">ODMWriter</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        write the odmlib hierarchy as an XML file</span>
+
+<span class="sd">        :param odm_file: string ODM filename and path</span>
+<span class="sd">        :param odm_writer: object used to write the elementree XML to a file</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">odm_elem</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">to_xml</span><span class="p">()</span>
+        <span class="n">odm_writer</span> <span class="o">=</span> <span class="n">odm_writer</span><span class="p">()</span>
+        <span class="n">odm_writer</span><span class="o">.</span><span class="n">write_odm</span><span class="p">(</span><span class="n">odm_file</span><span class="p">,</span> <span class="n">odm_elem</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="ODMElement.write_json">
+<a class="viewcode-back" href="../modules.html#odm_element.ODMElement.write_json">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">write_json</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">odm_file</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        write the odmlib hierarchy as a JSON file</span>
+
+<span class="sd">        :param odm_file: string ODM filename and path</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">odm_file</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">outfile</span><span class="p">:</span>
+            <span class="n">json</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">to_dict</span><span class="p">(),</span> <span class="n">outfile</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="ODMElement.build_oid_index">
+<a class="viewcode-back" href="../modules.html#odm_element.ODMElement.build_oid_index">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">build_oid_index</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">IDX</span><span class="o">.</span><span class="n">OIDIndex</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Build an OID lookup index for this element and all descendants.</span>
+
+<span class="sd">        Traverses the entire object tree and creates an index mapping</span>
+<span class="sd">        OID attribute values to their containing odmlib objects.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            OIDIndex: Index supporting ``find_all(oid)`` lookups.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">idx</span> <span class="o">=</span> <span class="n">IDX</span><span class="o">.</span><span class="n">OIDIndex</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_init_oid_index</span><span class="p">(</span><span class="n">idx</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">idx</span></div>
+
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_init_oid_index</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">idx</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        for odmlib object, loads all OIDs into a dict that functions as an OID index</span>
+
+<span class="sd">        :return oid_index: object that provices a dictionary lookup based on OID</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">odm_content</span> <span class="o">=</span> <span class="p">{</span><span class="n">attr</span><span class="p">:</span> <span class="n">obj</span> <span class="k">for</span> <span class="n">attr</span><span class="p">,</span> <span class="n">obj</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">attr</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;_fields&quot;</span><span class="p">,</span> <span class="s2">&quot;_attr_ns&quot;</span><span class="p">,</span> <span class="s2">&quot;_elems&quot;</span><span class="p">,</span> <span class="s2">&quot;_attrs&quot;</span><span class="p">]}</span>
+        <span class="k">for</span> <span class="n">attr</span><span class="p">,</span> <span class="n">obj</span> <span class="ow">in</span> <span class="n">odm_content</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">ODMElement</span><span class="p">):</span>
+                <span class="n">obj</span><span class="o">.</span><span class="n">_init_oid_index</span><span class="p">(</span><span class="n">idx</span><span class="p">)</span>                    <span class="c1"># element</span>
+            <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+                <span class="k">for</span> <span class="n">o</span> <span class="ow">in</span> <span class="n">obj</span><span class="p">:</span>
+                    <span class="n">o</span><span class="o">.</span><span class="n">_init_oid_index</span><span class="p">(</span><span class="n">idx</span><span class="p">)</span>                  <span class="c1"># list of ELEMENTS</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">attr</span> <span class="o">==</span> <span class="s2">&quot;OID&quot;</span> <span class="ow">or</span> <span class="s2">&quot;OID&quot;</span> <span class="ow">in</span> <span class="n">attr</span><span class="p">:</span>
+                    <span class="n">idx</span><span class="o">.</span><span class="n">add_oid</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span>
+        <span class="k">return</span>
+
+<div class="viewcode-block" id="ODMElement.verify_oids">
+<a class="viewcode-back" href="../modules.html#odm_element.ODMElement.verify_oids">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">verify_oids</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">oid_checker</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        checks all the OIDs for uniqueness and Def/Ref integrity; oid_checker throws a ValueError on failure</span>
+
+<span class="sd">        :param oid_checker: object that performs that checks OID uniqueness and Def/Ref checks</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_init_oid_check</span><span class="p">(</span><span class="n">oid_checker</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">oid_checker</span><span class="o">.</span><span class="n">check_oid_refs</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="ODMElement.unreferenced_oids">
+<a class="viewcode-back" href="../modules.html#odm_element.ODMElement.unreferenced_oids">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">unreferenced_oids</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">oid_checker</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Find OID definitions that are not referenced anywhere.</span>
+
+<span class="sd">        Calls :meth:`verify_oids` first if OIDs have not yet been verified.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            oid_checker: An ``OIDRef`` instance (from ``rules/oid_ref.py``)</span>
+<span class="sd">                or a ``DynamicOIDRef`` instance.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            list: OID definition values that have no corresponding references.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">oid_checker</span><span class="o">.</span><span class="n">is_oids_verified</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">verify_oids</span><span class="p">(</span><span class="n">oid_checker</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">oid_checker</span><span class="o">.</span><span class="n">check_unreferenced_oids</span><span class="p">()</span></div>
+
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_init_oid_check</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">oid_checker</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        for odmlib object, loads all OIDs and checks them for uniqueness; throws an error if uniqueness check fails</span>
+
+<span class="sd">        :param oid_checker: object used to check OIDs for uniqueness and Def/Ref check</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">odm_content</span> <span class="o">=</span> <span class="p">{</span><span class="n">attr</span><span class="p">:</span> <span class="n">obj</span> <span class="k">for</span> <span class="n">attr</span><span class="p">,</span> <span class="n">obj</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">attr</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;_fields&quot;</span><span class="p">,</span> <span class="s2">&quot;_attr_ns&quot;</span><span class="p">,</span> <span class="s2">&quot;_elems&quot;</span><span class="p">,</span> <span class="s2">&quot;_attrs&quot;</span><span class="p">]}</span>
+        <span class="k">for</span> <span class="n">attr</span><span class="p">,</span> <span class="n">obj</span> <span class="ow">in</span> <span class="n">odm_content</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">ODMElement</span><span class="p">):</span>
+                <span class="n">obj</span><span class="o">.</span><span class="n">_init_oid_check</span><span class="p">(</span><span class="n">oid_checker</span><span class="p">)</span>                    <span class="c1"># element</span>
+            <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+                <span class="k">for</span> <span class="n">o</span> <span class="ow">in</span> <span class="n">obj</span><span class="p">:</span>
+                    <span class="n">o</span><span class="o">.</span><span class="n">_init_oid_check</span><span class="p">(</span><span class="n">oid_checker</span><span class="p">)</span>                  <span class="c1"># list of ELEMENTS</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c1"># assumes consistency in OID naming. Exceptions: FileOID and PriorFileOID in ODM</span>
+                <span class="k">if</span> <span class="n">attr</span> <span class="o">==</span> <span class="s2">&quot;OID&quot;</span><span class="p">:</span>
+                    <span class="n">oid_checker</span><span class="o">.</span><span class="n">add_oid</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">)</span>
+                <span class="k">elif</span> <span class="s2">&quot;OID&quot;</span> <span class="ow">in</span> <span class="n">attr</span><span class="p">:</span>
+                    <span class="n">oid_checker</span><span class="o">.</span><span class="n">add_oid_ref</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">attr</span><span class="p">)</span>
+        <span class="k">return</span>
+
+<div class="viewcode-block" id="ODMElement.verify_conformance">
+<a class="viewcode-back" href="../modules.html#odm_element.ODMElement.verify_conformance">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">verify_conformance</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">validator</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        uses validator object to check object for conformance with the model</span>
+
+<span class="sd">        :param validator: object that validates the odmlib object against the model</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">doc_dict</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">to_dict</span><span class="p">()</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">validator</span><span class="o">.</span><span class="n">check_conformance</span><span class="p">(</span><span class="n">doc_dict</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">result</span></div>
+
+
+<div class="viewcode-block" id="ODMElement.verify_order">
+<a class="viewcode-back" href="../modules.html#odm_element.ODMElement.verify_order">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">verify_order</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Verify that child elements are in the model declaration order.</span>
+
+<span class="sd">        Recursively checks this element and all descendants — calling at</span>
+<span class="sd">        the odmlib root covers the whole document. Works on any</span>
+<span class="sd">        :class:`ODMElement` subclass; not applicable to</span>
+<span class="sd">        :class:`xml.etree.ElementTree.Element` (load through a loader</span>
+<span class="sd">        first if you only have an ElementTree).</span>
+
+<span class="sd">        Limitations:</span>
+
+<span class="sd">        * Each class&#39;s expected order comes from descriptors declared in</span>
+<span class="sd">          its own class body. Custom extensions that subclass a model</span>
+<span class="sd">          class must redeclare base children in schema order — otherwise</span>
+<span class="sd">          inherited children are flagged as unexpected.</span>
+<span class="sd">        * In permissive mode (:class:`~odmlib.mode.ValidationMode.SKIP_TYPE`)</span>
+<span class="sd">          unknown attributes can land in ``__dict__``; they will trip</span>
+<span class="sd">          this check until cleaned up.</span>
+<span class="sd">        * Only the order of *different* child element kinds is checked.</span>
+<span class="sd">          Order within a single list (e.g. multiple ``ItemRef`` entries)</span>
+<span class="sd">          is not validated — ODM relies on ``OrderNumber`` attributes</span>
+<span class="sd">          for that.</span>
+<span class="sd">        * Completeness is not checked. Missing required children must be</span>
+<span class="sd">          caught via :meth:`verify_conformance` or :meth:`validate`.</span>
+
+<span class="sd">        Note:</span>
+<span class="sd">            :meth:`to_xml` / :meth:`write_xml` already emit children in</span>
+<span class="sd">            ``_elems`` order, so ``verify_order()`` is **not** required</span>
+<span class="sd">            before XML serialization. It is still useful before</span>
+<span class="sd">            :meth:`to_dict` / :meth:`to_json`, which walk ``__dict__``</span>
+<span class="sd">            and therefore reflect instance assignment order.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            bool: True if ordering is correct.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            OdmlibElementOrderError: If any element has children out of</span>
+<span class="sd">                order. Use :meth:`reorder_object` to fix automatically.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">odm_content</span> <span class="o">=</span> <span class="p">{</span><span class="n">attr</span><span class="p">:</span> <span class="n">obj</span> <span class="k">for</span> <span class="n">attr</span><span class="p">,</span> <span class="n">obj</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">attr</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;_fields&quot;</span><span class="p">,</span> <span class="s2">&quot;_attr_ns&quot;</span><span class="p">,</span> <span class="s2">&quot;_elems&quot;</span><span class="p">,</span> <span class="s2">&quot;_attrs&quot;</span><span class="p">]}</span>
+        <span class="n">obj_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">key</span> <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span> <span class="k">if</span> <span class="n">key</span> <span class="o">!=</span> <span class="s2">&quot;_content&quot;</span> <span class="ow">and</span> <span class="n">key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attrs</span><span class="p">]</span>
+        <span class="n">elem_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">elem</span> <span class="k">for</span> <span class="n">elem</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_elems</span> <span class="k">if</span> <span class="n">elem</span> <span class="ow">in</span> <span class="n">obj_list</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">obj_list</span> <span class="o">!=</span> <span class="n">elem_list</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">OdmlibElementOrderError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;The order of elements in </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2"> should be &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">key</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">key</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="bp">self</span><span class="o">.</span><span class="n">_elems</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                <span class="n">element_type</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span>
+                <span class="n">hint</span><span class="o">=</span><span class="s2">&quot;Use reorder_object() to fix element ordering automatically&quot;</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="k">for</span> <span class="n">attr</span><span class="p">,</span> <span class="n">obj</span> <span class="ow">in</span> <span class="n">odm_content</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">ODMElement</span><span class="p">):</span>
+                <span class="n">obj</span><span class="o">.</span><span class="n">verify_order</span><span class="p">()</span>
+            <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+                <span class="k">for</span> <span class="n">o</span> <span class="ow">in</span> <span class="n">obj</span><span class="p">:</span>
+                    <span class="n">o</span><span class="o">.</span><span class="n">verify_order</span><span class="p">()</span>
+        <span class="k">return</span> <span class="kc">True</span></div>
+
+
+<div class="viewcode-block" id="ODMElement.reorder_object">
+<a class="viewcode-back" href="../modules.html#odm_element.ODMElement.reorder_object">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">reorder_object</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Reorder this element&#39;s children to match model declaration order.</span>
+
+<span class="sd">        Modifies ``__dict__`` in-place. Issues an :class:`OdmlibWarning`</span>
+<span class="sd">        to indicate that reordering was needed.</span>
+
+<span class="sd">        Note:</span>
+<span class="sd">            Recursion is not automatic — call on each element that needs</span>
+<span class="sd">            reordering, or call :meth:`verify_order` first to identify</span>
+<span class="sd">            which elements need reordering.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2"> elements are being reordered to match the ODM specification. &quot;</span>
+            <span class="s2">&quot;Use verify_order() before reorder_object() to understand the ordering issue.&quot;</span><span class="p">,</span>
+            <span class="n">OdmlibWarning</span><span class="p">,</span>
+            <span class="n">stacklevel</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">ordered_obj</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">model_elem_name</span><span class="p">,</span> <span class="n">model_elem_obj</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_elems</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">model_elem_name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span><span class="p">:</span>
+                <span class="n">obj</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">model_elem_name</span><span class="p">)</span>
+                <span class="n">ordered_obj</span><span class="p">[</span><span class="n">model_elem_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">obj</span>
+        <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">elem</span> <span class="ow">in</span> <span class="n">ordered_obj</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">elem</span></div>
+
+
+<div class="viewcode-block" id="ODMElement.validate">
+<a class="viewcode-back" href="../modules.html#odm_element.ODMElement.validate">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">validate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">collect_errors</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">oid_checker</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">conformance_checker</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Validate this element and all children.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            collect_errors: If True, accumulate all errors and return them as a</span>
+<span class="sd">                list instead of raising on the first failure. Defaults to False</span>
+<span class="sd">                (fail-fast, existing behaviour).</span>
+<span class="sd">            oid_checker: Optional OIDRef instance for OID validation.</span>
+<span class="sd">            conformance_checker: Optional MetadataSchema instance for</span>
+<span class="sd">                conformance validation.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            If ``collect_errors=False``: ``True`` (or raises on first error).</span>
+<span class="sd">            If ``collect_errors=True``: list of :class:`~odmlib.exceptions.OdmlibError`</span>
+<span class="sd">            instances (empty list means valid).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">collect_errors</span><span class="p">:</span>
+            <span class="c1"># Fail-fast — preserves existing behaviour exactly</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">verify_order</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">oid_checker</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">verify_oids</span><span class="p">(</span><span class="n">oid_checker</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">conformance_checker</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">verify_conformance</span><span class="p">(</span><span class="n">conformance_checker</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">True</span>
+
+        <span class="n">collector</span> <span class="o">=</span> <span class="n">ErrorCollector</span><span class="p">()</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">verify_order</span><span class="p">()</span>
+        <span class="k">except</span> <span class="n">OdmlibError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="n">collector</span><span class="o">.</span><span class="n">add_error</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">oid_checker</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">verify_oids</span><span class="p">(</span><span class="n">oid_checker</span><span class="p">)</span>
+            <span class="k">except</span> <span class="n">OdmlibError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="n">collector</span><span class="o">.</span><span class="n">add_error</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">conformance_checker</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">verify_conformance</span><span class="p">(</span><span class="n">conformance_checker</span><span class="p">)</span>
+            <span class="k">except</span> <span class="n">OdmlibError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="n">collector</span><span class="o">.</span><span class="n">add_error</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">collector</span><span class="o">.</span><span class="n">errors</span></div>
+</div>
+
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2020, Sam Hume.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

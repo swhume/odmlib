@@ -1,0 +1,445 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>exceptions &mdash; odmlib 0.2.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=938c9ccc"></script>
+      <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            odmlib
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">User Guides</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../guides/getting_started.html">Getting Started with odmlib</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guides/reading_documents.html">Reading ODM Documents</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guides/permissive_loading.html">Permissive Loading Mode</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guides/creating_documents.html">Creating ODM Documents</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guides/validation.html">Validating ODM Documents</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guides/model_reference.html">Model Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guides/interoperability.html">Interoperability: Dataset-JSON and Pandas</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guides/dataset_json.html">Working with Dataset-JSON v1.1</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../modules.html">odmlib</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../odmlib.odm_1_3_2.html">odm_1_3_2 package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../odmlib.odm_2_0.html">odm_2_0 package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../odmlib.define_2_0.html">define_2_0 package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../odmlib.define_2_1.html">define_2_1 package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../odmlib.dataset_1_0_1.html">odmlib.dataset_1_0_1 module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../odmlib.ct_1_1_1.html">odmlib.ct_1_1_1 module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../odmlib.arm_1_0.html">odmlib.arm_1_0 module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../odmlib.dataset_json_1_1.html">odmlib.dataset_json_1_1</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../odmlib.dataframe.html">odmlib.dataframe</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Project</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../changelog.html">Changelog</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">odmlib</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">Module code</a></li>
+      <li class="breadcrumb-item active">exceptions</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for exceptions</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">odmlib exception hierarchy.</span>
+
+<span class="sd">All odmlib-specific exceptions inherit from OdmlibError, which itself</span>
+<span class="sd">inherits from Exception. During the v0.2.x transition period, validation</span>
+<span class="sd">and type exceptions also inherit from ValueError/TypeError respectively</span>
+<span class="sd">so that existing except clauses continue to work.</span>
+
+<span class="sd">Deprecation schedule:</span>
+<span class="sd">    v0.2.x: New exceptions dual-inherit from ValueError/TypeError.</span>
+<span class="sd">            All existing ``except ValueError`` and ``except TypeError``</span>
+<span class="sd">            clauses continue to work unchanged.</span>
+<span class="sd">    v0.3.0: Remove the ValueError/TypeError base classes.</span>
+<span class="sd">            Update ``except ValueError`` → ``except OdmlibValidationError``</span>
+<span class="sd">            and ``except TypeError`` → ``except OdmlibTypeError``.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
+
+
+<span class="c1"># ---------------------------------------------------------------------------</span>
+<span class="c1"># Base</span>
+<span class="c1"># ---------------------------------------------------------------------------</span>
+
+<div class="viewcode-block" id="OdmlibError">
+<a class="viewcode-back" href="../modules.html#exceptions.OdmlibError">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">OdmlibError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Base exception for all odmlib errors.&quot;&quot;&quot;</span></div>
+
+
+
+<span class="c1"># ---------------------------------------------------------------------------</span>
+<span class="c1"># Validation errors (currently raised as ValueError)</span>
+<span class="c1"># ---------------------------------------------------------------------------</span>
+
+<div class="viewcode-block" id="OdmlibValidationError">
+<a class="viewcode-back" href="../modules.html#exceptions.OdmlibValidationError">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">OdmlibValidationError</span><span class="p">(</span><span class="n">OdmlibError</span><span class="p">,</span> <span class="ne">ValueError</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Raised when an element fails conformance, OID, or schema validation.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        element_path: Dot-separated path from root to the failing element,</span>
+<span class="sd">            e.g. &quot;ODM &gt; Study &gt; MetaDataVersion &gt; ItemGroupDef(OID=&#39;IG.VS&#39;)&quot;</span>
+<span class="sd">        hint: Optional human-readable suggestion for fixing the problem.</span>
+<span class="sd">        attribute: The attribute name that caused the error (if applicable).</span>
+<span class="sd">        element_type: The class name of the element that failed validation.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">element_path</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">hint</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">attribute</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">element_type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">actual_value</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">element_path</span> <span class="o">=</span> <span class="n">element_path</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">hint</span> <span class="o">=</span> <span class="n">hint</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">attribute</span> <span class="o">=</span> <span class="n">attribute</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">element_type</span> <span class="o">=</span> <span class="n">element_type</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">actual_value</span> <span class="o">=</span> <span class="n">actual_value</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_raw_message</span> <span class="o">=</span> <span class="n">message</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_format</span><span class="p">())</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_format</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">parts</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_raw_message</span><span class="p">]</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">element_path</span><span class="p">:</span>
+            <span class="n">parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  Context: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">element_path</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">hint</span><span class="p">:</span>
+            <span class="n">parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  Hint: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">hint</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">parts</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="OdmlibRequiredAttributeError">
+<a class="viewcode-back" href="../modules.html#exceptions.OdmlibRequiredAttributeError">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">OdmlibRequiredAttributeError</span><span class="p">(</span><span class="n">OdmlibValidationError</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Raised when a required attribute is missing during construction.&quot;&quot;&quot;</span></div>
+
+
+
+<div class="viewcode-block" id="OdmlibOIDError">
+<a class="viewcode-back" href="../modules.html#exceptions.OdmlibOIDError">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">OdmlibOIDError</span><span class="p">(</span><span class="n">OdmlibValidationError</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Raised for OID uniqueness or ref/def integrity failures.&quot;&quot;&quot;</span></div>
+
+
+
+<div class="viewcode-block" id="OdmlibConformanceError">
+<a class="viewcode-back" href="../modules.html#exceptions.OdmlibConformanceError">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">OdmlibConformanceError</span><span class="p">(</span><span class="n">OdmlibValidationError</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Raised when Cerberus conformance validation fails.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        cerberus_errors: The raw Cerberus error dict for programmatic access.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">cerberus_errors</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cerberus_errors</span> <span class="o">=</span> <span class="n">cerberus_errors</span> <span class="ow">or</span> <span class="p">{}</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">message</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="OdmlibElementOrderError">
+<a class="viewcode-back" href="../modules.html#exceptions.OdmlibElementOrderError">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">OdmlibElementOrderError</span><span class="p">(</span><span class="n">OdmlibValidationError</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Raised when child elements are not in the order required by the ODM spec.&quot;&quot;&quot;</span></div>
+
+
+
+<div class="viewcode-block" id="OdmlibSchemaValidationError">
+<a class="viewcode-back" href="../modules.html#exceptions.OdmlibSchemaValidationError">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">OdmlibSchemaValidationError</span><span class="p">(</span><span class="n">OdmlibValidationError</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Raised when XSD/XML-Schema validation of an ODM document fails.</span>
+
+<span class="sd">    Wraps the underlying ``xmlschema`` exception raised during XSD</span>
+<span class="sd">    validation (e.g. by :meth:`ODMSchemaValidator.validate_file`). The</span>
+<span class="sd">    wrapped exception is available at ``args[0]`` (for backward</span>
+<span class="sd">    compatibility with callers that introspect ``ex.args[0].msg``) and</span>
+<span class="sd">    via the ``wrapped`` attribute.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">wrapped_exception</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">hint</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="c1"># Bypass OdmlibValidationError.__init__: it would replace args[0]</span>
+        <span class="c1"># with a formatted string and would crash on a non-string message.</span>
+        <span class="c1"># Preserve args[0] == wrapped exception for backward compatibility.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">wrapped</span> <span class="o">=</span> <span class="n">wrapped_exception</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">element_path</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">hint</span> <span class="o">=</span> <span class="n">hint</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">attribute</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">element_type</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">actual_value</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_raw_message</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">wrapped_exception</span><span class="p">)</span>
+        <span class="ne">Exception</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">wrapped_exception</span><span class="p">)</span></div>
+
+
+
+<span class="c1"># ---------------------------------------------------------------------------</span>
+<span class="c1"># Type errors (currently raised as TypeError)</span>
+<span class="c1"># ---------------------------------------------------------------------------</span>
+
+<div class="viewcode-block" id="OdmlibTypeError">
+<a class="viewcode-back" href="../modules.html#exceptions.OdmlibTypeError">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">OdmlibTypeError</span><span class="p">(</span><span class="n">OdmlibError</span><span class="p">,</span> <span class="ne">TypeError</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Raised when a value has the wrong type for an attribute.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        attribute: The attribute name.</span>
+<span class="sd">        expected_type: The expected type description.</span>
+<span class="sd">        actual_value: The value that was provided.</span>
+<span class="sd">        element_path: Path from root to the failing element (if known).</span>
+<span class="sd">        hint: Optional human-readable suggestion for fixing the problem.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">attribute</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">expected_type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">actual_value</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">element_path</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">hint</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">element_type</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">attribute</span> <span class="o">=</span> <span class="n">attribute</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">expected_type</span> <span class="o">=</span> <span class="n">expected_type</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">actual_value</span> <span class="o">=</span> <span class="n">actual_value</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">element_path</span> <span class="o">=</span> <span class="n">element_path</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">hint</span> <span class="o">=</span> <span class="n">hint</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">element_type</span> <span class="o">=</span> <span class="n">element_type</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_raw_message</span> <span class="o">=</span> <span class="n">message</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_format</span><span class="p">())</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_format</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">parts</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_raw_message</span><span class="p">]</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">element_path</span><span class="p">:</span>
+            <span class="n">parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  Context: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">element_path</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">hint</span><span class="p">:</span>
+            <span class="n">parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  Hint: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">hint</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">parts</span><span class="p">)</span></div>
+
+
+
+<span class="c1"># ---------------------------------------------------------------------------</span>
+<span class="c1"># Parsing errors</span>
+<span class="c1"># ---------------------------------------------------------------------------</span>
+
+<div class="viewcode-block" id="OdmlibParsingError">
+<a class="viewcode-back" href="../modules.html#exceptions.OdmlibParsingError">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">OdmlibParsingError</span><span class="p">(</span><span class="n">OdmlibError</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Raised when an XML or JSON document cannot be parsed into the model.&quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">hint</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">hint</span> <span class="o">=</span> <span class="n">hint</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_raw_message</span> <span class="o">=</span> <span class="n">message</span>
+        <span class="n">parts</span> <span class="o">=</span> <span class="p">[</span><span class="n">message</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">hint</span><span class="p">:</span>
+            <span class="n">parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  Hint: </span><span class="si">{</span><span class="n">hint</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">parts</span><span class="p">))</span></div>
+
+
+
+<div class="viewcode-block" id="OdmlibLoaderStateError">
+<a class="viewcode-back" href="../modules.html#exceptions.OdmlibLoaderStateError">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">OdmlibLoaderStateError</span><span class="p">(</span><span class="n">OdmlibParsingError</span><span class="p">,</span> <span class="ne">ValueError</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Raised when a loader method is called before the document is opened.</span>
+
+<span class="sd">    Also inherits from ValueError for backward compatibility with code that</span>
+<span class="sd">    catches ValueError from loader calls.</span>
+<span class="sd">    &quot;&quot;&quot;</span></div>
+
+
+
+<span class="c1"># ---------------------------------------------------------------------------</span>
+<span class="c1"># Serialization errors</span>
+<span class="c1"># ---------------------------------------------------------------------------</span>
+
+<div class="viewcode-block" id="OdmlibSerializationError">
+<a class="viewcode-back" href="../modules.html#exceptions.OdmlibSerializationError">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">OdmlibSerializationError</span><span class="p">(</span><span class="n">OdmlibError</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Raised when an in-memory model cannot be written to XML or JSON.&quot;&quot;&quot;</span></div>
+
+
+
+<span class="c1"># ---------------------------------------------------------------------------</span>
+<span class="c1"># Namespace errors</span>
+<span class="c1"># ---------------------------------------------------------------------------</span>
+
+<div class="viewcode-block" id="OdmlibNamespaceError">
+<a class="viewcode-back" href="../modules.html#exceptions.OdmlibNamespaceError">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">OdmlibNamespaceError</span><span class="p">(</span><span class="n">OdmlibError</span><span class="p">,</span> <span class="ne">ValueError</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Raised for namespace registration or lookup failures.&quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">hint</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">hint</span> <span class="o">=</span> <span class="n">hint</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_raw_message</span> <span class="o">=</span> <span class="n">message</span>
+        <span class="n">parts</span> <span class="o">=</span> <span class="p">[</span><span class="n">message</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">hint</span><span class="p">:</span>
+            <span class="n">parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  Hint: </span><span class="si">{</span><span class="n">hint</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">parts</span><span class="p">))</span></div>
+
+
+
+<span class="c1"># ---------------------------------------------------------------------------</span>
+<span class="c1"># Warnings</span>
+<span class="c1"># ---------------------------------------------------------------------------</span>
+
+<div class="viewcode-block" id="OdmlibWarning">
+<a class="viewcode-back" href="../modules.html#exceptions.OdmlibWarning">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">OdmlibWarning</span><span class="p">(</span><span class="ne">UserWarning</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Base warning for all odmlib non-fatal issues.&quot;&quot;&quot;</span></div>
+
+
+
+<div class="viewcode-block" id="OdmlibDeprecationWarning">
+<a class="viewcode-back" href="../modules.html#exceptions.OdmlibDeprecationWarning">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">OdmlibDeprecationWarning</span><span class="p">(</span><span class="n">OdmlibWarning</span><span class="p">,</span> <span class="ne">DeprecationWarning</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Issued when a deprecated odmlib feature is used.&quot;&quot;&quot;</span></div>
+
+
+
+<div class="viewcode-block" id="OdmlibInteroperabilityWarning">
+<a class="viewcode-back" href="../modules.html#exceptions.OdmlibInteroperabilityWarning">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">OdmlibInteroperabilityWarning</span><span class="p">(</span><span class="n">OdmlibWarning</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Issued for constructs that are valid but may cause interoperability issues.&quot;&quot;&quot;</span></div>
+
+
+
+<span class="c1"># ---------------------------------------------------------------------------</span>
+<span class="c1"># Error collector for collect-all-errors mode</span>
+<span class="c1"># ---------------------------------------------------------------------------</span>
+
+<div class="viewcode-block" id="ErrorCollector">
+<a class="viewcode-back" href="../modules.html#exceptions.ErrorCollector">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">ErrorCollector</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Accumulates validation errors instead of raising immediately.</span>
+
+<span class="sd">    Pass to :meth:`~odmlib.odm_element.ODMElement.validate` with</span>
+<span class="sd">    ``collect_errors=True`` to gather all errors in a single pass rather</span>
+<span class="sd">    than stopping at the first failure.</span>
+
+<span class="sd">    Example::</span>
+
+<span class="sd">        collector = ErrorCollector()</span>
+<span class="sd">        errors = odm.validate(collect_errors=True, oid_checker=checker)</span>
+<span class="sd">        if errors:</span>
+<span class="sd">            for err in errors:</span>
+<span class="sd">                print(err)</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        errors: List of :class:`OdmlibError` instances collected so far.</span>
+<span class="sd">        warnings: List of :class:`OdmlibWarning` instances collected so far.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">errors</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">warnings</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">has_errors</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;True if any errors have been collected.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">errors</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span>
+
+<div class="viewcode-block" id="ErrorCollector.add_error">
+<a class="viewcode-back" href="../modules.html#exceptions.ErrorCollector.add_error">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">add_error</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">error</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Add an :class:`OdmlibError` to the collection.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">errors</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">error</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="ErrorCollector.add_warning">
+<a class="viewcode-back" href="../modules.html#exceptions.ErrorCollector.add_warning">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">add_warning</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">warning</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Add an :class:`OdmlibWarning` to the collection.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">warnings</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">warning</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="ErrorCollector.raise_if_errors">
+<a class="viewcode-back" href="../modules.html#exceptions.ErrorCollector.raise_if_errors">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">raise_if_errors</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Raise if any errors were collected.</span>
+
+<span class="sd">        Raises the single collected error directly if only one exists, or a</span>
+<span class="sd">        new :class:`OdmlibValidationError` summarising all errors otherwise.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">has_errors</span><span class="p">:</span>
+            <span class="k">return</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">errors</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="bp">self</span><span class="o">.</span><span class="n">errors</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">errors</span><span class="p">)</span><span class="si">}</span><span class="s2"> validation errors found:</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="n">msg</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  </span><span class="si">{</span><span class="n">i</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="si">}</span><span class="s2">. </span><span class="si">{</span><span class="n">err</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">err</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">errors</span><span class="p">))</span>
+        <span class="k">raise</span> <span class="n">OdmlibValidationError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span></div>
+</div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2020, Sam Hume.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,328 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Interoperability: Dataset-JSON and Pandas &mdash; odmlib 0.2.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=938c9ccc"></script>
+      <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Working with Dataset-JSON v1.1" href="dataset_json.html" />
+    <link rel="prev" title="Model Reference" href="model_reference.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            odmlib
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">User Guides</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="getting_started.html">Getting Started with odmlib</a></li>
+<li class="toctree-l1"><a class="reference internal" href="reading_documents.html">Reading ODM Documents</a></li>
+<li class="toctree-l1"><a class="reference internal" href="permissive_loading.html">Permissive Loading Mode</a></li>
+<li class="toctree-l1"><a class="reference internal" href="creating_documents.html">Creating ODM Documents</a></li>
+<li class="toctree-l1"><a class="reference internal" href="validation.html">Validating ODM Documents</a></li>
+<li class="toctree-l1"><a class="reference internal" href="model_reference.html">Model Reference</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Interoperability: Dataset-JSON and Pandas</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#working-with-dataset-json">Working with Dataset-JSON</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#creating-a-dataset-json-document">Creating a Dataset-JSON document</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#reading-a-dataset-json-file">Reading a Dataset-JSON file</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#converting-from-dataset-xml">Converting from Dataset-XML</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#using-pandas-with-odmlib">Using Pandas with odmlib</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#exporting-metadata-to-a-dataframe">Exporting metadata to a DataFrame</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#exporting-clinical-data-to-a-dataframe">Exporting clinical data to a DataFrame</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#importing-from-a-dataframe-back-into-odmlib">Importing from a DataFrame back into odmlib</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="dataset_json.html">Working with Dataset-JSON v1.1</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../modules.html">odmlib</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../odmlib.odm_1_3_2.html">odm_1_3_2 package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../odmlib.odm_2_0.html">odm_2_0 package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../odmlib.define_2_0.html">define_2_0 package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../odmlib.define_2_1.html">define_2_1 package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../odmlib.dataset_1_0_1.html">odmlib.dataset_1_0_1 module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../odmlib.ct_1_1_1.html">odmlib.ct_1_1_1 module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../odmlib.arm_1_0.html">odmlib.arm_1_0 module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../odmlib.dataset_json_1_1.html">odmlib.dataset_json_1_1</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../odmlib.dataframe.html">odmlib.dataframe</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Project</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../changelog.html">Changelog</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">odmlib</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Interoperability: Dataset-JSON and Pandas</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/guides/interoperability.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="interoperability-dataset-json-and-pandas">
+<h1>Interoperability: Dataset-JSON and Pandas<a class="headerlink" href="#interoperability-dataset-json-and-pandas" title="Link to this heading"></a></h1>
+<p>odmlib v0.2.0 adds two new interoperability features:</p>
+<ol class="arabic simple">
+<li><p><strong>Dataset-JSON v1.1 support</strong> — create, read, write, and convert CDISC
+Dataset-JSON documents</p></li>
+<li><p><strong>Optional Pandas DataFrame integration</strong> — export metadata and data to
+DataFrames, and import DataFrame rows back into odmlib objects</p></li>
+</ol>
+<p>—</p>
+<section id="working-with-dataset-json">
+<h2>Working with Dataset-JSON<a class="headerlink" href="#working-with-dataset-json" title="Link to this heading"></a></h2>
+<p><a class="reference external" href="https://www.cdisc.org/standards/data-exchange/dataset-json">CDISC Dataset-JSON</a>
+is a column-oriented JSON format for regulatory submission datasets.
+odmlib provides a pure-Python model that requires no additional dependencies.</p>
+<section id="creating-a-dataset-json-document">
+<h3>Creating a Dataset-JSON document<a class="headerlink" href="#creating-a-dataset-json-document" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">odmlib.dataset_json_1_1</span><span class="w"> </span><span class="kn">import</span> <span class="n">DatasetJSON</span><span class="p">,</span> <span class="n">Column</span>
+
+<span class="c1"># Create columns</span>
+<span class="n">columns</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="n">Column</span><span class="p">(</span><span class="n">itemOID</span><span class="o">=</span><span class="s2">&quot;IT.STUDYID&quot;</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;STUDYID&quot;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Study Identifier&quot;</span><span class="p">,</span> <span class="n">dataType</span><span class="o">=</span><span class="s2">&quot;string&quot;</span><span class="p">),</span>
+    <span class="n">Column</span><span class="p">(</span><span class="n">itemOID</span><span class="o">=</span><span class="s2">&quot;IT.USUBJID&quot;</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;USUBJID&quot;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Unique Subject Identifier&quot;</span><span class="p">,</span> <span class="n">dataType</span><span class="o">=</span><span class="s2">&quot;string&quot;</span><span class="p">),</span>
+    <span class="n">Column</span><span class="p">(</span><span class="n">itemOID</span><span class="o">=</span><span class="s2">&quot;IT.AETERM&quot;</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;AETERM&quot;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Reported Term for the AE&quot;</span><span class="p">,</span> <span class="n">dataType</span><span class="o">=</span><span class="s2">&quot;string&quot;</span><span class="p">),</span>
+    <span class="n">Column</span><span class="p">(</span><span class="n">itemOID</span><span class="o">=</span><span class="s2">&quot;IT.AESEQ&quot;</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;AESEQ&quot;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Sequence Number&quot;</span><span class="p">,</span> <span class="n">dataType</span><span class="o">=</span><span class="s2">&quot;integer&quot;</span><span class="p">),</span>
+<span class="p">]</span>
+
+<span class="c1"># Create the dataset</span>
+<span class="n">ae</span> <span class="o">=</span> <span class="n">DatasetJSON</span><span class="p">(</span>
+    <span class="n">datasetJSONCreationDateTime</span><span class="o">=</span><span class="s2">&quot;2024-01-15T12:00:00&quot;</span><span class="p">,</span>
+    <span class="n">datasetJSONVersion</span><span class="o">=</span><span class="s2">&quot;1.1.0&quot;</span><span class="p">,</span>
+    <span class="n">fileOID</span><span class="o">=</span><span class="s2">&quot;ODM.DATASET.AE&quot;</span><span class="p">,</span>
+    <span class="n">studyOID</span><span class="o">=</span><span class="s2">&quot;CDISC01&quot;</span><span class="p">,</span>
+    <span class="n">metaDataVersionOID</span><span class="o">=</span><span class="s2">&quot;MDV.001&quot;</span><span class="p">,</span>
+    <span class="n">originator</span><span class="o">=</span><span class="s2">&quot;ACME Corp&quot;</span><span class="p">,</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;AE&quot;</span><span class="p">,</span>
+    <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Adverse Events&quot;</span><span class="p">,</span>
+    <span class="n">columns</span><span class="o">=</span><span class="n">columns</span><span class="p">,</span>
+    <span class="n">records</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
+    <span class="n">rows</span><span class="o">=</span><span class="p">[</span>
+        <span class="p">[</span><span class="s2">&quot;CDISC01&quot;</span><span class="p">,</span> <span class="s2">&quot;CDISC01-001&quot;</span><span class="p">,</span> <span class="s2">&quot;Headache&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span>
+        <span class="p">[</span><span class="s2">&quot;CDISC01&quot;</span><span class="p">,</span> <span class="s2">&quot;CDISC01-001&quot;</span><span class="p">,</span> <span class="s2">&quot;Nausea&quot;</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span>
+    <span class="p">],</span>
+<span class="p">)</span>
+<span class="n">ae</span><span class="o">.</span><span class="n">write_json</span><span class="p">(</span><span class="s2">&quot;ae_dataset.json&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="reading-a-dataset-json-file">
+<h3>Reading a Dataset-JSON file<a class="headerlink" href="#reading-a-dataset-json-file" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">odmlib.dataset_json_1_1</span><span class="w"> </span><span class="kn">import</span> <span class="n">DatasetJSON</span>
+
+<span class="n">ae</span> <span class="o">=</span> <span class="n">DatasetJSON</span><span class="o">.</span><span class="n">read_json</span><span class="p">(</span><span class="s2">&quot;ae_dataset.json&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;File OID: </span><span class="si">{</span><span class="n">ae</span><span class="o">.</span><span class="n">fileOID</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Columns: </span><span class="si">{</span><span class="n">ae</span><span class="o">.</span><span class="n">column_names</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Rows: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">ae</span><span class="o">.</span><span class="n">rows</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="converting-from-dataset-xml">
+<h3>Converting from Dataset-XML<a class="headerlink" href="#converting-from-dataset-xml" title="Link to this heading"></a></h3>
+<p>Use <a class="reference internal" href="../odmlib.dataset_json_1_1.html#odmlib.dataset_json_1_1.converter.dataset_xml_to_dataset_json" title="odmlib.dataset_json_1_1.converter.dataset_xml_to_dataset_json"><code class="xref py py-func docutils literal notranslate"><span class="pre">odmlib.dataset_json_1_1.converter.dataset_xml_to_dataset_json()</span></code></a> to convert
+an odmlib Dataset-XML 1.0.1 object to Dataset-JSON v1.1:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">odmlib.odm_loader</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">OL</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">odmlib.loader</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">LD</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">odmlib.ns_registry</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">NS</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">odmlib.dataset_json_1_1.converter</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataset_xml_to_dataset_json</span>
+
+<span class="c1"># Set up namespaces for Dataset-XML</span>
+<span class="n">NS</span><span class="o">.</span><span class="n">NamespaceRegistry</span><span class="p">(</span><span class="n">prefix</span><span class="o">=</span><span class="s2">&quot;odm&quot;</span><span class="p">,</span>  <span class="n">uri</span><span class="o">=</span><span class="s2">&quot;http://www.cdisc.org/ns/odm/v1.3&quot;</span><span class="p">,</span>
+                     <span class="n">is_default</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">NS</span><span class="o">.</span><span class="n">NamespaceRegistry</span><span class="p">(</span><span class="n">prefix</span><span class="o">=</span><span class="s2">&quot;data&quot;</span><span class="p">,</span> <span class="n">uri</span><span class="o">=</span><span class="s2">&quot;http://www.cdisc.org/ns/Dataset-XML/v1.0&quot;</span><span class="p">)</span>
+
+<span class="c1"># Load the Dataset-XML file</span>
+<span class="n">loader</span> <span class="o">=</span> <span class="n">LD</span><span class="o">.</span><span class="n">ODMLoader</span><span class="p">(</span><span class="n">OL</span><span class="o">.</span><span class="n">XMLODMLoader</span><span class="p">(</span>
+    <span class="n">model_package</span><span class="o">=</span><span class="s2">&quot;dataset_1_0_1&quot;</span><span class="p">,</span>
+    <span class="n">ns_uri</span><span class="o">=</span><span class="s2">&quot;http://www.cdisc.org/ns/Dataset-XML/v1.0&quot;</span><span class="p">,</span>
+<span class="p">))</span>
+<span class="n">loader</span><span class="o">.</span><span class="n">open_odm_document</span><span class="p">(</span><span class="s2">&quot;ae.xml&quot;</span><span class="p">)</span>
+<span class="n">odm</span> <span class="o">=</span> <span class="n">loader</span><span class="o">.</span><span class="n">root</span><span class="p">()</span>
+
+<span class="c1"># Convert to Dataset-JSON v1.1 (returns dict of dataset name -&gt; DatasetJSON)</span>
+<span class="n">datasets</span> <span class="o">=</span> <span class="n">dataset_xml_to_dataset_json</span><span class="p">(</span><span class="n">odm</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">ds</span> <span class="ow">in</span> <span class="n">datasets</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+    <span class="n">ds</span><span class="o">.</span><span class="n">write_json</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">_dataset.json&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Optionally pass a Define-XML MetaDataVersion to enrich column metadata
+(labels, types, lengths):</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">odmlib.dataset_json_1_1.converter</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataset_xml_to_dataset_json</span>
+
+<span class="c1"># Load Define-XML for metadata enrichment</span>
+<span class="n">define_loader</span> <span class="o">=</span> <span class="n">LD</span><span class="o">.</span><span class="n">ODMLoader</span><span class="p">(</span><span class="n">DL</span><span class="o">.</span><span class="n">XMLDefineLoader</span><span class="p">(</span><span class="n">model_package</span><span class="o">=</span><span class="s2">&quot;define_2_1&quot;</span><span class="p">))</span>
+<span class="n">define_loader</span><span class="o">.</span><span class="n">open_odm_document</span><span class="p">(</span><span class="s2">&quot;define.xml&quot;</span><span class="p">)</span>
+<span class="n">mdv</span> <span class="o">=</span> <span class="n">define_loader</span><span class="o">.</span><span class="n">MetaDataVersion</span><span class="p">()</span>
+
+<span class="c1"># Convert with enriched metadata</span>
+<span class="n">datasets</span> <span class="o">=</span> <span class="n">dataset_xml_to_dataset_json</span><span class="p">(</span><span class="n">odm</span><span class="p">,</span> <span class="n">define_mdv</span><span class="o">=</span><span class="n">mdv</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>—</p>
+</section>
+</section>
+<section id="using-pandas-with-odmlib">
+<h2>Using Pandas with odmlib<a class="headerlink" href="#using-pandas-with-odmlib" title="Link to this heading"></a></h2>
+<p>Install Pandas (optional dependency):</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>odmlib<span class="o">[</span>dataframe<span class="o">]</span>
+<span class="c1"># or</span>
+pip<span class="w"> </span>install<span class="w"> </span>pandas
+</pre></div>
+</div>
+<section id="exporting-metadata-to-a-dataframe">
+<h3>Exporting metadata to a DataFrame<a class="headerlink" href="#exporting-metadata-to-a-dataframe" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">odmlib.loader</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">LD</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">odmlib.define_loader</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">DL</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">odmlib.dataframe</span><span class="w"> </span><span class="kn">import</span> <span class="n">metadata_to_dataframe</span>
+
+<span class="n">loader</span> <span class="o">=</span> <span class="n">LD</span><span class="o">.</span><span class="n">ODMLoader</span><span class="p">(</span><span class="n">DL</span><span class="o">.</span><span class="n">XMLDefineLoader</span><span class="p">(</span><span class="n">model_package</span><span class="o">=</span><span class="s2">&quot;define_2_1&quot;</span><span class="p">))</span>
+<span class="n">loader</span><span class="o">.</span><span class="n">open_odm_document</span><span class="p">(</span><span class="s2">&quot;define.xml&quot;</span><span class="p">)</span>
+<span class="n">mdv</span> <span class="o">=</span> <span class="n">loader</span><span class="o">.</span><span class="n">MetaDataVersion</span><span class="p">()</span>
+
+<span class="c1"># All ItemDef attributes as a DataFrame</span>
+<span class="n">df</span> <span class="o">=</span> <span class="n">metadata_to_dataframe</span><span class="p">(</span><span class="n">mdv</span><span class="p">,</span> <span class="s2">&quot;ItemDef&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">df</span><span class="p">[[</span><span class="s2">&quot;OID&quot;</span><span class="p">,</span> <span class="s2">&quot;Name&quot;</span><span class="p">,</span> <span class="s2">&quot;DataType&quot;</span><span class="p">,</span> <span class="s2">&quot;Length&quot;</span><span class="p">]]</span><span class="o">.</span><span class="n">head</span><span class="p">(</span><span class="mi">10</span><span class="p">))</span>
+
+<span class="c1"># Filter to specific columns only</span>
+<span class="n">df_slim</span> <span class="o">=</span> <span class="n">metadata_to_dataframe</span><span class="p">(</span><span class="n">mdv</span><span class="p">,</span> <span class="s2">&quot;ItemDef&quot;</span><span class="p">,</span> <span class="n">attributes</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;OID&quot;</span><span class="p">,</span> <span class="s2">&quot;Name&quot;</span><span class="p">,</span> <span class="s2">&quot;DataType&quot;</span><span class="p">])</span>
+</pre></div>
+</div>
+</section>
+<section id="exporting-clinical-data-to-a-dataframe">
+<h3>Exporting clinical data to a DataFrame<a class="headerlink" href="#exporting-clinical-data-to-a-dataframe" title="Link to this heading"></a></h3>
+<p>For ODM 1.3.2 hierarchical clinical data:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">odmlib.dataframe</span><span class="w"> </span><span class="kn">import</span> <span class="n">clinical_data_to_dataframe</span>
+
+<span class="c1"># Flatten all VS records to a DataFrame</span>
+<span class="n">df</span> <span class="o">=</span> <span class="n">clinical_data_to_dataframe</span><span class="p">(</span><span class="n">odm</span><span class="o">.</span><span class="n">ClinicalData</span><span class="p">,</span> <span class="n">item_group_oid</span><span class="o">=</span><span class="s2">&quot;IG.VS&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">head</span><span class="p">())</span>
+</pre></div>
+</div>
+<p>For Dataset-XML 1.0.1 (flat structure):</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">odmlib.dataframe</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataset_to_dataframe</span>
+
+<span class="n">df</span> <span class="o">=</span> <span class="n">dataset_to_dataframe</span><span class="p">(</span><span class="n">odm</span><span class="o">.</span><span class="n">ClinicalData</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">head</span><span class="p">())</span>
+</pre></div>
+</div>
+<p>For Dataset-JSON v1.1 datasets:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">odmlib.dataset_json_1_1</span><span class="w"> </span><span class="kn">import</span> <span class="n">DatasetJSON</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">odmlib.dataframe</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataset_json_to_dataframe</span>
+
+<span class="n">ae</span> <span class="o">=</span> <span class="n">DatasetJSON</span><span class="o">.</span><span class="n">read_json</span><span class="p">(</span><span class="s2">&quot;ae_dataset.json&quot;</span><span class="p">)</span>
+<span class="n">df</span> <span class="o">=</span> <span class="n">dataset_json_to_dataframe</span><span class="p">(</span><span class="n">ae</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">describe</span><span class="p">())</span>
+</pre></div>
+</div>
+</section>
+<section id="importing-from-a-dataframe-back-into-odmlib">
+<h3>Importing from a DataFrame back into odmlib<a class="headerlink" href="#importing-from-a-dataframe-back-into-odmlib" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">odmlib.define_2_1.model</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">DEF</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">odmlib.dataframe</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataframe_to_items</span>
+
+<span class="c1"># Load item definitions from a spreadsheet or CSV</span>
+<span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_excel</span><span class="p">(</span><span class="s2">&quot;items.xlsx&quot;</span><span class="p">)</span>
+
+<span class="c1"># Map spreadsheet columns to odmlib attribute names if needed</span>
+<span class="n">mapping</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;Variable Name&quot;</span><span class="p">:</span> <span class="s2">&quot;Name&quot;</span><span class="p">,</span> <span class="s2">&quot;Item OID&quot;</span><span class="p">:</span> <span class="s2">&quot;OID&quot;</span><span class="p">,</span> <span class="s2">&quot;Type&quot;</span><span class="p">:</span> <span class="s2">&quot;DataType&quot;</span><span class="p">}</span>
+
+<span class="n">items</span> <span class="o">=</span> <span class="n">dataframe_to_items</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">DEF</span><span class="p">,</span> <span class="s2">&quot;ItemDef&quot;</span><span class="p">,</span> <span class="n">column_mapping</span><span class="o">=</span><span class="n">mapping</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">items</span><span class="p">:</span>
+    <span class="n">mdv</span><span class="o">.</span><span class="n">ItemDef</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p><a class="reference internal" href="../odmlib.dataframe.html#odmlib.dataframe.dataframe_to_items" title="odmlib.dataframe.dataframe_to_items"><code class="xref py py-func docutils literal notranslate"><span class="pre">dataframe_to_items()</span></code></a> skips rows that cannot
+be constructed as valid odmlib elements (e.g., rows with missing
+required attributes).  Check the returned list length against the
+input DataFrame length to detect skipped rows.</p>
+</div>
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="model_reference.html" class="btn btn-neutral float-left" title="Model Reference" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="dataset_json.html" class="btn btn-neutral float-right" title="Working with Dataset-JSON v1.1" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2020, Sam Hume.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,468 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>odmlib.dataframe &mdash; odmlib 0.2.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=9edc463e" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=938c9ccc"></script>
+      <script src="_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Changelog" href="changelog.html" />
+    <link rel="prev" title="odmlib.dataset_json_1_1" href="odmlib.dataset_json_1_1.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            odmlib
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">User Guides</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="guides/getting_started.html">Getting Started with odmlib</a></li>
+<li class="toctree-l1"><a class="reference internal" href="guides/reading_documents.html">Reading ODM Documents</a></li>
+<li class="toctree-l1"><a class="reference internal" href="guides/permissive_loading.html">Permissive Loading Mode</a></li>
+<li class="toctree-l1"><a class="reference internal" href="guides/creating_documents.html">Creating ODM Documents</a></li>
+<li class="toctree-l1"><a class="reference internal" href="guides/validation.html">Validating ODM Documents</a></li>
+<li class="toctree-l1"><a class="reference internal" href="guides/model_reference.html">Model Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="guides/interoperability.html">Interoperability: Dataset-JSON and Pandas</a></li>
+<li class="toctree-l1"><a class="reference internal" href="guides/dataset_json.html">Working with Dataset-JSON v1.1</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="modules.html">odmlib</a></li>
+<li class="toctree-l1"><a class="reference internal" href="odmlib.odm_1_3_2.html">odm_1_3_2 package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="odmlib.odm_2_0.html">odm_2_0 package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="odmlib.define_2_0.html">define_2_0 package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="odmlib.define_2_1.html">define_2_1 package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="odmlib.dataset_1_0_1.html">odmlib.dataset_1_0_1 module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="odmlib.ct_1_1_1.html">odmlib.ct_1_1_1 module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="odmlib.arm_1_0.html">odmlib.arm_1_0 module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="odmlib.dataset_json_1_1.html">odmlib.dataset_json_1_1</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">odmlib.dataframe</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#functions">Functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#odmlib.dataframe.metadata_to_dataframe"><code class="docutils literal notranslate"><span class="pre">metadata_to_dataframe()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#odmlib.dataframe.clinical_data_to_dataframe"><code class="docutils literal notranslate"><span class="pre">clinical_data_to_dataframe()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#odmlib.dataframe.dataset_to_dataframe"><code class="docutils literal notranslate"><span class="pre">dataset_to_dataframe()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#odmlib.dataframe.dataset_json_to_dataframe"><code class="docutils literal notranslate"><span class="pre">dataset_json_to_dataframe()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#odmlib.dataframe.define_metadata_to_dataframes"><code class="docutils literal notranslate"><span class="pre">define_metadata_to_dataframes()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#odmlib.dataframe.dataframe_to_dataset_json"><code class="docutils literal notranslate"><span class="pre">dataframe_to_dataset_json()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#odmlib.dataframe.dataframe_to_items"><code class="docutils literal notranslate"><span class="pre">dataframe_to_items()</span></code></a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Project</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="changelog.html">Changelog</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">odmlib</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">odmlib.dataframe</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/odmlib.dataframe.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="odmlib-dataframe">
+<h1>odmlib.dataframe<a class="headerlink" href="#odmlib-dataframe" title="Link to this heading"></a></h1>
+<p>Optional Pandas DataFrame integration for odmlib.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Requires the <code class="docutils literal notranslate"><span class="pre">pandas</span></code> package.  Install with:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="n">odmlib</span><span class="p">[</span><span class="n">dataframe</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+<p id="module-odmlib.dataframe">Optional Pandas DataFrame integration for odmlib.</p>
+<p>Provides convenience functions to export odmlib metadata and clinical data
+to Pandas DataFrames and to construct odmlib element lists from DataFrames.</p>
+<p>Pandas is an <strong>optional</strong> dependency.  If it is not installed, importing
+this module succeeds but calling any function raises <a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ImportError" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">ImportError</span></code></a>
+with a helpful install hint.</p>
+<p>Install with:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="n">odmlib</span><span class="p">[</span><span class="n">dataframe</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>or:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="n">pandas</span>
+</pre></div>
+</div>
+<section id="functions">
+<h2>Functions<a class="headerlink" href="#functions" title="Link to this heading"></a></h2>
+<dl class="simple">
+<dt><a class="reference internal" href="#odmlib.dataframe.metadata_to_dataframe" title="odmlib.dataframe.metadata_to_dataframe"><code class="xref py py-func docutils literal notranslate"><span class="pre">metadata_to_dataframe()</span></code></a></dt><dd><p>Export a list of odmlib metadata elements (e.g., all ItemDef objects in
+a MetaDataVersion) as a DataFrame with one row per element.</p>
+</dd>
+<dt><a class="reference internal" href="#odmlib.dataframe.clinical_data_to_dataframe" title="odmlib.dataframe.clinical_data_to_dataframe"><code class="xref py py-func docutils literal notranslate"><span class="pre">clinical_data_to_dataframe()</span></code></a></dt><dd><p>Flatten a hierarchical ODM 1.3.2 ClinicalData object
+(SubjectData → StudyEventData → FormData → ItemGroupData → ItemData)
+into a tabular DataFrame with one row per subject-event-form-group record.</p>
+</dd>
+<dt><a class="reference internal" href="#odmlib.dataframe.dataset_to_dataframe" title="odmlib.dataframe.dataset_to_dataframe"><code class="xref py py-func docutils literal notranslate"><span class="pre">dataset_to_dataframe()</span></code></a></dt><dd><p>Flatten a Dataset-XML 1.0.1 ClinicalData object (no SubjectData
+hierarchy) into a tabular DataFrame with one row per ItemGroupData record.</p>
+</dd>
+<dt><a class="reference internal" href="#odmlib.dataframe.dataset_json_to_dataframe" title="odmlib.dataframe.dataset_json_to_dataframe"><code class="xref py py-func docutils literal notranslate"><span class="pre">dataset_json_to_dataframe()</span></code></a></dt><dd><p>Convert a <a class="reference internal" href="odmlib.dataset_json_1_1.html#odmlib.dataset_json_1_1.model.DatasetJSON" title="odmlib.dataset_json_1_1.model.DatasetJSON"><code class="xref py py-class docutils literal notranslate"><span class="pre">DatasetJSON</span></code></a> object
+to a DataFrame.</p>
+</dd>
+<dt><a class="reference internal" href="#odmlib.dataframe.define_metadata_to_dataframes" title="odmlib.dataframe.define_metadata_to_dataframes"><code class="xref py py-func docutils literal notranslate"><span class="pre">define_metadata_to_dataframes()</span></code></a></dt><dd><p>Flatten all Define-XML v2.1 metadata into a dict of DataFrames, one
+per metadata table (study, datasets, variables, codelists, etc.).</p>
+</dd>
+<dt><a class="reference internal" href="#odmlib.dataframe.dataframe_to_items" title="odmlib.dataframe.dataframe_to_items"><code class="xref py py-func docutils literal notranslate"><span class="pre">dataframe_to_items()</span></code></a></dt><dd><p>Create odmlib element instances from a DataFrame (one row → one element).</p>
+</dd>
+</dl>
+<p>Example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">odmlib.odm_1_3_2.model</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ODM</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">odmlib.loader</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">LD</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">odmlib.odm_loader</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">OL</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">odmlib.dataframe</span><span class="w"> </span><span class="kn">import</span> <span class="n">metadata_to_dataframe</span>
+
+<span class="n">loader</span> <span class="o">=</span> <span class="n">LD</span><span class="o">.</span><span class="n">ODMLoader</span><span class="p">(</span><span class="n">OL</span><span class="o">.</span><span class="n">XMLODMLoader</span><span class="p">())</span>
+<span class="n">loader</span><span class="o">.</span><span class="n">open_odm_document</span><span class="p">(</span><span class="s2">&quot;study.xml&quot;</span><span class="p">)</span>
+<span class="n">mdv</span> <span class="o">=</span> <span class="n">loader</span><span class="o">.</span><span class="n">MetaDataVersion</span><span class="p">()</span>
+
+<span class="n">df</span> <span class="o">=</span> <span class="n">metadata_to_dataframe</span><span class="p">(</span><span class="n">mdv</span><span class="p">,</span> <span class="s2">&quot;ItemDef&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">df</span><span class="p">[[</span><span class="s2">&quot;OID&quot;</span><span class="p">,</span> <span class="s2">&quot;Name&quot;</span><span class="p">,</span> <span class="s2">&quot;DataType&quot;</span><span class="p">]]</span><span class="o">.</span><span class="n">to_string</span><span class="p">())</span>
+</pre></div>
+</div>
+</section>
+<dl class="py function">
+<dt class="sig sig-object py" id="odmlib.dataframe.metadata_to_dataframe">
+<span class="sig-prename descclassname"><span class="pre">odmlib.dataframe.</span></span><span class="sig-name descname"><span class="pre">metadata_to_dataframe</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mdv</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">element_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">attributes</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/odmlib/dataframe.html#metadata_to_dataframe"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#odmlib.dataframe.metadata_to_dataframe" title="Link to this definition"></a></dt>
+<dd><p>Export odmlib metadata elements to a Pandas DataFrame.</p>
+<p>Extracts all elements of <em>element_type</em> from a <code class="docutils literal notranslate"><span class="pre">MetaDataVersion</span></code> and
+returns a DataFrame with one row per element.  Only scalar attributes
+(<code class="docutils literal notranslate"><span class="pre">str</span></code>, <code class="docutils literal notranslate"><span class="pre">int</span></code>, <code class="docutils literal notranslate"><span class="pre">float</span></code>, <code class="docutils literal notranslate"><span class="pre">bool</span></code>, <code class="docutils literal notranslate"><span class="pre">None</span></code>) are included as
+columns; child element lists and nested objects are excluded.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>mdv</strong> (<em>Any</em>) – A <code class="docutils literal notranslate"><span class="pre">MetaDataVersion</span></code> odmlib object (ODM 1.3.2,
+Define-XML 2.0, or Define-XML 2.1).</p></li>
+<li><p><strong>element_type</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – Name of the element list to export.  Examples:
+<code class="docutils literal notranslate"><span class="pre">&quot;ItemDef&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;ItemGroupDef&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;CodeList&quot;</span></code>,
+<code class="docutils literal notranslate"><span class="pre">&quot;StudyEventDef&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;FormDef&quot;</span></code>.</p></li>
+<li><p><strong>attributes</strong> (<em>Optional</em><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><em>list</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em>]</em><em>]</em>) – Optional list of attribute names to include as columns.
+If <code class="docutils literal notranslate"><span class="pre">None</span></code>, all scalar attributes found on any element are
+included (union across all elements).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A <code class="xref py py-class docutils literal notranslate"><span class="pre">pandas.DataFrame</span></code> with one row per element and one
+column per scalar attribute.</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ImportError" title="(in Python v3.14)"><strong>ImportError</strong></a> – If pandas is not installed.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>pd.DataFrame</p>
+</dd>
+</dl>
+<p>Example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">df</span> <span class="o">=</span> <span class="n">metadata_to_dataframe</span><span class="p">(</span><span class="n">mdv</span><span class="p">,</span> <span class="s2">&quot;ItemDef&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">df</span><span class="p">[[</span><span class="s2">&quot;OID&quot;</span><span class="p">,</span> <span class="s2">&quot;Name&quot;</span><span class="p">,</span> <span class="s2">&quot;DataType&quot;</span><span class="p">]]</span><span class="o">.</span><span class="n">head</span><span class="p">())</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="odmlib.dataframe.clinical_data_to_dataframe">
+<span class="sig-prename descclassname"><span class="pre">odmlib.dataframe.</span></span><span class="sig-name descname"><span class="pre">clinical_data_to_dataframe</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">clinical_data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">item_group_oid</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/odmlib/dataframe.html#clinical_data_to_dataframe"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#odmlib.dataframe.clinical_data_to_dataframe" title="Link to this definition"></a></dt>
+<dd><p>Export ODM 1.3.2 clinical data for one ItemGroup to a DataFrame.</p>
+<p>Traverses the full hierarchy
+<code class="docutils literal notranslate"><span class="pre">SubjectData</span> <span class="pre">→</span> <span class="pre">StudyEventData</span> <span class="pre">→</span> <span class="pre">FormData</span> <span class="pre">→</span> <span class="pre">ItemGroupData</span> <span class="pre">→</span> <span class="pre">ItemData</span></code>
+and collects rows where <code class="docutils literal notranslate"><span class="pre">ItemGroupData.ItemGroupOID</span></code> matches
+<em>item_group_oid</em>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>clinical_data</strong> (<em>Any</em>) – A <code class="docutils literal notranslate"><span class="pre">ClinicalData</span></code> odmlib object from the
+<code class="docutils literal notranslate"><span class="pre">odm_1_3_2</span></code> model.</p></li>
+<li><p><strong>item_group_oid</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – OID of the <code class="docutils literal notranslate"><span class="pre">ItemGroupDef</span></code> to extract (e.g.,
+<code class="docutils literal notranslate"><span class="pre">&quot;IG.VS&quot;</span></code>).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A <code class="xref py py-class docutils literal notranslate"><span class="pre">pandas.DataFrame</span></code> with one row per matching record.
+Columns include <code class="docutils literal notranslate"><span class="pre">&quot;SubjectKey&quot;</span></code> plus one column per <code class="docutils literal notranslate"><span class="pre">ItemOID</span></code>
+found in those records.</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ImportError" title="(in Python v3.14)"><strong>ImportError</strong></a> – If pandas is not installed.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>pd.DataFrame</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="odmlib.dataframe.dataset_to_dataframe">
+<span class="sig-prename descclassname"><span class="pre">odmlib.dataframe.</span></span><span class="sig-name descname"><span class="pre">dataset_to_dataframe</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">clinical_data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/odmlib/dataframe.html#dataset_to_dataframe"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#odmlib.dataframe.dataset_to_dataframe" title="Link to this definition"></a></dt>
+<dd><p>Export Dataset-XML 1.0.1 ClinicalData to a Pandas DataFrame.</p>
+<p>For the simpler Dataset-XML 1.0.1 structure, which does not have the
+<code class="docutils literal notranslate"><span class="pre">SubjectData</span></code> hierarchy.  Each <code class="docutils literal notranslate"><span class="pre">ItemGroupData</span></code> row becomes one
+row in the DataFrame.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>clinical_data</strong> (<em>Any</em>) – A <code class="docutils literal notranslate"><span class="pre">ClinicalData</span></code> odmlib object from the
+<code class="docutils literal notranslate"><span class="pre">dataset_1_0_1</span></code> model.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A <code class="xref py py-class docutils literal notranslate"><span class="pre">pandas.DataFrame</span></code> with one row per <code class="docutils literal notranslate"><span class="pre">ItemGroupData</span></code>
+record.  Columns include <code class="docutils literal notranslate"><span class="pre">&quot;ItemGroupOID&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;ItemGroupDataSeq&quot;</span></code>,
+and one column per <code class="docutils literal notranslate"><span class="pre">ItemOID</span></code> found in any record.</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ImportError" title="(in Python v3.14)"><strong>ImportError</strong></a> – If pandas is not installed.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>pd.DataFrame</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="odmlib.dataframe.dataset_json_to_dataframe">
+<span class="sig-prename descclassname"><span class="pre">odmlib.dataframe.</span></span><span class="sig-name descname"><span class="pre">dataset_json_to_dataframe</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataset</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/odmlib/dataframe.html#dataset_json_to_dataframe"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#odmlib.dataframe.dataset_json_to_dataframe" title="Link to this definition"></a></dt>
+<dd><p>Convert a Dataset-JSON v1.1 dataset object to a Pandas DataFrame.</p>
+<p>Column names come from the <code class="xref py py-attr docutils literal notranslate"><span class="pre">DatasetJSON.column_names</span></code> property
+and row data from <code class="xref py py-attr docutils literal notranslate"><span class="pre">DatasetJSON.rows</span></code> (list of lists).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>dataset</strong> (<em>Any</em>) – An <a class="reference internal" href="odmlib.dataset_json_1_1.html#odmlib.dataset_json_1_1.model.DatasetJSON" title="odmlib.dataset_json_1_1.model.DatasetJSON"><code class="xref py py-class docutils literal notranslate"><span class="pre">odmlib.dataset_json_1_1.model.DatasetJSON</span></code></a> object.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A <code class="xref py py-class docutils literal notranslate"><span class="pre">pandas.DataFrame</span></code> with one row per record and columns
+named by variable name.</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ImportError" title="(in Python v3.14)"><strong>ImportError</strong></a> – If pandas is not installed.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>pd.DataFrame</p>
+</dd>
+</dl>
+<p>Example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">odmlib.dataset_json_1_1</span><span class="w"> </span><span class="kn">import</span> <span class="n">DatasetJSON</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">odmlib.dataframe</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataset_json_to_dataframe</span>
+
+<span class="n">ds</span> <span class="o">=</span> <span class="n">DatasetJSON</span><span class="o">.</span><span class="n">read_json</span><span class="p">(</span><span class="s2">&quot;ae.json&quot;</span><span class="p">)</span>
+<span class="n">df</span> <span class="o">=</span> <span class="n">dataset_json_to_dataframe</span><span class="p">(</span><span class="n">ds</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">head</span><span class="p">())</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="odmlib.dataframe.define_metadata_to_dataframes">
+<span class="sig-prename descclassname"><span class="pre">odmlib.dataframe.</span></span><span class="sig-name descname"><span class="pre">define_metadata_to_dataframes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">odm_root</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">study_idx</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/odmlib/dataframe.html#define_metadata_to_dataframes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#odmlib.dataframe.define_metadata_to_dataframes" title="Link to this definition"></a></dt>
+<dd><p>Flatten Define-XML v2.1 metadata into a dict of Pandas DataFrames.</p>
+<p>Uses <a class="reference internal" href="odmlib.dataset_json_1_1.html#odmlib.dataset_json_1_1.define_flattener.DefineFlattener" title="odmlib.dataset_json_1_1.define_flattener.DefineFlattener"><code class="xref py py-class docutils literal notranslate"><span class="pre">DefineFlattener</span></code></a>
+internally to convert a loaded Define-XML v2.1 ODM root object into
+tabular Dataset-JSON datasets, then converts each to a DataFrame.</p>
+<p>The returned dict maps dataset names to DataFrames.  Dataset names
+are: <code class="docutils literal notranslate"><span class="pre">study</span></code>, <code class="docutils literal notranslate"><span class="pre">standards</span></code>, <code class="docutils literal notranslate"><span class="pre">datasets</span></code>, <code class="docutils literal notranslate"><span class="pre">variables</span></code>,
+<code class="docutils literal notranslate"><span class="pre">value_level</span></code>, <code class="docutils literal notranslate"><span class="pre">where_clauses</span></code>, <code class="docutils literal notranslate"><span class="pre">methods</span></code>, <code class="docutils literal notranslate"><span class="pre">comments</span></code>,
+<code class="docutils literal notranslate"><span class="pre">documents</span></code>, <code class="docutils literal notranslate"><span class="pre">codelists</span></code>, <code class="docutils literal notranslate"><span class="pre">codelist_terms</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>odm_root</strong> (<em>Any</em>) – A loaded Define-XML v2.1 ODM root object (from odmlib
+loader).</p></li>
+<li><p><strong>study_idx</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a>) – Index of the Study element to use (default: 0).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Mapping of dataset name to DataFrame.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)">dict</a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)">str</a>, pandas.DataFrame]</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ImportError" title="(in Python v3.14)"><strong>ImportError</strong></a> – If pandas is not installed.</p>
+</dd>
+</dl>
+<p>Example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">odmlib.define_loader</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">DL</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">odmlib.loader</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">LD</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">odmlib.dataframe</span><span class="w"> </span><span class="kn">import</span> <span class="n">define_metadata_to_dataframes</span>
+
+<span class="n">loader</span> <span class="o">=</span> <span class="n">LD</span><span class="o">.</span><span class="n">ODMLoader</span><span class="p">(</span><span class="n">DL</span><span class="o">.</span><span class="n">XMLDefineLoader</span><span class="p">(</span><span class="n">model_package</span><span class="o">=</span><span class="s1">&#39;define_2_1&#39;</span><span class="p">))</span>
+<span class="n">loader</span><span class="o">.</span><span class="n">open_odm_document</span><span class="p">(</span><span class="s1">&#39;define.xml&#39;</span><span class="p">)</span>
+<span class="n">odm</span> <span class="o">=</span> <span class="n">loader</span><span class="o">.</span><span class="n">root</span><span class="p">()</span>
+
+<span class="n">dfs</span> <span class="o">=</span> <span class="n">define_metadata_to_dataframes</span><span class="p">(</span><span class="n">odm</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">dfs</span><span class="p">[</span><span class="s1">&#39;variables&#39;</span><span class="p">][[</span><span class="s1">&#39;DatasetOID&#39;</span><span class="p">,</span> <span class="s1">&#39;Name&#39;</span><span class="p">,</span> <span class="s1">&#39;DataType&#39;</span><span class="p">]]</span><span class="o">.</span><span class="n">head</span><span class="p">())</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="odmlib.dataframe.dataframe_to_dataset_json">
+<span class="sig-prename descclassname"><span class="pre">odmlib.dataframe.</span></span><span class="sig-name descname"><span class="pre">dataframe_to_dataset_json</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">df</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">label</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">item_group_oid</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dataset_json_version</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'1.1.0'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">creation_datetime</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/odmlib/dataframe.html#dataframe_to_dataset_json"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#odmlib.dataframe.dataframe_to_dataset_json" title="Link to this definition"></a></dt>
+<dd><p>Convert a Pandas DataFrame to a Dataset-JSON v1.1 DatasetJSON object.</p>
+<p>Each DataFrame column becomes a Dataset-JSON Column with <code class="docutils literal notranslate"><span class="pre">dataType</span></code>
+inferred from the pandas dtype (int → <code class="docutils literal notranslate"><span class="pre">&quot;integer&quot;</span></code>, float →
+<code class="docutils literal notranslate"><span class="pre">&quot;decimal&quot;</span></code>, otherwise <code class="docutils literal notranslate"><span class="pre">&quot;string&quot;</span></code>).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>df</strong> (<em>pd.DataFrame</em>) – Source DataFrame.</p></li>
+<li><p><strong>name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – Dataset name (e.g., <code class="docutils literal notranslate"><span class="pre">&quot;DM&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;AE&quot;</span></code>).</p></li>
+<li><p><strong>label</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – Dataset label/description.</p></li>
+<li><p><strong>item_group_oid</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – ItemGroupDef OID for this dataset.</p></li>
+<li><p><strong>dataset_json_version</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – Dataset-JSON version string (default:
+<code class="docutils literal notranslate"><span class="pre">&quot;1.1.0&quot;</span></code>).</p></li>
+<li><p><strong>creation_datetime</strong> (<em>Optional</em><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em>]</em>) – ISO 8601 creation timestamp.  If <code class="docutils literal notranslate"><span class="pre">None</span></code>,
+the current UTC time is used.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A <a class="reference internal" href="odmlib.dataset_json_1_1.html#odmlib.dataset_json_1_1.model.DatasetJSON" title="odmlib.dataset_json_1_1.model.DatasetJSON"><code class="xref py py-class docutils literal notranslate"><span class="pre">DatasetJSON</span></code></a> instance.</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ImportError" title="(in Python v3.14)"><strong>ImportError</strong></a> – If pandas is not installed.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>Any</p>
+</dd>
+</dl>
+<p>Example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">odmlib.dataframe</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataframe_to_dataset_json</span>
+
+<span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span>
+    <span class="s2">&quot;STUDYID&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;CDISC01&quot;</span><span class="p">,</span> <span class="s2">&quot;CDISC01&quot;</span><span class="p">],</span>
+    <span class="s2">&quot;USUBJID&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;001&quot;</span><span class="p">,</span> <span class="s2">&quot;002&quot;</span><span class="p">],</span>
+    <span class="s2">&quot;AGE&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">65</span><span class="p">,</span> <span class="mi">72</span><span class="p">],</span>
+<span class="p">})</span>
+<span class="n">ds</span> <span class="o">=</span> <span class="n">dataframe_to_dataset_json</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="s2">&quot;DM&quot;</span><span class="p">,</span> <span class="s2">&quot;Demographics&quot;</span><span class="p">,</span> <span class="s2">&quot;IG.DM&quot;</span><span class="p">)</span>
+<span class="n">ds</span><span class="o">.</span><span class="n">write_json</span><span class="p">(</span><span class="s2">&quot;dm.json&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="odmlib.dataframe.dataframe_to_items">
+<span class="sig-prename descclassname"><span class="pre">odmlib.dataframe.</span></span><span class="sig-name descname"><span class="pre">dataframe_to_items</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">df</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_module</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">element_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'ItemDef'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">column_mapping</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/odmlib/dataframe.html#dataframe_to_items"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#odmlib.dataframe.dataframe_to_items" title="Link to this definition"></a></dt>
+<dd><p>Create odmlib elements from a Pandas DataFrame.</p>
+<p>Each row of the DataFrame becomes one odmlib element instance of type
+<em>element_type</em>.  Columns that map to valid attribute names are passed
+as keyword arguments to the constructor.  Rows that fail to construct
+a valid element are silently skipped.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>df</strong> (<em>pd.DataFrame</em>) – Source DataFrame where each row represents one element.</p></li>
+<li><p><strong>model_module</strong> (<em>Any</em>) – The odmlib model module containing <em>element_type</em>
+(e.g., <code class="docutils literal notranslate"><span class="pre">odmlib.odm_1_3_2.model</span></code>).</p></li>
+<li><p><strong>element_type</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – Class name to instantiate (default <code class="docutils literal notranslate"><span class="pre">&quot;ItemDef&quot;</span></code>).</p></li>
+<li><p><strong>column_mapping</strong> (<em>Optional</em><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><em>dict</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em>]</em><em>]</em>) – Optional dict mapping DataFrame column names to
+odmlib attribute names.  If <code class="docutils literal notranslate"><span class="pre">None</span></code>, column names must match
+attribute names exactly.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>List of odmlib element instances (one per successfully constructed row).</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ImportError" title="(in Python v3.14)"><strong>ImportError</strong></a> – If pandas is not installed.</p></li>
+<li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#AttributeError" title="(in Python v3.14)"><strong>AttributeError</strong></a> – If <em>element_type</em> is not found in <em>model_module</em>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)">list</a>[Any]</p>
+</dd>
+</dl>
+<p>Example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">odmlib.odm_1_3_2.model</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ODM</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">odmlib.dataframe</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataframe_to_items</span>
+
+<span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">([</span>
+    <span class="p">{</span><span class="s2">&quot;OID&quot;</span><span class="p">:</span> <span class="s2">&quot;IT.AGE&quot;</span><span class="p">,</span> <span class="s2">&quot;Name&quot;</span><span class="p">:</span> <span class="s2">&quot;AGE&quot;</span><span class="p">,</span> <span class="s2">&quot;DataType&quot;</span><span class="p">:</span> <span class="s2">&quot;integer&quot;</span><span class="p">},</span>
+    <span class="p">{</span><span class="s2">&quot;OID&quot;</span><span class="p">:</span> <span class="s2">&quot;IT.SEX&quot;</span><span class="p">,</span> <span class="s2">&quot;Name&quot;</span><span class="p">:</span> <span class="s2">&quot;SEX&quot;</span><span class="p">,</span> <span class="s2">&quot;DataType&quot;</span><span class="p">:</span> <span class="s2">&quot;text&quot;</span><span class="p">},</span>
+<span class="p">])</span>
+<span class="n">items</span> <span class="o">=</span> <span class="n">dataframe_to_items</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">ODM</span><span class="p">,</span> <span class="s2">&quot;ItemDef&quot;</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">items</span><span class="p">:</span>
+    <span class="n">mdv</span><span class="o">.</span><span class="n">ItemDef</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="odmlib.dataset_json_1_1.html" class="btn btn-neutral float-left" title="odmlib.dataset_json_1_1" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="changelog.html" class="btn btn-neutral float-right" title="Changelog" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2020, Sam Hume.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

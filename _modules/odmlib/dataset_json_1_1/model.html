@@ -1,0 +1,580 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>odmlib.dataset_json_1_1.model &mdash; odmlib 0.2.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=9edc463e" />
+
+  
+      <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../_static/documentation_options.js?v=938c9ccc"></script>
+      <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            odmlib
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">User Guides</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../guides/getting_started.html">Getting Started with odmlib</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../guides/reading_documents.html">Reading ODM Documents</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../guides/permissive_loading.html">Permissive Loading Mode</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../guides/creating_documents.html">Creating ODM Documents</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../guides/validation.html">Validating ODM Documents</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../guides/model_reference.html">Model Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../guides/interoperability.html">Interoperability: Dataset-JSON and Pandas</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../guides/dataset_json.html">Working with Dataset-JSON v1.1</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules.html">odmlib</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../odmlib.odm_1_3_2.html">odm_1_3_2 package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../odmlib.odm_2_0.html">odm_2_0 package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../odmlib.define_2_0.html">define_2_0 package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../odmlib.define_2_1.html">define_2_1 package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../odmlib.dataset_1_0_1.html">odmlib.dataset_1_0_1 module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../odmlib.ct_1_1_1.html">odmlib.ct_1_1_1 module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../odmlib.arm_1_0.html">odmlib.arm_1_0 module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../odmlib.dataset_json_1_1.html">odmlib.dataset_json_1_1</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../odmlib.dataframe.html">odmlib.dataframe</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Project</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../changelog.html">Changelog</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">odmlib</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">odmlib.dataset_json_1_1.model</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for odmlib.dataset_json_1_1.model</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Dataset-JSON v1.1 model using the ODMElement/descriptor pattern.</span>
+
+<span class="sd">This module defines ODMElement-based classes conforming to the CDISC</span>
+<span class="sd">Dataset-JSON v1.1 specification. The model represents one dataset per file</span>
+<span class="sd">with column-oriented metadata and row data as arrays of arrays.</span>
+
+<span class="sd">Classes:</span>
+<span class="sd">    :class:`DatasetJSONElement` -- base class disabling XML serialization</span>
+<span class="sd">    :class:`SourceSystem` -- optional source system metadata object</span>
+<span class="sd">    :class:`Column` -- column (variable) metadata</span>
+<span class="sd">    :class:`DatasetJSON` -- root element for a Dataset-JSON v1.1 file</span>
+
+<span class="sd">Reference:</span>
+<span class="sd">    CDISC Dataset-JSON v1.1 specification and JSON schema.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">json</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">List</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">odmlib.odm_element</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">OE</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">odmlib.typed</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">T</span>
+
+
+<div class="viewcode-block" id="DatasetJSONElement">
+<a class="viewcode-back" href="../../../odmlib.dataset_json_1_1.html#odmlib.dataset_json_1_1.DatasetJSONElement">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">DatasetJSONElement</span><span class="p">(</span><span class="n">OE</span><span class="o">.</span><span class="n">ODMElement</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Base class for Dataset-JSON v1.1 elements.</span>
+
+<span class="sd">    Overrides XML serialization (not applicable for Dataset-JSON) and</span>
+<span class="sd">    provides a ``to_dict()`` that handles mixed list types (ODMElement</span>
+<span class="sd">    lists and plain data arrays) and omits None-valued optional fields.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">namespace</span> <span class="o">=</span> <span class="s2">&quot;dsjson&quot;</span>
+
+<div class="viewcode-block" id="DatasetJSONElement.to_xml">
+<a class="viewcode-back" href="../../../odmlib.dataset_json_1_1.html#odmlib.dataset_json_1_1.DatasetJSONElement.to_xml">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">to_xml</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parent_elem</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">top_elem</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Dataset-JSON does not support XML serialization.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            NotImplementedError: Always.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;Dataset-JSON does not support XML serialization&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="DatasetJSONElement.to_xml_string">
+<a class="viewcode-back" href="../../../odmlib.dataset_json_1_1.html#odmlib.dataset_json_1_1.DatasetJSONElement.to_xml_string">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">to_xml_string</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Dataset-JSON does not support XML serialization.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            NotImplementedError: Always.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;Dataset-JSON does not support XML serialization&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="DatasetJSONElement.write_xml">
+<a class="viewcode-back" href="../../../odmlib.dataset_json_1_1.html#odmlib.dataset_json_1_1.DatasetJSONElement.write_xml">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">write_xml</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">odm_file</span><span class="p">,</span> <span class="n">odm_writer</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Dataset-JSON does not support XML serialization.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            NotImplementedError: Always.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;Dataset-JSON does not support XML serialization&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="DatasetJSONElement.to_dict">
+<a class="viewcode-back" href="../../../odmlib.dataset_json_1_1.html#odmlib.dataset_json_1_1.DatasetJSONElement.to_dict">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">to_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Serialize this element to a Python dictionary.</span>
+
+<span class="sd">        Handles mixed list types: lists of ODMElement children are</span>
+<span class="sd">        recursively serialized via ``to_dict()``, while plain data</span>
+<span class="sd">        lists (e.g., rows) pass through unchanged. None-valued</span>
+<span class="sd">        optional fields are omitted.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            dict: Spec-conformant dictionary representation.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">d</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">attr</span><span class="p">,</span> <span class="n">obj</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">attr</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;_&quot;</span><span class="p">):</span>
+                <span class="k">continue</span>
+            <span class="k">if</span> <span class="n">obj</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">continue</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">OE</span><span class="o">.</span><span class="n">ODMElement</span><span class="p">):</span>
+                <span class="n">d</span><span class="p">[</span><span class="n">attr</span><span class="p">]</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">to_dict</span><span class="p">()</span>
+            <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">obj</span><span class="p">:</span>
+                    <span class="n">d</span><span class="p">[</span><span class="n">attr</span><span class="p">]</span> <span class="o">=</span> <span class="n">obj</span>
+                <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">OE</span><span class="o">.</span><span class="n">ODMElement</span><span class="p">):</span>
+                    <span class="n">d</span><span class="p">[</span><span class="n">attr</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">o</span><span class="o">.</span><span class="n">to_dict</span><span class="p">()</span> <span class="k">for</span> <span class="n">o</span> <span class="ow">in</span> <span class="n">obj</span><span class="p">]</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">d</span><span class="p">[</span><span class="n">attr</span><span class="p">]</span> <span class="o">=</span> <span class="n">obj</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">d</span><span class="p">[</span><span class="n">attr</span><span class="p">]</span> <span class="o">=</span> <span class="n">obj</span>
+        <span class="k">return</span> <span class="n">d</span></div>
+
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_init_oid_index</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">idx</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Override to safely handle non-ODMElement lists (e.g., rows).&quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">attr</span><span class="p">,</span> <span class="n">obj</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">attr</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;_&quot;</span><span class="p">):</span>
+                <span class="k">continue</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">OE</span><span class="o">.</span><span class="n">ODMElement</span><span class="p">):</span>
+                <span class="n">obj</span><span class="o">.</span><span class="n">_init_oid_index</span><span class="p">(</span><span class="n">idx</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+                <span class="k">for</span> <span class="n">o</span> <span class="ow">in</span> <span class="n">obj</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">o</span><span class="p">,</span> <span class="n">OE</span><span class="o">.</span><span class="n">ODMElement</span><span class="p">):</span>
+                        <span class="n">o</span><span class="o">.</span><span class="n">_init_oid_index</span><span class="p">(</span><span class="n">idx</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">attr</span> <span class="o">==</span> <span class="s2">&quot;OID&quot;</span> <span class="ow">or</span> <span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">and</span> <span class="s2">&quot;OID&quot;</span> <span class="ow">in</span> <span class="n">attr</span><span class="p">):</span>
+                <span class="n">idx</span><span class="o">.</span><span class="n">add_oid</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_init_oid_check</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">oid_checker</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Override to safely handle non-ODMElement lists (e.g., rows).&quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">attr</span><span class="p">,</span> <span class="n">obj</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">attr</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;_&quot;</span><span class="p">):</span>
+                <span class="k">continue</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">OE</span><span class="o">.</span><span class="n">ODMElement</span><span class="p">):</span>
+                <span class="n">obj</span><span class="o">.</span><span class="n">_init_oid_check</span><span class="p">(</span><span class="n">oid_checker</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+                <span class="k">for</span> <span class="n">o</span> <span class="ow">in</span> <span class="n">obj</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">o</span><span class="p">,</span> <span class="n">OE</span><span class="o">.</span><span class="n">ODMElement</span><span class="p">):</span>
+                        <span class="n">o</span><span class="o">.</span><span class="n">_init_oid_check</span><span class="p">(</span><span class="n">oid_checker</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">attr</span> <span class="o">==</span> <span class="s2">&quot;OID&quot;</span><span class="p">:</span>
+                    <span class="n">oid_checker</span><span class="o">.</span><span class="n">add_oid</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">)</span>
+                <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">and</span> <span class="s2">&quot;OID&quot;</span> <span class="ow">in</span> <span class="n">attr</span><span class="p">:</span>
+                    <span class="n">oid_checker</span><span class="o">.</span><span class="n">add_oid_ref</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">attr</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="SourceSystem">
+<a class="viewcode-back" href="../../../odmlib.dataset_json_1_1.html#odmlib.dataset_json_1_1.SourceSystem">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">SourceSystem</span><span class="p">(</span><span class="n">DatasetJSONElement</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Source system information (optional nested object in Dataset-JSON v1.1).</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        name (str, required): The name of the source system.</span>
+<span class="sd">        version (str, required): The version of the source system.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">name</span> <span class="o">=</span> <span class="n">T</span><span class="o">.</span><span class="n">String</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">version</span> <span class="o">=</span> <span class="n">T</span><span class="o">.</span><span class="n">String</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="Column">
+<a class="viewcode-back" href="../../../odmlib.dataset_json_1_1.html#odmlib.dataset_json_1_1.Column">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">Column</span><span class="p">(</span><span class="n">DatasetJSONElement</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Column (variable) metadata for a Dataset-JSON v1.1 dataset.</span>
+
+<span class="sd">    Each column describes one variable in the dataset, including its</span>
+<span class="sd">    OID, name, label, data type, and optional formatting information.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        itemOID (str, required): Variable OID (corresponds to ItemDef.OID</span>
+<span class="sd">            in Define-XML).</span>
+<span class="sd">        name (str, required): Variable name (e.g., &quot;STUDYID&quot;, &quot;AETERM&quot;).</span>
+<span class="sd">        label (str, required): Human-readable variable description.</span>
+<span class="sd">        dataType (str, required): Logical data type. One of: &quot;string&quot;,</span>
+<span class="sd">            &quot;integer&quot;, &quot;decimal&quot;, &quot;float&quot;, &quot;double&quot;, &quot;boolean&quot;,</span>
+<span class="sd">            &quot;datetime&quot;, &quot;date&quot;, &quot;time&quot;, &quot;URI&quot;.</span>
+<span class="sd">        targetDataType (str): Target data type for type conversion.</span>
+<span class="sd">            Only &quot;integer&quot; or &quot;decimal&quot; are valid.</span>
+<span class="sd">        length (int): Maximum variable length (must be &gt;= 1).</span>
+<span class="sd">        displayFormat (str): SAS-style display format (e.g., &quot;DATE9.&quot;).</span>
+<span class="sd">        keySequence (int): Key variable ordering (must be &gt;= 1).</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">itemOID</span> <span class="o">=</span> <span class="n">T</span><span class="o">.</span><span class="n">String</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="n">T</span><span class="o">.</span><span class="n">Name</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">label</span> <span class="o">=</span> <span class="n">T</span><span class="o">.</span><span class="n">String</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">dataType</span> <span class="o">=</span> <span class="n">T</span><span class="o">.</span><span class="n">ExtendedValidValues</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">valid_values</span><span class="o">=</span><span class="p">[</span>
+        <span class="s2">&quot;string&quot;</span><span class="p">,</span> <span class="s2">&quot;integer&quot;</span><span class="p">,</span> <span class="s2">&quot;decimal&quot;</span><span class="p">,</span> <span class="s2">&quot;float&quot;</span><span class="p">,</span> <span class="s2">&quot;double&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;boolean&quot;</span><span class="p">,</span> <span class="s2">&quot;datetime&quot;</span><span class="p">,</span> <span class="s2">&quot;date&quot;</span><span class="p">,</span> <span class="s2">&quot;time&quot;</span><span class="p">,</span> <span class="s2">&quot;URI&quot;</span>
+    <span class="p">])</span>
+    <span class="n">targetDataType</span> <span class="o">=</span> <span class="n">T</span><span class="o">.</span><span class="n">ExtendedValidValues</span><span class="p">(</span><span class="n">valid_values</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;integer&quot;</span><span class="p">,</span> <span class="s2">&quot;decimal&quot;</span><span class="p">])</span>
+    <span class="n">length</span> <span class="o">=</span> <span class="n">T</span><span class="o">.</span><span class="n">PositiveInteger</span><span class="p">()</span>
+    <span class="n">displayFormat</span> <span class="o">=</span> <span class="n">T</span><span class="o">.</span><span class="n">String</span><span class="p">()</span>
+    <span class="n">keySequence</span> <span class="o">=</span> <span class="n">T</span><span class="o">.</span><span class="n">PositiveInteger</span><span class="p">()</span></div>
+
+
+
+<div class="viewcode-block" id="DatasetJSON">
+<a class="viewcode-back" href="../../../odmlib.dataset_json_1_1.html#odmlib.dataset_json_1_1.DatasetJSON">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">DatasetJSON</span><span class="p">(</span><span class="n">DatasetJSONElement</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Root element for a Dataset-JSON v1.1 file.</span>
+
+<span class="sd">    Represents a single dataset (one per file) conforming to the CDISC</span>
+<span class="sd">    Dataset-JSON v1.1 specification. Contains file-level metadata,</span>
+<span class="sd">    column definitions, and row data.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        datasetJSONCreationDateTime (str, required): ISO 8601 creation</span>
+<span class="sd">            timestamp.</span>
+<span class="sd">        datasetJSONVersion (str, required): Specification version</span>
+<span class="sd">            (pattern: ``1.1(.N)?``).</span>
+<span class="sd">        fileOID (str): Unique file identifier.</span>
+<span class="sd">        dbLastModifiedDateTime (str): ISO 8601 timestamp of last database</span>
+<span class="sd">            modification.</span>
+<span class="sd">        originator (str): Organization that generated the file.</span>
+<span class="sd">        sourceSystem (SourceSystem): Source system information object.</span>
+<span class="sd">        studyOID (str): Study OID (foreign key to ODM Study).</span>
+<span class="sd">        metaDataVersionOID (str): MetaDataVersion OID (foreign key to ODM).</span>
+<span class="sd">        metaDataRef (str): URI to metadata file (e.g., Define-XML).</span>
+<span class="sd">        itemGroupOID (str, required): ItemGroupDef OID (foreign key to</span>
+<span class="sd">            Define-XML).</span>
+<span class="sd">        records (int, required): Total number of records (&gt;= 0).</span>
+<span class="sd">        name (str, required): Dataset name (e.g., &quot;DM&quot;, &quot;AE&quot;).</span>
+<span class="sd">        label (str, required): Dataset description.</span>
+<span class="sd">        columns (list[Column]): Column metadata definitions.</span>
+<span class="sd">        rows (list): Array of row arrays. Each row is a list of values</span>
+<span class="sd">            matching the column order. None indicates missing values.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># Required fields (in spec-recommended order)</span>
+    <span class="n">datasetJSONCreationDateTime</span> <span class="o">=</span> <span class="n">T</span><span class="o">.</span><span class="n">String</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">datasetJSONVersion</span> <span class="o">=</span> <span class="n">T</span><span class="o">.</span><span class="n">String</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="c1"># Optional file-level fields</span>
+    <span class="n">fileOID</span> <span class="o">=</span> <span class="n">T</span><span class="o">.</span><span class="n">String</span><span class="p">()</span>
+    <span class="n">dbLastModifiedDateTime</span> <span class="o">=</span> <span class="n">T</span><span class="o">.</span><span class="n">String</span><span class="p">()</span>
+    <span class="n">originator</span> <span class="o">=</span> <span class="n">T</span><span class="o">.</span><span class="n">String</span><span class="p">()</span>
+    <span class="n">sourceSystem</span> <span class="o">=</span> <span class="n">T</span><span class="o">.</span><span class="n">ODMObject</span><span class="p">(</span><span class="n">element_class</span><span class="o">=</span><span class="n">SourceSystem</span><span class="p">)</span>
+    <span class="c1"># Optional study-level fields</span>
+    <span class="n">studyOID</span> <span class="o">=</span> <span class="n">T</span><span class="o">.</span><span class="n">String</span><span class="p">()</span>
+    <span class="n">metaDataVersionOID</span> <span class="o">=</span> <span class="n">T</span><span class="o">.</span><span class="n">String</span><span class="p">()</span>
+    <span class="n">metaDataRef</span> <span class="o">=</span> <span class="n">T</span><span class="o">.</span><span class="n">String</span><span class="p">()</span>
+    <span class="c1"># Required dataset fields</span>
+    <span class="n">itemGroupOID</span> <span class="o">=</span> <span class="n">T</span><span class="o">.</span><span class="n">String</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">records</span> <span class="o">=</span> <span class="n">T</span><span class="o">.</span><span class="n">NonNegativeInteger</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="n">T</span><span class="o">.</span><span class="n">Name</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">label</span> <span class="o">=</span> <span class="n">T</span><span class="o">.</span><span class="n">String</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">columns</span> <span class="o">=</span> <span class="n">T</span><span class="o">.</span><span class="n">ODMListObject</span><span class="p">(</span><span class="n">element_class</span><span class="o">=</span><span class="n">Column</span><span class="p">)</span>
+    <span class="c1"># Data (optional — allows metadata-only files with records=0)</span>
+    <span class="n">rows</span> <span class="o">=</span> <span class="n">T</span><span class="o">.</span><span class="n">List</span><span class="p">()</span>
+
+<div class="viewcode-block" id="DatasetJSON.__init__">
+<a class="viewcode-back" href="../../../odmlib.dataset_json_1_1.html#odmlib.dataset_json_1_1.DatasetJSON.__init__">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialize a DatasetJSON instance.</span>
+
+<span class="sd">        Ensures ``columns`` is always initialized (defaults to ``[]``)</span>
+<span class="sd">        since it is required by the Dataset-JSON v1.1 schema.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="s2">&quot;columns&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
+            <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;columns&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">column_names</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the list of column variable names.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            list[str]: Variable names from each Column&#39;s ``name`` attribute.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">col</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">columns</span><span class="p">]</span>
+
+<div class="viewcode-block" id="DatasetJSON.add_column">
+<a class="viewcode-back" href="../../../odmlib.dataset_json_1_1.html#odmlib.dataset_json_1_1.DatasetJSON.add_column">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">add_column</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">column</span><span class="p">:</span> <span class="n">Column</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Append a Column to this dataset&#39;s column list.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            column (Column): Column metadata to add.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            OdmlibTypeError: If ``column`` is not a Column instance.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">columns</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">column</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="DatasetJSON.add_row">
+<a class="viewcode-back" href="../../../odmlib.dataset_json_1_1.html#odmlib.dataset_json_1_1.DatasetJSON.add_row">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">add_row</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">values</span><span class="p">:</span> <span class="nb">list</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Append a row of values to this dataset.</span>
+
+<span class="sd">        Validates that the number of values matches the number of columns.</span>
+<span class="sd">        Automatically increments the ``records`` count.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            values (list): List of values in column order. Use None for</span>
+<span class="sd">                missing values.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            ValueError: If ``len(values)`` does not match ``len(columns)``.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;rows&quot;</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">rows</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">n_cols</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">columns</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">values</span><span class="p">)</span> <span class="o">!=</span> <span class="n">n_cols</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;Row has </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">values</span><span class="p">)</span><span class="si">}</span><span class="s2"> values but dataset has </span><span class="si">{</span><span class="n">n_cols</span><span class="si">}</span><span class="s2"> columns&quot;</span>
+            <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">rows</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">values</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">records</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">rows</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="DatasetJSON.to_dict">
+<a class="viewcode-back" href="../../../odmlib.dataset_json_1_1.html#odmlib.dataset_json_1_1.DatasetJSON.to_dict">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">to_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Serialize to a spec-conformant Dataset-JSON v1.1 dictionary.</span>
+
+<span class="sd">        Omits empty ``rows`` for metadata-only mode (records &gt; 0 but no</span>
+<span class="sd">        row data transferred). All other behavior inherited from</span>
+<span class="sd">        :meth:`DatasetJSONElement.to_dict`.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            dict: Dataset-JSON v1.1 conformant dictionary.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">d</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">to_dict</span><span class="p">()</span>
+        <span class="c1"># Omit empty rows (metadata-only mode)</span>
+        <span class="k">if</span> <span class="s2">&quot;rows&quot;</span> <span class="ow">in</span> <span class="n">d</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">d</span><span class="p">[</span><span class="s2">&quot;rows&quot;</span><span class="p">]:</span>
+            <span class="k">del</span> <span class="n">d</span><span class="p">[</span><span class="s2">&quot;rows&quot;</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">d</span></div>
+
+
+<div class="viewcode-block" id="DatasetJSON.to_json">
+<a class="viewcode-back" href="../../../odmlib.dataset_json_1_1.html#odmlib.dataset_json_1_1.DatasetJSON.to_json">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">to_json</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">indent</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">2</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Serialize to a JSON string.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            indent (int): JSON indentation level (default: 2).</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            str: JSON string representation.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">to_dict</span><span class="p">(),</span> <span class="n">indent</span><span class="o">=</span><span class="n">indent</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="DatasetJSON.write_json">
+<a class="viewcode-back" href="../../../odmlib.dataset_json_1_1.html#odmlib.dataset_json_1_1.DatasetJSON.write_json">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">write_json</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">indent</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">2</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Write this dataset to a JSON file.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            filename (str): Output file path.</span>
+<span class="sd">            indent (int): JSON indentation level (default: 2).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">json</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">to_dict</span><span class="p">(),</span> <span class="n">f</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="n">indent</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="DatasetJSON.write_ndjson">
+<a class="viewcode-back" href="../../../odmlib.dataset_json_1_1.html#odmlib.dataset_json_1_1.DatasetJSON.write_ndjson">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">write_ndjson</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Write this dataset to an NDJSON file.</span>
+
+<span class="sd">        NDJSON format: line 1 is the metadata (everything except rows),</span>
+<span class="sd">        lines 2+ are one row array per line.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            filename (str): Output file path.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">d</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">to_dict</span><span class="p">()</span>
+        <span class="n">rows</span> <span class="o">=</span> <span class="n">d</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;rows&quot;</span><span class="p">,</span> <span class="p">[])</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">d</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">rows</span><span class="p">:</span>
+                <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">row</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="DatasetJSON.from_dict">
+<a class="viewcode-back" href="../../../odmlib.dataset_json_1_1.html#odmlib.dataset_json_1_1.DatasetJSON.from_dict">[docs]</a>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">from_dict</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DatasetJSON</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Construct a DatasetJSON from a dictionary.</span>
+
+<span class="sd">        Handles nested construction of Column and SourceSystem objects</span>
+<span class="sd">        from their dict representations.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            data (dict): Dictionary with Dataset-JSON v1.1 fields.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            DatasetJSON: Constructed instance.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">kwargs</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">data</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">key</span> <span class="o">==</span> <span class="s2">&quot;columns&quot;</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+                <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;columns&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span>
+                    <span class="n">Column</span><span class="p">(</span><span class="o">**</span><span class="n">col</span><span class="p">)</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">col</span><span class="p">,</span> <span class="nb">dict</span><span class="p">)</span> <span class="k">else</span> <span class="n">col</span>
+                    <span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="n">value</span>
+                <span class="p">]</span>
+            <span class="k">elif</span> <span class="n">key</span> <span class="o">==</span> <span class="s2">&quot;sourceSystem&quot;</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+                <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;sourceSystem&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">SourceSystem</span><span class="p">(</span><span class="o">**</span><span class="n">value</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">kwargs</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
+        <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="DatasetJSON.from_json">
+<a class="viewcode-back" href="../../../odmlib.dataset_json_1_1.html#odmlib.dataset_json_1_1.DatasetJSON.from_json">[docs]</a>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">from_json</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">json_string</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DatasetJSON</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Construct a DatasetJSON from a JSON string.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            json_string (str): JSON string with Dataset-JSON v1.1 fields.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            DatasetJSON: Constructed instance.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">from_dict</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">json_string</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="DatasetJSON.read_json">
+<a class="viewcode-back" href="../../../odmlib.dataset_json_1_1.html#odmlib.dataset_json_1_1.DatasetJSON.read_json">[docs]</a>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">read_json</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">filename</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DatasetJSON</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Read a DatasetJSON from a JSON file.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            filename (str): Input file path.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            DatasetJSON: Constructed instance.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">from_dict</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">f</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="DatasetJSON.read_ndjson">
+<a class="viewcode-back" href="../../../odmlib.dataset_json_1_1.html#odmlib.dataset_json_1_1.DatasetJSON.read_ndjson">[docs]</a>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">read_ndjson</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">filename</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DatasetJSON</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Read a DatasetJSON from an NDJSON file.</span>
+
+<span class="sd">        NDJSON format: line 1 is the metadata (everything except rows),</span>
+<span class="sd">        lines 2+ are one row array per line.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            filename (str): Input file path.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            DatasetJSON: Constructed instance.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">lines</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">readlines</span><span class="p">()</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">lines</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Empty NDJSON file&quot;</span><span class="p">)</span>
+        <span class="n">metadata</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">lines</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="n">rows</span> <span class="o">=</span> <span class="p">[</span><span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">line</span><span class="p">)</span> <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">lines</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span> <span class="k">if</span> <span class="n">line</span><span class="o">.</span><span class="n">strip</span><span class="p">()]</span>
+        <span class="k">if</span> <span class="n">rows</span><span class="p">:</span>
+            <span class="n">metadata</span><span class="p">[</span><span class="s2">&quot;rows&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">rows</span>
+            <span class="k">if</span> <span class="s2">&quot;records&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">metadata</span><span class="p">:</span>
+                <span class="n">metadata</span><span class="p">[</span><span class="s2">&quot;records&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">rows</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">from_dict</span><span class="p">(</span><span class="n">metadata</span><span class="p">)</span></div>
+</div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2020, Sam Hume.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

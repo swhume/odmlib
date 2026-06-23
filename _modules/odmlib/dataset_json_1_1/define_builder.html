@@ -1,0 +1,869 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>odmlib.dataset_json_1_1.define_builder &mdash; odmlib 0.2.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=9edc463e" />
+
+  
+      <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../_static/documentation_options.js?v=938c9ccc"></script>
+      <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            odmlib
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">User Guides</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../guides/getting_started.html">Getting Started with odmlib</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../guides/reading_documents.html">Reading ODM Documents</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../guides/permissive_loading.html">Permissive Loading Mode</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../guides/creating_documents.html">Creating ODM Documents</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../guides/validation.html">Validating ODM Documents</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../guides/model_reference.html">Model Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../guides/interoperability.html">Interoperability: Dataset-JSON and Pandas</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../guides/dataset_json.html">Working with Dataset-JSON v1.1</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules.html">odmlib</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../odmlib.odm_1_3_2.html">odm_1_3_2 package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../odmlib.odm_2_0.html">odm_2_0 package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../odmlib.define_2_0.html">define_2_0 package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../odmlib.define_2_1.html">define_2_1 package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../odmlib.dataset_1_0_1.html">odmlib.dataset_1_0_1 module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../odmlib.ct_1_1_1.html">odmlib.ct_1_1_1 module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../odmlib.arm_1_0.html">odmlib.arm_1_0 module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../odmlib.dataset_json_1_1.html">odmlib.dataset_json_1_1</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../odmlib.dataframe.html">odmlib.dataframe</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Project</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../changelog.html">Changelog</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">odmlib</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">odmlib.dataset_json_1_1.define_builder</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for odmlib.dataset_json_1_1.define_builder</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Reconstruct Define-XML v2.1 from flattened Dataset-JSON v1.1 datasets.</span>
+
+<span class="sd">This module is the inverse of :mod:`~odmlib.dataset_json_1_1.define_flattener`.</span>
+<span class="sd">It takes the 11 tabular Dataset-JSON datasets produced by</span>
+<span class="sd">:class:`DefineFlattener` and reconstructs a full odmlib Define-XML v2.1</span>
+<span class="sd">object tree that can be written to XML.</span>
+
+<span class="sd">Classes:</span>
+<span class="sd">    :class:`DefineBuilder` -- reconstructs Define-XML v2.1 from Dataset-JSON tables</span>
+
+<span class="sd">Target datasets consumed (11 total):</span>
+<span class="sd">    study, standards, datasets, variables, value_level, where_clauses,</span>
+<span class="sd">    methods, comments, documents, codelists, codelist_terms</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">collections</span><span class="w"> </span><span class="kn">import</span> <span class="n">defaultdict</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Optional</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">odmlib.define_2_1.model</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">DEF</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">odmlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">mode</span> <span class="k">as</span> <span class="n">_mode</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">odmlib.dataset_json_1_1.model</span><span class="w"> </span><span class="kn">import</span> <span class="n">DatasetJSON</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">odmlib.exceptions</span><span class="w"> </span><span class="kn">import</span> <span class="n">OdmlibTypeError</span>
+
+
+<span class="c1"># ------------------------------------------------------------------ #</span>
+<span class="c1"># Helper utilities</span>
+<span class="c1"># ------------------------------------------------------------------ #</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_optional</span><span class="p">(</span><span class="n">kwargs</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">key</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="n">Any</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Add *key* to *kwargs* only if *value* is not None.&quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">value</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">kwargs</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_split_ids</span><span class="p">(</span><span class="n">value</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Split a comma-joined string into a list, handling None/empty.&quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">value</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">[]</span>
+    <span class="k">return</span> <span class="p">[</span><span class="n">v</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">value</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;,&quot;</span><span class="p">)]</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_int_or_none</span><span class="p">(</span><span class="n">value</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">field_name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Convert to int, handling None and float-from-JSON.</span>
+
+<span class="sd">    Under ``ValidationMode.SKIP_TYPE`` (permissive), returns the raw value</span>
+<span class="sd">    unchanged when conversion fails so the descriptor can store it as-is.</span>
+<span class="sd">    Otherwise raises :exc:`OdmlibTypeError` for parity with descriptor errors.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">value</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">None</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+    <span class="k">except</span> <span class="p">(</span><span class="ne">ValueError</span><span class="p">,</span> <span class="ne">TypeError</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">_mode</span><span class="o">.</span><span class="n">is_permissive</span><span class="p">(</span><span class="n">_mode</span><span class="o">.</span><span class="n">ValidationMode</span><span class="o">.</span><span class="n">SKIP_TYPE</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">value</span>
+        <span class="k">raise</span> <span class="n">OdmlibTypeError</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;Expected integer for </span><span class="si">{</span><span class="n">field_name</span><span class="w"> </span><span class="ow">or</span><span class="w"> </span><span class="s1">&#39;attribute&#39;</span><span class="si">}</span><span class="s2"> with value </span><span class="si">{</span><span class="n">value</span><span class="si">!r}</span><span class="s2">&quot;</span><span class="p">,</span>
+            <span class="n">attribute</span><span class="o">=</span><span class="n">field_name</span><span class="p">,</span>
+            <span class="n">expected_type</span><span class="o">=</span><span class="s2">&quot;int&quot;</span><span class="p">,</span>
+            <span class="n">actual_value</span><span class="o">=</span><span class="n">value</span><span class="p">,</span>
+            <span class="n">hint</span><span class="o">=</span><span class="s2">&quot;Provide an integer or a string/float convertible to an integer&quot;</span><span class="p">,</span>
+        <span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_float_or_none</span><span class="p">(</span><span class="n">value</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">field_name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Convert to float, handling None.</span>
+
+<span class="sd">    Under ``ValidationMode.SKIP_TYPE`` (permissive), returns the raw value</span>
+<span class="sd">    unchanged when conversion fails so the descriptor can store it as-is.</span>
+<span class="sd">    Otherwise raises :exc:`OdmlibTypeError` for parity with descriptor errors.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">value</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">None</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+    <span class="k">except</span> <span class="p">(</span><span class="ne">ValueError</span><span class="p">,</span> <span class="ne">TypeError</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">_mode</span><span class="o">.</span><span class="n">is_permissive</span><span class="p">(</span><span class="n">_mode</span><span class="o">.</span><span class="n">ValidationMode</span><span class="o">.</span><span class="n">SKIP_TYPE</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">value</span>
+        <span class="k">raise</span> <span class="n">OdmlibTypeError</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;Expected float for </span><span class="si">{</span><span class="n">field_name</span><span class="w"> </span><span class="ow">or</span><span class="w"> </span><span class="s1">&#39;attribute&#39;</span><span class="si">}</span><span class="s2"> with value </span><span class="si">{</span><span class="n">value</span><span class="si">!r}</span><span class="s2">&quot;</span><span class="p">,</span>
+            <span class="n">attribute</span><span class="o">=</span><span class="n">field_name</span><span class="p">,</span>
+            <span class="n">expected_type</span><span class="o">=</span><span class="s2">&quot;float&quot;</span><span class="p">,</span>
+            <span class="n">actual_value</span><span class="o">=</span><span class="n">value</span><span class="p">,</span>
+            <span class="n">hint</span><span class="o">=</span><span class="s2">&quot;Provide a number or a string convertible to a float&quot;</span><span class="p">,</span>
+        <span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_make_description</span><span class="p">(</span><span class="n">text</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">DEF</span><span class="o">.</span><span class="n">Description</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Create a Description element from text, or return None.&quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">text</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">None</span>
+    <span class="k">return</span> <span class="n">DEF</span><span class="o">.</span><span class="n">Description</span><span class="p">(</span>
+        <span class="n">TranslatedText</span><span class="o">=</span><span class="p">[</span><span class="n">DEF</span><span class="o">.</span><span class="n">TranslatedText</span><span class="p">(</span><span class="n">_content</span><span class="o">=</span><span class="n">text</span><span class="p">)]</span>
+    <span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_make_doc_refs</span><span class="p">(</span><span class="n">leaf_ids_str</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Build a list of DocumentRef from a comma-joined leafID string.&quot;&quot;&quot;</span>
+    <span class="n">ids</span> <span class="o">=</span> <span class="n">_split_ids</span><span class="p">(</span><span class="n">leaf_ids_str</span><span class="p">)</span>
+    <span class="k">return</span> <span class="p">[</span><span class="n">DEF</span><span class="o">.</span><span class="n">DocumentRef</span><span class="p">(</span><span class="n">leafID</span><span class="o">=</span><span class="n">lid</span><span class="p">)</span> <span class="k">for</span> <span class="n">lid</span> <span class="ow">in</span> <span class="n">ids</span><span class="p">]</span>
+
+
+<span class="c1"># ------------------------------------------------------------------ #</span>
+<span class="c1"># DefineBuilder</span>
+<span class="c1"># ------------------------------------------------------------------ #</span>
+
+<div class="viewcode-block" id="DefineBuilder">
+<a class="viewcode-back" href="../../../odmlib.dataset_json_1_1.html#odmlib.dataset_json_1_1.define_builder.DefineBuilder">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">DefineBuilder</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Reconstruct a Define-XML v2.1 ODM object tree from Dataset-JSON tables.</span>
+
+<span class="sd">    Takes the same ``dict[str, DatasetJSON]`` that</span>
+<span class="sd">    :meth:`DefineFlattener.flatten_all` returns and rebuilds the full odmlib</span>
+<span class="sd">    object hierarchy.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        datasets: Mapping of table name to DatasetJSON, with keys:</span>
+<span class="sd">            study, standards, datasets, variables, value_level,</span>
+<span class="sd">            where_clauses, methods, comments, documents, codelists,</span>
+<span class="sd">            codelist_terms.</span>
+
+<span class="sd">    Example::</span>
+
+<span class="sd">        from odmlib.dataset_json_1_1 import DefineFlattener, DefineBuilder</span>
+
+<span class="sd">        flattener = DefineFlattener(odm_root)</span>
+<span class="sd">        flat = flattener.flatten_all()</span>
+<span class="sd">        rebuilt = DefineBuilder(flat).build()</span>
+<span class="sd">        rebuilt.write_xml(&#39;rebuilt_define.xml&#39;)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># Expected dataset names (same as DefineFlattener.TABLE_NAMES)</span>
+    <span class="n">TABLE_NAMES</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="s2">&quot;study&quot;</span><span class="p">,</span> <span class="s2">&quot;standards&quot;</span><span class="p">,</span> <span class="s2">&quot;datasets&quot;</span><span class="p">,</span> <span class="s2">&quot;variables&quot;</span><span class="p">,</span> <span class="s2">&quot;value_level&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;where_clauses&quot;</span><span class="p">,</span> <span class="s2">&quot;methods&quot;</span><span class="p">,</span> <span class="s2">&quot;comments&quot;</span><span class="p">,</span> <span class="s2">&quot;documents&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;codelists&quot;</span><span class="p">,</span> <span class="s2">&quot;codelist_terms&quot;</span><span class="p">,</span>
+    <span class="p">]</span>
+
+    <span class="c1"># Optional lossless-roundtrip extension datasets</span>
+    <span class="n">EXTRA_TABLE_NAMES</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;aliases&quot;</span><span class="p">,</span> <span class="s2">&quot;origins&quot;</span><span class="p">]</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">datasets</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">DatasetJSON</span><span class="p">]):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">datasets</span> <span class="o">=</span> <span class="n">datasets</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_post_build_hooks</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="p">[]</span>
+
+<div class="viewcode-block" id="DefineBuilder.add_post_build_hook">
+<a class="viewcode-back" href="../../../odmlib.dataset_json_1_1.html#odmlib.dataset_json_1_1.define_builder.DefineBuilder.add_post_build_hook">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">add_post_build_hook</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">hook</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;DefineBuilder&quot;</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Register a callable invoked with the assembled ODM root.</span>
+
+<span class="sd">        The hook runs just before :meth:`build` returns, enabling</span>
+<span class="sd">        insertion of Define-XML elements the 11 datasets cannot express</span>
+<span class="sd">        (e.g. ``Alias``, full ``Origin``/``DocumentRef`` trees,</span>
+<span class="sd">        ``AnnotatedCRF``).  If the hook returns a non-``None`` value it</span>
+<span class="sd">        replaces the ODM root.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            hook: Callable taking the ``DEF.ODM`` root; may mutate it</span>
+<span class="sd">                in place or return a replacement.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            DefineBuilder: self, for chaining.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_post_build_hooks</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">hook</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span></div>
+
+
+    <span class="c1"># ------------------------------------------------------------------ #</span>
+    <span class="c1"># Public API</span>
+    <span class="c1"># ------------------------------------------------------------------ #</span>
+
+<div class="viewcode-block" id="DefineBuilder.build">
+<a class="viewcode-back" href="../../../odmlib.dataset_json_1_1.html#odmlib.dataset_json_1_1.define_builder.DefineBuilder.build">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">build</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DEF</span><span class="o">.</span><span class="n">ODM</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Reconstruct the full Define-XML v2.1 ODM object tree.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            DEF.ODM: A complete odmlib Define-XML v2.1 root object.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">documents</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_build_documents</span><span class="p">()</span>
+        <span class="n">comments</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_build_comments</span><span class="p">()</span>
+        <span class="n">methods</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_build_methods</span><span class="p">()</span>
+        <span class="n">where_clauses</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_build_where_clauses</span><span class="p">()</span>
+        <span class="n">codelists</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_build_codelists</span><span class="p">()</span>
+        <span class="n">item_defs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_build_item_defs</span><span class="p">()</span>
+        <span class="n">value_list_defs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_build_value_list_defs</span><span class="p">()</span>
+        <span class="n">item_group_defs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_build_item_group_defs</span><span class="p">()</span>
+        <span class="n">standards</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_build_standards</span><span class="p">()</span>
+
+        <span class="n">mdv</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_build_metadata_version</span><span class="p">(</span>
+            <span class="n">item_group_defs</span><span class="o">=</span><span class="n">item_group_defs</span><span class="p">,</span>
+            <span class="n">item_defs</span><span class="o">=</span><span class="n">item_defs</span><span class="p">,</span>
+            <span class="n">code_lists</span><span class="o">=</span><span class="n">codelists</span><span class="p">,</span>
+            <span class="n">method_defs</span><span class="o">=</span><span class="n">methods</span><span class="p">,</span>
+            <span class="n">value_list_defs</span><span class="o">=</span><span class="n">value_list_defs</span><span class="p">,</span>
+            <span class="n">where_clause_defs</span><span class="o">=</span><span class="n">where_clauses</span><span class="p">,</span>
+            <span class="n">comment_defs</span><span class="o">=</span><span class="n">comments</span><span class="p">,</span>
+            <span class="n">leaves</span><span class="o">=</span><span class="n">documents</span><span class="p">,</span>
+            <span class="n">standards</span><span class="o">=</span><span class="n">standards</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_apply_origins</span><span class="p">(</span><span class="n">mdv</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_apply_aliases</span><span class="p">(</span><span class="n">mdv</span><span class="p">)</span>
+
+        <span class="n">odm</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_build_odm</span><span class="p">(</span><span class="n">mdv</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">hook</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_post_build_hooks</span><span class="p">:</span>
+            <span class="n">replacement</span> <span class="o">=</span> <span class="n">hook</span><span class="p">(</span><span class="n">odm</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">replacement</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">odm</span> <span class="o">=</span> <span class="n">replacement</span>
+        <span class="k">return</span> <span class="n">odm</span></div>
+
+
+<div class="viewcode-block" id="DefineBuilder.read_all">
+<a class="viewcode-back" href="../../../odmlib.dataset_json_1_1.html#odmlib.dataset_json_1_1.define_builder.DefineBuilder.read_all">[docs]</a>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">read_all</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">input_dir</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">DatasetJSON</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Load 11 Dataset-JSON files from a directory.</span>
+
+<span class="sd">        Expects files named ``{table_name}.json`` for each table in</span>
+<span class="sd">        :attr:`TABLE_NAMES`.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            input_dir: Directory containing the JSON files.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            dict[str, DatasetJSON]: Mapping suitable for the constructor.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="bp">cls</span><span class="o">.</span><span class="n">TABLE_NAMES</span><span class="p">:</span>
+            <span class="n">path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">input_dir</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">.json&quot;</span><span class="p">)</span>
+            <span class="n">result</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">DatasetJSON</span><span class="o">.</span><span class="n">read_json</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="bp">cls</span><span class="o">.</span><span class="n">EXTRA_TABLE_NAMES</span><span class="p">:</span>
+            <span class="n">path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">input_dir</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">.json&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
+                <span class="n">result</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">DatasetJSON</span><span class="o">.</span><span class="n">read_json</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">result</span></div>
+
+
+    <span class="c1"># ------------------------------------------------------------------ #</span>
+    <span class="c1"># Row access</span>
+    <span class="c1"># ------------------------------------------------------------------ #</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_rows_as_dicts</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dataset_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Convert DatasetJSON rows to a list of dicts keyed by column name.</span>
+
+<span class="sd">        Returns an empty list for an absent dataset so the optional</span>
+<span class="sd">        lossless-extension tables (``aliases``, ``origins``) are not</span>
+<span class="sd">        required for backward compatibility.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">ds</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">datasets</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">dataset_name</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">ds</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">[]</span>
+        <span class="n">col_names</span> <span class="o">=</span> <span class="p">[</span><span class="n">c</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">ds</span><span class="o">.</span><span class="n">columns</span><span class="p">]</span>
+        <span class="n">rows</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">ds</span><span class="p">,</span> <span class="s2">&quot;rows&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">or</span> <span class="p">[]</span>
+        <span class="k">return</span> <span class="p">[</span><span class="nb">dict</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">col_names</span><span class="p">,</span> <span class="n">row</span><span class="p">))</span> <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">rows</span><span class="p">]</span>
+
+    <span class="c1"># ------------------------------------------------------------------ #</span>
+    <span class="c1"># Individual builders</span>
+    <span class="c1"># ------------------------------------------------------------------ #</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_build_documents</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Build leaf elements from the documents dataset.&quot;&quot;&quot;</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_rows_as_dicts</span><span class="p">(</span><span class="s2">&quot;documents&quot;</span><span class="p">):</span>
+            <span class="n">result</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">DEF</span><span class="o">.</span><span class="n">leaf</span><span class="p">(</span>
+                <span class="n">ID</span><span class="o">=</span><span class="n">row</span><span class="p">[</span><span class="s2">&quot;ID&quot;</span><span class="p">],</span>
+                <span class="n">href</span><span class="o">=</span><span class="n">row</span><span class="p">[</span><span class="s2">&quot;href&quot;</span><span class="p">],</span>
+                <span class="n">title</span><span class="o">=</span><span class="n">DEF</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="n">_content</span><span class="o">=</span><span class="n">row</span><span class="p">[</span><span class="s2">&quot;title&quot;</span><span class="p">]),</span>
+            <span class="p">))</span>
+        <span class="k">return</span> <span class="n">result</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_build_comments</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Build CommentDef elements from the comments dataset.&quot;&quot;&quot;</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_rows_as_dicts</span><span class="p">(</span><span class="s2">&quot;comments&quot;</span><span class="p">):</span>
+            <span class="n">kwargs</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;OID&quot;</span><span class="p">:</span> <span class="n">row</span><span class="p">[</span><span class="s2">&quot;OID&quot;</span><span class="p">]}</span>
+            <span class="n">desc</span> <span class="o">=</span> <span class="n">_make_description</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="s2">&quot;DescriptionText&quot;</span><span class="p">])</span>
+            <span class="k">if</span> <span class="n">desc</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;Description&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">desc</span>
+            <span class="n">doc_refs</span> <span class="o">=</span> <span class="n">_make_doc_refs</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="s2">&quot;DocumentRefLeafIDs&quot;</span><span class="p">])</span>
+            <span class="k">if</span> <span class="n">doc_refs</span><span class="p">:</span>
+                <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;DocumentRef&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">doc_refs</span>
+            <span class="n">result</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">DEF</span><span class="o">.</span><span class="n">CommentDef</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">result</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_build_methods</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Build MethodDef elements from the methods dataset.</span>
+
+<span class="sd">        Multiple rows with the same OID represent multiple</span>
+<span class="sd">        FormalExpressions (denormalized by the flattener).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">rows</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_rows_as_dicts</span><span class="p">(</span><span class="s2">&quot;methods&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Group by OID preserving order</span>
+        <span class="n">grouped</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="nb">list</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">rows</span><span class="p">:</span>
+            <span class="n">grouped</span><span class="p">[</span><span class="n">row</span><span class="p">[</span><span class="s2">&quot;OID&quot;</span><span class="p">]]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">row</span><span class="p">)</span>
+
+        <span class="n">result</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">oid</span><span class="p">,</span> <span class="n">group_rows</span> <span class="ow">in</span> <span class="n">grouped</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">first</span> <span class="o">=</span> <span class="n">group_rows</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">kwargs</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;OID&quot;</span><span class="p">:</span> <span class="n">oid</span><span class="p">,</span> <span class="s2">&quot;Name&quot;</span><span class="p">:</span> <span class="n">first</span><span class="p">[</span><span class="s2">&quot;Name&quot;</span><span class="p">],</span> <span class="s2">&quot;Type&quot;</span><span class="p">:</span> <span class="n">first</span><span class="p">[</span><span class="s2">&quot;Type&quot;</span><span class="p">]}</span>
+            <span class="n">desc</span> <span class="o">=</span> <span class="n">_make_description</span><span class="p">(</span><span class="n">first</span><span class="p">[</span><span class="s2">&quot;DescriptionText&quot;</span><span class="p">])</span>
+            <span class="k">if</span> <span class="n">desc</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;Description&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">desc</span>
+
+            <span class="c1"># FormalExpressions (skip None-rows from methods with no expressions)</span>
+            <span class="n">formal_exprs</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">group_rows</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">r</span><span class="p">[</span><span class="s2">&quot;FormalExpressionContext&quot;</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="n">formal_exprs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">DEF</span><span class="o">.</span><span class="n">FormalExpression</span><span class="p">(</span>
+                        <span class="n">Context</span><span class="o">=</span><span class="n">r</span><span class="p">[</span><span class="s2">&quot;FormalExpressionContext&quot;</span><span class="p">],</span>
+                        <span class="n">_content</span><span class="o">=</span><span class="n">r</span><span class="p">[</span><span class="s2">&quot;FormalExpressionText&quot;</span><span class="p">],</span>
+                    <span class="p">))</span>
+            <span class="k">if</span> <span class="n">formal_exprs</span><span class="p">:</span>
+                <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;FormalExpression&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">formal_exprs</span>
+
+            <span class="c1"># DocumentRef (from first row — flattener repeats parent fields)</span>
+            <span class="n">doc_refs</span> <span class="o">=</span> <span class="n">_make_doc_refs</span><span class="p">(</span><span class="n">first</span><span class="p">[</span><span class="s2">&quot;DocumentRefLeafIDs&quot;</span><span class="p">])</span>
+            <span class="k">if</span> <span class="n">doc_refs</span><span class="p">:</span>
+                <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;DocumentRef&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">doc_refs</span>
+
+            <span class="n">result</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">DEF</span><span class="o">.</span><span class="n">MethodDef</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">result</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_build_where_clauses</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Build WhereClauseDef elements from the where_clauses dataset.</span>
+
+<span class="sd">        Multiple rows with the same WhereClauseOID represent multiple</span>
+<span class="sd">        RangeChecks.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">rows</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_rows_as_dicts</span><span class="p">(</span><span class="s2">&quot;where_clauses&quot;</span><span class="p">)</span>
+
+        <span class="n">grouped</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="nb">list</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">rows</span><span class="p">:</span>
+            <span class="n">grouped</span><span class="p">[</span><span class="n">row</span><span class="p">[</span><span class="s2">&quot;WhereClauseOID&quot;</span><span class="p">]]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">row</span><span class="p">)</span>
+
+        <span class="n">result</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">wc_oid</span><span class="p">,</span> <span class="n">group_rows</span> <span class="ow">in</span> <span class="n">grouped</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">kwargs</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;OID&quot;</span><span class="p">:</span> <span class="n">wc_oid</span><span class="p">}</span>
+            <span class="n">_optional</span><span class="p">(</span><span class="n">kwargs</span><span class="p">,</span> <span class="s2">&quot;CommentOID&quot;</span><span class="p">,</span> <span class="n">group_rows</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;WhereClauseCommentOID&quot;</span><span class="p">])</span>
+
+            <span class="n">range_checks</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">group_rows</span><span class="p">:</span>
+                <span class="n">rc_kwargs</span> <span class="o">=</span> <span class="p">{</span>
+                    <span class="s2">&quot;Comparator&quot;</span><span class="p">:</span> <span class="n">r</span><span class="p">[</span><span class="s2">&quot;Comparator&quot;</span><span class="p">],</span>
+                    <span class="s2">&quot;SoftHard&quot;</span><span class="p">:</span> <span class="n">r</span><span class="p">[</span><span class="s2">&quot;SoftHard&quot;</span><span class="p">]</span> <span class="ow">or</span> <span class="s2">&quot;Soft&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;ItemOID&quot;</span><span class="p">:</span> <span class="n">r</span><span class="p">[</span><span class="s2">&quot;ItemOID&quot;</span><span class="p">],</span>
+                <span class="p">}</span>
+                <span class="k">if</span> <span class="n">r</span><span class="p">[</span><span class="s2">&quot;CheckValues&quot;</span><span class="p">]:</span>
+                    <span class="n">rc_kwargs</span><span class="p">[</span><span class="s2">&quot;CheckValue&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span>
+                        <span class="n">DEF</span><span class="o">.</span><span class="n">CheckValue</span><span class="p">(</span><span class="n">_content</span><span class="o">=</span><span class="n">v</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span>
+                        <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">r</span><span class="p">[</span><span class="s2">&quot;CheckValues&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;, &quot;</span><span class="p">)</span>
+                    <span class="p">]</span>
+                <span class="n">range_checks</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">DEF</span><span class="o">.</span><span class="n">RangeCheck</span><span class="p">(</span><span class="o">**</span><span class="n">rc_kwargs</span><span class="p">))</span>
+
+            <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;RangeCheck&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">range_checks</span>
+            <span class="n">result</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">DEF</span><span class="o">.</span><span class="n">WhereClauseDef</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">result</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_build_codelists</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Build CodeList elements from the codelists + codelist_terms datasets.&quot;&quot;&quot;</span>
+        <span class="n">cl_rows</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_rows_as_dicts</span><span class="p">(</span><span class="s2">&quot;codelists&quot;</span><span class="p">)</span>
+        <span class="n">term_rows</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_rows_as_dicts</span><span class="p">(</span><span class="s2">&quot;codelist_terms&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Group terms by CodeListOID</span>
+        <span class="n">terms_by_cl</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="nb">list</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">term_rows</span><span class="p">:</span>
+            <span class="n">terms_by_cl</span><span class="p">[</span><span class="n">t</span><span class="p">[</span><span class="s2">&quot;CodeListOID&quot;</span><span class="p">]]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
+
+        <span class="n">result</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">cl</span> <span class="ow">in</span> <span class="n">cl_rows</span><span class="p">:</span>
+            <span class="n">kwargs</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="s2">&quot;OID&quot;</span><span class="p">:</span> <span class="n">cl</span><span class="p">[</span><span class="s2">&quot;OID&quot;</span><span class="p">],</span>
+                <span class="s2">&quot;Name&quot;</span><span class="p">:</span> <span class="n">cl</span><span class="p">[</span><span class="s2">&quot;Name&quot;</span><span class="p">],</span>
+                <span class="s2">&quot;DataType&quot;</span><span class="p">:</span> <span class="n">cl</span><span class="p">[</span><span class="s2">&quot;DataType&quot;</span><span class="p">],</span>
+            <span class="p">}</span>
+            <span class="n">_optional</span><span class="p">(</span><span class="n">kwargs</span><span class="p">,</span> <span class="s2">&quot;IsNonStandard&quot;</span><span class="p">,</span> <span class="n">cl</span><span class="p">[</span><span class="s2">&quot;IsNonStandard&quot;</span><span class="p">])</span>
+            <span class="n">_optional</span><span class="p">(</span><span class="n">kwargs</span><span class="p">,</span> <span class="s2">&quot;StandardOID&quot;</span><span class="p">,</span> <span class="n">cl</span><span class="p">[</span><span class="s2">&quot;StandardOID&quot;</span><span class="p">])</span>
+            <span class="n">_optional</span><span class="p">(</span><span class="n">kwargs</span><span class="p">,</span> <span class="s2">&quot;SASFormatName&quot;</span><span class="p">,</span> <span class="n">cl</span><span class="p">[</span><span class="s2">&quot;SASFormatName&quot;</span><span class="p">])</span>
+            <span class="n">_optional</span><span class="p">(</span><span class="n">kwargs</span><span class="p">,</span> <span class="s2">&quot;CommentOID&quot;</span><span class="p">,</span> <span class="n">cl</span><span class="p">[</span><span class="s2">&quot;CommentOID&quot;</span><span class="p">])</span>
+            <span class="n">desc</span> <span class="o">=</span> <span class="n">_make_description</span><span class="p">(</span><span class="n">cl</span><span class="p">[</span><span class="s2">&quot;DescriptionText&quot;</span><span class="p">])</span>
+            <span class="k">if</span> <span class="n">desc</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;Description&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">desc</span>
+
+            <span class="c1"># Terms</span>
+            <span class="n">terms</span> <span class="o">=</span> <span class="n">terms_by_cl</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">cl</span><span class="p">[</span><span class="s2">&quot;OID&quot;</span><span class="p">],</span> <span class="p">[])</span>
+            <span class="n">has_decodes</span> <span class="o">=</span> <span class="nb">any</span><span class="p">(</span><span class="n">t</span><span class="p">[</span><span class="s2">&quot;DecodedText&quot;</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">terms</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">has_decodes</span><span class="p">:</span>
+                <span class="n">items</span> <span class="o">=</span> <span class="p">[]</span>
+                <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">terms</span><span class="p">:</span>
+                    <span class="n">cli_kwargs</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;CodedValue&quot;</span><span class="p">:</span> <span class="n">t</span><span class="p">[</span><span class="s2">&quot;CodedValue&quot;</span><span class="p">]}</span>
+                    <span class="n">_optional</span><span class="p">(</span><span class="n">cli_kwargs</span><span class="p">,</span> <span class="s2">&quot;Rank&quot;</span><span class="p">,</span> <span class="n">_float_or_none</span><span class="p">(</span><span class="n">t</span><span class="p">[</span><span class="s2">&quot;Rank&quot;</span><span class="p">],</span> <span class="s2">&quot;Rank&quot;</span><span class="p">))</span>
+                    <span class="n">_optional</span><span class="p">(</span><span class="n">cli_kwargs</span><span class="p">,</span> <span class="s2">&quot;OrderNumber&quot;</span><span class="p">,</span> <span class="n">_int_or_none</span><span class="p">(</span><span class="n">t</span><span class="p">[</span><span class="s2">&quot;OrderNumber&quot;</span><span class="p">],</span> <span class="s2">&quot;OrderNumber&quot;</span><span class="p">))</span>
+                    <span class="n">_optional</span><span class="p">(</span><span class="n">cli_kwargs</span><span class="p">,</span> <span class="s2">&quot;ExtendedValue&quot;</span><span class="p">,</span> <span class="n">t</span><span class="p">[</span><span class="s2">&quot;ExtendedValue&quot;</span><span class="p">])</span>
+                    <span class="k">if</span> <span class="n">t</span><span class="p">[</span><span class="s2">&quot;DecodedText&quot;</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                        <span class="n">cli_kwargs</span><span class="p">[</span><span class="s2">&quot;Decode&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">DEF</span><span class="o">.</span><span class="n">Decode</span><span class="p">(</span>
+                            <span class="n">TranslatedText</span><span class="o">=</span><span class="p">[</span><span class="n">DEF</span><span class="o">.</span><span class="n">TranslatedText</span><span class="p">(</span><span class="n">_content</span><span class="o">=</span><span class="n">t</span><span class="p">[</span><span class="s2">&quot;DecodedText&quot;</span><span class="p">])]</span>
+                        <span class="p">)</span>
+                    <span class="n">items</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">DEF</span><span class="o">.</span><span class="n">CodeListItem</span><span class="p">(</span><span class="o">**</span><span class="n">cli_kwargs</span><span class="p">))</span>
+                <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;CodeListItem&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">items</span>
+            <span class="k">elif</span> <span class="n">terms</span><span class="p">:</span>
+                <span class="n">items</span> <span class="o">=</span> <span class="p">[]</span>
+                <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">terms</span><span class="p">:</span>
+                    <span class="n">ei_kwargs</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;CodedValue&quot;</span><span class="p">:</span> <span class="n">t</span><span class="p">[</span><span class="s2">&quot;CodedValue&quot;</span><span class="p">]}</span>
+                    <span class="n">_optional</span><span class="p">(</span><span class="n">ei_kwargs</span><span class="p">,</span> <span class="s2">&quot;Rank&quot;</span><span class="p">,</span> <span class="n">_float_or_none</span><span class="p">(</span><span class="n">t</span><span class="p">[</span><span class="s2">&quot;Rank&quot;</span><span class="p">],</span> <span class="s2">&quot;Rank&quot;</span><span class="p">))</span>
+                    <span class="n">_optional</span><span class="p">(</span><span class="n">ei_kwargs</span><span class="p">,</span> <span class="s2">&quot;OrderNumber&quot;</span><span class="p">,</span> <span class="n">_int_or_none</span><span class="p">(</span><span class="n">t</span><span class="p">[</span><span class="s2">&quot;OrderNumber&quot;</span><span class="p">],</span> <span class="s2">&quot;OrderNumber&quot;</span><span class="p">))</span>
+                    <span class="n">_optional</span><span class="p">(</span><span class="n">ei_kwargs</span><span class="p">,</span> <span class="s2">&quot;ExtendedValue&quot;</span><span class="p">,</span> <span class="n">t</span><span class="p">[</span><span class="s2">&quot;ExtendedValue&quot;</span><span class="p">])</span>
+                    <span class="n">items</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">DEF</span><span class="o">.</span><span class="n">EnumeratedItem</span><span class="p">(</span><span class="o">**</span><span class="n">ei_kwargs</span><span class="p">))</span>
+                <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;EnumeratedItem&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">items</span>
+
+            <span class="c1"># ExternalCodeList</span>
+            <span class="k">if</span> <span class="n">cl</span><span class="p">[</span><span class="s2">&quot;ExternalDictionary&quot;</span><span class="p">]</span> <span class="ow">or</span> <span class="n">cl</span><span class="p">[</span><span class="s2">&quot;ExternalVersion&quot;</span><span class="p">]:</span>
+                <span class="n">ecl_kwargs</span> <span class="o">=</span> <span class="p">{}</span>
+                <span class="n">_optional</span><span class="p">(</span><span class="n">ecl_kwargs</span><span class="p">,</span> <span class="s2">&quot;Dictionary&quot;</span><span class="p">,</span> <span class="n">cl</span><span class="p">[</span><span class="s2">&quot;ExternalDictionary&quot;</span><span class="p">])</span>
+                <span class="n">_optional</span><span class="p">(</span><span class="n">ecl_kwargs</span><span class="p">,</span> <span class="s2">&quot;Version&quot;</span><span class="p">,</span> <span class="n">cl</span><span class="p">[</span><span class="s2">&quot;ExternalVersion&quot;</span><span class="p">])</span>
+                <span class="n">_optional</span><span class="p">(</span><span class="n">ecl_kwargs</span><span class="p">,</span> <span class="s2">&quot;ref&quot;</span><span class="p">,</span> <span class="n">cl</span><span class="p">[</span><span class="s2">&quot;ExternalRef&quot;</span><span class="p">])</span>
+                <span class="n">_optional</span><span class="p">(</span><span class="n">ecl_kwargs</span><span class="p">,</span> <span class="s2">&quot;href&quot;</span><span class="p">,</span> <span class="n">cl</span><span class="p">[</span><span class="s2">&quot;ExternalHref&quot;</span><span class="p">])</span>
+                <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;ExternalCodeList&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">DEF</span><span class="o">.</span><span class="n">ExternalCodeList</span><span class="p">(</span><span class="o">**</span><span class="n">ecl_kwargs</span><span class="p">)</span>
+
+            <span class="n">result</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">DEF</span><span class="o">.</span><span class="n">CodeList</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">result</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_build_item_defs</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Build ItemDef elements from variables + value_level (deduplicated).</span>
+
+<span class="sd">        The same ItemDef OID may appear in multiple rows of the variables</span>
+<span class="sd">        table (shared across datasets) and in value_level. We collect the</span>
+<span class="sd">        first occurrence of each unique OID.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">var_rows</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_rows_as_dicts</span><span class="p">(</span><span class="s2">&quot;variables&quot;</span><span class="p">)</span>
+        <span class="n">vl_rows</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_rows_as_dicts</span><span class="p">(</span><span class="s2">&quot;value_level&quot;</span><span class="p">)</span>
+
+        <span class="n">seen</span> <span class="o">=</span> <span class="p">{}</span>  <span class="c1"># OID -&gt; row dict (first occurrence)</span>
+        <span class="n">valuelist_map</span> <span class="o">=</span> <span class="p">{}</span>  <span class="c1"># ItemOID -&gt; ValueListOID</span>
+
+        <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">var_rows</span><span class="p">:</span>
+            <span class="n">oid</span> <span class="o">=</span> <span class="n">row</span><span class="p">[</span><span class="s2">&quot;ItemOID&quot;</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">oid</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">seen</span><span class="p">:</span>
+                <span class="n">seen</span><span class="p">[</span><span class="n">oid</span><span class="p">]</span> <span class="o">=</span> <span class="n">row</span>
+            <span class="k">if</span> <span class="n">row</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;ValueListOID&quot;</span><span class="p">):</span>
+                <span class="n">valuelist_map</span><span class="p">[</span><span class="n">oid</span><span class="p">]</span> <span class="o">=</span> <span class="n">row</span><span class="p">[</span><span class="s2">&quot;ValueListOID&quot;</span><span class="p">]</span>
+
+        <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">vl_rows</span><span class="p">:</span>
+            <span class="n">oid</span> <span class="o">=</span> <span class="n">row</span><span class="p">[</span><span class="s2">&quot;ItemOID&quot;</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">oid</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">seen</span><span class="p">:</span>
+                <span class="n">seen</span><span class="p">[</span><span class="n">oid</span><span class="p">]</span> <span class="o">=</span> <span class="n">row</span>
+
+        <span class="n">result</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">oid</span><span class="p">,</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">seen</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">kwargs</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="s2">&quot;OID&quot;</span><span class="p">:</span> <span class="n">oid</span><span class="p">,</span>
+                <span class="s2">&quot;Name&quot;</span><span class="p">:</span> <span class="n">row</span><span class="p">[</span><span class="s2">&quot;Name&quot;</span><span class="p">],</span>
+                <span class="s2">&quot;DataType&quot;</span><span class="p">:</span> <span class="n">row</span><span class="p">[</span><span class="s2">&quot;DataType&quot;</span><span class="p">],</span>
+            <span class="p">}</span>
+            <span class="n">_optional</span><span class="p">(</span><span class="n">kwargs</span><span class="p">,</span> <span class="s2">&quot;Length&quot;</span><span class="p">,</span> <span class="n">_int_or_none</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="s2">&quot;Length&quot;</span><span class="p">],</span> <span class="s2">&quot;Length&quot;</span><span class="p">))</span>
+            <span class="n">_optional</span><span class="p">(</span><span class="n">kwargs</span><span class="p">,</span> <span class="s2">&quot;SignificantDigits&quot;</span><span class="p">,</span> <span class="n">_int_or_none</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="s2">&quot;SignificantDigits&quot;</span><span class="p">],</span> <span class="s2">&quot;SignificantDigits&quot;</span><span class="p">))</span>
+            <span class="n">_optional</span><span class="p">(</span><span class="n">kwargs</span><span class="p">,</span> <span class="s2">&quot;SASFieldName&quot;</span><span class="p">,</span> <span class="n">row</span><span class="p">[</span><span class="s2">&quot;SASFieldName&quot;</span><span class="p">])</span>
+            <span class="n">_optional</span><span class="p">(</span><span class="n">kwargs</span><span class="p">,</span> <span class="s2">&quot;DisplayFormat&quot;</span><span class="p">,</span> <span class="n">row</span><span class="p">[</span><span class="s2">&quot;DisplayFormat&quot;</span><span class="p">])</span>
+            <span class="n">_optional</span><span class="p">(</span><span class="n">kwargs</span><span class="p">,</span> <span class="s2">&quot;CommentOID&quot;</span><span class="p">,</span> <span class="n">row</span><span class="p">[</span><span class="s2">&quot;CommentOID&quot;</span><span class="p">])</span>
+
+            <span class="n">desc</span> <span class="o">=</span> <span class="n">_make_description</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="s2">&quot;DescriptionText&quot;</span><span class="p">])</span>
+            <span class="k">if</span> <span class="n">desc</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;Description&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">desc</span>
+
+            <span class="k">if</span> <span class="n">row</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;CodeListOID&quot;</span><span class="p">):</span>
+                <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;CodeListRef&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">DEF</span><span class="o">.</span><span class="n">CodeListRef</span><span class="p">(</span>
+                    <span class="n">CodeListOID</span><span class="o">=</span><span class="n">row</span><span class="p">[</span><span class="s2">&quot;CodeListOID&quot;</span><span class="p">]</span>
+                <span class="p">)</span>
+            <span class="k">if</span> <span class="n">oid</span> <span class="ow">in</span> <span class="n">valuelist_map</span><span class="p">:</span>
+                <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;ValueListRef&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">DEF</span><span class="o">.</span><span class="n">ValueListRef</span><span class="p">(</span>
+                    <span class="n">ValueListOID</span><span class="o">=</span><span class="n">valuelist_map</span><span class="p">[</span><span class="n">oid</span><span class="p">]</span>
+                <span class="p">)</span>
+
+            <span class="c1"># Origin (only Type and Source captured by flattener)</span>
+            <span class="k">if</span> <span class="n">row</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;OriginType&quot;</span><span class="p">):</span>
+                <span class="n">origin_kwargs</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;Type&quot;</span><span class="p">:</span> <span class="n">row</span><span class="p">[</span><span class="s2">&quot;OriginType&quot;</span><span class="p">]}</span>
+                <span class="n">_optional</span><span class="p">(</span><span class="n">origin_kwargs</span><span class="p">,</span> <span class="s2">&quot;Source&quot;</span><span class="p">,</span> <span class="n">row</span><span class="p">[</span><span class="s2">&quot;OriginSource&quot;</span><span class="p">])</span>
+                <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;Origin&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">DEF</span><span class="o">.</span><span class="n">Origin</span><span class="p">(</span><span class="o">**</span><span class="n">origin_kwargs</span><span class="p">)]</span>
+
+            <span class="n">result</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">DEF</span><span class="o">.</span><span class="n">ItemDef</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">result</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_build_value_list_defs</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Build ValueListDef elements from the value_level dataset.&quot;&quot;&quot;</span>
+        <span class="n">rows</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_rows_as_dicts</span><span class="p">(</span><span class="s2">&quot;value_level&quot;</span><span class="p">)</span>
+
+        <span class="n">grouped</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="nb">list</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">rows</span><span class="p">:</span>
+            <span class="n">grouped</span><span class="p">[</span><span class="n">row</span><span class="p">[</span><span class="s2">&quot;ValueListOID&quot;</span><span class="p">]]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">row</span><span class="p">)</span>
+
+        <span class="n">result</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">vl_oid</span><span class="p">,</span> <span class="n">group_rows</span> <span class="ow">in</span> <span class="n">grouped</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">item_refs</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">group_rows</span><span class="p">:</span>
+                <span class="n">ir_kwargs</span> <span class="o">=</span> <span class="p">{</span>
+                    <span class="s2">&quot;ItemOID&quot;</span><span class="p">:</span> <span class="n">r</span><span class="p">[</span><span class="s2">&quot;ItemOID&quot;</span><span class="p">],</span>
+                    <span class="s2">&quot;Mandatory&quot;</span><span class="p">:</span> <span class="n">r</span><span class="p">[</span><span class="s2">&quot;Mandatory&quot;</span><span class="p">],</span>
+                <span class="p">}</span>
+                <span class="n">_optional</span><span class="p">(</span><span class="n">ir_kwargs</span><span class="p">,</span> <span class="s2">&quot;OrderNumber&quot;</span><span class="p">,</span> <span class="n">_int_or_none</span><span class="p">(</span><span class="n">r</span><span class="p">[</span><span class="s2">&quot;OrderNumber&quot;</span><span class="p">],</span> <span class="s2">&quot;OrderNumber&quot;</span><span class="p">))</span>
+                <span class="n">_optional</span><span class="p">(</span><span class="n">ir_kwargs</span><span class="p">,</span> <span class="s2">&quot;MethodOID&quot;</span><span class="p">,</span> <span class="n">r</span><span class="p">[</span><span class="s2">&quot;MethodOID&quot;</span><span class="p">])</span>
+                <span class="k">if</span> <span class="n">r</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;WhereClauseOID&quot;</span><span class="p">):</span>
+                    <span class="n">ir_kwargs</span><span class="p">[</span><span class="s2">&quot;WhereClauseRef&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span>
+                        <span class="n">DEF</span><span class="o">.</span><span class="n">WhereClauseRef</span><span class="p">(</span><span class="n">WhereClauseOID</span><span class="o">=</span><span class="n">r</span><span class="p">[</span><span class="s2">&quot;WhereClauseOID&quot;</span><span class="p">])</span>
+                    <span class="p">]</span>
+                <span class="n">item_refs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">DEF</span><span class="o">.</span><span class="n">ItemRef</span><span class="p">(</span><span class="o">**</span><span class="n">ir_kwargs</span><span class="p">))</span>
+            <span class="n">result</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">DEF</span><span class="o">.</span><span class="n">ValueListDef</span><span class="p">(</span><span class="n">OID</span><span class="o">=</span><span class="n">vl_oid</span><span class="p">,</span> <span class="n">ItemRef</span><span class="o">=</span><span class="n">item_refs</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">result</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_build_item_group_defs</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Build ItemGroupDef elements from datasets + variables.&quot;&quot;&quot;</span>
+        <span class="n">ds_rows</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_rows_as_dicts</span><span class="p">(</span><span class="s2">&quot;datasets&quot;</span><span class="p">)</span>
+        <span class="n">var_rows</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_rows_as_dicts</span><span class="p">(</span><span class="s2">&quot;variables&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Pre-group variables by DatasetOID</span>
+        <span class="n">vars_by_ds</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="nb">list</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">var_rows</span><span class="p">:</span>
+            <span class="n">vars_by_ds</span><span class="p">[</span><span class="n">v</span><span class="p">[</span><span class="s2">&quot;DatasetOID&quot;</span><span class="p">]]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
+
+        <span class="n">result</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">ds</span> <span class="ow">in</span> <span class="n">ds_rows</span><span class="p">:</span>
+            <span class="n">kwargs</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="s2">&quot;OID&quot;</span><span class="p">:</span> <span class="n">ds</span><span class="p">[</span><span class="s2">&quot;OID&quot;</span><span class="p">],</span>
+                <span class="s2">&quot;Name&quot;</span><span class="p">:</span> <span class="n">ds</span><span class="p">[</span><span class="s2">&quot;Name&quot;</span><span class="p">],</span>
+                <span class="s2">&quot;Repeating&quot;</span><span class="p">:</span> <span class="n">ds</span><span class="p">[</span><span class="s2">&quot;Repeating&quot;</span><span class="p">],</span>
+                <span class="s2">&quot;Structure&quot;</span><span class="p">:</span> <span class="n">ds</span><span class="p">[</span><span class="s2">&quot;Structure&quot;</span><span class="p">],</span>
+            <span class="p">}</span>
+            <span class="n">_optional</span><span class="p">(</span><span class="n">kwargs</span><span class="p">,</span> <span class="s2">&quot;IsReferenceData&quot;</span><span class="p">,</span> <span class="n">ds</span><span class="p">[</span><span class="s2">&quot;IsReferenceData&quot;</span><span class="p">])</span>
+            <span class="n">_optional</span><span class="p">(</span><span class="n">kwargs</span><span class="p">,</span> <span class="s2">&quot;SASDatasetName&quot;</span><span class="p">,</span> <span class="n">ds</span><span class="p">[</span><span class="s2">&quot;SASDatasetName&quot;</span><span class="p">])</span>
+            <span class="n">_optional</span><span class="p">(</span><span class="n">kwargs</span><span class="p">,</span> <span class="s2">&quot;Domain&quot;</span><span class="p">,</span> <span class="n">ds</span><span class="p">[</span><span class="s2">&quot;Domain&quot;</span><span class="p">])</span>
+            <span class="n">_optional</span><span class="p">(</span><span class="n">kwargs</span><span class="p">,</span> <span class="s2">&quot;Purpose&quot;</span><span class="p">,</span> <span class="n">ds</span><span class="p">[</span><span class="s2">&quot;Purpose&quot;</span><span class="p">])</span>
+            <span class="n">_optional</span><span class="p">(</span><span class="n">kwargs</span><span class="p">,</span> <span class="s2">&quot;ArchiveLocationID&quot;</span><span class="p">,</span> <span class="n">ds</span><span class="p">[</span><span class="s2">&quot;ArchiveLocationID&quot;</span><span class="p">])</span>
+            <span class="n">_optional</span><span class="p">(</span><span class="n">kwargs</span><span class="p">,</span> <span class="s2">&quot;CommentOID&quot;</span><span class="p">,</span> <span class="n">ds</span><span class="p">[</span><span class="s2">&quot;CommentOID&quot;</span><span class="p">])</span>
+            <span class="n">_optional</span><span class="p">(</span><span class="n">kwargs</span><span class="p">,</span> <span class="s2">&quot;IsNonStandard&quot;</span><span class="p">,</span> <span class="n">ds</span><span class="p">[</span><span class="s2">&quot;IsNonStandard&quot;</span><span class="p">])</span>
+            <span class="n">_optional</span><span class="p">(</span><span class="n">kwargs</span><span class="p">,</span> <span class="s2">&quot;StandardOID&quot;</span><span class="p">,</span> <span class="n">ds</span><span class="p">[</span><span class="s2">&quot;StandardOID&quot;</span><span class="p">])</span>
+            <span class="n">_optional</span><span class="p">(</span><span class="n">kwargs</span><span class="p">,</span> <span class="s2">&quot;HasNoData&quot;</span><span class="p">,</span> <span class="n">ds</span><span class="p">[</span><span class="s2">&quot;HasNoData&quot;</span><span class="p">])</span>
+
+            <span class="n">desc</span> <span class="o">=</span> <span class="n">_make_description</span><span class="p">(</span><span class="n">ds</span><span class="p">[</span><span class="s2">&quot;DescriptionText&quot;</span><span class="p">])</span>
+            <span class="k">if</span> <span class="n">desc</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;Description&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">desc</span>
+
+            <span class="c1"># Class element</span>
+            <span class="k">if</span> <span class="n">ds</span><span class="p">[</span><span class="s2">&quot;ClassName&quot;</span><span class="p">]:</span>
+                <span class="n">class_kwargs</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;Name&quot;</span><span class="p">:</span> <span class="n">ds</span><span class="p">[</span><span class="s2">&quot;ClassName&quot;</span><span class="p">]}</span>
+                <span class="k">if</span> <span class="n">ds</span><span class="p">[</span><span class="s2">&quot;SubClassName&quot;</span><span class="p">]:</span>
+                    <span class="n">class_kwargs</span><span class="p">[</span><span class="s2">&quot;SubClass&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span>
+                        <span class="n">DEF</span><span class="o">.</span><span class="n">SubClass</span><span class="p">(</span><span class="n">Name</span><span class="o">=</span><span class="n">ds</span><span class="p">[</span><span class="s2">&quot;SubClassName&quot;</span><span class="p">])</span>
+                    <span class="p">]</span>
+                <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;Class&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">DEF</span><span class="o">.</span><span class="n">Class</span><span class="p">(</span><span class="o">**</span><span class="n">class_kwargs</span><span class="p">)</span>
+
+            <span class="c1"># leaf element</span>
+            <span class="k">if</span> <span class="n">ds</span><span class="p">[</span><span class="s2">&quot;leafID&quot;</span><span class="p">]:</span>
+                <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;leaf&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">DEF</span><span class="o">.</span><span class="n">leaf</span><span class="p">(</span>
+                    <span class="n">ID</span><span class="o">=</span><span class="n">ds</span><span class="p">[</span><span class="s2">&quot;leafID&quot;</span><span class="p">],</span>
+                    <span class="n">href</span><span class="o">=</span><span class="n">ds</span><span class="p">[</span><span class="s2">&quot;leafHref&quot;</span><span class="p">],</span>
+                    <span class="n">title</span><span class="o">=</span><span class="n">DEF</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="n">_content</span><span class="o">=</span><span class="n">ds</span><span class="p">[</span><span class="s2">&quot;leafTitle&quot;</span><span class="p">]</span> <span class="ow">or</span> <span class="s2">&quot;&quot;</span><span class="p">),</span>
+                <span class="p">)</span>
+
+            <span class="c1"># ItemRef children from variables table</span>
+            <span class="n">item_refs</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">vars_by_ds</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">ds</span><span class="p">[</span><span class="s2">&quot;OID&quot;</span><span class="p">],</span> <span class="p">[]):</span>
+                <span class="n">ir_kwargs</span> <span class="o">=</span> <span class="p">{</span>
+                    <span class="s2">&quot;ItemOID&quot;</span><span class="p">:</span> <span class="n">v</span><span class="p">[</span><span class="s2">&quot;ItemOID&quot;</span><span class="p">],</span>
+                    <span class="s2">&quot;Mandatory&quot;</span><span class="p">:</span> <span class="n">v</span><span class="p">[</span><span class="s2">&quot;Mandatory&quot;</span><span class="p">],</span>
+                <span class="p">}</span>
+                <span class="n">_optional</span><span class="p">(</span><span class="n">ir_kwargs</span><span class="p">,</span> <span class="s2">&quot;OrderNumber&quot;</span><span class="p">,</span> <span class="n">_int_or_none</span><span class="p">(</span><span class="n">v</span><span class="p">[</span><span class="s2">&quot;OrderNumber&quot;</span><span class="p">],</span> <span class="s2">&quot;OrderNumber&quot;</span><span class="p">))</span>
+                <span class="n">_optional</span><span class="p">(</span><span class="n">ir_kwargs</span><span class="p">,</span> <span class="s2">&quot;KeySequence&quot;</span><span class="p">,</span> <span class="n">_int_or_none</span><span class="p">(</span><span class="n">v</span><span class="p">[</span><span class="s2">&quot;KeySequence&quot;</span><span class="p">],</span> <span class="s2">&quot;KeySequence&quot;</span><span class="p">))</span>
+                <span class="n">_optional</span><span class="p">(</span><span class="n">ir_kwargs</span><span class="p">,</span> <span class="s2">&quot;MethodOID&quot;</span><span class="p">,</span> <span class="n">v</span><span class="p">[</span><span class="s2">&quot;MethodOID&quot;</span><span class="p">])</span>
+                <span class="n">_optional</span><span class="p">(</span><span class="n">ir_kwargs</span><span class="p">,</span> <span class="s2">&quot;Role&quot;</span><span class="p">,</span> <span class="n">v</span><span class="p">[</span><span class="s2">&quot;Role&quot;</span><span class="p">])</span>
+                <span class="n">_optional</span><span class="p">(</span><span class="n">ir_kwargs</span><span class="p">,</span> <span class="s2">&quot;RoleCodeListOID&quot;</span><span class="p">,</span> <span class="n">v</span><span class="p">[</span><span class="s2">&quot;RoleCodeListOID&quot;</span><span class="p">])</span>
+                <span class="n">_optional</span><span class="p">(</span><span class="n">ir_kwargs</span><span class="p">,</span> <span class="s2">&quot;IsNonStandard&quot;</span><span class="p">,</span> <span class="n">v</span><span class="p">[</span><span class="s2">&quot;IsNonStandard&quot;</span><span class="p">])</span>
+                <span class="n">_optional</span><span class="p">(</span><span class="n">ir_kwargs</span><span class="p">,</span> <span class="s2">&quot;HasNoData&quot;</span><span class="p">,</span> <span class="n">v</span><span class="p">[</span><span class="s2">&quot;HasNoData&quot;</span><span class="p">])</span>
+                <span class="n">item_refs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">DEF</span><span class="o">.</span><span class="n">ItemRef</span><span class="p">(</span><span class="o">**</span><span class="n">ir_kwargs</span><span class="p">))</span>
+            <span class="k">if</span> <span class="n">item_refs</span><span class="p">:</span>
+                <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;ItemRef&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">item_refs</span>
+
+            <span class="n">result</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">DEF</span><span class="o">.</span><span class="n">ItemGroupDef</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">result</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_build_standards</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">DEF</span><span class="o">.</span><span class="n">Standards</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Build Standards element from the standards dataset.&quot;&quot;&quot;</span>
+        <span class="n">rows</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_rows_as_dicts</span><span class="p">(</span><span class="s2">&quot;standards&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">rows</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+
+        <span class="n">standard_list</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">rows</span><span class="p">:</span>
+            <span class="n">kwargs</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="s2">&quot;OID&quot;</span><span class="p">:</span> <span class="n">row</span><span class="p">[</span><span class="s2">&quot;OID&quot;</span><span class="p">],</span>
+                <span class="s2">&quot;Name&quot;</span><span class="p">:</span> <span class="n">row</span><span class="p">[</span><span class="s2">&quot;Name&quot;</span><span class="p">],</span>
+                <span class="s2">&quot;Type&quot;</span><span class="p">:</span> <span class="n">row</span><span class="p">[</span><span class="s2">&quot;Type&quot;</span><span class="p">],</span>
+                <span class="s2">&quot;Version&quot;</span><span class="p">:</span> <span class="n">row</span><span class="p">[</span><span class="s2">&quot;Version&quot;</span><span class="p">],</span>
+            <span class="p">}</span>
+            <span class="n">_optional</span><span class="p">(</span><span class="n">kwargs</span><span class="p">,</span> <span class="s2">&quot;PublishingSet&quot;</span><span class="p">,</span> <span class="n">row</span><span class="p">[</span><span class="s2">&quot;PublishingSet&quot;</span><span class="p">])</span>
+            <span class="n">_optional</span><span class="p">(</span><span class="n">kwargs</span><span class="p">,</span> <span class="s2">&quot;Status&quot;</span><span class="p">,</span> <span class="n">row</span><span class="p">[</span><span class="s2">&quot;Status&quot;</span><span class="p">])</span>
+            <span class="n">_optional</span><span class="p">(</span><span class="n">kwargs</span><span class="p">,</span> <span class="s2">&quot;CommentOID&quot;</span><span class="p">,</span> <span class="n">row</span><span class="p">[</span><span class="s2">&quot;CommentOID&quot;</span><span class="p">])</span>
+            <span class="n">standard_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">DEF</span><span class="o">.</span><span class="n">Standard</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">))</span>
+
+        <span class="k">return</span> <span class="n">DEF</span><span class="o">.</span><span class="n">Standards</span><span class="p">(</span><span class="n">Standard</span><span class="o">=</span><span class="n">standard_list</span><span class="p">)</span>
+
+    <span class="c1"># ------------------------------------------------------------------ #</span>
+    <span class="c1"># Lossless-roundtrip post-passes (no-op when the dataset is absent)</span>
+    <span class="c1"># ------------------------------------------------------------------ #</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_apply_origins</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mdv</span><span class="p">:</span> <span class="n">DEF</span><span class="o">.</span><span class="n">MetaDataVersion</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Replace inline Origins with the full origins-dataset trees.</span>
+
+<span class="sd">        The variables/value_level tables only carry the first Origin&#39;s</span>
+<span class="sd">        Type and Source.  When the optional ``origins`` dataset is</span>
+<span class="sd">        present it is authoritative: every ItemDef it names has its</span>
+<span class="sd">        Origin list rebuilt with Description and DocumentRef children.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">rows</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_rows_as_dicts</span><span class="p">(</span><span class="s2">&quot;origins&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">rows</span><span class="p">:</span>
+            <span class="k">return</span>
+        <span class="n">by_item</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">list</span><span class="p">]</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="nb">list</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">rows</span><span class="p">:</span>
+            <span class="n">kwargs</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;Type&quot;</span><span class="p">:</span> <span class="n">r</span><span class="p">[</span><span class="s2">&quot;Type&quot;</span><span class="p">]}</span>
+            <span class="n">_optional</span><span class="p">(</span><span class="n">kwargs</span><span class="p">,</span> <span class="s2">&quot;Source&quot;</span><span class="p">,</span> <span class="n">r</span><span class="p">[</span><span class="s2">&quot;Source&quot;</span><span class="p">])</span>
+            <span class="n">text</span> <span class="o">=</span> <span class="n">r</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;DescriptionText&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">text</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">lang</span> <span class="o">=</span> <span class="n">r</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;DescriptionLang&quot;</span><span class="p">)</span>
+                <span class="n">tt</span> <span class="o">=</span> <span class="p">(</span><span class="n">DEF</span><span class="o">.</span><span class="n">TranslatedText</span><span class="p">(</span><span class="n">_content</span><span class="o">=</span><span class="n">text</span><span class="p">,</span> <span class="n">lang</span><span class="o">=</span><span class="n">lang</span><span class="p">)</span>
+                      <span class="k">if</span> <span class="n">lang</span> <span class="k">else</span> <span class="n">DEF</span><span class="o">.</span><span class="n">TranslatedText</span><span class="p">(</span><span class="n">_content</span><span class="o">=</span><span class="n">text</span><span class="p">))</span>
+                <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;Description&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">DEF</span><span class="o">.</span><span class="n">Description</span><span class="p">(</span><span class="n">TranslatedText</span><span class="o">=</span><span class="p">[</span><span class="n">tt</span><span class="p">])</span>
+            <span class="n">doc_refs</span> <span class="o">=</span> <span class="n">_make_doc_refs</span><span class="p">(</span><span class="n">r</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;DocumentRefLeafIDs&quot;</span><span class="p">))</span>
+            <span class="k">if</span> <span class="n">doc_refs</span><span class="p">:</span>
+                <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;DocumentRef&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">doc_refs</span>
+            <span class="n">order</span> <span class="o">=</span> <span class="n">_int_or_none</span><span class="p">(</span><span class="n">r</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;OrderNumber&quot;</span><span class="p">),</span> <span class="s2">&quot;OrderNumber&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="mi">0</span>
+            <span class="n">by_item</span><span class="p">[</span><span class="n">r</span><span class="p">[</span><span class="s2">&quot;ItemOID&quot;</span><span class="p">]]</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">order</span><span class="p">,</span> <span class="n">DEF</span><span class="o">.</span><span class="n">Origin</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)))</span>
+        <span class="k">for</span> <span class="n">item_def</span> <span class="ow">in</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">mdv</span><span class="p">,</span> <span class="s2">&quot;ItemDef&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">or</span> <span class="p">[]:</span>
+            <span class="k">if</span> <span class="n">item_def</span><span class="o">.</span><span class="n">OID</span> <span class="ow">in</span> <span class="n">by_item</span><span class="p">:</span>
+                <span class="n">ordered</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">by_item</span><span class="p">[</span><span class="n">item_def</span><span class="o">.</span><span class="n">OID</span><span class="p">],</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">t</span><span class="p">:</span> <span class="n">t</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+                <span class="n">item_def</span><span class="o">.</span><span class="n">Origin</span> <span class="o">=</span> <span class="p">[</span><span class="n">origin</span> <span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">origin</span> <span class="ow">in</span> <span class="n">ordered</span><span class="p">]</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_apply_aliases</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mdv</span><span class="p">:</span> <span class="n">DEF</span><span class="o">.</span><span class="n">MetaDataVersion</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Attach Alias elements from the optional ``aliases`` dataset.&quot;&quot;&quot;</span>
+        <span class="n">rows</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_rows_as_dicts</span><span class="p">(</span><span class="s2">&quot;aliases&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">rows</span><span class="p">:</span>
+            <span class="k">return</span>
+        <span class="n">igd_by_oid</span> <span class="o">=</span> <span class="p">{</span><span class="n">x</span><span class="o">.</span><span class="n">OID</span><span class="p">:</span> <span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">mdv</span><span class="p">,</span> <span class="s2">&quot;ItemGroupDef&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">or</span> <span class="p">[]}</span>
+        <span class="n">idf_by_oid</span> <span class="o">=</span> <span class="p">{</span><span class="n">x</span><span class="o">.</span><span class="n">OID</span><span class="p">:</span> <span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">mdv</span><span class="p">,</span> <span class="s2">&quot;ItemDef&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">or</span> <span class="p">[]}</span>
+        <span class="n">cl_by_oid</span> <span class="o">=</span> <span class="p">{</span><span class="n">x</span><span class="o">.</span><span class="n">OID</span><span class="p">:</span> <span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">mdv</span><span class="p">,</span> <span class="s2">&quot;CodeList&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">or</span> <span class="p">[]}</span>
+
+        <span class="k">def</span><span class="w"> </span><span class="nf">_term</span><span class="p">(</span><span class="n">cl</span><span class="p">,</span> <span class="n">member</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="n">cl</span><span class="p">,</span> <span class="s2">&quot;CodeListItem&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">or</span> <span class="p">[])</span> <span class="o">+</span> \
+                     <span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="n">cl</span><span class="p">,</span> <span class="s2">&quot;EnumeratedItem&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">or</span> <span class="p">[]):</span>
+                <span class="k">if</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="s2">&quot;CodedValue&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="o">==</span> <span class="n">member</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="n">t</span>
+            <span class="k">return</span> <span class="kc">None</span>
+
+        <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">rows</span><span class="p">:</span>
+            <span class="n">ptype</span><span class="p">,</span> <span class="n">poid</span><span class="p">,</span> <span class="n">member</span> <span class="o">=</span> <span class="n">r</span><span class="p">[</span><span class="s2">&quot;ParentType&quot;</span><span class="p">],</span> <span class="n">r</span><span class="p">[</span><span class="s2">&quot;ParentOID&quot;</span><span class="p">],</span> <span class="n">r</span><span class="p">[</span><span class="s2">&quot;Member&quot;</span><span class="p">]</span>
+            <span class="n">alias</span> <span class="o">=</span> <span class="n">DEF</span><span class="o">.</span><span class="n">Alias</span><span class="p">(</span><span class="n">Context</span><span class="o">=</span><span class="n">r</span><span class="p">[</span><span class="s2">&quot;Context&quot;</span><span class="p">],</span> <span class="n">Name</span><span class="o">=</span><span class="n">r</span><span class="p">[</span><span class="s2">&quot;Name&quot;</span><span class="p">])</span>
+            <span class="k">if</span> <span class="n">ptype</span> <span class="o">==</span> <span class="s2">&quot;ItemGroupDef&quot;</span><span class="p">:</span>
+                <span class="n">target</span> <span class="o">=</span> <span class="n">igd_by_oid</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">poid</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">ptype</span> <span class="o">==</span> <span class="s2">&quot;ItemDef&quot;</span><span class="p">:</span>
+                <span class="n">target</span> <span class="o">=</span> <span class="n">idf_by_oid</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">poid</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">ptype</span> <span class="o">==</span> <span class="s2">&quot;CodeList&quot;</span><span class="p">:</span>
+                <span class="n">target</span> <span class="o">=</span> <span class="n">cl_by_oid</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">poid</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">ptype</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;CodeListItem&quot;</span><span class="p">,</span> <span class="s2">&quot;EnumeratedItem&quot;</span><span class="p">):</span>
+                <span class="n">cl</span> <span class="o">=</span> <span class="n">cl_by_oid</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">poid</span><span class="p">)</span>
+                <span class="n">target</span> <span class="o">=</span> <span class="n">_term</span><span class="p">(</span><span class="n">cl</span><span class="p">,</span> <span class="n">member</span><span class="p">)</span> <span class="k">if</span> <span class="n">cl</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="kc">None</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">target</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="k">if</span> <span class="n">target</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">target</span><span class="o">.</span><span class="n">Alias</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">alias</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_build_metadata_version</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">item_group_defs</span><span class="p">,</span> <span class="n">item_defs</span><span class="p">,</span>
+                                 <span class="n">code_lists</span><span class="p">,</span> <span class="n">method_defs</span><span class="p">,</span> <span class="n">value_list_defs</span><span class="p">,</span>
+                                 <span class="n">where_clause_defs</span><span class="p">,</span> <span class="n">comment_defs</span><span class="p">,</span> <span class="n">leaves</span><span class="p">,</span>
+                                 <span class="n">standards</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DEF</span><span class="o">.</span><span class="n">MetaDataVersion</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Assemble MetaDataVersion from all child elements.&quot;&quot;&quot;</span>
+        <span class="n">study_rows</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_rows_as_dicts</span><span class="p">(</span><span class="s2">&quot;study&quot;</span><span class="p">)</span>
+        <span class="n">study_row</span> <span class="o">=</span> <span class="n">study_rows</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+        <span class="n">kwargs</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;OID&quot;</span><span class="p">:</span> <span class="n">study_row</span><span class="p">[</span><span class="s2">&quot;MetaDataVersionOID&quot;</span><span class="p">],</span>
+            <span class="s2">&quot;Name&quot;</span><span class="p">:</span> <span class="n">study_row</span><span class="p">[</span><span class="s2">&quot;MetaDataVersionName&quot;</span><span class="p">],</span>
+            <span class="s2">&quot;DefineVersion&quot;</span><span class="p">:</span> <span class="n">study_row</span><span class="p">[</span><span class="s2">&quot;DefineVersion&quot;</span><span class="p">],</span>
+        <span class="p">}</span>
+        <span class="n">_optional</span><span class="p">(</span><span class="n">kwargs</span><span class="p">,</span> <span class="s2">&quot;CommentOID&quot;</span><span class="p">,</span> <span class="n">study_row</span><span class="p">[</span><span class="s2">&quot;CommentOID&quot;</span><span class="p">])</span>
+
+        <span class="k">if</span> <span class="n">standards</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;Standards&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">standards</span>
+        <span class="k">if</span> <span class="n">value_list_defs</span><span class="p">:</span>
+            <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;ValueListDef&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">value_list_defs</span>
+        <span class="k">if</span> <span class="n">where_clause_defs</span><span class="p">:</span>
+            <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;WhereClauseDef&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">where_clause_defs</span>
+        <span class="k">if</span> <span class="n">item_group_defs</span><span class="p">:</span>
+            <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;ItemGroupDef&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">item_group_defs</span>
+        <span class="k">if</span> <span class="n">item_defs</span><span class="p">:</span>
+            <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;ItemDef&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">item_defs</span>
+        <span class="k">if</span> <span class="n">code_lists</span><span class="p">:</span>
+            <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;CodeList&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">code_lists</span>
+        <span class="k">if</span> <span class="n">method_defs</span><span class="p">:</span>
+            <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;MethodDef&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">method_defs</span>
+        <span class="k">if</span> <span class="n">comment_defs</span><span class="p">:</span>
+            <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;CommentDef&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">comment_defs</span>
+        <span class="k">if</span> <span class="n">leaves</span><span class="p">:</span>
+            <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;leaf&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">leaves</span>
+
+        <span class="k">return</span> <span class="n">DEF</span><span class="o">.</span><span class="n">MetaDataVersion</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_build_odm</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">metadata_version</span><span class="p">:</span> <span class="n">DEF</span><span class="o">.</span><span class="n">MetaDataVersion</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DEF</span><span class="o">.</span><span class="n">ODM</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Build the root ODM element from the study dataset.&quot;&quot;&quot;</span>
+        <span class="n">study_rows</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_rows_as_dicts</span><span class="p">(</span><span class="s2">&quot;study&quot;</span><span class="p">)</span>
+        <span class="n">study_row</span> <span class="o">=</span> <span class="n">study_rows</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+        <span class="n">gv</span> <span class="o">=</span> <span class="n">DEF</span><span class="o">.</span><span class="n">GlobalVariables</span><span class="p">(</span>
+            <span class="n">StudyName</span><span class="o">=</span><span class="n">DEF</span><span class="o">.</span><span class="n">StudyName</span><span class="p">(</span><span class="n">_content</span><span class="o">=</span><span class="n">study_row</span><span class="p">[</span><span class="s2">&quot;StudyName&quot;</span><span class="p">]</span> <span class="ow">or</span> <span class="s2">&quot;&quot;</span><span class="p">),</span>
+            <span class="n">StudyDescription</span><span class="o">=</span><span class="n">DEF</span><span class="o">.</span><span class="n">StudyDescription</span><span class="p">(</span>
+                <span class="n">_content</span><span class="o">=</span><span class="n">study_row</span><span class="p">[</span><span class="s2">&quot;StudyDescription&quot;</span><span class="p">]</span> <span class="ow">or</span> <span class="s2">&quot;&quot;</span>
+            <span class="p">),</span>
+            <span class="n">ProtocolName</span><span class="o">=</span><span class="n">DEF</span><span class="o">.</span><span class="n">ProtocolName</span><span class="p">(</span>
+                <span class="n">_content</span><span class="o">=</span><span class="n">study_row</span><span class="p">[</span><span class="s2">&quot;ProtocolName&quot;</span><span class="p">]</span> <span class="ow">or</span> <span class="s2">&quot;&quot;</span>
+            <span class="p">),</span>
+        <span class="p">)</span>
+
+        <span class="n">study</span> <span class="o">=</span> <span class="n">DEF</span><span class="o">.</span><span class="n">Study</span><span class="p">(</span>
+            <span class="n">OID</span><span class="o">=</span><span class="n">study_row</span><span class="p">[</span><span class="s2">&quot;StudyOID&quot;</span><span class="p">],</span>
+            <span class="n">GlobalVariables</span><span class="o">=</span><span class="n">gv</span><span class="p">,</span>
+            <span class="n">MetaDataVersion</span><span class="o">=</span><span class="n">metadata_version</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="n">odm_kwargs</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;FileType&quot;</span><span class="p">:</span> <span class="s2">&quot;Snapshot&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;FileOID&quot;</span><span class="p">:</span> <span class="n">study_row</span><span class="p">[</span><span class="s2">&quot;FileOID&quot;</span><span class="p">],</span>
+            <span class="s2">&quot;CreationDateTime&quot;</span><span class="p">:</span> <span class="n">study_row</span><span class="p">[</span><span class="s2">&quot;CreationDateTime&quot;</span><span class="p">],</span>
+            <span class="s2">&quot;ODMVersion&quot;</span><span class="p">:</span> <span class="s2">&quot;1.3.2&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Context&quot;</span><span class="p">:</span> <span class="n">study_row</span><span class="p">[</span><span class="s2">&quot;Context&quot;</span><span class="p">],</span>
+            <span class="s2">&quot;Study&quot;</span><span class="p">:</span> <span class="n">study</span><span class="p">,</span>
+        <span class="p">}</span>
+        <span class="n">_optional</span><span class="p">(</span><span class="n">odm_kwargs</span><span class="p">,</span> <span class="s2">&quot;AsOfDateTime&quot;</span><span class="p">,</span> <span class="n">study_row</span><span class="p">[</span><span class="s2">&quot;AsOfDateTime&quot;</span><span class="p">])</span>
+        <span class="n">_optional</span><span class="p">(</span><span class="n">odm_kwargs</span><span class="p">,</span> <span class="s2">&quot;Originator&quot;</span><span class="p">,</span> <span class="n">study_row</span><span class="p">[</span><span class="s2">&quot;Originator&quot;</span><span class="p">])</span>
+        <span class="n">_optional</span><span class="p">(</span><span class="n">odm_kwargs</span><span class="p">,</span> <span class="s2">&quot;SourceSystem&quot;</span><span class="p">,</span> <span class="n">study_row</span><span class="p">[</span><span class="s2">&quot;SourceSystem&quot;</span><span class="p">])</span>
+        <span class="n">_optional</span><span class="p">(</span><span class="n">odm_kwargs</span><span class="p">,</span> <span class="s2">&quot;SourceSystemVersion&quot;</span><span class="p">,</span>
+                  <span class="n">study_row</span><span class="p">[</span><span class="s2">&quot;SourceSystemVersion&quot;</span><span class="p">])</span>
+
+        <span class="k">return</span> <span class="n">DEF</span><span class="o">.</span><span class="n">ODM</span><span class="p">(</span><span class="o">**</span><span class="n">odm_kwargs</span><span class="p">)</span></div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2020, Sam Hume.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

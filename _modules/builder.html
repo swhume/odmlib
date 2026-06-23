@@ -1,0 +1,942 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>builder &mdash; odmlib 0.2.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=938c9ccc"></script>
+      <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            odmlib
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">User Guides</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../guides/getting_started.html">Getting Started with odmlib</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guides/reading_documents.html">Reading ODM Documents</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guides/permissive_loading.html">Permissive Loading Mode</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guides/creating_documents.html">Creating ODM Documents</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guides/validation.html">Validating ODM Documents</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guides/model_reference.html">Model Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guides/interoperability.html">Interoperability: Dataset-JSON and Pandas</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guides/dataset_json.html">Working with Dataset-JSON v1.1</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../modules.html">odmlib</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../odmlib.odm_1_3_2.html">odm_1_3_2 package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../odmlib.odm_2_0.html">odm_2_0 package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../odmlib.define_2_0.html">define_2_0 package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../odmlib.define_2_1.html">define_2_1 package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../odmlib.dataset_1_0_1.html">odmlib.dataset_1_0_1 module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../odmlib.ct_1_1_1.html">odmlib.ct_1_1_1 module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../odmlib.arm_1_0.html">odmlib.arm_1_0 module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../odmlib.dataset_json_1_1.html">odmlib.dataset_json_1_1</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../odmlib.dataframe.html">odmlib.dataframe</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Project</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../changelog.html">Changelog</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">odmlib</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">Module code</a></li>
+      <li class="breadcrumb-item active">builder</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for builder</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Optional builder/fluent API for constructing ODM documents.</span>
+
+<span class="sd">The builder provides a chainable interface for constructing complex</span>
+<span class="sd">documents with less boilerplate. It wraps the standard odmlib model</span>
+<span class="sd">classes and is purely additive — all existing APIs continue to work</span>
+<span class="sd">unchanged.</span>
+
+<span class="sd">Example::</span>
+
+<span class="sd">    from odmlib.builder import ODMBuilder</span>
+
+<span class="sd">    odm = (ODMBuilder(&quot;odm_1_3_2&quot;)</span>
+<span class="sd">        .set_file(FileOID=&quot;F.001&quot;, FileType=&quot;Snapshot&quot;,</span>
+<span class="sd">                  CreationDateTime=&quot;2024-01-01T00:00:00&quot;)</span>
+<span class="sd">        .add_study(OID=&quot;S.001&quot;,</span>
+<span class="sd">                   study_name=&quot;My Study&quot;,</span>
+<span class="sd">                   study_description=&quot;A study&quot;,</span>
+<span class="sd">                   protocol_name=&quot;PROT-001&quot;)</span>
+<span class="sd">        .add_metadata_version(OID=&quot;MDV.001&quot;, Name=&quot;Version 1&quot;)</span>
+<span class="sd">        .add_item_group_def(OID=&quot;IG.DM&quot;, Name=&quot;Demographics&quot;, Repeating=&quot;No&quot;)</span>
+<span class="sd">        .add_item_ref(ItemOID=&quot;IT.SUBJID&quot;, Mandatory=&quot;Yes&quot;, OrderNumber=1)</span>
+<span class="sd">        .add_item_ref(ItemOID=&quot;IT.AGE&quot;, Mandatory=&quot;No&quot;, OrderNumber=2)</span>
+<span class="sd">        .build())</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Optional</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">importlib</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">odmlib.odm_element</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">OE</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">odmlib.typed</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">T</span>
+
+
+<div class="viewcode-block" id="ODMBuilder">
+<a class="viewcode-back" href="../modules.html#builder.ODMBuilder">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">ODMBuilder</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Fluent builder for constructing ODM documents.</span>
+
+<span class="sd">    Maintains state for the currently active Study, MetaDataVersion,</span>
+<span class="sd">    and ItemGroupDef so that ``add_*`` calls automatically append to</span>
+<span class="sd">    the right parent.</span>
+
+<span class="sd">    Works with ``odm_1_3_2``, ``define_2_0``, ``define_2_1`` and</span>
+<span class="sd">    ``odm_2_0``.  Model-shape differences are handled automatically —</span>
+<span class="sd">    notably the ODM 2.0 ``Study`` (scalar ``StudyName`` / ``ProtocolName``,</span>
+<span class="sd">    no ``GlobalVariables``) and its object-valued ``Description``.  Note</span>
+<span class="sd">    that ODM 2.0 is structurally flatter: ``StudyEventDef`` references</span>
+<span class="sd">    ``ItemGroupRef`` directly (there is no ``FormDef`` / ``FormRef``), so</span>
+<span class="sd">    the form-level helpers do not apply to ``odm_2_0``.</span>
+
+<span class="sd">    :param model_package: The odmlib model package to use.</span>
+<span class="sd">        Defaults to ``&quot;odm_1_3_2&quot;``.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model_package</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;odm_1_3_2&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_model</span> <span class="o">=</span> <span class="n">importlib</span><span class="o">.</span><span class="n">import_module</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;odmlib.</span><span class="si">{</span><span class="n">model_package</span><span class="si">}</span><span class="s2">.model&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_file_attrs</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_studies</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_current_study</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_current_mdv</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_current_igd</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_current_item_def</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_current_form_def</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_current_sed</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="c1"># ------------------------------------------------------------------</span>
+    <span class="c1"># Model-shape detection</span>
+    <span class="c1"># ------------------------------------------------------------------</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_uses_global_variables</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Whether the active model uses the ODM 1.3.2 study structure.</span>
+
+<span class="sd">        ODM 1.3.2 and the Define-XML models nest study identification under</span>
+<span class="sd">        a ``GlobalVariables`` element (with ``StudyName`` /</span>
+<span class="sd">        ``StudyDescription`` / ``ProtocolName`` child elements) and model</span>
+<span class="sd">        ``MetaDataVersion.Description`` as a plain string.  ODM 2.0 has a</span>
+<span class="sd">        flatter shape: scalar ``StudyName`` / ``ProtocolName`` attributes on</span>
+<span class="sd">        ``Study``, an object-valued ``Study.Description``, and an</span>
+<span class="sd">        object-valued ``MetaDataVersion.Description``.  Presence of the</span>
+<span class="sd">        ``GlobalVariables`` class is a precise proxy for that distinction.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_model</span><span class="p">,</span> <span class="s2">&quot;GlobalVariables&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_translated_text</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kw</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Construct a model ``TranslatedText``.</span>
+
+<span class="sd">        ODM 2.0 makes ``TranslatedText/@Type`` required (a free-text media</span>
+<span class="sd">        type per the XSD). For the ODM 2.0 model shape this helper defaults</span>
+<span class="sd">        ``Type=&quot;text/plain&quot;`` so builder output is schema- and model-valid;</span>
+<span class="sd">        an explicit ``Type`` in ``kw`` always wins. For ODM 1.3.2 / Define</span>
+<span class="sd">        (which have a ``GlobalVariables`` element and no required ``Type``)</span>
+<span class="sd">        the kwargs are passed through unchanged, so output is byte-identical</span>
+<span class="sd">        to before.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">M</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_model</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_uses_global_variables</span><span class="p">()</span> <span class="ow">and</span> <span class="s2">&quot;Type&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">kw</span><span class="p">:</span>
+            <span class="n">kw</span><span class="p">[</span><span class="s2">&quot;Type&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;text/plain&quot;</span>
+        <span class="k">return</span> <span class="n">M</span><span class="o">.</span><span class="n">TranslatedText</span><span class="p">(</span><span class="o">**</span><span class="n">kw</span><span class="p">)</span>
+
+    <span class="c1"># ------------------------------------------------------------------</span>
+    <span class="c1"># File-level</span>
+    <span class="c1"># ------------------------------------------------------------------</span>
+
+<div class="viewcode-block" id="ODMBuilder.set_file">
+<a class="viewcode-back" href="../modules.html#builder.ODMBuilder.set_file">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">set_file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ODMBuilder</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Set ODM file-level attributes (FileOID, FileType, CreationDateTime, …).</span>
+
+<span class="sd">        These are passed directly to the ``ODM`` constructor when</span>
+<span class="sd">        :meth:`build` is called.</span>
+
+<span class="sd">        :returns: self, for chaining.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_file_attrs</span> <span class="o">=</span> <span class="n">kwargs</span>
+        <span class="k">return</span> <span class="bp">self</span></div>
+
+
+    <span class="c1"># ------------------------------------------------------------------</span>
+    <span class="c1"># Study</span>
+    <span class="c1"># ------------------------------------------------------------------</span>
+
+<div class="viewcode-block" id="ODMBuilder.add_study">
+<a class="viewcode-back" href="../modules.html#builder.ODMBuilder.add_study">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">add_study</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">OID</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">study_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+                  <span class="n">study_description</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">protocol_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+                  <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ODMBuilder</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Add a Study element.</span>
+
+<span class="sd">        The Study is constructed in whichever shape the active model uses:</span>
+
+<span class="sd">        - **ODM 1.3.2 / Define-XML:** a ``GlobalVariables`` element wrapping</span>
+<span class="sd">          ``StudyName`` / ``StudyDescription`` / ``ProtocolName`` children.</span>
+<span class="sd">        - **ODM 2.0:** scalar ``StudyName`` / ``ProtocolName`` attributes on</span>
+<span class="sd">          ``Study`` plus an object-valued ``Description`` (there is no</span>
+<span class="sd">          ``GlobalVariables`` element in ODM 2.0).</span>
+
+<span class="sd">        :param OID: Study OID.</span>
+<span class="sd">        :param study_name: Study name (StudyName content/attribute).</span>
+<span class="sd">        :param study_description: Study description.</span>
+<span class="sd">        :param protocol_name: Protocol name (ProtocolName content/attribute).</span>
+<span class="sd">        :param kwargs: Additional Study attributes.</span>
+<span class="sd">        :returns: self, for chaining.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">M</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_model</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_uses_global_variables</span><span class="p">():</span>
+            <span class="n">sn</span> <span class="o">=</span> <span class="n">M</span><span class="o">.</span><span class="n">StudyName</span><span class="p">(</span><span class="n">_content</span><span class="o">=</span><span class="n">study_name</span><span class="p">)</span>
+            <span class="n">sd</span> <span class="o">=</span> <span class="n">M</span><span class="o">.</span><span class="n">StudyDescription</span><span class="p">(</span><span class="n">_content</span><span class="o">=</span><span class="n">study_description</span><span class="p">)</span>
+            <span class="n">pn</span> <span class="o">=</span> <span class="n">M</span><span class="o">.</span><span class="n">ProtocolName</span><span class="p">(</span><span class="n">_content</span><span class="o">=</span><span class="n">protocol_name</span><span class="p">)</span>
+            <span class="n">gv</span> <span class="o">=</span> <span class="n">M</span><span class="o">.</span><span class="n">GlobalVariables</span><span class="p">(</span><span class="n">StudyName</span><span class="o">=</span><span class="n">sn</span><span class="p">,</span> <span class="n">StudyDescription</span><span class="o">=</span><span class="n">sd</span><span class="p">,</span>
+                                   <span class="n">ProtocolName</span><span class="o">=</span><span class="n">pn</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_current_study</span> <span class="o">=</span> <span class="n">M</span><span class="o">.</span><span class="n">Study</span><span class="p">(</span><span class="n">OID</span><span class="o">=</span><span class="n">OID</span><span class="p">,</span> <span class="n">GlobalVariables</span><span class="o">=</span><span class="n">gv</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># ODM 2.0: StudyName/ProtocolName are scalar attributes; the</span>
+            <span class="c1"># description is an object-valued Description element.</span>
+            <span class="n">desc</span> <span class="o">=</span> <span class="n">M</span><span class="o">.</span><span class="n">Description</span><span class="p">(</span><span class="n">TranslatedText</span><span class="o">=</span><span class="p">[</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_translated_text</span><span class="p">(</span><span class="n">_content</span><span class="o">=</span><span class="n">study_description</span><span class="p">,</span> <span class="n">lang</span><span class="o">=</span><span class="s2">&quot;en&quot;</span><span class="p">)])</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_current_study</span> <span class="o">=</span> <span class="n">M</span><span class="o">.</span><span class="n">Study</span><span class="p">(</span>
+                <span class="n">OID</span><span class="o">=</span><span class="n">OID</span><span class="p">,</span> <span class="n">StudyName</span><span class="o">=</span><span class="n">study_name</span><span class="p">,</span> <span class="n">ProtocolName</span><span class="o">=</span><span class="n">protocol_name</span><span class="p">,</span>
+                <span class="n">Description</span><span class="o">=</span><span class="n">desc</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_studies</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_current_study</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span></div>
+
+
+    <span class="c1"># ------------------------------------------------------------------</span>
+    <span class="c1"># MetaDataVersion</span>
+    <span class="c1"># ------------------------------------------------------------------</span>
+
+<div class="viewcode-block" id="ODMBuilder.add_metadata_version">
+<a class="viewcode-back" href="../modules.html#builder.ODMBuilder.add_metadata_version">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">add_metadata_version</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ODMBuilder</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Add a MetaDataVersion to the current Study.</span>
+
+<span class="sd">        :param kwargs: MetaDataVersion attributes (OID, Name, …).</span>
+<span class="sd">        :returns: self, for chaining.</span>
+<span class="sd">        :raises RuntimeError: if no Study has been added yet.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_current_study</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;Call add_study() before add_metadata_version()&quot;</span><span class="p">)</span>
+        <span class="n">M</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_model</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_current_mdv</span> <span class="o">=</span> <span class="n">M</span><span class="o">.</span><span class="n">MetaDataVersion</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_current_study</span><span class="o">.</span><span class="n">MetaDataVersion</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_current_mdv</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span></div>
+
+
+    <span class="c1"># ------------------------------------------------------------------</span>
+    <span class="c1"># ItemGroupDef</span>
+    <span class="c1"># ------------------------------------------------------------------</span>
+
+<div class="viewcode-block" id="ODMBuilder.add_item_group_def">
+<a class="viewcode-back" href="../modules.html#builder.ODMBuilder.add_item_group_def">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">add_item_group_def</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ODMBuilder</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Add an ItemGroupDef to the current MetaDataVersion.</span>
+
+<span class="sd">        :param kwargs: ItemGroupDef attributes (OID, Name, Repeating, …).</span>
+<span class="sd">        :returns: self, for chaining.</span>
+<span class="sd">        :raises RuntimeError: if no MetaDataVersion has been added yet.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_current_mdv</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;Call add_metadata_version() before add_item_group_def()&quot;</span><span class="p">)</span>
+        <span class="n">M</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_model</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_current_igd</span> <span class="o">=</span> <span class="n">M</span><span class="o">.</span><span class="n">ItemGroupDef</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_current_mdv</span><span class="o">.</span><span class="n">ItemGroupDef</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_current_igd</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span></div>
+
+
+    <span class="c1"># ------------------------------------------------------------------</span>
+    <span class="c1"># ItemRef</span>
+    <span class="c1"># ------------------------------------------------------------------</span>
+
+<div class="viewcode-block" id="ODMBuilder.add_item_ref">
+<a class="viewcode-back" href="../modules.html#builder.ODMBuilder.add_item_ref">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">add_item_ref</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ODMBuilder</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Add an ItemRef to the current ItemGroupDef.</span>
+
+<span class="sd">        :param kwargs: ItemRef attributes (ItemOID, Mandatory, OrderNumber, …).</span>
+<span class="sd">        :returns: self, for chaining.</span>
+<span class="sd">        :raises RuntimeError: if no ItemGroupDef has been added yet.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_current_igd</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;Call add_item_group_def() before add_item_ref()&quot;</span><span class="p">)</span>
+        <span class="n">M</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_model</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_current_igd</span><span class="o">.</span><span class="n">ItemRef</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">M</span><span class="o">.</span><span class="n">ItemRef</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">))</span>
+        <span class="k">return</span> <span class="bp">self</span></div>
+
+
+    <span class="c1"># ------------------------------------------------------------------</span>
+    <span class="c1"># ItemDef</span>
+    <span class="c1"># ------------------------------------------------------------------</span>
+
+<div class="viewcode-block" id="ODMBuilder.add_item_def">
+<a class="viewcode-back" href="../modules.html#builder.ODMBuilder.add_item_def">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">add_item_def</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ODMBuilder</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Add an ItemDef to the current MetaDataVersion.</span>
+
+<span class="sd">        :param kwargs: ItemDef attributes (OID, Name, DataType, …).</span>
+<span class="sd">        :returns: self, for chaining.</span>
+<span class="sd">        :raises RuntimeError: if no MetaDataVersion has been added yet.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_current_mdv</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;Call add_metadata_version() before add_item_def()&quot;</span><span class="p">)</span>
+        <span class="n">M</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_model</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_current_item_def</span> <span class="o">=</span> <span class="n">M</span><span class="o">.</span><span class="n">ItemDef</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_current_mdv</span><span class="o">.</span><span class="n">ItemDef</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_current_item_def</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span></div>
+
+
+    <span class="c1"># ------------------------------------------------------------------</span>
+    <span class="c1"># CodeList</span>
+    <span class="c1"># ------------------------------------------------------------------</span>
+
+<div class="viewcode-block" id="ODMBuilder.add_code_list">
+<a class="viewcode-back" href="../modules.html#builder.ODMBuilder.add_code_list">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">add_code_list</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">OID</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">Name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">DataType</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+                      <span class="n">items</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">list</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                      <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ODMBuilder</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Add a CodeList to the current MetaDataVersion.</span>
+
+<span class="sd">        :param OID: CodeList OID.</span>
+<span class="sd">        :param Name: CodeList name.</span>
+<span class="sd">        :param DataType: Coded value data type.</span>
+<span class="sd">        :param items: Optional list of dicts.  Each dict must have a</span>
+<span class="sd">            ``&quot;CodedValue&quot;`` key and may have a ``&quot;Decode&quot;`` key</span>
+<span class="sd">            (a plain English label string).  If ``&quot;Decode&quot;`` is present</span>
+<span class="sd">            a CodeListItem is created; otherwise an EnumeratedItem.</span>
+<span class="sd">        :param kwargs: Additional CodeList attributes.</span>
+<span class="sd">        :returns: self, for chaining.</span>
+<span class="sd">        :raises RuntimeError: if no MetaDataVersion has been added yet.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_current_mdv</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;Call add_metadata_version() before add_code_list()&quot;</span><span class="p">)</span>
+        <span class="n">M</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_model</span>
+        <span class="n">cl</span> <span class="o">=</span> <span class="n">M</span><span class="o">.</span><span class="n">CodeList</span><span class="p">(</span><span class="n">OID</span><span class="o">=</span><span class="n">OID</span><span class="p">,</span> <span class="n">Name</span><span class="o">=</span><span class="n">Name</span><span class="p">,</span> <span class="n">DataType</span><span class="o">=</span><span class="n">DataType</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">items</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">items</span><span class="p">:</span>
+                <span class="n">coded_value</span> <span class="o">=</span> <span class="n">item</span><span class="p">[</span><span class="s2">&quot;CodedValue&quot;</span><span class="p">]</span>
+                <span class="n">decode_text</span> <span class="o">=</span> <span class="n">item</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;Decode&quot;</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">decode_text</span><span class="p">:</span>
+                    <span class="n">decode</span> <span class="o">=</span> <span class="n">M</span><span class="o">.</span><span class="n">Decode</span><span class="p">(</span><span class="n">TranslatedText</span><span class="o">=</span><span class="p">[</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">_translated_text</span><span class="p">(</span><span class="n">_content</span><span class="o">=</span><span class="n">decode_text</span><span class="p">,</span> <span class="n">lang</span><span class="o">=</span><span class="s2">&quot;en&quot;</span><span class="p">)])</span>
+                    <span class="n">cl</span><span class="o">.</span><span class="n">CodeListItem</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                        <span class="n">M</span><span class="o">.</span><span class="n">CodeListItem</span><span class="p">(</span><span class="n">CodedValue</span><span class="o">=</span><span class="n">coded_value</span><span class="p">,</span> <span class="n">Decode</span><span class="o">=</span><span class="n">decode</span><span class="p">))</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">cl</span><span class="o">.</span><span class="n">EnumeratedItem</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                        <span class="n">M</span><span class="o">.</span><span class="n">EnumeratedItem</span><span class="p">(</span><span class="n">CodedValue</span><span class="o">=</span><span class="n">coded_value</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_current_mdv</span><span class="o">.</span><span class="n">CodeList</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">cl</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span></div>
+
+
+    <span class="c1"># ------------------------------------------------------------------</span>
+    <span class="c1"># Description helper</span>
+    <span class="c1"># ------------------------------------------------------------------</span>
+
+<div class="viewcode-block" id="ODMBuilder.with_description">
+<a class="viewcode-back" href="../modules.html#builder.ODMBuilder.with_description">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">with_description</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">lang</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;en&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ODMBuilder</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Attach a Description to the most recently created element.</span>
+
+<span class="sd">        Applies to the most recently created ItemGroupDef or ItemDef.</span>
+<span class="sd">        Falls back to the current MetaDataVersion if neither is set.</span>
+
+<span class="sd">        :param text: Description text.</span>
+<span class="sd">        :param lang: Language code (default ``&quot;en&quot;``).</span>
+<span class="sd">        :returns: self, for chaining.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">M</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_model</span>
+        <span class="n">desc</span> <span class="o">=</span> <span class="n">M</span><span class="o">.</span><span class="n">Description</span><span class="p">(</span><span class="n">TranslatedText</span><span class="o">=</span><span class="p">[</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_translated_text</span><span class="p">(</span><span class="n">_content</span><span class="o">=</span><span class="n">text</span><span class="p">,</span> <span class="n">lang</span><span class="o">=</span><span class="n">lang</span><span class="p">)])</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_current_item_def</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_current_item_def</span><span class="o">.</span><span class="n">Description</span> <span class="o">=</span> <span class="n">desc</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">_current_igd</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_current_igd</span><span class="o">.</span><span class="n">Description</span> <span class="o">=</span> <span class="n">desc</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">_current_mdv</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_uses_global_variables</span><span class="p">():</span>
+                <span class="c1"># ODM 1.3.2 / Define: MetaDataVersion.Description is a String.</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_current_mdv</span><span class="o">.</span><span class="n">Description</span> <span class="o">=</span> <span class="n">text</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c1"># ODM 2.0: MetaDataVersion.Description is a Description object.</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_current_mdv</span><span class="o">.</span><span class="n">Description</span> <span class="o">=</span> <span class="n">desc</span>
+        <span class="k">return</span> <span class="bp">self</span></div>
+
+
+    <span class="c1"># ------------------------------------------------------------------</span>
+    <span class="c1"># Protocol / StudyEventDef / StudyEventRef</span>
+    <span class="c1"># ------------------------------------------------------------------</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_require_v1</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">feature</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Raise if the active model is ODM 2.0 (which lacks ``feature``).&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_uses_global_variables</span><span class="p">():</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">feature</span><span class="si">}</span><span class="s2"> is not part of ODM 2.0. In ODM 2.0 a &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;StudyEventDef references ItemGroupRef directly — use &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;add_study_event_def() then add_item_group_ref().&quot;</span><span class="p">)</span>
+
+<div class="viewcode-block" id="ODMBuilder.add_study_event_def">
+<a class="viewcode-back" href="../modules.html#builder.ODMBuilder.add_study_event_def">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">add_study_event_def</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ODMBuilder</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Add a StudyEventDef to the current MetaDataVersion.</span>
+
+<span class="sd">        The StudyEventDef is appended to ``MetaDataVersion.StudyEventDef``</span>
+<span class="sd">        and becomes the *current* study event so that subsequent</span>
+<span class="sd">        :meth:`add_form_ref` (ODM 1.3.2) or :meth:`add_item_group_ref`</span>
+<span class="sd">        (ODM 2.0) calls attach to it.  This does *not* create a Protocol</span>
+<span class="sd">        reference — use :meth:`add_study_event_ref` for that.</span>
+
+<span class="sd">        :param kwargs: StudyEventDef attributes (OID, Name, Repeating, Type, …).</span>
+<span class="sd">        :returns: self, for chaining.</span>
+<span class="sd">        :raises RuntimeError: if no MetaDataVersion has been added yet.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_current_mdv</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;Call add_metadata_version() before add_study_event_def()&quot;</span><span class="p">)</span>
+        <span class="n">M</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_model</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_current_sed</span> <span class="o">=</span> <span class="n">M</span><span class="o">.</span><span class="n">StudyEventDef</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_current_form_def</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_current_mdv</span><span class="o">.</span><span class="n">StudyEventDef</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_current_sed</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span></div>
+
+
+<div class="viewcode-block" id="ODMBuilder.add_study_event_ref">
+<a class="viewcode-back" href="../modules.html#builder.ODMBuilder.add_study_event_ref">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">add_study_event_ref</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ODMBuilder</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Add a StudyEventRef to the current MetaDataVersion&#39;s Protocol.</span>
+
+<span class="sd">        The Protocol element is created automatically if it does not exist</span>
+<span class="sd">        yet.</span>
+
+<span class="sd">        .. warning::</span>
+
+<span class="sd">           **Not valid for ``model_package=&quot;odm_2_0&quot;``.** The ODM 2.0 XSD</span>
+<span class="sd">           removed ``Protocol/StudyEventRef`` (Protocol uses</span>
+<span class="sd">           ``StudyEventGroupRef`` instead); a document built with this helper</span>
+<span class="sd">           under odm_2_0 is schema-invalid. See ROADMAP &quot;v0.2.1 — ODM 2.0</span>
+<span class="sd">           Model/XSD Alignment&quot; and ``ODM20-MODEL-XSD-DIFFERENCES_PLAN.md``</span>
+<span class="sd">           §3.3. Safe for ODM 1.3.2.</span>
+
+<span class="sd">        :param kwargs: StudyEventRef attributes (StudyEventOID, Mandatory,</span>
+<span class="sd">            OrderNumber, …).</span>
+<span class="sd">        :returns: self, for chaining.</span>
+<span class="sd">        :raises RuntimeError: if no MetaDataVersion has been added yet.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_current_mdv</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;Call add_metadata_version() before add_study_event_ref()&quot;</span><span class="p">)</span>
+        <span class="n">M</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_model</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_current_mdv</span><span class="o">.</span><span class="n">Protocol</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_current_mdv</span><span class="o">.</span><span class="n">Protocol</span> <span class="o">=</span> <span class="n">M</span><span class="o">.</span><span class="n">Protocol</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_current_mdv</span><span class="o">.</span><span class="n">Protocol</span><span class="o">.</span><span class="n">StudyEventRef</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">M</span><span class="o">.</span><span class="n">StudyEventRef</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">))</span>
+        <span class="k">return</span> <span class="bp">self</span></div>
+
+
+    <span class="c1"># ------------------------------------------------------------------</span>
+    <span class="c1"># FormDef / FormRef (ODM 1.3.2 / Define-XML only)</span>
+    <span class="c1"># ------------------------------------------------------------------</span>
+
+<div class="viewcode-block" id="ODMBuilder.add_form_def">
+<a class="viewcode-back" href="../modules.html#builder.ODMBuilder.add_form_def">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">add_form_def</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ODMBuilder</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Add a FormDef to the current MetaDataVersion (ODM 1.3.2 only).</span>
+
+<span class="sd">        Becomes the current form so that :meth:`add_item_group_ref`</span>
+<span class="sd">        attaches its ItemGroupRefs here.</span>
+
+<span class="sd">        :param kwargs: FormDef attributes (OID, Name, Repeating, …).</span>
+<span class="sd">        :returns: self, for chaining.</span>
+<span class="sd">        :raises RuntimeError: if no MetaDataVersion yet, or model is ODM 2.0.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_current_mdv</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;Call add_metadata_version() before add_form_def()&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_require_v1</span><span class="p">(</span><span class="s2">&quot;FormDef&quot;</span><span class="p">)</span>
+        <span class="n">M</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_model</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_current_form_def</span> <span class="o">=</span> <span class="n">M</span><span class="o">.</span><span class="n">FormDef</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_current_mdv</span><span class="o">.</span><span class="n">FormDef</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_current_form_def</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span></div>
+
+
+<div class="viewcode-block" id="ODMBuilder.add_form_ref">
+<a class="viewcode-back" href="../modules.html#builder.ODMBuilder.add_form_ref">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">add_form_ref</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ODMBuilder</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Add a FormRef to the current StudyEventDef (ODM 1.3.2 only).</span>
+
+<span class="sd">        :param kwargs: FormRef attributes (FormOID, Mandatory, OrderNumber, …).</span>
+<span class="sd">        :returns: self, for chaining.</span>
+<span class="sd">        :raises RuntimeError: if no StudyEventDef yet, or model is ODM 2.0.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_require_v1</span><span class="p">(</span><span class="s2">&quot;FormRef&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_current_sed</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;Call add_study_event_def() before add_form_ref()&quot;</span><span class="p">)</span>
+        <span class="n">M</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_model</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_current_sed</span><span class="o">.</span><span class="n">FormRef</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">M</span><span class="o">.</span><span class="n">FormRef</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">))</span>
+        <span class="k">return</span> <span class="bp">self</span></div>
+
+
+<div class="viewcode-block" id="ODMBuilder.add_item_group_ref">
+<a class="viewcode-back" href="../modules.html#builder.ODMBuilder.add_item_group_ref">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">add_item_group_ref</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ODMBuilder</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Add an ItemGroupRef to the appropriate parent.</span>
+
+<span class="sd">        In ODM 1.3.2 / Define-XML the ItemGroupRef is added to the current</span>
+<span class="sd">        FormDef (call :meth:`add_form_def` first).  In ODM 2.0 — which has</span>
+<span class="sd">        no FormDef — it is added to the current StudyEventDef (call</span>
+<span class="sd">        :meth:`add_study_event_def` first).</span>
+
+<span class="sd">        :param kwargs: ItemGroupRef attributes (ItemGroupOID, Mandatory, …).</span>
+<span class="sd">        :returns: self, for chaining.</span>
+<span class="sd">        :raises RuntimeError: if the required parent has not been added yet.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">M</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_model</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_uses_global_variables</span><span class="p">():</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_current_form_def</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;Call add_form_def() before add_item_group_ref()&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_current_form_def</span><span class="o">.</span><span class="n">ItemGroupRef</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">M</span><span class="o">.</span><span class="n">ItemGroupRef</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_current_sed</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
+                    <span class="s2">&quot;Call add_study_event_def() before add_item_group_ref()&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_current_sed</span><span class="o">.</span><span class="n">ItemGroupRef</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">M</span><span class="o">.</span><span class="n">ItemGroupRef</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">))</span>
+        <span class="k">return</span> <span class="bp">self</span></div>
+
+
+    <span class="c1"># ------------------------------------------------------------------</span>
+    <span class="c1"># MethodDef / ConditionDef</span>
+    <span class="c1"># ------------------------------------------------------------------</span>
+
+<div class="viewcode-block" id="ODMBuilder.add_method_def">
+<a class="viewcode-back" href="../modules.html#builder.ODMBuilder.add_method_def">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">add_method_def</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">OID</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">Name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">Type</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">description</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+                        <span class="n">formal_expression</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                        <span class="n">expression_context</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;Python&quot;</span><span class="p">,</span>
+                        <span class="n">lang</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;en&quot;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ODMBuilder</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Add a MethodDef to the current MetaDataVersion.</span>
+
+<span class="sd">        MethodDef requires a Description; it is built from ``description``.</span>
+<span class="sd">        An optional FormalExpression is added when ``formal_expression`` is</span>
+<span class="sd">        given.</span>
+
+<span class="sd">        .. warning::</span>
+
+<span class="sd">           For ``model_package=&quot;odm_2_0&quot;``, do **not** pass</span>
+<span class="sd">           ``formal_expression``: ODM 2.0 ``FormalExpression`` is</span>
+<span class="sd">           element-based (``Code | ExternalCodeLib``) while odmlib&#39;s model is</span>
+<span class="sd">           text-based, so a text FormalExpression is schema-invalid. The</span>
+<span class="sd">           Description-only form is valid. See ROADMAP &quot;v0.2.1 — ODM 2.0</span>
+<span class="sd">           Model/XSD Alignment&quot; / ``ODM20-MODEL-XSD-DIFFERENCES_PLAN.md`` §3.2.</span>
+
+<span class="sd">        :param OID: Method OID.</span>
+<span class="sd">        :param Name: Method name.</span>
+<span class="sd">        :param Type: Method type (e.g. &quot;Computation&quot;, &quot;Imputation&quot;).</span>
+<span class="sd">        :param description: Human-readable description text.</span>
+<span class="sd">        :param formal_expression: Optional expression source code.</span>
+<span class="sd">        :param expression_context: FormalExpression Context (e.g. &quot;Python&quot;,</span>
+<span class="sd">            &quot;SAS&quot;); used only when ``formal_expression`` is given.</span>
+<span class="sd">        :param lang: Language code for the Description (default ``&quot;en&quot;``).</span>
+<span class="sd">        :param kwargs: Additional MethodDef attributes.</span>
+<span class="sd">        :returns: self, for chaining.</span>
+<span class="sd">        :raises RuntimeError: if no MetaDataVersion has been added yet.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_current_mdv</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;Call add_metadata_version() before add_method_def()&quot;</span><span class="p">)</span>
+        <span class="n">M</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_model</span>
+        <span class="n">desc</span> <span class="o">=</span> <span class="n">M</span><span class="o">.</span><span class="n">Description</span><span class="p">(</span><span class="n">TranslatedText</span><span class="o">=</span><span class="p">[</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_translated_text</span><span class="p">(</span><span class="n">_content</span><span class="o">=</span><span class="n">description</span><span class="p">,</span> <span class="n">lang</span><span class="o">=</span><span class="n">lang</span><span class="p">)])</span>
+        <span class="n">md</span> <span class="o">=</span> <span class="n">M</span><span class="o">.</span><span class="n">MethodDef</span><span class="p">(</span><span class="n">OID</span><span class="o">=</span><span class="n">OID</span><span class="p">,</span> <span class="n">Name</span><span class="o">=</span><span class="n">Name</span><span class="p">,</span> <span class="n">Type</span><span class="o">=</span><span class="n">Type</span><span class="p">,</span> <span class="n">Description</span><span class="o">=</span><span class="n">desc</span><span class="p">,</span>
+                         <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">formal_expression</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">md</span><span class="o">.</span><span class="n">FormalExpression</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">M</span><span class="o">.</span><span class="n">FormalExpression</span><span class="p">(</span>
+                <span class="n">Context</span><span class="o">=</span><span class="n">expression_context</span><span class="p">,</span> <span class="n">_content</span><span class="o">=</span><span class="n">formal_expression</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_current_mdv</span><span class="o">.</span><span class="n">MethodDef</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">md</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span></div>
+
+
+<div class="viewcode-block" id="ODMBuilder.add_condition_def">
+<a class="viewcode-back" href="../modules.html#builder.ODMBuilder.add_condition_def">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">add_condition_def</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">OID</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">Name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+                          <span class="n">description</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                          <span class="n">formal_expression</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                          <span class="n">expression_context</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;Python&quot;</span><span class="p">,</span>
+                          <span class="n">lang</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;en&quot;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ODMBuilder</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Add a ConditionDef to the current MetaDataVersion.</span>
+
+<span class="sd">        .. warning::</span>
+
+<span class="sd">           **Not valid for ``model_package=&quot;odm_2_0&quot;``.** The ODM 2.0 XSD</span>
+<span class="sd">           requires a ``MethodSignature`` child on ``ConditionDef`` (and a</span>
+<span class="sd">           required ``Description``), which odmlib&#39;s odm_2_0 model cannot yet</span>
+<span class="sd">           express, so any ConditionDef built here is schema-invalid — and</span>
+<span class="sd">           transitively any ``CollectionExceptionConditionOID`` pointing at</span>
+<span class="sd">           it. ``formal_expression`` is additionally invalid under odm_2_0</span>
+<span class="sd">           (text vs. element-based, see :meth:`add_method_def`). See ROADMAP</span>
+<span class="sd">           &quot;v0.2.1 — ODM 2.0 Model/XSD Alignment&quot; /</span>
+<span class="sd">           ``ODM20-MODEL-XSD-DIFFERENCES_PLAN.md`` §3.1–§3.2. Safe for ODM</span>
+<span class="sd">           1.3.2.</span>
+
+<span class="sd">        :param OID: Condition OID.</span>
+<span class="sd">        :param Name: Condition name.</span>
+<span class="sd">        :param description: Optional description text.</span>
+<span class="sd">        :param formal_expression: Optional expression source code.</span>
+<span class="sd">        :param expression_context: FormalExpression Context; used only when</span>
+<span class="sd">            ``formal_expression`` is given.</span>
+<span class="sd">        :param lang: Language code for the Description (default ``&quot;en&quot;``).</span>
+<span class="sd">        :param kwargs: Additional ConditionDef attributes.</span>
+<span class="sd">        :returns: self, for chaining.</span>
+<span class="sd">        :raises RuntimeError: if no MetaDataVersion has been added yet.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_current_mdv</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;Call add_metadata_version() before add_condition_def()&quot;</span><span class="p">)</span>
+        <span class="n">M</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_model</span>
+        <span class="n">cd</span> <span class="o">=</span> <span class="n">M</span><span class="o">.</span><span class="n">ConditionDef</span><span class="p">(</span><span class="n">OID</span><span class="o">=</span><span class="n">OID</span><span class="p">,</span> <span class="n">Name</span><span class="o">=</span><span class="n">Name</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">description</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">cd</span><span class="o">.</span><span class="n">Description</span> <span class="o">=</span> <span class="n">M</span><span class="o">.</span><span class="n">Description</span><span class="p">(</span><span class="n">TranslatedText</span><span class="o">=</span><span class="p">[</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_translated_text</span><span class="p">(</span><span class="n">_content</span><span class="o">=</span><span class="n">description</span><span class="p">,</span> <span class="n">lang</span><span class="o">=</span><span class="n">lang</span><span class="p">)])</span>
+        <span class="k">if</span> <span class="n">formal_expression</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">cd</span><span class="o">.</span><span class="n">FormalExpression</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">M</span><span class="o">.</span><span class="n">FormalExpression</span><span class="p">(</span>
+                <span class="n">Context</span><span class="o">=</span><span class="n">expression_context</span><span class="p">,</span> <span class="n">_content</span><span class="o">=</span><span class="n">formal_expression</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_current_mdv</span><span class="o">.</span><span class="n">ConditionDef</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">cd</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span></div>
+
+
+    <span class="c1"># ------------------------------------------------------------------</span>
+    <span class="c1"># MeasurementUnit (ODM 1.3.2 / Define-XML only)</span>
+    <span class="c1"># ------------------------------------------------------------------</span>
+
+<div class="viewcode-block" id="ODMBuilder.add_measurement_unit">
+<a class="viewcode-back" href="../modules.html#builder.ODMBuilder.add_measurement_unit">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">add_measurement_unit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">OID</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">Name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">symbol</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+                             <span class="n">lang</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;en&quot;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ODMBuilder</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Add a MeasurementUnit to the Study&#39;s BasicDefinitions.</span>
+
+<span class="sd">        BasicDefinitions is created automatically if absent.  Not available</span>
+<span class="sd">        in ODM 2.0 (which has no BasicDefinitions/MeasurementUnit).</span>
+
+<span class="sd">        :param OID: MeasurementUnit OID.</span>
+<span class="sd">        :param Name: MeasurementUnit name.</span>
+<span class="sd">        :param symbol: Symbol text (wrapped in Symbol/TranslatedText).</span>
+<span class="sd">        :param lang: Language code for the Symbol (default ``&quot;en&quot;``).</span>
+<span class="sd">        :param kwargs: Additional MeasurementUnit attributes.</span>
+<span class="sd">        :returns: self, for chaining.</span>
+<span class="sd">        :raises RuntimeError: if no Study yet, or model is ODM 2.0.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_current_study</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;Call add_study() before add_measurement_unit()&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_require_v1</span><span class="p">(</span><span class="s2">&quot;BasicDefinitions/MeasurementUnit&quot;</span><span class="p">)</span>
+        <span class="n">M</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_model</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_current_study</span><span class="o">.</span><span class="n">BasicDefinitions</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_current_study</span><span class="o">.</span><span class="n">BasicDefinitions</span> <span class="o">=</span> <span class="n">M</span><span class="o">.</span><span class="n">BasicDefinitions</span><span class="p">()</span>
+        <span class="n">sym</span> <span class="o">=</span> <span class="n">M</span><span class="o">.</span><span class="n">Symbol</span><span class="p">(</span><span class="n">TranslatedText</span><span class="o">=</span><span class="p">[</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_translated_text</span><span class="p">(</span><span class="n">_content</span><span class="o">=</span><span class="n">symbol</span><span class="p">,</span> <span class="n">lang</span><span class="o">=</span><span class="n">lang</span><span class="p">)])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_current_study</span><span class="o">.</span><span class="n">BasicDefinitions</span><span class="o">.</span><span class="n">MeasurementUnit</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+            <span class="n">M</span><span class="o">.</span><span class="n">MeasurementUnit</span><span class="p">(</span><span class="n">OID</span><span class="o">=</span><span class="n">OID</span><span class="p">,</span> <span class="n">Name</span><span class="o">=</span><span class="n">Name</span><span class="p">,</span> <span class="n">Symbol</span><span class="o">=</span><span class="n">sym</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">))</span>
+        <span class="k">return</span> <span class="bp">self</span></div>
+
+
+    <span class="c1"># ------------------------------------------------------------------</span>
+    <span class="c1"># ItemDef enrichers (operate on the most recent ItemDef)</span>
+    <span class="c1"># ------------------------------------------------------------------</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_require_item_def</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">method</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_current_item_def</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Call add_item_def() before </span><span class="si">{</span><span class="n">method</span><span class="si">}</span><span class="s2">()&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_current_item_def</span>
+
+<div class="viewcode-block" id="ODMBuilder.with_question">
+<a class="viewcode-back" href="../modules.html#builder.ODMBuilder.with_question">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">with_question</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">lang</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;en&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ODMBuilder</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Set the Question on the most recently created ItemDef.</span>
+
+<span class="sd">        :param text: Question text.</span>
+<span class="sd">        :param lang: Language code (default ``&quot;en&quot;``).</span>
+<span class="sd">        :returns: self, for chaining.</span>
+<span class="sd">        :raises RuntimeError: if no ItemDef has been added yet.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">item</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_require_item_def</span><span class="p">(</span><span class="s2">&quot;with_question&quot;</span><span class="p">)</span>
+        <span class="n">M</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_model</span>
+        <span class="n">item</span><span class="o">.</span><span class="n">Question</span> <span class="o">=</span> <span class="n">M</span><span class="o">.</span><span class="n">Question</span><span class="p">(</span><span class="n">TranslatedText</span><span class="o">=</span><span class="p">[</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_translated_text</span><span class="p">(</span><span class="n">_content</span><span class="o">=</span><span class="n">text</span><span class="p">,</span> <span class="n">lang</span><span class="o">=</span><span class="n">lang</span><span class="p">)])</span>
+        <span class="k">return</span> <span class="bp">self</span></div>
+
+
+<div class="viewcode-block" id="ODMBuilder.with_codelist_ref">
+<a class="viewcode-back" href="../modules.html#builder.ODMBuilder.with_codelist_ref">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">with_codelist_ref</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">codelist_oid</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ODMBuilder</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Attach a CodeListRef to the most recently created ItemDef.</span>
+
+<span class="sd">        :param codelist_oid: OID of the referenced CodeList.</span>
+<span class="sd">        :returns: self, for chaining.</span>
+<span class="sd">        :raises RuntimeError: if no ItemDef has been added yet.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">item</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_require_item_def</span><span class="p">(</span><span class="s2">&quot;with_codelist_ref&quot;</span><span class="p">)</span>
+        <span class="n">item</span><span class="o">.</span><span class="n">CodeListRef</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_model</span><span class="o">.</span><span class="n">CodeListRef</span><span class="p">(</span><span class="n">CodeListOID</span><span class="o">=</span><span class="n">codelist_oid</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span></div>
+
+
+<div class="viewcode-block" id="ODMBuilder.with_measurement_unit_ref">
+<a class="viewcode-back" href="../modules.html#builder.ODMBuilder.with_measurement_unit_ref">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">with_measurement_unit_ref</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mu_oid</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ODMBuilder</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Add a MeasurementUnitRef to the most recent ItemDef (ODM 1.3.2 only).</span>
+
+<span class="sd">        :param mu_oid: OID of the referenced MeasurementUnit.</span>
+<span class="sd">        :returns: self, for chaining.</span>
+<span class="sd">        :raises RuntimeError: if no ItemDef yet, or model is ODM 2.0.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">item</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_require_item_def</span><span class="p">(</span><span class="s2">&quot;with_measurement_unit_ref&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_require_v1</span><span class="p">(</span><span class="s2">&quot;MeasurementUnitRef&quot;</span><span class="p">)</span>
+        <span class="n">item</span><span class="o">.</span><span class="n">MeasurementUnitRef</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_model</span><span class="o">.</span><span class="n">MeasurementUnitRef</span><span class="p">(</span><span class="n">MeasurementUnitOID</span><span class="o">=</span><span class="n">mu_oid</span><span class="p">))</span>
+        <span class="k">return</span> <span class="bp">self</span></div>
+
+
+<div class="viewcode-block" id="ODMBuilder.with_range_check">
+<a class="viewcode-back" href="../modules.html#builder.ODMBuilder.with_range_check">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">with_range_check</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">comparator</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">check_values</span><span class="p">:</span> <span class="nb">list</span><span class="p">,</span>
+                         <span class="n">soft_hard</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;Soft&quot;</span><span class="p">,</span>
+                         <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ODMBuilder</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Add a RangeCheck to the most recently created ItemDef.</span>
+
+<span class="sd">        :param comparator: Comparator (e.g. &quot;GE&quot;, &quot;LE&quot;, &quot;IN&quot;); may be None.</span>
+<span class="sd">        :param check_values: List of check values (rendered as CheckValue).</span>
+<span class="sd">        :param soft_hard: SoftHard flag (default ``&quot;Soft&quot;``).</span>
+<span class="sd">        :param kwargs: Additional RangeCheck attributes.</span>
+<span class="sd">        :returns: self, for chaining.</span>
+<span class="sd">        :raises RuntimeError: if no ItemDef has been added yet.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">item</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_require_item_def</span><span class="p">(</span><span class="s2">&quot;with_range_check&quot;</span><span class="p">)</span>
+        <span class="n">M</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_model</span>
+        <span class="n">rc_kwargs</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;SoftHard&quot;</span><span class="p">:</span> <span class="n">soft_hard</span><span class="p">}</span>
+        <span class="k">if</span> <span class="n">comparator</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">rc_kwargs</span><span class="p">[</span><span class="s2">&quot;Comparator&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">comparator</span>
+        <span class="n">rc_kwargs</span><span class="p">[</span><span class="s2">&quot;CheckValue&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">M</span><span class="o">.</span><span class="n">CheckValue</span><span class="p">(</span><span class="n">_content</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">v</span><span class="p">))</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">check_values</span><span class="p">]</span>
+        <span class="n">rc_kwargs</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="n">item</span><span class="o">.</span><span class="n">RangeCheck</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">M</span><span class="o">.</span><span class="n">RangeCheck</span><span class="p">(</span><span class="o">**</span><span class="n">rc_kwargs</span><span class="p">))</span>
+        <span class="k">return</span> <span class="bp">self</span></div>
+
+
+<div class="viewcode-block" id="ODMBuilder.with_alias">
+<a class="viewcode-back" href="../modules.html#builder.ODMBuilder.with_alias">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">with_alias</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">context</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ODMBuilder</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Add an Alias to the most recent ItemDef (or ItemGroupDef).</span>
+
+<span class="sd">        Applies to the most recently created ItemDef; falls back to the</span>
+<span class="sd">        current ItemGroupDef.</span>
+
+<span class="sd">        :param context: Alias Context.</span>
+<span class="sd">        :param name: Alias Name.</span>
+<span class="sd">        :returns: self, for chaining.</span>
+<span class="sd">        :raises RuntimeError: if neither an ItemDef nor ItemGroupDef exists.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">M</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_model</span>
+        <span class="n">alias</span> <span class="o">=</span> <span class="n">M</span><span class="o">.</span><span class="n">Alias</span><span class="p">(</span><span class="n">Context</span><span class="o">=</span><span class="n">context</span><span class="p">,</span> <span class="n">Name</span><span class="o">=</span><span class="n">name</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_current_item_def</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_current_item_def</span><span class="o">.</span><span class="n">Alias</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">alias</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">_current_igd</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_current_igd</span><span class="o">.</span><span class="n">Alias</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">alias</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
+                <span class="s2">&quot;Call add_item_def() or add_item_group_def() before with_alias()&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span></div>
+
+
+    <span class="c1"># ------------------------------------------------------------------</span>
+    <span class="c1"># Generic escape hatch</span>
+    <span class="c1"># ------------------------------------------------------------------</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_find_elem_field</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parent</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">element</span><span class="p">:</span> <span class="n">Any</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return ``(field, descriptor)`` on *parent* that accepts *element*.</span>
+
+<span class="sd">        Prefers an exact class match, falling back to a subclass match</span>
+<span class="sd">        (so a Define-XML subclass element still resolves).  Returns</span>
+<span class="sd">        ``None`` if *parent* has no child field for *element*&#39;s type.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">elems</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span><span class="n">parent</span><span class="p">)</span><span class="o">.</span><span class="n">_elems</span>
+        <span class="n">fallback</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">for</span> <span class="n">field</span><span class="p">,</span> <span class="n">descr</span> <span class="ow">in</span> <span class="n">elems</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">ec</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">descr</span><span class="p">,</span> <span class="s2">&quot;element_class&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">ec</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">continue</span>
+            <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">element</span><span class="p">)</span> <span class="ow">is</span> <span class="n">ec</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">field</span><span class="p">,</span> <span class="n">descr</span>
+            <span class="k">if</span> <span class="n">fallback</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">element</span><span class="p">,</span> <span class="n">ec</span><span class="p">):</span>
+                <span class="n">fallback</span> <span class="o">=</span> <span class="p">(</span><span class="n">field</span><span class="p">,</span> <span class="n">descr</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">fallback</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_attach</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parent</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">element</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">element</span><span class="p">,</span> <span class="n">OE</span><span class="o">.</span><span class="n">ODMElement</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;attach() expects an ODMElement, got &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">element</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">match</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_find_elem_field</span><span class="p">(</span><span class="n">parent</span><span class="p">,</span> <span class="n">element</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">match</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">accepted</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">({</span>
+                <span class="n">d</span><span class="o">.</span><span class="n">element_class</span><span class="o">.</span><span class="vm">__name__</span>
+                <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="nb">type</span><span class="p">(</span><span class="n">parent</span><span class="p">)</span><span class="o">.</span><span class="n">_elems</span><span class="o">.</span><span class="n">values</span><span class="p">()</span>
+                <span class="k">if</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="s2">&quot;element_class&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">})</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">parent</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2"> cannot hold &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">element</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">. Accepted child elements: &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">accepted</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">field</span><span class="p">,</span> <span class="n">descr</span> <span class="o">=</span> <span class="n">match</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">descr</span><span class="p">,</span> <span class="n">T</span><span class="o">.</span><span class="n">ODMListObject</span><span class="p">):</span>
+            <span class="nb">getattr</span><span class="p">(</span><span class="n">parent</span><span class="p">,</span> <span class="n">field</span><span class="p">)</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">element</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="nb">setattr</span><span class="p">(</span><span class="n">parent</span><span class="p">,</span> <span class="n">field</span><span class="p">,</span> <span class="n">element</span><span class="p">)</span>
+
+<div class="viewcode-block" id="ODMBuilder.attach">
+<a class="viewcode-back" href="../modules.html#builder.ODMBuilder.attach">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">attach</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parent</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">element</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ODMBuilder</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Attach a pre-built ODMElement onto an explicit parent element.</span>
+
+<span class="sd">        Escape hatch for any model element that has no dedicated</span>
+<span class="sd">        ``add_*`` method.  The target child field is resolved from the</span>
+<span class="sd">        parent&#39;s model definition — appended if it is a list element,</span>
+<span class="sd">        assigned otherwise.</span>
+
+<span class="sd">        :param parent: An ODMElement already in the tree being built</span>
+<span class="sd">            (e.g. a value returned via :attr:`current`).</span>
+<span class="sd">        :param element: A pre-built ODMElement to attach.</span>
+<span class="sd">        :returns: self, for chaining.</span>
+<span class="sd">        :raises TypeError: if *element* is not an ODMElement or *parent*</span>
+<span class="sd">            has no child field able to hold it.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_attach</span><span class="p">(</span><span class="n">parent</span><span class="p">,</span> <span class="n">element</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span></div>
+
+
+<div class="viewcode-block" id="ODMBuilder.attach_to_current">
+<a class="viewcode-back" href="../modules.html#builder.ODMBuilder.attach_to_current">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">attach_to_current</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">element</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ODMBuilder</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Attach a pre-built ODMElement to the most specific current parent.</span>
+
+<span class="sd">        Tries the active ItemDef, FormDef, StudyEventDef, ItemGroupDef,</span>
+<span class="sd">        MetaDataVersion and Study in turn, attaching to the first that</span>
+<span class="sd">        accepts *element*&#39;s type.</span>
+
+<span class="sd">        :param element: A pre-built ODMElement to attach.</span>
+<span class="sd">        :returns: self, for chaining.</span>
+<span class="sd">        :raises TypeError: if no active element can hold *element*.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">parent</span> <span class="ow">in</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_current_item_def</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_current_form_def</span><span class="p">,</span>
+                       <span class="bp">self</span><span class="o">.</span><span class="n">_current_sed</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_current_igd</span><span class="p">,</span>
+                       <span class="bp">self</span><span class="o">.</span><span class="n">_current_mdv</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_current_study</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">parent</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> \
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_find_elem_field</span><span class="p">(</span><span class="n">parent</span><span class="p">,</span> <span class="n">element</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_attach</span><span class="p">(</span><span class="n">parent</span><span class="p">,</span> <span class="n">element</span><span class="p">)</span>
+                <span class="k">return</span> <span class="bp">self</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;No active element can hold </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">element</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">; &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;use attach(parent, element) with an explicit parent.&quot;</span><span class="p">)</span></div>
+
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">current</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;The active context elements, for use with :meth:`attach`.</span>
+
+<span class="sd">        Keys: ``study``, ``mdv``, ``item_group_def``, ``item_def``,</span>
+<span class="sd">        ``form_def``, ``study_event_def`` (value is ``None`` if not set).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">{</span>
+            <span class="s2">&quot;study&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_current_study</span><span class="p">,</span>
+            <span class="s2">&quot;mdv&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_current_mdv</span><span class="p">,</span>
+            <span class="s2">&quot;item_group_def&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_current_igd</span><span class="p">,</span>
+            <span class="s2">&quot;item_def&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_current_item_def</span><span class="p">,</span>
+            <span class="s2">&quot;form_def&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_current_form_def</span><span class="p">,</span>
+            <span class="s2">&quot;study_event_def&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_current_sed</span><span class="p">,</span>
+        <span class="p">}</span>
+
+    <span class="c1"># ------------------------------------------------------------------</span>
+    <span class="c1"># Build</span>
+    <span class="c1"># ------------------------------------------------------------------</span>
+
+<div class="viewcode-block" id="ODMBuilder.build">
+<a class="viewcode-back" href="../modules.html#builder.ODMBuilder.build">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">build</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Construct and return the top-level ODM object.</span>
+
+<span class="sd">        :returns: An ``ODM`` instance containing all added elements.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">M</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_model</span>
+        <span class="k">return</span> <span class="n">M</span><span class="o">.</span><span class="n">ODM</span><span class="p">(</span><span class="n">Study</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_studies</span><span class="p">,</span> <span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">_file_attrs</span><span class="p">)</span></div>
+</div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2020, Sam Hume.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,618 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>odmlib.dataframe &mdash; odmlib 0.2.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=938c9ccc"></script>
+      <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            odmlib
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">User Guides</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../guides/getting_started.html">Getting Started with odmlib</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../guides/reading_documents.html">Reading ODM Documents</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../guides/permissive_loading.html">Permissive Loading Mode</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../guides/creating_documents.html">Creating ODM Documents</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../guides/validation.html">Validating ODM Documents</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../guides/model_reference.html">Model Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../guides/interoperability.html">Interoperability: Dataset-JSON and Pandas</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../guides/dataset_json.html">Working with Dataset-JSON v1.1</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../modules.html">odmlib</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../odmlib.odm_1_3_2.html">odm_1_3_2 package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../odmlib.odm_2_0.html">odm_2_0 package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../odmlib.define_2_0.html">define_2_0 package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../odmlib.define_2_1.html">define_2_1 package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../odmlib.dataset_1_0_1.html">odmlib.dataset_1_0_1 module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../odmlib.ct_1_1_1.html">odmlib.ct_1_1_1 module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../odmlib.arm_1_0.html">odmlib.arm_1_0 module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../odmlib.dataset_json_1_1.html">odmlib.dataset_json_1_1</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../odmlib.dataframe.html">odmlib.dataframe</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Project</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../changelog.html">Changelog</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">odmlib</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">odmlib.dataframe</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for odmlib.dataframe</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Optional Pandas DataFrame integration for odmlib.</span>
+
+<span class="sd">Provides convenience functions to export odmlib metadata and clinical data</span>
+<span class="sd">to Pandas DataFrames and to construct odmlib element lists from DataFrames.</span>
+
+<span class="sd">Pandas is an **optional** dependency.  If it is not installed, importing</span>
+<span class="sd">this module succeeds but calling any function raises :class:`ImportError`</span>
+<span class="sd">with a helpful install hint.</span>
+
+<span class="sd">Install with::</span>
+
+<span class="sd">    pip install odmlib[dataframe]</span>
+
+<span class="sd">or::</span>
+
+<span class="sd">    pip install pandas</span>
+
+<span class="sd">Functions</span>
+<span class="sd">---------</span>
+<span class="sd">:func:`metadata_to_dataframe`</span>
+<span class="sd">    Export a list of odmlib metadata elements (e.g., all ItemDef objects in</span>
+<span class="sd">    a MetaDataVersion) as a DataFrame with one row per element.</span>
+
+<span class="sd">:func:`clinical_data_to_dataframe`</span>
+<span class="sd">    Flatten a hierarchical ODM 1.3.2 ClinicalData object</span>
+<span class="sd">    (SubjectData → StudyEventData → FormData → ItemGroupData → ItemData)</span>
+<span class="sd">    into a tabular DataFrame with one row per subject-event-form-group record.</span>
+
+<span class="sd">:func:`dataset_to_dataframe`</span>
+<span class="sd">    Flatten a Dataset-XML 1.0.1 ClinicalData object (no SubjectData</span>
+<span class="sd">    hierarchy) into a tabular DataFrame with one row per ItemGroupData record.</span>
+
+<span class="sd">:func:`dataset_json_to_dataframe`</span>
+<span class="sd">    Convert a :class:`~odmlib.dataset_json_1_1.model.DatasetJSON` object</span>
+<span class="sd">    to a DataFrame.</span>
+
+<span class="sd">:func:`define_metadata_to_dataframes`</span>
+<span class="sd">    Flatten all Define-XML v2.1 metadata into a dict of DataFrames, one</span>
+<span class="sd">    per metadata table (study, datasets, variables, codelists, etc.).</span>
+
+<span class="sd">:func:`dataframe_to_items`</span>
+<span class="sd">    Create odmlib element instances from a DataFrame (one row → one element).</span>
+
+<span class="sd">Example::</span>
+
+<span class="sd">    import odmlib.odm_1_3_2.model as ODM</span>
+<span class="sd">    import odmlib.loader as LD</span>
+<span class="sd">    import odmlib.odm_loader as OL</span>
+<span class="sd">    from odmlib.dataframe import metadata_to_dataframe</span>
+
+<span class="sd">    loader = LD.ODMLoader(OL.XMLODMLoader())</span>
+<span class="sd">    loader.open_odm_document(&quot;study.xml&quot;)</span>
+<span class="sd">    mdv = loader.MetaDataVersion()</span>
+
+<span class="sd">    df = metadata_to_dataframe(mdv, &quot;ItemDef&quot;)</span>
+<span class="sd">    print(df[[&quot;OID&quot;, &quot;Name&quot;, &quot;DataType&quot;]].to_string())</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Optional</span>
+
+<span class="k">try</span><span class="p">:</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+    <span class="n">HAS_PANDAS</span> <span class="o">=</span> <span class="kc">True</span>
+<span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+    <span class="n">HAS_PANDAS</span> <span class="o">=</span> <span class="kc">False</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_require_pandas</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Raise ImportError if pandas is not installed.&quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">HAS_PANDAS</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ImportError</span><span class="p">(</span>
+            <span class="s2">&quot;pandas is required for DataFrame integration.</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="s2">&quot;Install it with:  pip install odmlib[dataframe]</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="s2">&quot;or:               pip install pandas&quot;</span>
+        <span class="p">)</span>
+
+
+<div class="viewcode-block" id="metadata_to_dataframe">
+<a class="viewcode-back" href="../../odmlib.dataframe.html#odmlib.dataframe.metadata_to_dataframe">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">metadata_to_dataframe</span><span class="p">(</span>
+    <span class="n">mdv</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
+    <span class="n">element_type</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">attributes</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;pd.DataFrame&quot;</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Export odmlib metadata elements to a Pandas DataFrame.</span>
+
+<span class="sd">    Extracts all elements of *element_type* from a ``MetaDataVersion`` and</span>
+<span class="sd">    returns a DataFrame with one row per element.  Only scalar attributes</span>
+<span class="sd">    (``str``, ``int``, ``float``, ``bool``, ``None``) are included as</span>
+<span class="sd">    columns; child element lists and nested objects are excluded.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        mdv: A ``MetaDataVersion`` odmlib object (ODM 1.3.2,</span>
+<span class="sd">            Define-XML 2.0, or Define-XML 2.1).</span>
+<span class="sd">        element_type: Name of the element list to export.  Examples:</span>
+<span class="sd">            ``&quot;ItemDef&quot;``, ``&quot;ItemGroupDef&quot;``, ``&quot;CodeList&quot;``,</span>
+<span class="sd">            ``&quot;StudyEventDef&quot;``, ``&quot;FormDef&quot;``.</span>
+<span class="sd">        attributes: Optional list of attribute names to include as columns.</span>
+<span class="sd">            If ``None``, all scalar attributes found on any element are</span>
+<span class="sd">            included (union across all elements).</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        A :class:`pandas.DataFrame` with one row per element and one</span>
+<span class="sd">        column per scalar attribute.</span>
+
+<span class="sd">    Raises:</span>
+<span class="sd">        ImportError: If pandas is not installed.</span>
+
+<span class="sd">    Example::</span>
+
+<span class="sd">        df = metadata_to_dataframe(mdv, &quot;ItemDef&quot;)</span>
+<span class="sd">        print(df[[&quot;OID&quot;, &quot;Name&quot;, &quot;DataType&quot;]].head())</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">_require_pandas</span><span class="p">()</span>
+
+    <span class="n">elements</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">mdv</span><span class="p">,</span> <span class="n">element_type</span><span class="p">,</span> <span class="p">[])</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">elements</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+        <span class="n">elements</span> <span class="o">=</span> <span class="p">[</span><span class="n">elements</span><span class="p">]</span> <span class="k">if</span> <span class="n">elements</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="p">[]</span>
+
+    <span class="n">rows</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">elem</span> <span class="ow">in</span> <span class="n">elements</span><span class="p">:</span>
+        <span class="n">row</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">elem_dict</span> <span class="o">=</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">v</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">elem</span><span class="o">.</span><span class="vm">__dict__</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">k</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;_&quot;</span><span class="p">)}</span>
+        <span class="k">for</span> <span class="n">attr_name</span><span class="p">,</span> <span class="n">attr_val</span> <span class="ow">in</span> <span class="n">elem_dict</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">attributes</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">attr_name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">attributes</span><span class="p">:</span>
+                <span class="k">continue</span>
+            <span class="c1"># Include only scalar values; exclude child elements (lists, objects)</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">attr_val</span><span class="p">,</span> <span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">bool</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="kc">None</span><span class="p">))):</span>
+                <span class="n">row</span><span class="p">[</span><span class="n">attr_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">attr_val</span>
+        <span class="n">rows</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">row</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">rows</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="clinical_data_to_dataframe">
+<a class="viewcode-back" href="../../odmlib.dataframe.html#odmlib.dataframe.clinical_data_to_dataframe">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">clinical_data_to_dataframe</span><span class="p">(</span>
+    <span class="n">clinical_data</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
+    <span class="n">item_group_oid</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;pd.DataFrame&quot;</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Export ODM 1.3.2 clinical data for one ItemGroup to a DataFrame.</span>
+
+<span class="sd">    Traverses the full hierarchy</span>
+<span class="sd">    ``SubjectData → StudyEventData → FormData → ItemGroupData → ItemData``</span>
+<span class="sd">    and collects rows where ``ItemGroupData.ItemGroupOID`` matches</span>
+<span class="sd">    *item_group_oid*.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        clinical_data: A ``ClinicalData`` odmlib object from the</span>
+<span class="sd">            ``odm_1_3_2`` model.</span>
+<span class="sd">        item_group_oid: OID of the ``ItemGroupDef`` to extract (e.g.,</span>
+<span class="sd">            ``&quot;IG.VS&quot;``).</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        A :class:`pandas.DataFrame` with one row per matching record.</span>
+<span class="sd">        Columns include ``&quot;SubjectKey&quot;`` plus one column per ``ItemOID``</span>
+<span class="sd">        found in those records.</span>
+
+<span class="sd">    Raises:</span>
+<span class="sd">        ImportError: If pandas is not installed.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">_require_pandas</span><span class="p">()</span>
+
+    <span class="n">rows</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">subject</span> <span class="ow">in</span> <span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="n">clinical_data</span><span class="p">,</span> <span class="s2">&quot;SubjectData&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">or</span> <span class="p">[]):</span>
+        <span class="k">for</span> <span class="n">se_data</span> <span class="ow">in</span> <span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="n">subject</span><span class="p">,</span> <span class="s2">&quot;StudyEventData&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">or</span> <span class="p">[]):</span>
+            <span class="k">for</span> <span class="n">form_data</span> <span class="ow">in</span> <span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="n">se_data</span><span class="p">,</span> <span class="s2">&quot;FormData&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">or</span> <span class="p">[]):</span>
+                <span class="k">for</span> <span class="n">ig_data</span> <span class="ow">in</span> <span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="n">form_data</span><span class="p">,</span> <span class="s2">&quot;ItemGroupData&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">or</span> <span class="p">[]):</span>
+                    <span class="k">if</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">ig_data</span><span class="p">,</span> <span class="s2">&quot;ItemGroupOID&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="o">==</span> <span class="n">item_group_oid</span><span class="p">:</span>
+                        <span class="n">row</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+                            <span class="s2">&quot;SubjectKey&quot;</span><span class="p">:</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">subject</span><span class="p">,</span> <span class="s2">&quot;SubjectKey&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+                        <span class="p">}</span>
+                        <span class="k">for</span> <span class="n">item_data</span> <span class="ow">in</span> <span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="n">ig_data</span><span class="p">,</span> <span class="s2">&quot;ItemData&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">or</span> <span class="p">[]):</span>
+                            <span class="n">row</span><span class="p">[</span><span class="n">item_data</span><span class="o">.</span><span class="n">ItemOID</span><span class="p">]</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">item_data</span><span class="p">,</span> <span class="s2">&quot;Value&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+                        <span class="n">rows</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">row</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">rows</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="dataset_to_dataframe">
+<a class="viewcode-back" href="../../odmlib.dataframe.html#odmlib.dataframe.dataset_to_dataframe">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">dataset_to_dataframe</span><span class="p">(</span><span class="n">clinical_data</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;pd.DataFrame&quot;</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Export Dataset-XML 1.0.1 ClinicalData to a Pandas DataFrame.</span>
+
+<span class="sd">    For the simpler Dataset-XML 1.0.1 structure, which does not have the</span>
+<span class="sd">    ``SubjectData`` hierarchy.  Each ``ItemGroupData`` row becomes one</span>
+<span class="sd">    row in the DataFrame.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        clinical_data: A ``ClinicalData`` odmlib object from the</span>
+<span class="sd">            ``dataset_1_0_1`` model.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        A :class:`pandas.DataFrame` with one row per ``ItemGroupData``</span>
+<span class="sd">        record.  Columns include ``&quot;ItemGroupOID&quot;``, ``&quot;ItemGroupDataSeq&quot;``,</span>
+<span class="sd">        and one column per ``ItemOID`` found in any record.</span>
+
+<span class="sd">    Raises:</span>
+<span class="sd">        ImportError: If pandas is not installed.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">_require_pandas</span><span class="p">()</span>
+
+    <span class="n">rows</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">ig_data</span> <span class="ow">in</span> <span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="n">clinical_data</span><span class="p">,</span> <span class="s2">&quot;ItemGroupData&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">or</span> <span class="p">[]):</span>
+        <span class="n">row</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;ItemGroupOID&quot;</span><span class="p">:</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">ig_data</span><span class="p">,</span> <span class="s2">&quot;ItemGroupOID&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
+            <span class="s2">&quot;ItemGroupDataSeq&quot;</span><span class="p">:</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">ig_data</span><span class="p">,</span> <span class="s2">&quot;ItemGroupDataSeq&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
+        <span class="p">}</span>
+        <span class="k">for</span> <span class="n">item_data</span> <span class="ow">in</span> <span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="n">ig_data</span><span class="p">,</span> <span class="s2">&quot;ItemData&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">or</span> <span class="p">[]):</span>
+            <span class="n">row</span><span class="p">[</span><span class="n">item_data</span><span class="o">.</span><span class="n">ItemOID</span><span class="p">]</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">item_data</span><span class="p">,</span> <span class="s2">&quot;Value&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="n">rows</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">row</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">rows</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="dataset_json_to_dataframe">
+<a class="viewcode-back" href="../../odmlib.dataframe.html#odmlib.dataframe.dataset_json_to_dataframe">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">dataset_json_to_dataframe</span><span class="p">(</span><span class="n">dataset</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;pd.DataFrame&quot;</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Convert a Dataset-JSON v1.1 dataset object to a Pandas DataFrame.</span>
+
+<span class="sd">    Column names come from the :attr:`DatasetJSON.column_names` property</span>
+<span class="sd">    and row data from :attr:`DatasetJSON.rows` (list of lists).</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        dataset: An :class:`odmlib.dataset_json_1_1.model.DatasetJSON` object.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        A :class:`pandas.DataFrame` with one row per record and columns</span>
+<span class="sd">        named by variable name.</span>
+
+<span class="sd">    Raises:</span>
+<span class="sd">        ImportError: If pandas is not installed.</span>
+
+<span class="sd">    Example::</span>
+
+<span class="sd">        from odmlib.dataset_json_1_1 import DatasetJSON</span>
+<span class="sd">        from odmlib.dataframe import dataset_json_to_dataframe</span>
+
+<span class="sd">        ds = DatasetJSON.read_json(&quot;ae.json&quot;)</span>
+<span class="sd">        df = dataset_json_to_dataframe(ds)</span>
+<span class="sd">        print(df.head())</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">_require_pandas</span><span class="p">()</span>
+
+    <span class="n">col_names</span> <span class="o">=</span> <span class="n">dataset</span><span class="o">.</span><span class="n">column_names</span>
+    <span class="n">rows</span> <span class="o">=</span> <span class="n">dataset</span><span class="o">.</span><span class="n">rows</span> <span class="k">if</span> <span class="n">dataset</span><span class="o">.</span><span class="n">rows</span> <span class="k">else</span> <span class="p">[]</span>
+    <span class="k">return</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">rows</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="n">col_names</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="define_metadata_to_dataframes">
+<a class="viewcode-back" href="../../odmlib.dataframe.html#odmlib.dataframe.define_metadata_to_dataframes">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">define_metadata_to_dataframes</span><span class="p">(</span>
+    <span class="n">odm_root</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
+    <span class="n">study_idx</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;dict[str, pd.DataFrame]&quot;</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Flatten Define-XML v2.1 metadata into a dict of Pandas DataFrames.</span>
+
+<span class="sd">    Uses :class:`~odmlib.dataset_json_1_1.define_flattener.DefineFlattener`</span>
+<span class="sd">    internally to convert a loaded Define-XML v2.1 ODM root object into</span>
+<span class="sd">    tabular Dataset-JSON datasets, then converts each to a DataFrame.</span>
+
+<span class="sd">    The returned dict maps dataset names to DataFrames.  Dataset names</span>
+<span class="sd">    are: ``study``, ``standards``, ``datasets``, ``variables``,</span>
+<span class="sd">    ``value_level``, ``where_clauses``, ``methods``, ``comments``,</span>
+<span class="sd">    ``documents``, ``codelists``, ``codelist_terms``.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        odm_root: A loaded Define-XML v2.1 ODM root object (from odmlib</span>
+<span class="sd">            loader).</span>
+<span class="sd">        study_idx: Index of the Study element to use (default: 0).</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        dict[str, pandas.DataFrame]: Mapping of dataset name to DataFrame.</span>
+
+<span class="sd">    Raises:</span>
+<span class="sd">        ImportError: If pandas is not installed.</span>
+
+<span class="sd">    Example::</span>
+
+<span class="sd">        import odmlib.define_loader as DL</span>
+<span class="sd">        import odmlib.loader as LD</span>
+<span class="sd">        from odmlib.dataframe import define_metadata_to_dataframes</span>
+
+<span class="sd">        loader = LD.ODMLoader(DL.XMLDefineLoader(model_package=&#39;define_2_1&#39;))</span>
+<span class="sd">        loader.open_odm_document(&#39;define.xml&#39;)</span>
+<span class="sd">        odm = loader.root()</span>
+
+<span class="sd">        dfs = define_metadata_to_dataframes(odm)</span>
+<span class="sd">        print(dfs[&#39;variables&#39;][[&#39;DatasetOID&#39;, &#39;Name&#39;, &#39;DataType&#39;]].head())</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">_require_pandas</span><span class="p">()</span>
+
+    <span class="kn">from</span><span class="w"> </span><span class="nn">odmlib.dataset_json_1_1.define_flattener</span><span class="w"> </span><span class="kn">import</span> <span class="n">DefineFlattener</span>
+
+    <span class="n">flattener</span> <span class="o">=</span> <span class="n">DefineFlattener</span><span class="p">(</span><span class="n">odm_root</span><span class="p">,</span> <span class="n">study_idx</span><span class="o">=</span><span class="n">study_idx</span><span class="p">)</span>
+    <span class="n">datasets</span> <span class="o">=</span> <span class="n">flattener</span><span class="o">.</span><span class="n">flatten_all</span><span class="p">()</span>
+
+    <span class="n">result</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">ds</span> <span class="ow">in</span> <span class="n">datasets</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="n">col_names</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">column_names</span>
+        <span class="n">rows</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">rows</span> <span class="k">if</span> <span class="n">ds</span><span class="o">.</span><span class="n">rows</span> <span class="k">else</span> <span class="p">[]</span>
+        <span class="n">result</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">rows</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="n">col_names</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">result</span></div>
+
+
+
+<div class="viewcode-block" id="dataframe_to_dataset_json">
+<a class="viewcode-back" href="../../odmlib.dataframe.html#odmlib.dataframe.dataframe_to_dataset_json">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">dataframe_to_dataset_json</span><span class="p">(</span>
+    <span class="n">df</span><span class="p">:</span> <span class="s2">&quot;pd.DataFrame&quot;</span><span class="p">,</span>
+    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">label</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">item_group_oid</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">dataset_json_version</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;1.1.0&quot;</span><span class="p">,</span>
+    <span class="n">creation_datetime</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Convert a Pandas DataFrame to a Dataset-JSON v1.1 DatasetJSON object.</span>
+
+<span class="sd">    Each DataFrame column becomes a Dataset-JSON Column with ``dataType``</span>
+<span class="sd">    inferred from the pandas dtype (int → ``&quot;integer&quot;``, float →</span>
+<span class="sd">    ``&quot;decimal&quot;``, otherwise ``&quot;string&quot;``).</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        df: Source DataFrame.</span>
+<span class="sd">        name: Dataset name (e.g., ``&quot;DM&quot;``, ``&quot;AE&quot;``).</span>
+<span class="sd">        label: Dataset label/description.</span>
+<span class="sd">        item_group_oid: ItemGroupDef OID for this dataset.</span>
+<span class="sd">        dataset_json_version: Dataset-JSON version string (default:</span>
+<span class="sd">            ``&quot;1.1.0&quot;``).</span>
+<span class="sd">        creation_datetime: ISO 8601 creation timestamp.  If ``None``,</span>
+<span class="sd">            the current UTC time is used.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        A :class:`~odmlib.dataset_json_1_1.model.DatasetJSON` instance.</span>
+
+<span class="sd">    Raises:</span>
+<span class="sd">        ImportError: If pandas is not installed.</span>
+
+<span class="sd">    Example::</span>
+
+<span class="sd">        import pandas as pd</span>
+<span class="sd">        from odmlib.dataframe import dataframe_to_dataset_json</span>
+
+<span class="sd">        df = pd.DataFrame({</span>
+<span class="sd">            &quot;STUDYID&quot;: [&quot;CDISC01&quot;, &quot;CDISC01&quot;],</span>
+<span class="sd">            &quot;USUBJID&quot;: [&quot;001&quot;, &quot;002&quot;],</span>
+<span class="sd">            &quot;AGE&quot;: [65, 72],</span>
+<span class="sd">        })</span>
+<span class="sd">        ds = dataframe_to_dataset_json(df, &quot;DM&quot;, &quot;Demographics&quot;, &quot;IG.DM&quot;)</span>
+<span class="sd">        ds.write_json(&quot;dm.json&quot;)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">_require_pandas</span><span class="p">()</span>
+
+    <span class="kn">import</span><span class="w"> </span><span class="nn">datetime</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">dt</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">odmlib.dataset_json_1_1.model</span><span class="w"> </span><span class="kn">import</span> <span class="n">DatasetJSON</span><span class="p">,</span> <span class="n">Column</span>
+
+    <span class="k">if</span> <span class="n">creation_datetime</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">creation_datetime</span> <span class="o">=</span> <span class="n">dt</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">(</span><span class="n">dt</span><span class="o">.</span><span class="n">timezone</span><span class="o">.</span><span class="n">utc</span><span class="p">)</span><span class="o">.</span><span class="n">isoformat</span><span class="p">()</span>
+
+    <span class="c1"># Build columns from DataFrame dtypes</span>
+    <span class="n">columns</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">col_name</span> <span class="ow">in</span> <span class="n">df</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
+        <span class="n">dtype</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="n">col_name</span><span class="p">]</span><span class="o">.</span><span class="n">dtype</span>
+        <span class="k">if</span> <span class="n">pd</span><span class="o">.</span><span class="n">api</span><span class="o">.</span><span class="n">types</span><span class="o">.</span><span class="n">is_integer_dtype</span><span class="p">(</span><span class="n">dtype</span><span class="p">):</span>
+            <span class="n">data_type</span> <span class="o">=</span> <span class="s2">&quot;integer&quot;</span>
+        <span class="k">elif</span> <span class="n">pd</span><span class="o">.</span><span class="n">api</span><span class="o">.</span><span class="n">types</span><span class="o">.</span><span class="n">is_float_dtype</span><span class="p">(</span><span class="n">dtype</span><span class="p">):</span>
+            <span class="n">data_type</span> <span class="o">=</span> <span class="s2">&quot;decimal&quot;</span>
+        <span class="k">elif</span> <span class="n">pd</span><span class="o">.</span><span class="n">api</span><span class="o">.</span><span class="n">types</span><span class="o">.</span><span class="n">is_bool_dtype</span><span class="p">(</span><span class="n">dtype</span><span class="p">):</span>
+            <span class="n">data_type</span> <span class="o">=</span> <span class="s2">&quot;boolean&quot;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">data_type</span> <span class="o">=</span> <span class="s2">&quot;string&quot;</span>
+
+        <span class="n">columns</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Column</span><span class="p">(</span>
+            <span class="n">itemOID</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;IT.</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">.</span><span class="si">{</span><span class="n">col_name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+            <span class="n">name</span><span class="o">=</span><span class="n">col_name</span><span class="p">,</span>
+            <span class="n">label</span><span class="o">=</span><span class="n">col_name</span><span class="p">,</span>
+            <span class="n">dataType</span><span class="o">=</span><span class="n">data_type</span><span class="p">,</span>
+        <span class="p">))</span>
+
+    <span class="c1"># Build rows, converting NaN to None</span>
+    <span class="n">rows</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">df</span><span class="o">.</span><span class="n">iterrows</span><span class="p">():</span>
+        <span class="n">row_values</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">row</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">pd</span><span class="o">.</span><span class="n">isna</span><span class="p">(</span><span class="n">val</span><span class="p">):</span>
+                    <span class="n">row_values</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="c1"># Convert numpy types to native Python types</span>
+                    <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="s2">&quot;item&quot;</span><span class="p">):</span>
+                        <span class="n">row_values</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">val</span><span class="o">.</span><span class="n">item</span><span class="p">())</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">row_values</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">val</span><span class="p">)</span>
+            <span class="k">except</span> <span class="p">(</span><span class="ne">TypeError</span><span class="p">,</span> <span class="ne">ValueError</span><span class="p">):</span>
+                <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="s2">&quot;item&quot;</span><span class="p">):</span>
+                    <span class="n">row_values</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">val</span><span class="o">.</span><span class="n">item</span><span class="p">())</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">row_values</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">val</span><span class="p">)</span>
+        <span class="n">rows</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">row_values</span><span class="p">)</span>
+
+    <span class="n">ds</span> <span class="o">=</span> <span class="n">DatasetJSON</span><span class="p">(</span>
+        <span class="n">datasetJSONCreationDateTime</span><span class="o">=</span><span class="n">creation_datetime</span><span class="p">,</span>
+        <span class="n">datasetJSONVersion</span><span class="o">=</span><span class="n">dataset_json_version</span><span class="p">,</span>
+        <span class="n">itemGroupOID</span><span class="o">=</span><span class="n">item_group_oid</span><span class="p">,</span>
+        <span class="n">records</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">rows</span><span class="p">),</span>
+        <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span>
+        <span class="n">label</span><span class="o">=</span><span class="n">label</span><span class="p">,</span>
+        <span class="n">columns</span><span class="o">=</span><span class="n">columns</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="k">if</span> <span class="n">rows</span><span class="p">:</span>
+        <span class="n">ds</span><span class="o">.</span><span class="n">rows</span> <span class="o">=</span> <span class="n">rows</span>
+
+    <span class="k">return</span> <span class="n">ds</span></div>
+
+
+
+<div class="viewcode-block" id="dataframe_to_items">
+<a class="viewcode-back" href="../../odmlib.dataframe.html#odmlib.dataframe.dataframe_to_items">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">dataframe_to_items</span><span class="p">(</span>
+    <span class="n">df</span><span class="p">:</span> <span class="s2">&quot;pd.DataFrame&quot;</span><span class="p">,</span>
+    <span class="n">model_module</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
+    <span class="n">element_type</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;ItemDef&quot;</span><span class="p">,</span>
+    <span class="n">column_mapping</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">Any</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Create odmlib elements from a Pandas DataFrame.</span>
+
+<span class="sd">    Each row of the DataFrame becomes one odmlib element instance of type</span>
+<span class="sd">    *element_type*.  Columns that map to valid attribute names are passed</span>
+<span class="sd">    as keyword arguments to the constructor.  Rows that fail to construct</span>
+<span class="sd">    a valid element are silently skipped.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        df: Source DataFrame where each row represents one element.</span>
+<span class="sd">        model_module: The odmlib model module containing *element_type*</span>
+<span class="sd">            (e.g., ``odmlib.odm_1_3_2.model``).</span>
+<span class="sd">        element_type: Class name to instantiate (default ``&quot;ItemDef&quot;``).</span>
+<span class="sd">        column_mapping: Optional dict mapping DataFrame column names to</span>
+<span class="sd">            odmlib attribute names.  If ``None``, column names must match</span>
+<span class="sd">            attribute names exactly.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        List of odmlib element instances (one per successfully constructed row).</span>
+
+<span class="sd">    Raises:</span>
+<span class="sd">        ImportError: If pandas is not installed.</span>
+<span class="sd">        AttributeError: If *element_type* is not found in *model_module*.</span>
+
+<span class="sd">    Example::</span>
+
+<span class="sd">        import odmlib.odm_1_3_2.model as ODM</span>
+<span class="sd">        import pandas as pd</span>
+<span class="sd">        from odmlib.dataframe import dataframe_to_items</span>
+
+<span class="sd">        df = pd.DataFrame([</span>
+<span class="sd">            {&quot;OID&quot;: &quot;IT.AGE&quot;, &quot;Name&quot;: &quot;AGE&quot;, &quot;DataType&quot;: &quot;integer&quot;},</span>
+<span class="sd">            {&quot;OID&quot;: &quot;IT.SEX&quot;, &quot;Name&quot;: &quot;SEX&quot;, &quot;DataType&quot;: &quot;text&quot;},</span>
+<span class="sd">        ])</span>
+<span class="sd">        items = dataframe_to_items(df, ODM, &quot;ItemDef&quot;)</span>
+<span class="sd">        for item in items:</span>
+<span class="sd">            mdv.ItemDef.append(item)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">_require_pandas</span><span class="p">()</span>
+
+    <span class="bp">cls</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">model_module</span><span class="p">,</span> <span class="n">element_type</span><span class="p">)</span>
+    <span class="n">mapping</span> <span class="o">=</span> <span class="n">column_mapping</span> <span class="ow">or</span> <span class="p">{}</span>
+
+    <span class="n">elements</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">df</span><span class="o">.</span><span class="n">iterrows</span><span class="p">():</span>
+        <span class="n">kwargs</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="n">df</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
+            <span class="n">attr_name</span> <span class="o">=</span> <span class="n">mapping</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">col</span><span class="p">,</span> <span class="n">col</span><span class="p">)</span>
+            <span class="n">val</span> <span class="o">=</span> <span class="n">row</span><span class="p">[</span><span class="n">col</span><span class="p">]</span>
+            <span class="c1"># Skip NaN / None / pd.NA values</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">pd</span><span class="o">.</span><span class="n">notna</span><span class="p">(</span><span class="n">val</span><span class="p">):</span>
+                    <span class="n">kwargs</span><span class="p">[</span><span class="n">attr_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">val</span>
+            <span class="k">except</span> <span class="p">(</span><span class="ne">TypeError</span><span class="p">,</span> <span class="ne">ValueError</span><span class="p">):</span>
+                <span class="c1"># notna() may raise for certain object types; skip gracefully</span>
+                <span class="k">if</span> <span class="n">val</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="n">kwargs</span><span class="p">[</span><span class="n">attr_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">val</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">elements</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">cls</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">))</span>
+        <span class="k">except</span> <span class="p">(</span><span class="ne">TypeError</span><span class="p">,</span> <span class="ne">ValueError</span><span class="p">,</span> <span class="ne">AttributeError</span><span class="p">):</span>
+            <span class="c1"># Skip rows that cannot construct a valid element</span>
+            <span class="k">pass</span>
+
+    <span class="k">return</span> <span class="n">elements</span></div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2020, Sam Hume.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

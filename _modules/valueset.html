@@ -1,0 +1,405 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>valueset &mdash; odmlib 0.2.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=938c9ccc"></script>
+      <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            odmlib
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">User Guides</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../guides/getting_started.html">Getting Started with odmlib</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guides/reading_documents.html">Reading ODM Documents</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guides/permissive_loading.html">Permissive Loading Mode</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guides/creating_documents.html">Creating ODM Documents</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guides/validation.html">Validating ODM Documents</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guides/model_reference.html">Model Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guides/interoperability.html">Interoperability: Dataset-JSON and Pandas</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guides/dataset_json.html">Working with Dataset-JSON v1.1</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../modules.html">odmlib</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../odmlib.odm_1_3_2.html">odm_1_3_2 package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../odmlib.odm_2_0.html">odm_2_0 package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../odmlib.define_2_0.html">define_2_0 package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../odmlib.define_2_1.html">define_2_1 package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../odmlib.dataset_1_0_1.html">odmlib.dataset_1_0_1 module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../odmlib.ct_1_1_1.html">odmlib.ct_1_1_1 module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../odmlib.arm_1_0.html">odmlib.arm_1_0 module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../odmlib.dataset_json_1_1.html">odmlib.dataset_json_1_1</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../odmlib.dataframe.html">odmlib.dataframe</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Project</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../changelog.html">Changelog</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">odmlib</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">Module code</a></li>
+      <li class="breadcrumb-item active">valueset</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for valueset</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">json</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">re</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">odmlib.exceptions</span><span class="w"> </span><span class="kn">import</span> <span class="n">OdmlibValidationError</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">_UnknownAttribute</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Sentinel returned by :meth:`ValueSet.value_set` when an attribute key</span>
+<span class="sd">    is absent from the resolved version *and* every fallback version.</span>
+
+<span class="sd">    Distinct from an unknown *version*, which still raises</span>
+<span class="sd">    ``OdmlibValidationError``. Returning a sentinel (rather than raising)</span>
+<span class="sd">    lets ``validate()`` report ``False`` so the ``SKIP_VALUESET`` permissive</span>
+<span class="sd">    guard in ``ValidValues.__set__`` can take effect for unregistered keys.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="vm">__slots__</span> <span class="o">=</span> <span class="p">()</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s2">&quot;&lt;ValueSet.UNKNOWN_ATTRIBUTE&gt;&quot;</span>
+
+
+<span class="n">UNKNOWN_ATTRIBUTE</span> <span class="o">=</span> <span class="n">_UnknownAttribute</span><span class="p">()</span>
+
+
+<div class="viewcode-block" id="ValueSetLoader">
+<a class="viewcode-back" href="../modules.html#valueset.ValueSetLoader">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">ValueSetLoader</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Loads and caches valueset data from JSON file&quot;&quot;&quot;</span>
+    <span class="n">_cache</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># Class variable for singleton cache</span>
+    <span class="n">_version_map</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># Maps module paths to versions</span>
+
+<div class="viewcode-block" id="ValueSetLoader.load_valuesets">
+<a class="viewcode-back" href="../modules.html#valueset.ValueSetLoader.load_valuesets">[docs]</a>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">load_valuesets</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Load JSON once, cache in memory (lazy loading)&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_cache</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">data_dir</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)</span><span class="o">.</span><span class="n">parent</span> <span class="o">/</span> <span class="s1">&#39;data&#39;</span>
+            <span class="n">json_path</span> <span class="o">=</span> <span class="n">data_dir</span> <span class="o">/</span> <span class="s1">&#39;valuesets.json&#39;</span>
+            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">json_path</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+                <span class="bp">cls</span><span class="o">.</span><span class="n">_cache</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+            <span class="bp">cls</span><span class="o">.</span><span class="n">_build_version_map</span><span class="p">()</span>
+        <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_cache</span></div>
+
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_build_version_map</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Map module paths to version keys&quot;&quot;&quot;</span>
+        <span class="bp">cls</span><span class="o">.</span><span class="n">_version_map</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s1">&#39;odmlib.odm_1_3_2.model&#39;</span><span class="p">:</span> <span class="s1">&#39;odm_1_3_2&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;odmlib.odm_2_0.model&#39;</span><span class="p">:</span> <span class="s1">&#39;odm_2_0&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;odmlib.define_2_0.model&#39;</span><span class="p">:</span> <span class="s1">&#39;define_2_0&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;odmlib.define_2_1.model&#39;</span><span class="p">:</span> <span class="s1">&#39;define_2_1&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;odmlib.arm_1_0.model&#39;</span><span class="p">:</span> <span class="s1">&#39;define_2_1&#39;</span><span class="p">,</span>      <span class="c1"># ARM extends Define-XML 2.1</span>
+            <span class="s1">&#39;odmlib.ct_1_1_1.model&#39;</span><span class="p">:</span> <span class="s1">&#39;ct_1_1_1&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;odmlib.dataset_1_0_1.model&#39;</span><span class="p">:</span> <span class="s1">&#39;dataset_1_0_1&#39;</span><span class="p">,</span>
+            <span class="c1"># Add test models</span>
+            <span class="s1">&#39;tests.model_extended&#39;</span><span class="p">:</span> <span class="s1">&#39;odm_1_3_2&#39;</span><span class="p">,</span>  <span class="c1"># Test extension uses base</span>
+        <span class="p">}</span>
+
+    <span class="c1"># Pattern markers checked against unknown module paths, in priority order.</span>
+    <span class="c1"># Order matters: &#39;odm_2_0&#39; must be tried before &#39;odm_1_3_2&#39; substrings, etc.</span>
+    <span class="n">_MODULE_PATTERNS</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="p">(</span><span class="s1">&#39;odm_2_0&#39;</span><span class="p">,</span> <span class="s1">&#39;odm_2_0&#39;</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">&#39;define_2_1&#39;</span><span class="p">,</span> <span class="s1">&#39;define_2_1&#39;</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">&#39;arm_1_0&#39;</span><span class="p">,</span> <span class="s1">&#39;define_2_1&#39;</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">&#39;define_2_0&#39;</span><span class="p">,</span> <span class="s1">&#39;define_2_0&#39;</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">&#39;ct_1_1_1&#39;</span><span class="p">,</span> <span class="s1">&#39;ct_1_1_1&#39;</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">&#39;dataset_1_0_1&#39;</span><span class="p">,</span> <span class="s1">&#39;dataset_1_0_1&#39;</span><span class="p">),</span>
+    <span class="p">)</span>
+
+<div class="viewcode-block" id="ValueSetLoader.get_version_for_module">
+<a class="viewcode-back" href="../modules.html#valueset.ValueSetLoader.get_version_for_module">[docs]</a>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_version_for_module</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">module_path</span><span class="p">,</span> <span class="n">instance_class</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Determine the valueset version for a module path.</span>
+
+<span class="sd">        Resolution order:</span>
+<span class="sd">        1. Exact match in the version map.</span>
+<span class="sd">        2. Substring marker match against the module path.</span>
+<span class="sd">        3. If ``instance_class`` is provided, walk its MRO and recurse on each</span>
+<span class="sd">           base class&#39;s module — this lets local models that subclass a shipped</span>
+<span class="sd">           odmlib model inherit the correct version.</span>
+<span class="sd">        4. Fallback: ``odm_1_3_2`` for backward compatibility.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_version_map</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">cls</span><span class="o">.</span><span class="n">load_valuesets</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="n">module_path</span> <span class="ow">in</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_version_map</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_version_map</span><span class="p">[</span><span class="n">module_path</span><span class="p">]</span>
+
+        <span class="k">for</span> <span class="n">marker</span><span class="p">,</span> <span class="n">version</span> <span class="ow">in</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_MODULE_PATTERNS</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">marker</span> <span class="ow">in</span> <span class="n">module_path</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">version</span>
+
+        <span class="k">if</span> <span class="n">instance_class</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">base</span> <span class="ow">in</span> <span class="n">instance_class</span><span class="o">.</span><span class="vm">__mro__</span><span class="p">[</span><span class="mi">1</span><span class="p">:]:</span>
+                <span class="n">base_module</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">base</span><span class="p">,</span> <span class="s1">&#39;__module__&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">base_module</span> <span class="ow">or</span> <span class="n">base_module</span> <span class="o">==</span> <span class="s1">&#39;builtins&#39;</span><span class="p">:</span>
+                    <span class="k">continue</span>
+                <span class="k">if</span> <span class="n">base_module</span> <span class="ow">in</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_version_map</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_version_map</span><span class="p">[</span><span class="n">base_module</span><span class="p">]</span>
+                <span class="k">for</span> <span class="n">marker</span><span class="p">,</span> <span class="n">version</span> <span class="ow">in</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_MODULE_PATTERNS</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">marker</span> <span class="ow">in</span> <span class="n">base_module</span><span class="p">:</span>
+                        <span class="k">return</span> <span class="n">version</span>
+
+        <span class="k">return</span> <span class="s1">&#39;odm_1_3_2&#39;</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="ValueSet">
+<a class="viewcode-back" href="../modules.html#valueset.ValueSet">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">ValueSet</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Backward-compatible interface to valueset data.</span>
+
+<span class="sd">    Supports two entry types in valuesets.json:</span>
+<span class="sd">    - **list**: A list of allowed string values (e.g., ``[&quot;Yes&quot;, &quot;No&quot;]``)</span>
+<span class="sd">    - **regex dict**: A dict with ``_regex`` key and optional ``_description``</span>
+<span class="sd">      (e.g., ``{&quot;_regex&quot;: &quot;^2\\\\.[01](\\\\.\\\\d+)?$&quot;, &quot;_description&quot;: &quot;...&quot;}``).</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1">#: Sentinel returned by :meth:`value_set` for an unknown attribute key</span>
+    <span class="c1">#: (see :class:`_UnknownAttribute`). Exposed for callers/tests.</span>
+    <span class="n">UNKNOWN_ATTRIBUTE</span> <span class="o">=</span> <span class="n">UNKNOWN_ATTRIBUTE</span>
+
+    <span class="n">_compiled_regex_cache</span> <span class="o">=</span> <span class="p">{}</span>  <span class="c1"># (version, attribute) -&gt; compiled re.Pattern</span>
+
+    <span class="c1"># Versions tried (in order) when an attribute is missing from the resolved</span>
+    <span class="c1"># version. Hybrid local models (e.g. an ODM 1.3.2 base extended with</span>
+    <span class="c1"># Define-XML 2.x attributes) need this to find Define-only keys.</span>
+    <span class="n">_FALLBACK_VERSIONS</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="s1">&#39;define_2_1&#39;</span><span class="p">,</span> <span class="s1">&#39;define_2_0&#39;</span><span class="p">,</span> <span class="s1">&#39;odm_2_0&#39;</span><span class="p">,</span> <span class="s1">&#39;odm_1_3_2&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;ct_1_1_1&#39;</span><span class="p">,</span> <span class="s1">&#39;dataset_1_0_1&#39;</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_resolve_version</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">version</span><span class="p">,</span> <span class="n">instance</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Resolve the version string from explicit value or instance.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">version</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">instance</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">instance_class</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span><span class="n">instance</span><span class="p">)</span>
+            <span class="n">module_path</span> <span class="o">=</span> <span class="n">instance_class</span><span class="o">.</span><span class="vm">__module__</span>
+            <span class="k">return</span> <span class="n">ValueSetLoader</span><span class="o">.</span><span class="n">get_version_for_module</span><span class="p">(</span>
+                <span class="n">module_path</span><span class="p">,</span> <span class="n">instance_class</span><span class="o">=</span><span class="n">instance_class</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="k">elif</span> <span class="n">version</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s1">&#39;odm_1_3_2&#39;</span>
+        <span class="k">return</span> <span class="n">version</span>
+
+<div class="viewcode-block" id="ValueSet.value_set">
+<a class="viewcode-back" href="../modules.html#valueset.ValueSet.value_set">[docs]</a>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">value_set</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">attribute</span><span class="p">,</span> <span class="n">version</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">instance</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the raw valueset entry for an attribute.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            attribute: &quot;ClassName.AttributeName&quot; format</span>
+<span class="sd">            version: Explicit version (e.g., &quot;odm_2_0&quot;) - optional</span>
+<span class="sd">            instance: ODMElement instance for automatic version detection - optional</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            list or dict: A list of valid values, or a dict with ``_regex``</span>
+<span class="sd">            key for pattern-based validation. Returns the</span>
+<span class="sd">            :data:`UNKNOWN_ATTRIBUTE` sentinel if the attribute key is not</span>
+<span class="sd">            registered for the resolved version or any fallback version.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            OdmlibValidationError: If the *version* is not found in the</span>
+<span class="sd">            valueset. An unknown *attribute* no longer raises — it returns</span>
+<span class="sd">            the :data:`UNKNOWN_ATTRIBUTE` sentinel instead.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">version</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_resolve_version</span><span class="p">(</span><span class="n">version</span><span class="p">,</span> <span class="n">instance</span><span class="p">)</span>
+
+        <span class="c1"># Load valuesets (cached)</span>
+        <span class="n">valuesets</span> <span class="o">=</span> <span class="n">ValueSetLoader</span><span class="o">.</span><span class="n">load_valuesets</span><span class="p">()</span>
+
+        <span class="c1"># Get version-specific valueset</span>
+        <span class="k">if</span> <span class="n">version</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">valuesets</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">OdmlibValidationError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;Unknown version </span><span class="si">{</span><span class="n">version</span><span class="si">}</span><span class="s2"> in ValueSet&quot;</span><span class="p">,</span>
+                <span class="n">hint</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;Valid versions are: </span><span class="si">{</span><span class="nb">list</span><span class="p">(</span><span class="n">valuesets</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+            <span class="p">)</span>
+
+        <span class="n">version_valueset</span> <span class="o">=</span> <span class="n">valuesets</span><span class="p">[</span><span class="n">version</span><span class="p">]</span>
+
+        <span class="c1"># Get attribute values</span>
+        <span class="k">if</span> <span class="n">attribute</span> <span class="ow">in</span> <span class="n">version_valueset</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">version_valueset</span><span class="p">[</span><span class="n">attribute</span><span class="p">]</span>
+
+        <span class="c1"># Cross-version fallback: hybrid local models (e.g. an ODM 1.3.2 base</span>
+        <span class="c1"># extended with def: attributes) may carry attribute keys that only</span>
+        <span class="c1"># exist in another shipped version&#39;s valueset. Search the others.</span>
+        <span class="k">for</span> <span class="n">other</span> <span class="ow">in</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_FALLBACK_VERSIONS</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">other</span> <span class="o">==</span> <span class="n">version</span><span class="p">:</span>
+                <span class="k">continue</span>
+            <span class="n">other_valueset</span> <span class="o">=</span> <span class="n">valuesets</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">other</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">other_valueset</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">attribute</span> <span class="ow">in</span> <span class="n">other_valueset</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">other_valueset</span><span class="p">[</span><span class="n">attribute</span><span class="p">]</span>
+
+        <span class="c1"># Unknown *attribute* (absent here and in every fallback version):</span>
+        <span class="c1"># return a sentinel rather than raising, so validate() can report</span>
+        <span class="c1"># False and the SKIP_VALUESET permissive guard can take effect.</span>
+        <span class="c1"># (Unknown *version* still raises, above.)</span>
+        <span class="k">return</span> <span class="n">UNKNOWN_ATTRIBUTE</span></div>
+
+
+<div class="viewcode-block" id="ValueSet.validate">
+<a class="viewcode-back" href="../modules.html#valueset.ValueSet.validate">[docs]</a>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">validate</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">attribute</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">version</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">instance</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Check whether a value is valid for the given attribute.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            attribute: &quot;ClassName.AttributeName&quot; format</span>
+<span class="sd">            value: The string value to validate</span>
+<span class="sd">            version: Explicit version (e.g., &quot;odm_2_0&quot;) - optional</span>
+<span class="sd">            instance: ODMElement instance for automatic version detection - optional</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            bool: True if the value is valid, False otherwise.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">version</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_resolve_version</span><span class="p">(</span><span class="n">version</span><span class="p">,</span> <span class="n">instance</span><span class="p">)</span>
+        <span class="n">entry</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">value_set</span><span class="p">(</span><span class="n">attribute</span><span class="p">,</span> <span class="n">version</span><span class="o">=</span><span class="n">version</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">entry</span> <span class="ow">is</span> <span class="n">UNKNOWN_ATTRIBUTE</span><span class="p">:</span>
+            <span class="c1"># No registered value set for this attribute: not provably</span>
+            <span class="c1"># valid -&gt; False. This lets ValidValues.__set__ reach the</span>
+            <span class="c1"># SKIP_VALUESET permissive guard instead of the old raise</span>
+            <span class="c1"># propagating out of value_set().</span>
+            <span class="k">return</span> <span class="kc">False</span>
+
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">entry</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">entry</span>
+
+        <span class="c1"># Regex dict entry</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">entry</span><span class="p">,</span> <span class="nb">dict</span><span class="p">)</span> <span class="ow">and</span> <span class="s2">&quot;_regex&quot;</span> <span class="ow">in</span> <span class="n">entry</span><span class="p">:</span>
+            <span class="n">cache_key</span> <span class="o">=</span> <span class="p">(</span><span class="n">version</span><span class="p">,</span> <span class="n">attribute</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">cache_key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_compiled_regex_cache</span><span class="p">:</span>
+                <span class="bp">cls</span><span class="o">.</span><span class="n">_compiled_regex_cache</span><span class="p">[</span><span class="n">cache_key</span><span class="p">]</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">entry</span><span class="p">[</span><span class="s2">&quot;_regex&quot;</span><span class="p">])</span>
+            <span class="n">pattern</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_compiled_regex_cache</span><span class="p">[</span><span class="n">cache_key</span><span class="p">]</span>
+            <span class="k">return</span> <span class="n">pattern</span><span class="o">.</span><span class="n">fullmatch</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+
+        <span class="k">return</span> <span class="kc">False</span></div>
+
+
+<div class="viewcode-block" id="ValueSet.describe">
+<a class="viewcode-back" href="../modules.html#valueset.ValueSet.describe">[docs]</a>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">describe</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">attribute</span><span class="p">,</span> <span class="n">version</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">instance</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return a human-readable description of valid values for an attribute.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            attribute: &quot;ClassName.AttributeName&quot; format</span>
+<span class="sd">            version: Explicit version (e.g., &quot;odm_2_0&quot;) - optional</span>
+<span class="sd">            instance: ODMElement instance for automatic version detection - optional</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            str: Description suitable for error messages.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">version</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_resolve_version</span><span class="p">(</span><span class="n">version</span><span class="p">,</span> <span class="n">instance</span><span class="p">)</span>
+        <span class="n">entry</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">value_set</span><span class="p">(</span><span class="n">attribute</span><span class="p">,</span> <span class="n">version</span><span class="o">=</span><span class="n">version</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">entry</span> <span class="ow">is</span> <span class="n">UNKNOWN_ATTRIBUTE</span><span class="p">:</span>
+            <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;No registered value set for </span><span class="si">{</span><span class="n">attribute</span><span class="si">}</span><span class="s2">&quot;</span>
+
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">entry</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+            <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;Value must be one of: </span><span class="si">{</span><span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">entry</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">entry</span><span class="p">,</span> <span class="nb">dict</span><span class="p">)</span> <span class="ow">and</span> <span class="s2">&quot;_regex&quot;</span> <span class="ow">in</span> <span class="n">entry</span><span class="p">:</span>
+            <span class="k">if</span> <span class="s2">&quot;_description&quot;</span> <span class="ow">in</span> <span class="n">entry</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">entry</span><span class="p">[</span><span class="s2">&quot;_description&quot;</span><span class="p">]</span>
+            <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;Value must match pattern: </span><span class="si">{</span><span class="n">entry</span><span class="p">[</span><span class="s1">&#39;_regex&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span>
+
+        <span class="k">return</span> <span class="s2">&quot;Unknown valueset format&quot;</span></div>
+</div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2020, Sam Hume.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

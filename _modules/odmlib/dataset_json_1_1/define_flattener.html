@@ -1,0 +1,1056 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>odmlib.dataset_json_1_1.define_flattener &mdash; odmlib 0.2.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=9edc463e" />
+
+  
+      <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../_static/documentation_options.js?v=938c9ccc"></script>
+      <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            odmlib
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">User Guides</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../guides/getting_started.html">Getting Started with odmlib</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../guides/reading_documents.html">Reading ODM Documents</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../guides/permissive_loading.html">Permissive Loading Mode</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../guides/creating_documents.html">Creating ODM Documents</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../guides/validation.html">Validating ODM Documents</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../guides/model_reference.html">Model Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../guides/interoperability.html">Interoperability: Dataset-JSON and Pandas</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../guides/dataset_json.html">Working with Dataset-JSON v1.1</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules.html">odmlib</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../odmlib.odm_1_3_2.html">odm_1_3_2 package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../odmlib.odm_2_0.html">odm_2_0 package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../odmlib.define_2_0.html">define_2_0 package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../odmlib.define_2_1.html">define_2_1 package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../odmlib.dataset_1_0_1.html">odmlib.dataset_1_0_1 module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../odmlib.ct_1_1_1.html">odmlib.ct_1_1_1 module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../odmlib.arm_1_0.html">odmlib.arm_1_0 module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../odmlib.dataset_json_1_1.html">odmlib.dataset_json_1_1</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../odmlib.dataframe.html">odmlib.dataframe</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Project</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../changelog.html">Changelog</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">odmlib</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">odmlib.dataset_json_1_1.define_flattener</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for odmlib.dataset_json_1_1.define_flattener</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Flatten Define-XML v2.1 metadata into tabular Dataset-JSON v1.1 datasets.</span>
+
+<span class="sd">This module converts a loaded Define-XML v2.1 ODM object hierarchy into</span>
+<span class="sd">a set of Dataset-JSON v1.1 datasets, one per metadata table. Each table</span>
+<span class="sd">captures a different aspect of the Define-XML metadata in a flat,</span>
+<span class="sd">tabular format suitable for analysis and round-tripping.</span>
+
+<span class="sd">Classes:</span>
+<span class="sd">    :class:`DefineFlattener` -- converts Define-XML v2.1 to Dataset-JSON tables</span>
+
+<span class="sd">Target datasets (11 core):</span>
+<span class="sd">    study, standards, datasets, variables, value_level, where_clauses,</span>
+<span class="sd">    methods, comments, documents, codelists, codelist_terms</span>
+
+<span class="sd">Additional datasets (lossless-roundtrip extensions, optional on read):</span>
+<span class="sd">    aliases, origins</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">datetime</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Optional</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">odmlib.dataset_json_1_1.model</span><span class="w"> </span><span class="kn">import</span> <span class="n">DatasetJSON</span><span class="p">,</span> <span class="n">Column</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_safe_get</span><span class="p">(</span><span class="n">element</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="o">*</span><span class="n">attrs</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Safely traverse nested optional attributes and indices.</span>
+
+<span class="sd">    Navigates through a chain of attribute accesses and list indexing,</span>
+<span class="sd">    returning ``default`` if any level is missing, None, or raises</span>
+<span class="sd">    AttributeError/IndexError/TypeError.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        element: Starting object.</span>
+<span class="sd">        *attrs: Sequence of attribute names (str) or list indices (int).</span>
+<span class="sd">        default: Value to return if traversal fails (default: None).</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        The value at the end of the chain, or ``default``.</span>
+
+<span class="sd">    Examples:</span>
+<span class="sd">        &gt;&gt;&gt; _safe_get(item_def, &quot;Description&quot;, &quot;TranslatedText&quot;, 0, &quot;_content&quot;)</span>
+<span class="sd">        &#39;Age&#39;</span>
+<span class="sd">        &gt;&gt;&gt; _safe_get(item_def, &quot;CodeListRef&quot;, &quot;CodeListOID&quot;)</span>
+<span class="sd">        &#39;CL.AGEU&#39;</span>
+<span class="sd">        &gt;&gt;&gt; _safe_get(None, &quot;anything&quot;)  # returns None</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">current</span> <span class="o">=</span> <span class="n">element</span>
+    <span class="k">for</span> <span class="n">attr</span> <span class="ow">in</span> <span class="n">attrs</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">current</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">default</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">attr</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
+                <span class="n">current</span> <span class="o">=</span> <span class="n">current</span><span class="p">[</span><span class="n">attr</span><span class="p">]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">current</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">current</span><span class="p">,</span> <span class="n">attr</span><span class="p">)</span>
+        <span class="k">except</span> <span class="p">(</span><span class="ne">AttributeError</span><span class="p">,</span> <span class="ne">IndexError</span><span class="p">,</span> <span class="ne">TypeError</span><span class="p">,</span> <span class="ne">KeyError</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">default</span>
+    <span class="k">return</span> <span class="n">current</span> <span class="k">if</span> <span class="n">current</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">default</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_make_column</span><span class="p">(</span><span class="n">item_oid</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">label</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+                 <span class="n">data_type</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;string&quot;</span><span class="p">,</span> <span class="n">key_seq</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Column</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Create a Column with common defaults.&quot;&quot;&quot;</span>
+    <span class="n">kwargs</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;itemOID&quot;</span><span class="p">:</span> <span class="n">item_oid</span><span class="p">,</span>
+        <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">name</span><span class="p">,</span>
+        <span class="s2">&quot;label&quot;</span><span class="p">:</span> <span class="n">label</span><span class="p">,</span>
+        <span class="s2">&quot;dataType&quot;</span><span class="p">:</span> <span class="n">data_type</span><span class="p">,</span>
+    <span class="p">}</span>
+    <span class="k">if</span> <span class="n">key_seq</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;keySequence&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">key_seq</span>
+    <span class="k">return</span> <span class="n">Column</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_str_or_none</span><span class="p">(</span><span class="n">value</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Convert a value to string, or return None if it is None.&quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">value</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">None</span>
+    <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="DefineFlattener">
+<a class="viewcode-back" href="../../../odmlib.dataset_json_1_1.html#odmlib.dataset_json_1_1.DefineFlattener">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">DefineFlattener</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Convert Define-XML v2.1 metadata into tabular Dataset-JSON datasets.</span>
+
+<span class="sd">    Initializes with a loaded Define-XML v2.1 ODM root object and provides</span>
+<span class="sd">    methods to flatten each metadata element type into a separate</span>
+<span class="sd">    Dataset-JSON v1.1 dataset.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        odm_root: A loaded Define-XML v2.1 ODM root object (from odmlib loader).</span>
+<span class="sd">        study_idx: Index of the Study element to use (default: 0). For</span>
+<span class="sd">            Define-XML, there is always exactly one Study.</span>
+
+<span class="sd">    Example::</span>
+
+<span class="sd">        import odmlib.define_loader as DL</span>
+<span class="sd">        import odmlib.loader as LD</span>
+<span class="sd">        from odmlib.dataset_json_1_1.define_flattener import DefineFlattener</span>
+
+<span class="sd">        loader = LD.ODMLoader(DL.XMLDefineLoader(model_package=&#39;define_2_1&#39;))</span>
+<span class="sd">        loader.open_odm_document(&#39;define.xml&#39;)</span>
+<span class="sd">        odm = loader.root()</span>
+
+<span class="sd">        flattener = DefineFlattener(odm)</span>
+<span class="sd">        datasets = flattener.flatten_all()</span>
+<span class="sd">        flattener.write_all(&#39;/output/dir&#39;)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># Dataset-JSON version for all generated files</span>
+    <span class="n">DATASET_JSON_VERSION</span> <span class="o">=</span> <span class="s2">&quot;1.1.0&quot;</span>
+
+    <span class="c1"># Names of all metadata tables produced by flatten_all</span>
+    <span class="n">TABLE_NAMES</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="s2">&quot;study&quot;</span><span class="p">,</span> <span class="s2">&quot;standards&quot;</span><span class="p">,</span> <span class="s2">&quot;datasets&quot;</span><span class="p">,</span> <span class="s2">&quot;variables&quot;</span><span class="p">,</span> <span class="s2">&quot;value_level&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;where_clauses&quot;</span><span class="p">,</span> <span class="s2">&quot;methods&quot;</span><span class="p">,</span> <span class="s2">&quot;comments&quot;</span><span class="p">,</span> <span class="s2">&quot;documents&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;codelists&quot;</span><span class="p">,</span> <span class="s2">&quot;codelist_terms&quot;</span><span class="p">,</span>
+    <span class="p">]</span>
+
+    <span class="c1"># Lossless-roundtrip extension datasets (optional when reading back)</span>
+    <span class="n">EXTRA_TABLE_NAMES</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;aliases&quot;</span><span class="p">,</span> <span class="s2">&quot;origins&quot;</span><span class="p">]</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">odm_root</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">study_idx</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_odm</span> <span class="o">=</span> <span class="n">odm_root</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_study</span> <span class="o">=</span> <span class="n">odm_root</span><span class="o">.</span><span class="n">Study</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_gv</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_study</span><span class="o">.</span><span class="n">GlobalVariables</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_mdv</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_study</span><span class="o">.</span><span class="n">MetaDataVersion</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_creation_dt</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">(</span>
+            <span class="n">datetime</span><span class="o">.</span><span class="n">timezone</span><span class="o">.</span><span class="n">utc</span>
+        <span class="p">)</span><span class="o">.</span><span class="n">isoformat</span><span class="p">()</span>
+        <span class="c1"># Build lookup indexes for O(1) access</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_item_def_index</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_build_item_def_index</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_where_clause_index</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_build_where_clause_index</span><span class="p">()</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_build_item_def_index</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Build OID -&gt; ItemDef lookup from MetaDataVersion.ItemDef.&quot;&quot;&quot;</span>
+        <span class="n">item_defs</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_mdv</span><span class="p">,</span> <span class="s2">&quot;ItemDef&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">or</span> <span class="p">[]</span>
+        <span class="k">return</span> <span class="p">{</span><span class="n">item_def</span><span class="o">.</span><span class="n">OID</span><span class="p">:</span> <span class="n">item_def</span> <span class="k">for</span> <span class="n">item_def</span> <span class="ow">in</span> <span class="n">item_defs</span><span class="p">}</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_build_where_clause_index</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Build OID -&gt; WhereClauseDef lookup.&quot;&quot;&quot;</span>
+        <span class="n">wc_defs</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_mdv</span><span class="p">,</span> <span class="s2">&quot;WhereClauseDef&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">or</span> <span class="p">[]</span>
+        <span class="k">return</span> <span class="p">{</span><span class="n">wc</span><span class="o">.</span><span class="n">OID</span><span class="p">:</span> <span class="n">wc</span> <span class="k">for</span> <span class="n">wc</span> <span class="ow">in</span> <span class="n">wc_defs</span><span class="p">}</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_make_dataset</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">label</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">columns</span><span class="p">:</span> <span class="nb">list</span><span class="p">,</span>
+                      <span class="n">rows</span><span class="p">:</span> <span class="nb">list</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DatasetJSON</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Create a DatasetJSON instance with standard metadata fields.&quot;&quot;&quot;</span>
+        <span class="n">ds</span> <span class="o">=</span> <span class="n">DatasetJSON</span><span class="p">(</span>
+            <span class="n">datasetJSONCreationDateTime</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_creation_dt</span><span class="p">,</span>
+            <span class="n">datasetJSONVersion</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">DATASET_JSON_VERSION</span><span class="p">,</span>
+            <span class="n">fileOID</span><span class="o">=</span><span class="n">_safe_get</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_odm</span><span class="p">,</span> <span class="s2">&quot;FileOID&quot;</span><span class="p">),</span>
+            <span class="n">studyOID</span><span class="o">=</span><span class="n">_safe_get</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_study</span><span class="p">,</span> <span class="s2">&quot;OID&quot;</span><span class="p">),</span>
+            <span class="n">metaDataVersionOID</span><span class="o">=</span><span class="n">_safe_get</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_mdv</span><span class="p">,</span> <span class="s2">&quot;OID&quot;</span><span class="p">),</span>
+            <span class="n">itemGroupOID</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;IG.DEFINE.</span><span class="si">{</span><span class="n">name</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+            <span class="n">records</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">rows</span><span class="p">),</span>
+            <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span>
+            <span class="n">label</span><span class="o">=</span><span class="n">label</span><span class="p">,</span>
+            <span class="n">columns</span><span class="o">=</span><span class="n">columns</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="k">if</span> <span class="n">rows</span><span class="p">:</span>
+            <span class="n">ds</span><span class="o">.</span><span class="n">rows</span> <span class="o">=</span> <span class="n">rows</span>
+        <span class="k">return</span> <span class="n">ds</span>
+
+    <span class="c1"># ------------------------------------------------------------------ #</span>
+    <span class="c1"># Public API</span>
+    <span class="c1"># ------------------------------------------------------------------ #</span>
+
+<div class="viewcode-block" id="DefineFlattener.flatten_all">
+<a class="viewcode-back" href="../../../odmlib.dataset_json_1_1.html#odmlib.dataset_json_1_1.DefineFlattener.flatten_all">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">flatten_all</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Flatten all Define-XML metadata into Dataset-JSON datasets.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            dict[str, DatasetJSON]: Mapping of dataset name to DatasetJSON</span>
+<span class="sd">                for all 11 metadata tables.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">{</span>
+            <span class="s2">&quot;study&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">flatten_study</span><span class="p">(),</span>
+            <span class="s2">&quot;standards&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">flatten_standards</span><span class="p">(),</span>
+            <span class="s2">&quot;datasets&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">flatten_datasets</span><span class="p">(),</span>
+            <span class="s2">&quot;variables&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">flatten_variables</span><span class="p">(),</span>
+            <span class="s2">&quot;value_level&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">flatten_value_level</span><span class="p">(),</span>
+            <span class="s2">&quot;where_clauses&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">flatten_where_clauses</span><span class="p">(),</span>
+            <span class="s2">&quot;methods&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">flatten_methods</span><span class="p">(),</span>
+            <span class="s2">&quot;comments&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">flatten_comments</span><span class="p">(),</span>
+            <span class="s2">&quot;documents&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">flatten_documents</span><span class="p">(),</span>
+            <span class="s2">&quot;codelists&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">flatten_codelists</span><span class="p">(),</span>
+            <span class="s2">&quot;codelist_terms&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">flatten_codelist_terms</span><span class="p">(),</span>
+            <span class="s2">&quot;aliases&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">flatten_aliases</span><span class="p">(),</span>
+            <span class="s2">&quot;origins&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">flatten_origins</span><span class="p">(),</span>
+        <span class="p">}</span></div>
+
+
+<div class="viewcode-block" id="DefineFlattener.write_all">
+<a class="viewcode-back" href="../../../odmlib.dataset_json_1_1.html#odmlib.dataset_json_1_1.DefineFlattener.write_all">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">write_all</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">output_dir</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">indent</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">2</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Write all metadata datasets to individual JSON files.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            output_dir: Directory to write files to. Created if it does</span>
+<span class="sd">                not exist.</span>
+<span class="sd">            indent: JSON indentation level (default: 2).</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            list[str]: List of written file paths.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">output_dir</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">datasets</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">flatten_all</span><span class="p">()</span>
+        <span class="n">paths</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">ds</span> <span class="ow">in</span> <span class="n">datasets</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">output_dir</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">.json&quot;</span><span class="p">)</span>
+            <span class="n">ds</span><span class="o">.</span><span class="n">write_json</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="n">indent</span><span class="p">)</span>
+            <span class="n">paths</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">paths</span></div>
+
+
+    <span class="c1"># ------------------------------------------------------------------ #</span>
+    <span class="c1"># Individual flatteners</span>
+    <span class="c1"># ------------------------------------------------------------------ #</span>
+
+<div class="viewcode-block" id="DefineFlattener.flatten_study">
+<a class="viewcode-back" href="../../../odmlib.dataset_json_1_1.html#odmlib.dataset_json_1_1.DefineFlattener.flatten_study">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">flatten_study</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DatasetJSON</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Flatten ODM root + Study + GlobalVariables + MetaDataVersion.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            DatasetJSON: Single-row dataset with study-level metadata.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">columns</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">_make_column</span><span class="p">(</span><span class="s2">&quot;DEFINE.STUDY.FILEOID&quot;</span><span class="p">,</span> <span class="s2">&quot;FileOID&quot;</span><span class="p">,</span> <span class="s2">&quot;File OID&quot;</span><span class="p">),</span>
+            <span class="n">_make_column</span><span class="p">(</span><span class="s2">&quot;DEFINE.STUDY.CREATIONDATETIME&quot;</span><span class="p">,</span> <span class="s2">&quot;CreationDateTime&quot;</span><span class="p">,</span>
+                         <span class="s2">&quot;Creation Date/Time&quot;</span><span class="p">),</span>
+            <span class="n">_make_column</span><span class="p">(</span><span class="s2">&quot;DEFINE.STUDY.ASOFDATETIME&quot;</span><span class="p">,</span> <span class="s2">&quot;AsOfDateTime&quot;</span><span class="p">,</span>
+                         <span class="s2">&quot;As-Of Date/Time&quot;</span><span class="p">),</span>
+            <span class="n">_make_column</span><span class="p">(</span><span class="s2">&quot;DEFINE.STUDY.ORIGINATOR&quot;</span><span class="p">,</span> <span class="s2">&quot;Originator&quot;</span><span class="p">,</span> <span class="s2">&quot;Originator&quot;</span><span class="p">),</span>
+            <span class="n">_make_column</span><span class="p">(</span><span class="s2">&quot;DEFINE.STUDY.SOURCESYSTEM&quot;</span><span class="p">,</span> <span class="s2">&quot;SourceSystem&quot;</span><span class="p">,</span>
+                         <span class="s2">&quot;Source System&quot;</span><span class="p">),</span>
+            <span class="n">_make_column</span><span class="p">(</span><span class="s2">&quot;DEFINE.STUDY.SOURCESYSTEMVERSION&quot;</span><span class="p">,</span>
+                         <span class="s2">&quot;SourceSystemVersion&quot;</span><span class="p">,</span> <span class="s2">&quot;Source System Version&quot;</span><span class="p">),</span>
+            <span class="n">_make_column</span><span class="p">(</span><span class="s2">&quot;DEFINE.STUDY.STUDYOID&quot;</span><span class="p">,</span> <span class="s2">&quot;StudyOID&quot;</span><span class="p">,</span> <span class="s2">&quot;Study OID&quot;</span><span class="p">),</span>
+            <span class="n">_make_column</span><span class="p">(</span><span class="s2">&quot;DEFINE.STUDY.STUDYNAME&quot;</span><span class="p">,</span> <span class="s2">&quot;StudyName&quot;</span><span class="p">,</span> <span class="s2">&quot;Study Name&quot;</span><span class="p">),</span>
+            <span class="n">_make_column</span><span class="p">(</span><span class="s2">&quot;DEFINE.STUDY.STUDYDESCRIPTION&quot;</span><span class="p">,</span> <span class="s2">&quot;StudyDescription&quot;</span><span class="p">,</span>
+                         <span class="s2">&quot;Study Description&quot;</span><span class="p">),</span>
+            <span class="n">_make_column</span><span class="p">(</span><span class="s2">&quot;DEFINE.STUDY.PROTOCOLNAME&quot;</span><span class="p">,</span> <span class="s2">&quot;ProtocolName&quot;</span><span class="p">,</span>
+                         <span class="s2">&quot;Protocol Name&quot;</span><span class="p">),</span>
+            <span class="n">_make_column</span><span class="p">(</span><span class="s2">&quot;DEFINE.STUDY.MDVOID&quot;</span><span class="p">,</span> <span class="s2">&quot;MetaDataVersionOID&quot;</span><span class="p">,</span>
+                         <span class="s2">&quot;MetaDataVersion OID&quot;</span><span class="p">),</span>
+            <span class="n">_make_column</span><span class="p">(</span><span class="s2">&quot;DEFINE.STUDY.MDVNAME&quot;</span><span class="p">,</span> <span class="s2">&quot;MetaDataVersionName&quot;</span><span class="p">,</span>
+                         <span class="s2">&quot;MetaDataVersion Name&quot;</span><span class="p">),</span>
+            <span class="n">_make_column</span><span class="p">(</span><span class="s2">&quot;DEFINE.STUDY.DEFINEVERSION&quot;</span><span class="p">,</span> <span class="s2">&quot;DefineVersion&quot;</span><span class="p">,</span>
+                         <span class="s2">&quot;Define-XML Version&quot;</span><span class="p">),</span>
+            <span class="n">_make_column</span><span class="p">(</span><span class="s2">&quot;DEFINE.STUDY.COMMENTOID&quot;</span><span class="p">,</span> <span class="s2">&quot;CommentOID&quot;</span><span class="p">,</span>
+                         <span class="s2">&quot;Comment OID&quot;</span><span class="p">),</span>
+            <span class="n">_make_column</span><span class="p">(</span><span class="s2">&quot;DEFINE.STUDY.CONTEXT&quot;</span><span class="p">,</span> <span class="s2">&quot;Context&quot;</span><span class="p">,</span> <span class="s2">&quot;Context&quot;</span><span class="p">),</span>
+        <span class="p">]</span>
+
+        <span class="n">row</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">_safe_get</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_odm</span><span class="p">,</span> <span class="s2">&quot;FileOID&quot;</span><span class="p">),</span>
+            <span class="n">_safe_get</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_odm</span><span class="p">,</span> <span class="s2">&quot;CreationDateTime&quot;</span><span class="p">),</span>
+            <span class="n">_safe_get</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_odm</span><span class="p">,</span> <span class="s2">&quot;AsOfDateTime&quot;</span><span class="p">),</span>
+            <span class="n">_safe_get</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_odm</span><span class="p">,</span> <span class="s2">&quot;Originator&quot;</span><span class="p">),</span>
+            <span class="n">_safe_get</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_odm</span><span class="p">,</span> <span class="s2">&quot;SourceSystem&quot;</span><span class="p">),</span>
+            <span class="n">_safe_get</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_odm</span><span class="p">,</span> <span class="s2">&quot;SourceSystemVersion&quot;</span><span class="p">),</span>
+            <span class="n">_safe_get</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_study</span><span class="p">,</span> <span class="s2">&quot;OID&quot;</span><span class="p">),</span>
+            <span class="n">_safe_get</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_gv</span><span class="p">,</span> <span class="s2">&quot;StudyName&quot;</span><span class="p">,</span> <span class="s2">&quot;_content&quot;</span><span class="p">),</span>
+            <span class="n">_safe_get</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_gv</span><span class="p">,</span> <span class="s2">&quot;StudyDescription&quot;</span><span class="p">,</span> <span class="s2">&quot;_content&quot;</span><span class="p">),</span>
+            <span class="n">_safe_get</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_gv</span><span class="p">,</span> <span class="s2">&quot;ProtocolName&quot;</span><span class="p">,</span> <span class="s2">&quot;_content&quot;</span><span class="p">),</span>
+            <span class="n">_safe_get</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_mdv</span><span class="p">,</span> <span class="s2">&quot;OID&quot;</span><span class="p">),</span>
+            <span class="n">_safe_get</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_mdv</span><span class="p">,</span> <span class="s2">&quot;Name&quot;</span><span class="p">),</span>
+            <span class="n">_safe_get</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_mdv</span><span class="p">,</span> <span class="s2">&quot;DefineVersion&quot;</span><span class="p">),</span>
+            <span class="n">_safe_get</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_mdv</span><span class="p">,</span> <span class="s2">&quot;CommentOID&quot;</span><span class="p">),</span>
+            <span class="n">_safe_get</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_odm</span><span class="p">,</span> <span class="s2">&quot;Context&quot;</span><span class="p">),</span>
+        <span class="p">]</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_make_dataset</span><span class="p">(</span><span class="s2">&quot;study&quot;</span><span class="p">,</span> <span class="s2">&quot;Study Metadata&quot;</span><span class="p">,</span> <span class="n">columns</span><span class="p">,</span> <span class="p">[</span><span class="n">row</span><span class="p">])</span></div>
+
+
+<div class="viewcode-block" id="DefineFlattener.flatten_standards">
+<a class="viewcode-back" href="../../../odmlib.dataset_json_1_1.html#odmlib.dataset_json_1_1.DefineFlattener.flatten_standards">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">flatten_standards</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DatasetJSON</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Flatten MetaDataVersion.Standards.Standard elements.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            DatasetJSON: One row per Standard element. Empty if Standards</span>
+<span class="sd">                are not loaded (known limitation).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">columns</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">_make_column</span><span class="p">(</span><span class="s2">&quot;DEFINE.STD.OID&quot;</span><span class="p">,</span> <span class="s2">&quot;OID&quot;</span><span class="p">,</span> <span class="s2">&quot;Standard OID&quot;</span><span class="p">,</span> <span class="n">key_seq</span><span class="o">=</span><span class="mi">1</span><span class="p">),</span>
+            <span class="n">_make_column</span><span class="p">(</span><span class="s2">&quot;DEFINE.STD.NAME&quot;</span><span class="p">,</span> <span class="s2">&quot;Name&quot;</span><span class="p">,</span> <span class="s2">&quot;Standard Name&quot;</span><span class="p">),</span>
+            <span class="n">_make_column</span><span class="p">(</span><span class="s2">&quot;DEFINE.STD.TYPE&quot;</span><span class="p">,</span> <span class="s2">&quot;Type&quot;</span><span class="p">,</span> <span class="s2">&quot;Standard Type&quot;</span><span class="p">),</span>
+            <span class="n">_make_column</span><span class="p">(</span><span class="s2">&quot;DEFINE.STD.PUBLISHINGSET&quot;</span><span class="p">,</span> <span class="s2">&quot;PublishingSet&quot;</span><span class="p">,</span>
+                         <span class="s2">&quot;Publishing Set&quot;</span><span class="p">),</span>
+            <span class="n">_make_column</span><span class="p">(</span><span class="s2">&quot;DEFINE.STD.VERSION&quot;</span><span class="p">,</span> <span class="s2">&quot;Version&quot;</span><span class="p">,</span> <span class="s2">&quot;Standard Version&quot;</span><span class="p">),</span>
+            <span class="n">_make_column</span><span class="p">(</span><span class="s2">&quot;DEFINE.STD.STATUS&quot;</span><span class="p">,</span> <span class="s2">&quot;Status&quot;</span><span class="p">,</span> <span class="s2">&quot;Standard Status&quot;</span><span class="p">),</span>
+            <span class="n">_make_column</span><span class="p">(</span><span class="s2">&quot;DEFINE.STD.COMMENTOID&quot;</span><span class="p">,</span> <span class="s2">&quot;CommentOID&quot;</span><span class="p">,</span> <span class="s2">&quot;Comment OID&quot;</span><span class="p">),</span>
+        <span class="p">]</span>
+
+        <span class="n">rows</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">standards_obj</span> <span class="o">=</span> <span class="n">_safe_get</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_mdv</span><span class="p">,</span> <span class="s2">&quot;Standards&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">standards_obj</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">standard_list</span> <span class="o">=</span> <span class="n">_safe_get</span><span class="p">(</span><span class="n">standards_obj</span><span class="p">,</span> <span class="s2">&quot;Standard&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">std</span> <span class="ow">in</span> <span class="n">standard_list</span><span class="p">:</span>
+                <span class="n">rows</span><span class="o">.</span><span class="n">append</span><span class="p">([</span>
+                    <span class="n">_safe_get</span><span class="p">(</span><span class="n">std</span><span class="p">,</span> <span class="s2">&quot;OID&quot;</span><span class="p">),</span>
+                    <span class="n">_safe_get</span><span class="p">(</span><span class="n">std</span><span class="p">,</span> <span class="s2">&quot;Name&quot;</span><span class="p">),</span>
+                    <span class="n">_safe_get</span><span class="p">(</span><span class="n">std</span><span class="p">,</span> <span class="s2">&quot;Type&quot;</span><span class="p">),</span>
+                    <span class="n">_safe_get</span><span class="p">(</span><span class="n">std</span><span class="p">,</span> <span class="s2">&quot;PublishingSet&quot;</span><span class="p">),</span>
+                    <span class="n">_safe_get</span><span class="p">(</span><span class="n">std</span><span class="p">,</span> <span class="s2">&quot;Version&quot;</span><span class="p">),</span>
+                    <span class="n">_safe_get</span><span class="p">(</span><span class="n">std</span><span class="p">,</span> <span class="s2">&quot;Status&quot;</span><span class="p">),</span>
+                    <span class="n">_safe_get</span><span class="p">(</span><span class="n">std</span><span class="p">,</span> <span class="s2">&quot;CommentOID&quot;</span><span class="p">),</span>
+                <span class="p">])</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_make_dataset</span><span class="p">(</span><span class="s2">&quot;standards&quot;</span><span class="p">,</span> <span class="s2">&quot;Standards&quot;</span><span class="p">,</span> <span class="n">columns</span><span class="p">,</span> <span class="n">rows</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="DefineFlattener.flatten_datasets">
+<a class="viewcode-back" href="../../../odmlib.dataset_json_1_1.html#odmlib.dataset_json_1_1.DefineFlattener.flatten_datasets">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">flatten_datasets</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DatasetJSON</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Flatten MetaDataVersion.ItemGroupDef elements.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            DatasetJSON: One row per ItemGroupDef (dataset definition).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">columns</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">_make_column</span><span class="p">(</span><span class="s2">&quot;DEFINE.DS.OID&quot;</span><span class="p">,</span> <span class="s2">&quot;OID&quot;</span><span class="p">,</span> <span class="s2">&quot;Dataset OID&quot;</span><span class="p">,</span> <span class="n">key_seq</span><span class="o">=</span><span class="mi">1</span><span class="p">),</span>
+            <span class="n">_make_column</span><span class="p">(</span><span class="s2">&quot;DEFINE.DS.NAME&quot;</span><span class="p">,</span> <span class="s2">&quot;Name&quot;</span><span class="p">,</span> <span class="s2">&quot;Dataset Name&quot;</span><span class="p">),</span>
+            <span class="n">_make_column</span><span class="p">(</span><span class="s2">&quot;DEFINE.DS.REPEATING&quot;</span><span class="p">,</span> <span class="s2">&quot;Repeating&quot;</span><span class="p">,</span> <span class="s2">&quot;Repeating&quot;</span><span class="p">),</span>
+            <span class="n">_make_column</span><span class="p">(</span><span class="s2">&quot;DEFINE.DS.ISREFERENCEDATA&quot;</span><span class="p">,</span> <span class="s2">&quot;IsReferenceData&quot;</span><span class="p">,</span>
+                         <span class="s2">&quot;Is Reference Data&quot;</span><span class="p">),</span>
+            <span class="n">_make_column</span><span class="p">(</span><span class="s2">&quot;DEFINE.DS.SASDATASETNAME&quot;</span><span class="p">,</span> <span class="s2">&quot;SASDatasetName&quot;</span><span class="p">,</span>
+                         <span class="s2">&quot;SAS Dataset Name&quot;</span><span class="p">),</span>
+            <span class="n">_make_column</span><span class="p">(</span><span class="s2">&quot;DEFINE.DS.DOMAIN&quot;</span><span class="p">,</span> <span class="s2">&quot;Domain&quot;</span><span class="p">,</span> <span class="s2">&quot;Domain&quot;</span><span class="p">),</span>
+            <span class="n">_make_column</span><span class="p">(</span><span class="s2">&quot;DEFINE.DS.PURPOSE&quot;</span><span class="p">,</span> <span class="s2">&quot;Purpose&quot;</span><span class="p">,</span> <span class="s2">&quot;Purpose&quot;</span><span class="p">),</span>
+            <span class="n">_make_column</span><span class="p">(</span><span class="s2">&quot;DEFINE.DS.STRUCTURE&quot;</span><span class="p">,</span> <span class="s2">&quot;Structure&quot;</span><span class="p">,</span> <span class="s2">&quot;Structure&quot;</span><span class="p">),</span>
+            <span class="n">_make_column</span><span class="p">(</span><span class="s2">&quot;DEFINE.DS.ARCHIVELOCATIONID&quot;</span><span class="p">,</span> <span class="s2">&quot;ArchiveLocationID&quot;</span><span class="p">,</span>
+                         <span class="s2">&quot;Archive Location ID&quot;</span><span class="p">),</span>
+            <span class="n">_make_column</span><span class="p">(</span><span class="s2">&quot;DEFINE.DS.COMMENTOID&quot;</span><span class="p">,</span> <span class="s2">&quot;CommentOID&quot;</span><span class="p">,</span> <span class="s2">&quot;Comment OID&quot;</span><span class="p">),</span>
+            <span class="n">_make_column</span><span class="p">(</span><span class="s2">&quot;DEFINE.DS.ISNONSTANDARD&quot;</span><span class="p">,</span> <span class="s2">&quot;IsNonStandard&quot;</span><span class="p">,</span>
+                         <span class="s2">&quot;Is Non-Standard&quot;</span><span class="p">),</span>
+            <span class="n">_make_column</span><span class="p">(</span><span class="s2">&quot;DEFINE.DS.STANDARDOID&quot;</span><span class="p">,</span> <span class="s2">&quot;StandardOID&quot;</span><span class="p">,</span>
+                         <span class="s2">&quot;Standard OID&quot;</span><span class="p">),</span>
+            <span class="n">_make_column</span><span class="p">(</span><span class="s2">&quot;DEFINE.DS.HASNODATA&quot;</span><span class="p">,</span> <span class="s2">&quot;HasNoData&quot;</span><span class="p">,</span> <span class="s2">&quot;Has No Data&quot;</span><span class="p">),</span>
+            <span class="n">_make_column</span><span class="p">(</span><span class="s2">&quot;DEFINE.DS.DESCRIPTIONTEXT&quot;</span><span class="p">,</span> <span class="s2">&quot;DescriptionText&quot;</span><span class="p">,</span>
+                         <span class="s2">&quot;Description&quot;</span><span class="p">),</span>
+            <span class="n">_make_column</span><span class="p">(</span><span class="s2">&quot;DEFINE.DS.CLASSNAME&quot;</span><span class="p">,</span> <span class="s2">&quot;ClassName&quot;</span><span class="p">,</span> <span class="s2">&quot;Class Name&quot;</span><span class="p">),</span>
+            <span class="n">_make_column</span><span class="p">(</span><span class="s2">&quot;DEFINE.DS.SUBCLASSNAME&quot;</span><span class="p">,</span> <span class="s2">&quot;SubClassName&quot;</span><span class="p">,</span>
+                         <span class="s2">&quot;Sub-Class Name&quot;</span><span class="p">),</span>
+            <span class="n">_make_column</span><span class="p">(</span><span class="s2">&quot;DEFINE.DS.LEAFID&quot;</span><span class="p">,</span> <span class="s2">&quot;leafID&quot;</span><span class="p">,</span> <span class="s2">&quot;Leaf ID&quot;</span><span class="p">),</span>
+            <span class="n">_make_column</span><span class="p">(</span><span class="s2">&quot;DEFINE.DS.LEAFHREF&quot;</span><span class="p">,</span> <span class="s2">&quot;leafHref&quot;</span><span class="p">,</span> <span class="s2">&quot;Leaf Href&quot;</span><span class="p">),</span>
+            <span class="n">_make_column</span><span class="p">(</span><span class="s2">&quot;DEFINE.DS.LEAFTITLE&quot;</span><span class="p">,</span> <span class="s2">&quot;leafTitle&quot;</span><span class="p">,</span> <span class="s2">&quot;Leaf Title&quot;</span><span class="p">),</span>
+        <span class="p">]</span>
+
+        <span class="n">rows</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">item_group_defs</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_mdv</span><span class="p">,</span> <span class="s2">&quot;ItemGroupDef&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">or</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">igd</span> <span class="ow">in</span> <span class="n">item_group_defs</span><span class="p">:</span>
+            <span class="n">rows</span><span class="o">.</span><span class="n">append</span><span class="p">([</span>
+                <span class="n">_safe_get</span><span class="p">(</span><span class="n">igd</span><span class="p">,</span> <span class="s2">&quot;OID&quot;</span><span class="p">),</span>
+                <span class="n">_safe_get</span><span class="p">(</span><span class="n">igd</span><span class="p">,</span> <span class="s2">&quot;Name&quot;</span><span class="p">),</span>
+                <span class="n">_safe_get</span><span class="p">(</span><span class="n">igd</span><span class="p">,</span> <span class="s2">&quot;Repeating&quot;</span><span class="p">),</span>
+                <span class="n">_safe_get</span><span class="p">(</span><span class="n">igd</span><span class="p">,</span> <span class="s2">&quot;IsReferenceData&quot;</span><span class="p">),</span>
+                <span class="n">_safe_get</span><span class="p">(</span><span class="n">igd</span><span class="p">,</span> <span class="s2">&quot;SASDatasetName&quot;</span><span class="p">),</span>
+                <span class="n">_safe_get</span><span class="p">(</span><span class="n">igd</span><span class="p">,</span> <span class="s2">&quot;Domain&quot;</span><span class="p">),</span>
+                <span class="n">_safe_get</span><span class="p">(</span><span class="n">igd</span><span class="p">,</span> <span class="s2">&quot;Purpose&quot;</span><span class="p">),</span>
+                <span class="n">_safe_get</span><span class="p">(</span><span class="n">igd</span><span class="p">,</span> <span class="s2">&quot;Structure&quot;</span><span class="p">),</span>
+                <span class="n">_safe_get</span><span class="p">(</span><span class="n">igd</span><span class="p">,</span> <span class="s2">&quot;ArchiveLocationID&quot;</span><span class="p">),</span>
+                <span class="n">_safe_get</span><span class="p">(</span><span class="n">igd</span><span class="p">,</span> <span class="s2">&quot;CommentOID&quot;</span><span class="p">),</span>
+                <span class="n">_safe_get</span><span class="p">(</span><span class="n">igd</span><span class="p">,</span> <span class="s2">&quot;IsNonStandard&quot;</span><span class="p">),</span>
+                <span class="n">_safe_get</span><span class="p">(</span><span class="n">igd</span><span class="p">,</span> <span class="s2">&quot;StandardOID&quot;</span><span class="p">),</span>
+                <span class="n">_safe_get</span><span class="p">(</span><span class="n">igd</span><span class="p">,</span> <span class="s2">&quot;HasNoData&quot;</span><span class="p">),</span>
+                <span class="n">_safe_get</span><span class="p">(</span><span class="n">igd</span><span class="p">,</span> <span class="s2">&quot;Description&quot;</span><span class="p">,</span> <span class="s2">&quot;TranslatedText&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;_content&quot;</span><span class="p">),</span>
+                <span class="n">_safe_get</span><span class="p">(</span><span class="n">igd</span><span class="p">,</span> <span class="s2">&quot;Class&quot;</span><span class="p">,</span> <span class="s2">&quot;Name&quot;</span><span class="p">),</span>
+                <span class="n">_safe_get</span><span class="p">(</span><span class="n">igd</span><span class="p">,</span> <span class="s2">&quot;Class&quot;</span><span class="p">,</span> <span class="s2">&quot;SubClass&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;Name&quot;</span><span class="p">),</span>
+                <span class="n">_safe_get</span><span class="p">(</span><span class="n">igd</span><span class="p">,</span> <span class="s2">&quot;leaf&quot;</span><span class="p">,</span> <span class="s2">&quot;ID&quot;</span><span class="p">),</span>
+                <span class="n">_safe_get</span><span class="p">(</span><span class="n">igd</span><span class="p">,</span> <span class="s2">&quot;leaf&quot;</span><span class="p">,</span> <span class="s2">&quot;href&quot;</span><span class="p">),</span>
+                <span class="n">_safe_get</span><span class="p">(</span><span class="n">igd</span><span class="p">,</span> <span class="s2">&quot;leaf&quot;</span><span class="p">,</span> <span class="s2">&quot;title&quot;</span><span class="p">,</span> <span class="s2">&quot;_content&quot;</span><span class="p">),</span>
+            <span class="p">])</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_make_dataset</span><span class="p">(</span><span class="s2">&quot;datasets&quot;</span><span class="p">,</span> <span class="s2">&quot;Dataset Definitions&quot;</span><span class="p">,</span>
+                                  <span class="n">columns</span><span class="p">,</span> <span class="n">rows</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="DefineFlattener.flatten_variables">
+<a class="viewcode-back" href="../../../odmlib.dataset_json_1_1.html#odmlib.dataset_json_1_1.DefineFlattener.flatten_variables">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">flatten_variables</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DatasetJSON</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Flatten ItemRef + ItemDef pairs within each ItemGroupDef.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            DatasetJSON: One row per variable (ItemRef+ItemDef) per dataset.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">columns</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">_make_column</span><span class="p">(</span><span class="s2">&quot;DEFINE.VAR.DATASETOID&quot;</span><span class="p">,</span> <span class="s2">&quot;DatasetOID&quot;</span><span class="p">,</span> <span class="s2">&quot;Dataset OID&quot;</span><span class="p">,</span>
+                         <span class="n">key_seq</span><span class="o">=</span><span class="mi">1</span><span class="p">),</span>
+            <span class="n">_make_column</span><span class="p">(</span><span class="s2">&quot;DEFINE.VAR.ITEMOID&quot;</span><span class="p">,</span> <span class="s2">&quot;ItemOID&quot;</span><span class="p">,</span> <span class="s2">&quot;Item OID&quot;</span><span class="p">,</span>
+                         <span class="n">key_seq</span><span class="o">=</span><span class="mi">2</span><span class="p">),</span>
+            <span class="n">_make_column</span><span class="p">(</span><span class="s2">&quot;DEFINE.VAR.ORDERNUMBER&quot;</span><span class="p">,</span> <span class="s2">&quot;OrderNumber&quot;</span><span class="p">,</span>
+                         <span class="s2">&quot;Order Number&quot;</span><span class="p">,</span> <span class="s2">&quot;integer&quot;</span><span class="p">),</span>
+            <span class="n">_make_column</span><span class="p">(</span><span class="s2">&quot;DEFINE.VAR.MANDATORY&quot;</span><span class="p">,</span> <span class="s2">&quot;Mandatory&quot;</span><span class="p">,</span> <span class="s2">&quot;Mandatory&quot;</span><span class="p">),</span>
+            <span class="n">_make_column</span><span class="p">(</span><span class="s2">&quot;DEFINE.VAR.KEYSEQUENCE&quot;</span><span class="p">,</span> <span class="s2">&quot;KeySequence&quot;</span><span class="p">,</span>
+                         <span class="s2">&quot;Key Sequence&quot;</span><span class="p">,</span> <span class="s2">&quot;integer&quot;</span><span class="p">),</span>
+            <span class="n">_make_column</span><span class="p">(</span><span class="s2">&quot;DEFINE.VAR.METHODOID&quot;</span><span class="p">,</span> <span class="s2">&quot;MethodOID&quot;</span><span class="p">,</span> <span class="s2">&quot;Method OID&quot;</span><span class="p">),</span>
+            <span class="n">_make_column</span><span class="p">(</span><span class="s2">&quot;DEFINE.VAR.ROLE&quot;</span><span class="p">,</span> <span class="s2">&quot;Role&quot;</span><span class="p">,</span> <span class="s2">&quot;Role&quot;</span><span class="p">),</span>
+            <span class="n">_make_column</span><span class="p">(</span><span class="s2">&quot;DEFINE.VAR.ROLECODELISTOID&quot;</span><span class="p">,</span> <span class="s2">&quot;RoleCodeListOID&quot;</span><span class="p">,</span>
+                         <span class="s2">&quot;Role CodeList OID&quot;</span><span class="p">),</span>
+            <span class="n">_make_column</span><span class="p">(</span><span class="s2">&quot;DEFINE.VAR.ISNONSTANDARD&quot;</span><span class="p">,</span> <span class="s2">&quot;IsNonStandard&quot;</span><span class="p">,</span>
+                         <span class="s2">&quot;Is Non-Standard&quot;</span><span class="p">),</span>
+            <span class="n">_make_column</span><span class="p">(</span><span class="s2">&quot;DEFINE.VAR.HASNODATA&quot;</span><span class="p">,</span> <span class="s2">&quot;HasNoData&quot;</span><span class="p">,</span> <span class="s2">&quot;Has No Data&quot;</span><span class="p">),</span>
+            <span class="n">_make_column</span><span class="p">(</span><span class="s2">&quot;DEFINE.VAR.NAME&quot;</span><span class="p">,</span> <span class="s2">&quot;Name&quot;</span><span class="p">,</span> <span class="s2">&quot;Variable Name&quot;</span><span class="p">),</span>
+            <span class="n">_make_column</span><span class="p">(</span><span class="s2">&quot;DEFINE.VAR.DATATYPE&quot;</span><span class="p">,</span> <span class="s2">&quot;DataType&quot;</span><span class="p">,</span> <span class="s2">&quot;Data Type&quot;</span><span class="p">),</span>
+            <span class="n">_make_column</span><span class="p">(</span><span class="s2">&quot;DEFINE.VAR.LENGTH&quot;</span><span class="p">,</span> <span class="s2">&quot;Length&quot;</span><span class="p">,</span> <span class="s2">&quot;Length&quot;</span><span class="p">,</span> <span class="s2">&quot;integer&quot;</span><span class="p">),</span>
+            <span class="n">_make_column</span><span class="p">(</span><span class="s2">&quot;DEFINE.VAR.SIGNIFICANTDIGITS&quot;</span><span class="p">,</span> <span class="s2">&quot;SignificantDigits&quot;</span><span class="p">,</span>
+                         <span class="s2">&quot;Significant Digits&quot;</span><span class="p">,</span> <span class="s2">&quot;integer&quot;</span><span class="p">),</span>
+            <span class="n">_make_column</span><span class="p">(</span><span class="s2">&quot;DEFINE.VAR.SASFIELDNAME&quot;</span><span class="p">,</span> <span class="s2">&quot;SASFieldName&quot;</span><span class="p">,</span>
+                         <span class="s2">&quot;SAS Field Name&quot;</span><span class="p">),</span>
+            <span class="n">_make_column</span><span class="p">(</span><span class="s2">&quot;DEFINE.VAR.DISPLAYFORMAT&quot;</span><span class="p">,</span> <span class="s2">&quot;DisplayFormat&quot;</span><span class="p">,</span>
+                         <span class="s2">&quot;Display Format&quot;</span><span class="p">),</span>
+            <span class="n">_make_column</span><span class="p">(</span><span class="s2">&quot;DEFINE.VAR.COMMENTOID&quot;</span><span class="p">,</span> <span class="s2">&quot;CommentOID&quot;</span><span class="p">,</span> <span class="s2">&quot;Comment OID&quot;</span><span class="p">),</span>
+            <span class="n">_make_column</span><span class="p">(</span><span class="s2">&quot;DEFINE.VAR.DESCRIPTIONTEXT&quot;</span><span class="p">,</span> <span class="s2">&quot;DescriptionText&quot;</span><span class="p">,</span>
+                         <span class="s2">&quot;Description&quot;</span><span class="p">),</span>
+            <span class="n">_make_column</span><span class="p">(</span><span class="s2">&quot;DEFINE.VAR.CODELISTOID&quot;</span><span class="p">,</span> <span class="s2">&quot;CodeListOID&quot;</span><span class="p">,</span>
+                         <span class="s2">&quot;CodeList OID&quot;</span><span class="p">),</span>
+            <span class="n">_make_column</span><span class="p">(</span><span class="s2">&quot;DEFINE.VAR.VALUELISTOID&quot;</span><span class="p">,</span> <span class="s2">&quot;ValueListOID&quot;</span><span class="p">,</span>
+                         <span class="s2">&quot;ValueList OID&quot;</span><span class="p">),</span>
+            <span class="n">_make_column</span><span class="p">(</span><span class="s2">&quot;DEFINE.VAR.ORIGINTYPE&quot;</span><span class="p">,</span> <span class="s2">&quot;OriginType&quot;</span><span class="p">,</span> <span class="s2">&quot;Origin Type&quot;</span><span class="p">),</span>
+            <span class="n">_make_column</span><span class="p">(</span><span class="s2">&quot;DEFINE.VAR.ORIGINSOURCE&quot;</span><span class="p">,</span> <span class="s2">&quot;OriginSource&quot;</span><span class="p">,</span>
+                         <span class="s2">&quot;Origin Source&quot;</span><span class="p">),</span>
+        <span class="p">]</span>
+
+        <span class="n">rows</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">item_group_defs</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_mdv</span><span class="p">,</span> <span class="s2">&quot;ItemGroupDef&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">or</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">igd</span> <span class="ow">in</span> <span class="n">item_group_defs</span><span class="p">:</span>
+            <span class="n">dataset_oid</span> <span class="o">=</span> <span class="n">igd</span><span class="o">.</span><span class="n">OID</span>
+            <span class="n">item_refs</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">igd</span><span class="p">,</span> <span class="s2">&quot;ItemRef&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">or</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">item_ref</span> <span class="ow">in</span> <span class="n">item_refs</span><span class="p">:</span>
+                <span class="n">item_oid</span> <span class="o">=</span> <span class="n">item_ref</span><span class="o">.</span><span class="n">ItemOID</span>
+                <span class="n">item_def</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_item_def_index</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">item_oid</span><span class="p">)</span>
+
+                <span class="n">rows</span><span class="o">.</span><span class="n">append</span><span class="p">([</span>
+                    <span class="n">dataset_oid</span><span class="p">,</span>
+                    <span class="n">item_oid</span><span class="p">,</span>
+                    <span class="n">_safe_get</span><span class="p">(</span><span class="n">item_ref</span><span class="p">,</span> <span class="s2">&quot;OrderNumber&quot;</span><span class="p">),</span>
+                    <span class="n">_safe_get</span><span class="p">(</span><span class="n">item_ref</span><span class="p">,</span> <span class="s2">&quot;Mandatory&quot;</span><span class="p">),</span>
+                    <span class="n">_safe_get</span><span class="p">(</span><span class="n">item_ref</span><span class="p">,</span> <span class="s2">&quot;KeySequence&quot;</span><span class="p">),</span>
+                    <span class="n">_safe_get</span><span class="p">(</span><span class="n">item_ref</span><span class="p">,</span> <span class="s2">&quot;MethodOID&quot;</span><span class="p">),</span>
+                    <span class="n">_safe_get</span><span class="p">(</span><span class="n">item_ref</span><span class="p">,</span> <span class="s2">&quot;Role&quot;</span><span class="p">),</span>
+                    <span class="n">_safe_get</span><span class="p">(</span><span class="n">item_ref</span><span class="p">,</span> <span class="s2">&quot;RoleCodeListOID&quot;</span><span class="p">),</span>
+                    <span class="n">_safe_get</span><span class="p">(</span><span class="n">item_ref</span><span class="p">,</span> <span class="s2">&quot;IsNonStandard&quot;</span><span class="p">),</span>
+                    <span class="n">_safe_get</span><span class="p">(</span><span class="n">item_ref</span><span class="p">,</span> <span class="s2">&quot;HasNoData&quot;</span><span class="p">),</span>
+                    <span class="n">_safe_get</span><span class="p">(</span><span class="n">item_def</span><span class="p">,</span> <span class="s2">&quot;Name&quot;</span><span class="p">),</span>
+                    <span class="n">_safe_get</span><span class="p">(</span><span class="n">item_def</span><span class="p">,</span> <span class="s2">&quot;DataType&quot;</span><span class="p">),</span>
+                    <span class="n">_safe_get</span><span class="p">(</span><span class="n">item_def</span><span class="p">,</span> <span class="s2">&quot;Length&quot;</span><span class="p">),</span>
+                    <span class="n">_safe_get</span><span class="p">(</span><span class="n">item_def</span><span class="p">,</span> <span class="s2">&quot;SignificantDigits&quot;</span><span class="p">),</span>
+                    <span class="n">_safe_get</span><span class="p">(</span><span class="n">item_def</span><span class="p">,</span> <span class="s2">&quot;SASFieldName&quot;</span><span class="p">),</span>
+                    <span class="n">_safe_get</span><span class="p">(</span><span class="n">item_def</span><span class="p">,</span> <span class="s2">&quot;DisplayFormat&quot;</span><span class="p">),</span>
+                    <span class="n">_safe_get</span><span class="p">(</span><span class="n">item_def</span><span class="p">,</span> <span class="s2">&quot;CommentOID&quot;</span><span class="p">),</span>
+                    <span class="n">_safe_get</span><span class="p">(</span><span class="n">item_def</span><span class="p">,</span> <span class="s2">&quot;Description&quot;</span><span class="p">,</span> <span class="s2">&quot;TranslatedText&quot;</span><span class="p">,</span>
+                              <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;_content&quot;</span><span class="p">),</span>
+                    <span class="n">_safe_get</span><span class="p">(</span><span class="n">item_def</span><span class="p">,</span> <span class="s2">&quot;CodeListRef&quot;</span><span class="p">,</span> <span class="s2">&quot;CodeListOID&quot;</span><span class="p">),</span>
+                    <span class="n">_safe_get</span><span class="p">(</span><span class="n">item_def</span><span class="p">,</span> <span class="s2">&quot;ValueListRef&quot;</span><span class="p">,</span> <span class="s2">&quot;ValueListOID&quot;</span><span class="p">),</span>
+                    <span class="n">_safe_get</span><span class="p">(</span><span class="n">item_def</span><span class="p">,</span> <span class="s2">&quot;Origin&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;Type&quot;</span><span class="p">),</span>
+                    <span class="n">_safe_get</span><span class="p">(</span><span class="n">item_def</span><span class="p">,</span> <span class="s2">&quot;Origin&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;Source&quot;</span><span class="p">),</span>
+                <span class="p">])</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_make_dataset</span><span class="p">(</span><span class="s2">&quot;variables&quot;</span><span class="p">,</span> <span class="s2">&quot;Variable Definitions&quot;</span><span class="p">,</span>
+                                  <span class="n">columns</span><span class="p">,</span> <span class="n">rows</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="DefineFlattener.flatten_value_level">
+<a class="viewcode-back" href="../../../odmlib.dataset_json_1_1.html#odmlib.dataset_json_1_1.DefineFlattener.flatten_value_level">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">flatten_value_level</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DatasetJSON</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Flatten ValueListDef ItemRef entries with joined ItemDef metadata.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            DatasetJSON: One row per ItemRef within each ValueListDef.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">columns</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">_make_column</span><span class="p">(</span><span class="s2">&quot;DEFINE.VL.VALUELISTOID&quot;</span><span class="p">,</span> <span class="s2">&quot;ValueListOID&quot;</span><span class="p">,</span>
+                         <span class="s2">&quot;ValueList OID&quot;</span><span class="p">,</span> <span class="n">key_seq</span><span class="o">=</span><span class="mi">1</span><span class="p">),</span>
+            <span class="n">_make_column</span><span class="p">(</span><span class="s2">&quot;DEFINE.VL.ITEMOID&quot;</span><span class="p">,</span> <span class="s2">&quot;ItemOID&quot;</span><span class="p">,</span> <span class="s2">&quot;Item OID&quot;</span><span class="p">,</span>
+                         <span class="n">key_seq</span><span class="o">=</span><span class="mi">2</span><span class="p">),</span>
+            <span class="n">_make_column</span><span class="p">(</span><span class="s2">&quot;DEFINE.VL.ORDERNUMBER&quot;</span><span class="p">,</span> <span class="s2">&quot;OrderNumber&quot;</span><span class="p">,</span>
+                         <span class="s2">&quot;Order Number&quot;</span><span class="p">,</span> <span class="s2">&quot;integer&quot;</span><span class="p">),</span>
+            <span class="n">_make_column</span><span class="p">(</span><span class="s2">&quot;DEFINE.VL.MANDATORY&quot;</span><span class="p">,</span> <span class="s2">&quot;Mandatory&quot;</span><span class="p">,</span> <span class="s2">&quot;Mandatory&quot;</span><span class="p">),</span>
+            <span class="n">_make_column</span><span class="p">(</span><span class="s2">&quot;DEFINE.VL.METHODOID&quot;</span><span class="p">,</span> <span class="s2">&quot;MethodOID&quot;</span><span class="p">,</span> <span class="s2">&quot;Method OID&quot;</span><span class="p">),</span>
+            <span class="n">_make_column</span><span class="p">(</span><span class="s2">&quot;DEFINE.VL.WHERECLAUSEOID&quot;</span><span class="p">,</span> <span class="s2">&quot;WhereClauseOID&quot;</span><span class="p">,</span>
+                         <span class="s2">&quot;WhereClause OID&quot;</span><span class="p">),</span>
+            <span class="n">_make_column</span><span class="p">(</span><span class="s2">&quot;DEFINE.VL.NAME&quot;</span><span class="p">,</span> <span class="s2">&quot;Name&quot;</span><span class="p">,</span> <span class="s2">&quot;Variable Name&quot;</span><span class="p">),</span>
+            <span class="n">_make_column</span><span class="p">(</span><span class="s2">&quot;DEFINE.VL.DATATYPE&quot;</span><span class="p">,</span> <span class="s2">&quot;DataType&quot;</span><span class="p">,</span> <span class="s2">&quot;Data Type&quot;</span><span class="p">),</span>
+            <span class="n">_make_column</span><span class="p">(</span><span class="s2">&quot;DEFINE.VL.LENGTH&quot;</span><span class="p">,</span> <span class="s2">&quot;Length&quot;</span><span class="p">,</span> <span class="s2">&quot;Length&quot;</span><span class="p">,</span> <span class="s2">&quot;integer&quot;</span><span class="p">),</span>
+            <span class="n">_make_column</span><span class="p">(</span><span class="s2">&quot;DEFINE.VL.SIGNIFICANTDIGITS&quot;</span><span class="p">,</span> <span class="s2">&quot;SignificantDigits&quot;</span><span class="p">,</span>
+                         <span class="s2">&quot;Significant Digits&quot;</span><span class="p">,</span> <span class="s2">&quot;integer&quot;</span><span class="p">),</span>
+            <span class="n">_make_column</span><span class="p">(</span><span class="s2">&quot;DEFINE.VL.SASFIELDNAME&quot;</span><span class="p">,</span> <span class="s2">&quot;SASFieldName&quot;</span><span class="p">,</span>
+                         <span class="s2">&quot;SAS Field Name&quot;</span><span class="p">),</span>
+            <span class="n">_make_column</span><span class="p">(</span><span class="s2">&quot;DEFINE.VL.DISPLAYFORMAT&quot;</span><span class="p">,</span> <span class="s2">&quot;DisplayFormat&quot;</span><span class="p">,</span>
+                         <span class="s2">&quot;Display Format&quot;</span><span class="p">),</span>
+            <span class="n">_make_column</span><span class="p">(</span><span class="s2">&quot;DEFINE.VL.COMMENTOID&quot;</span><span class="p">,</span> <span class="s2">&quot;CommentOID&quot;</span><span class="p">,</span> <span class="s2">&quot;Comment OID&quot;</span><span class="p">),</span>
+            <span class="n">_make_column</span><span class="p">(</span><span class="s2">&quot;DEFINE.VL.DESCRIPTIONTEXT&quot;</span><span class="p">,</span> <span class="s2">&quot;DescriptionText&quot;</span><span class="p">,</span>
+                         <span class="s2">&quot;Description&quot;</span><span class="p">),</span>
+            <span class="n">_make_column</span><span class="p">(</span><span class="s2">&quot;DEFINE.VL.CODELISTOID&quot;</span><span class="p">,</span> <span class="s2">&quot;CodeListOID&quot;</span><span class="p">,</span>
+                         <span class="s2">&quot;CodeList OID&quot;</span><span class="p">),</span>
+            <span class="n">_make_column</span><span class="p">(</span><span class="s2">&quot;DEFINE.VL.ORIGINTYPE&quot;</span><span class="p">,</span> <span class="s2">&quot;OriginType&quot;</span><span class="p">,</span> <span class="s2">&quot;Origin Type&quot;</span><span class="p">),</span>
+            <span class="n">_make_column</span><span class="p">(</span><span class="s2">&quot;DEFINE.VL.ORIGINSOURCE&quot;</span><span class="p">,</span> <span class="s2">&quot;OriginSource&quot;</span><span class="p">,</span>
+                         <span class="s2">&quot;Origin Source&quot;</span><span class="p">),</span>
+        <span class="p">]</span>
+
+        <span class="n">rows</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">value_list_defs</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_mdv</span><span class="p">,</span> <span class="s2">&quot;ValueListDef&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">or</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">vld</span> <span class="ow">in</span> <span class="n">value_list_defs</span><span class="p">:</span>
+            <span class="n">vl_oid</span> <span class="o">=</span> <span class="n">vld</span><span class="o">.</span><span class="n">OID</span>
+            <span class="n">item_refs</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">vld</span><span class="p">,</span> <span class="s2">&quot;ItemRef&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">or</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">item_ref</span> <span class="ow">in</span> <span class="n">item_refs</span><span class="p">:</span>
+                <span class="n">item_oid</span> <span class="o">=</span> <span class="n">item_ref</span><span class="o">.</span><span class="n">ItemOID</span>
+                <span class="n">item_def</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_item_def_index</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">item_oid</span><span class="p">)</span>
+
+                <span class="c1"># Get first WhereClauseRef OID</span>
+                <span class="n">wc_oid</span> <span class="o">=</span> <span class="n">_safe_get</span><span class="p">(</span><span class="n">item_ref</span><span class="p">,</span> <span class="s2">&quot;WhereClauseRef&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span>
+                                   <span class="s2">&quot;WhereClauseOID&quot;</span><span class="p">)</span>
+
+                <span class="n">rows</span><span class="o">.</span><span class="n">append</span><span class="p">([</span>
+                    <span class="n">vl_oid</span><span class="p">,</span>
+                    <span class="n">item_oid</span><span class="p">,</span>
+                    <span class="n">_safe_get</span><span class="p">(</span><span class="n">item_ref</span><span class="p">,</span> <span class="s2">&quot;OrderNumber&quot;</span><span class="p">),</span>
+                    <span class="n">_safe_get</span><span class="p">(</span><span class="n">item_ref</span><span class="p">,</span> <span class="s2">&quot;Mandatory&quot;</span><span class="p">),</span>
+                    <span class="n">_safe_get</span><span class="p">(</span><span class="n">item_ref</span><span class="p">,</span> <span class="s2">&quot;MethodOID&quot;</span><span class="p">),</span>
+                    <span class="n">wc_oid</span><span class="p">,</span>
+                    <span class="n">_safe_get</span><span class="p">(</span><span class="n">item_def</span><span class="p">,</span> <span class="s2">&quot;Name&quot;</span><span class="p">),</span>
+                    <span class="n">_safe_get</span><span class="p">(</span><span class="n">item_def</span><span class="p">,</span> <span class="s2">&quot;DataType&quot;</span><span class="p">),</span>
+                    <span class="n">_safe_get</span><span class="p">(</span><span class="n">item_def</span><span class="p">,</span> <span class="s2">&quot;Length&quot;</span><span class="p">),</span>
+                    <span class="n">_safe_get</span><span class="p">(</span><span class="n">item_def</span><span class="p">,</span> <span class="s2">&quot;SignificantDigits&quot;</span><span class="p">),</span>
+                    <span class="n">_safe_get</span><span class="p">(</span><span class="n">item_def</span><span class="p">,</span> <span class="s2">&quot;SASFieldName&quot;</span><span class="p">),</span>
+                    <span class="n">_safe_get</span><span class="p">(</span><span class="n">item_def</span><span class="p">,</span> <span class="s2">&quot;DisplayFormat&quot;</span><span class="p">),</span>
+                    <span class="n">_safe_get</span><span class="p">(</span><span class="n">item_def</span><span class="p">,</span> <span class="s2">&quot;CommentOID&quot;</span><span class="p">),</span>
+                    <span class="n">_safe_get</span><span class="p">(</span><span class="n">item_def</span><span class="p">,</span> <span class="s2">&quot;Description&quot;</span><span class="p">,</span> <span class="s2">&quot;TranslatedText&quot;</span><span class="p">,</span>
+                              <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;_content&quot;</span><span class="p">),</span>
+                    <span class="n">_safe_get</span><span class="p">(</span><span class="n">item_def</span><span class="p">,</span> <span class="s2">&quot;CodeListRef&quot;</span><span class="p">,</span> <span class="s2">&quot;CodeListOID&quot;</span><span class="p">),</span>
+                    <span class="n">_safe_get</span><span class="p">(</span><span class="n">item_def</span><span class="p">,</span> <span class="s2">&quot;Origin&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;Type&quot;</span><span class="p">),</span>
+                    <span class="n">_safe_get</span><span class="p">(</span><span class="n">item_def</span><span class="p">,</span> <span class="s2">&quot;Origin&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;Source&quot;</span><span class="p">),</span>
+                <span class="p">])</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_make_dataset</span><span class="p">(</span><span class="s2">&quot;value_level&quot;</span><span class="p">,</span>
+                                  <span class="s2">&quot;Value-Level Metadata&quot;</span><span class="p">,</span> <span class="n">columns</span><span class="p">,</span> <span class="n">rows</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="DefineFlattener.flatten_where_clauses">
+<a class="viewcode-back" href="../../../odmlib.dataset_json_1_1.html#odmlib.dataset_json_1_1.DefineFlattener.flatten_where_clauses">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">flatten_where_clauses</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DatasetJSON</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Flatten WhereClauseDef RangeCheck elements.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            DatasetJSON: One row per RangeCheck within each WhereClauseDef.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">columns</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">_make_column</span><span class="p">(</span><span class="s2">&quot;DEFINE.WC.WHERECLAUSEOID&quot;</span><span class="p">,</span> <span class="s2">&quot;WhereClauseOID&quot;</span><span class="p">,</span>
+                         <span class="s2">&quot;WhereClause OID&quot;</span><span class="p">,</span> <span class="n">key_seq</span><span class="o">=</span><span class="mi">1</span><span class="p">),</span>
+            <span class="n">_make_column</span><span class="p">(</span><span class="s2">&quot;DEFINE.WC.COMMENTOID&quot;</span><span class="p">,</span> <span class="s2">&quot;WhereClauseCommentOID&quot;</span><span class="p">,</span>
+                         <span class="s2">&quot;WhereClause Comment OID&quot;</span><span class="p">),</span>
+            <span class="n">_make_column</span><span class="p">(</span><span class="s2">&quot;DEFINE.WC.COMPARATOR&quot;</span><span class="p">,</span> <span class="s2">&quot;Comparator&quot;</span><span class="p">,</span> <span class="s2">&quot;Comparator&quot;</span><span class="p">),</span>
+            <span class="n">_make_column</span><span class="p">(</span><span class="s2">&quot;DEFINE.WC.SOFTHARD&quot;</span><span class="p">,</span> <span class="s2">&quot;SoftHard&quot;</span><span class="p">,</span> <span class="s2">&quot;Soft/Hard&quot;</span><span class="p">),</span>
+            <span class="n">_make_column</span><span class="p">(</span><span class="s2">&quot;DEFINE.WC.ITEMOID&quot;</span><span class="p">,</span> <span class="s2">&quot;ItemOID&quot;</span><span class="p">,</span> <span class="s2">&quot;Item OID&quot;</span><span class="p">),</span>
+            <span class="n">_make_column</span><span class="p">(</span><span class="s2">&quot;DEFINE.WC.CHECKVALUES&quot;</span><span class="p">,</span> <span class="s2">&quot;CheckValues&quot;</span><span class="p">,</span>
+                         <span class="s2">&quot;Check Values&quot;</span><span class="p">),</span>
+        <span class="p">]</span>
+
+        <span class="n">rows</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">wc_defs</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_mdv</span><span class="p">,</span> <span class="s2">&quot;WhereClauseDef&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">or</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">wcd</span> <span class="ow">in</span> <span class="n">wc_defs</span><span class="p">:</span>
+            <span class="n">wc_oid</span> <span class="o">=</span> <span class="n">wcd</span><span class="o">.</span><span class="n">OID</span>
+            <span class="n">wc_comment_oid</span> <span class="o">=</span> <span class="n">_safe_get</span><span class="p">(</span><span class="n">wcd</span><span class="p">,</span> <span class="s2">&quot;CommentOID&quot;</span><span class="p">)</span>
+            <span class="n">range_checks</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">wcd</span><span class="p">,</span> <span class="s2">&quot;RangeCheck&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">or</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">rc</span> <span class="ow">in</span> <span class="n">range_checks</span><span class="p">:</span>
+                <span class="c1"># Join CheckValue._content values with &quot;, &quot;</span>
+                <span class="n">check_values</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">rc</span><span class="p">,</span> <span class="s2">&quot;CheckValue&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">or</span> <span class="p">[]</span>
+                <span class="n">cv_str</span> <span class="o">=</span> <span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+                    <span class="n">cv</span><span class="o">.</span><span class="n">_content</span> <span class="k">for</span> <span class="n">cv</span> <span class="ow">in</span> <span class="n">check_values</span>
+                    <span class="k">if</span> <span class="n">_safe_get</span><span class="p">(</span><span class="n">cv</span><span class="p">,</span> <span class="s2">&quot;_content&quot;</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+                <span class="p">)</span>
+
+                <span class="n">rows</span><span class="o">.</span><span class="n">append</span><span class="p">([</span>
+                    <span class="n">wc_oid</span><span class="p">,</span>
+                    <span class="n">wc_comment_oid</span><span class="p">,</span>
+                    <span class="n">_safe_get</span><span class="p">(</span><span class="n">rc</span><span class="p">,</span> <span class="s2">&quot;Comparator&quot;</span><span class="p">),</span>
+                    <span class="n">_safe_get</span><span class="p">(</span><span class="n">rc</span><span class="p">,</span> <span class="s2">&quot;SoftHard&quot;</span><span class="p">),</span>
+                    <span class="n">_safe_get</span><span class="p">(</span><span class="n">rc</span><span class="p">,</span> <span class="s2">&quot;ItemOID&quot;</span><span class="p">),</span>
+                    <span class="n">cv_str</span> <span class="k">if</span> <span class="n">cv_str</span> <span class="k">else</span> <span class="kc">None</span><span class="p">,</span>
+                <span class="p">])</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_make_dataset</span><span class="p">(</span><span class="s2">&quot;where_clauses&quot;</span><span class="p">,</span>
+                                  <span class="s2">&quot;Where Clause Definitions&quot;</span><span class="p">,</span> <span class="n">columns</span><span class="p">,</span> <span class="n">rows</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="DefineFlattener.flatten_methods">
+<a class="viewcode-back" href="../../../odmlib.dataset_json_1_1.html#odmlib.dataset_json_1_1.DefineFlattener.flatten_methods">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">flatten_methods</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DatasetJSON</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Flatten MethodDef elements with FormalExpression denormalization.</span>
+
+<span class="sd">        For methods with multiple FormalExpressions, produces one row per</span>
+<span class="sd">        FormalExpression (repeating the parent fields) to ensure no data</span>
+<span class="sd">        loss for round-tripping.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            DatasetJSON: One row per MethodDef (or per FormalExpression</span>
+<span class="sd">                if multiple exist).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">columns</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">_make_column</span><span class="p">(</span><span class="s2">&quot;DEFINE.MT.OID&quot;</span><span class="p">,</span> <span class="s2">&quot;OID&quot;</span><span class="p">,</span> <span class="s2">&quot;Method OID&quot;</span><span class="p">,</span> <span class="n">key_seq</span><span class="o">=</span><span class="mi">1</span><span class="p">),</span>
+            <span class="n">_make_column</span><span class="p">(</span><span class="s2">&quot;DEFINE.MT.NAME&quot;</span><span class="p">,</span> <span class="s2">&quot;Name&quot;</span><span class="p">,</span> <span class="s2">&quot;Method Name&quot;</span><span class="p">),</span>
+            <span class="n">_make_column</span><span class="p">(</span><span class="s2">&quot;DEFINE.MT.TYPE&quot;</span><span class="p">,</span> <span class="s2">&quot;Type&quot;</span><span class="p">,</span> <span class="s2">&quot;Method Type&quot;</span><span class="p">),</span>
+            <span class="n">_make_column</span><span class="p">(</span><span class="s2">&quot;DEFINE.MT.DESCRIPTIONTEXT&quot;</span><span class="p">,</span> <span class="s2">&quot;DescriptionText&quot;</span><span class="p">,</span>
+                         <span class="s2">&quot;Description&quot;</span><span class="p">),</span>
+            <span class="n">_make_column</span><span class="p">(</span><span class="s2">&quot;DEFINE.MT.FORMALEXPRESSIONCONTEXT&quot;</span><span class="p">,</span>
+                         <span class="s2">&quot;FormalExpressionContext&quot;</span><span class="p">,</span>
+                         <span class="s2">&quot;Formal Expression Context&quot;</span><span class="p">),</span>
+            <span class="n">_make_column</span><span class="p">(</span><span class="s2">&quot;DEFINE.MT.FORMALEXPRESSIONTEXT&quot;</span><span class="p">,</span>
+                         <span class="s2">&quot;FormalExpressionText&quot;</span><span class="p">,</span> <span class="s2">&quot;Formal Expression Text&quot;</span><span class="p">),</span>
+            <span class="n">_make_column</span><span class="p">(</span><span class="s2">&quot;DEFINE.MT.DOCUMENTREFLEAFIDS&quot;</span><span class="p">,</span>
+                         <span class="s2">&quot;DocumentRefLeafIDs&quot;</span><span class="p">,</span> <span class="s2">&quot;Document Ref Leaf IDs&quot;</span><span class="p">),</span>
+        <span class="p">]</span>
+
+        <span class="n">rows</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">method_defs</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_mdv</span><span class="p">,</span> <span class="s2">&quot;MethodDef&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">or</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">md</span> <span class="ow">in</span> <span class="n">method_defs</span><span class="p">:</span>
+            <span class="n">oid</span> <span class="o">=</span> <span class="n">_safe_get</span><span class="p">(</span><span class="n">md</span><span class="p">,</span> <span class="s2">&quot;OID&quot;</span><span class="p">)</span>
+            <span class="n">name</span> <span class="o">=</span> <span class="n">_safe_get</span><span class="p">(</span><span class="n">md</span><span class="p">,</span> <span class="s2">&quot;Name&quot;</span><span class="p">)</span>
+            <span class="n">mtype</span> <span class="o">=</span> <span class="n">_safe_get</span><span class="p">(</span><span class="n">md</span><span class="p">,</span> <span class="s2">&quot;Type&quot;</span><span class="p">)</span>
+            <span class="n">desc</span> <span class="o">=</span> <span class="n">_safe_get</span><span class="p">(</span><span class="n">md</span><span class="p">,</span> <span class="s2">&quot;Description&quot;</span><span class="p">,</span> <span class="s2">&quot;TranslatedText&quot;</span><span class="p">,</span>
+                             <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;_content&quot;</span><span class="p">)</span>
+
+            <span class="c1"># Collect DocumentRef leafIDs</span>
+            <span class="n">doc_refs</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">md</span><span class="p">,</span> <span class="s2">&quot;DocumentRef&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">or</span> <span class="p">[]</span>
+            <span class="n">doc_leaf_ids</span> <span class="o">=</span> <span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+                <span class="n">dr</span><span class="o">.</span><span class="n">leafID</span> <span class="k">for</span> <span class="n">dr</span> <span class="ow">in</span> <span class="n">doc_refs</span>
+                <span class="k">if</span> <span class="n">_safe_get</span><span class="p">(</span><span class="n">dr</span><span class="p">,</span> <span class="s2">&quot;leafID&quot;</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+            <span class="p">)</span>
+            <span class="n">doc_leaf_ids</span> <span class="o">=</span> <span class="n">doc_leaf_ids</span> <span class="k">if</span> <span class="n">doc_leaf_ids</span> <span class="k">else</span> <span class="kc">None</span>
+
+            <span class="c1"># FormalExpressions: one row per expression, or one row with</span>
+            <span class="c1"># None if no expressions</span>
+            <span class="n">formal_exprs</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">md</span><span class="p">,</span> <span class="s2">&quot;FormalExpression&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">or</span> <span class="p">[]</span>
+            <span class="k">if</span> <span class="n">formal_exprs</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">fe</span> <span class="ow">in</span> <span class="n">formal_exprs</span><span class="p">:</span>
+                    <span class="n">rows</span><span class="o">.</span><span class="n">append</span><span class="p">([</span>
+                        <span class="n">oid</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">mtype</span><span class="p">,</span> <span class="n">desc</span><span class="p">,</span>
+                        <span class="n">_safe_get</span><span class="p">(</span><span class="n">fe</span><span class="p">,</span> <span class="s2">&quot;Context&quot;</span><span class="p">),</span>
+                        <span class="n">_safe_get</span><span class="p">(</span><span class="n">fe</span><span class="p">,</span> <span class="s2">&quot;_content&quot;</span><span class="p">),</span>
+                        <span class="n">doc_leaf_ids</span><span class="p">,</span>
+                    <span class="p">])</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">rows</span><span class="o">.</span><span class="n">append</span><span class="p">([</span>
+                    <span class="n">oid</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">mtype</span><span class="p">,</span> <span class="n">desc</span><span class="p">,</span>
+                    <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="n">doc_leaf_ids</span><span class="p">,</span>
+                <span class="p">])</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_make_dataset</span><span class="p">(</span><span class="s2">&quot;methods&quot;</span><span class="p">,</span> <span class="s2">&quot;Method Definitions&quot;</span><span class="p">,</span>
+                                  <span class="n">columns</span><span class="p">,</span> <span class="n">rows</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="DefineFlattener.flatten_comments">
+<a class="viewcode-back" href="../../../odmlib.dataset_json_1_1.html#odmlib.dataset_json_1_1.DefineFlattener.flatten_comments">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">flatten_comments</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DatasetJSON</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Flatten CommentDef elements.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            DatasetJSON: One row per CommentDef.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">columns</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">_make_column</span><span class="p">(</span><span class="s2">&quot;DEFINE.COM.OID&quot;</span><span class="p">,</span> <span class="s2">&quot;OID&quot;</span><span class="p">,</span> <span class="s2">&quot;Comment OID&quot;</span><span class="p">,</span> <span class="n">key_seq</span><span class="o">=</span><span class="mi">1</span><span class="p">),</span>
+            <span class="n">_make_column</span><span class="p">(</span><span class="s2">&quot;DEFINE.COM.DESCRIPTIONTEXT&quot;</span><span class="p">,</span> <span class="s2">&quot;DescriptionText&quot;</span><span class="p">,</span>
+                         <span class="s2">&quot;Description&quot;</span><span class="p">),</span>
+            <span class="n">_make_column</span><span class="p">(</span><span class="s2">&quot;DEFINE.COM.DOCUMENTREFLEAFIDS&quot;</span><span class="p">,</span>
+                         <span class="s2">&quot;DocumentRefLeafIDs&quot;</span><span class="p">,</span> <span class="s2">&quot;Document Ref Leaf IDs&quot;</span><span class="p">),</span>
+        <span class="p">]</span>
+
+        <span class="n">rows</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">comment_defs</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_mdv</span><span class="p">,</span> <span class="s2">&quot;CommentDef&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">or</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">cd</span> <span class="ow">in</span> <span class="n">comment_defs</span><span class="p">:</span>
+            <span class="n">doc_refs</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">cd</span><span class="p">,</span> <span class="s2">&quot;DocumentRef&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">or</span> <span class="p">[]</span>
+            <span class="n">doc_leaf_ids</span> <span class="o">=</span> <span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+                <span class="n">dr</span><span class="o">.</span><span class="n">leafID</span> <span class="k">for</span> <span class="n">dr</span> <span class="ow">in</span> <span class="n">doc_refs</span>
+                <span class="k">if</span> <span class="n">_safe_get</span><span class="p">(</span><span class="n">dr</span><span class="p">,</span> <span class="s2">&quot;leafID&quot;</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+            <span class="p">)</span>
+            <span class="n">rows</span><span class="o">.</span><span class="n">append</span><span class="p">([</span>
+                <span class="n">_safe_get</span><span class="p">(</span><span class="n">cd</span><span class="p">,</span> <span class="s2">&quot;OID&quot;</span><span class="p">),</span>
+                <span class="n">_safe_get</span><span class="p">(</span><span class="n">cd</span><span class="p">,</span> <span class="s2">&quot;Description&quot;</span><span class="p">,</span> <span class="s2">&quot;TranslatedText&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;_content&quot;</span><span class="p">),</span>
+                <span class="n">doc_leaf_ids</span> <span class="k">if</span> <span class="n">doc_leaf_ids</span> <span class="k">else</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="p">])</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_make_dataset</span><span class="p">(</span><span class="s2">&quot;comments&quot;</span><span class="p">,</span> <span class="s2">&quot;Comment Definitions&quot;</span><span class="p">,</span>
+                                  <span class="n">columns</span><span class="p">,</span> <span class="n">rows</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="DefineFlattener.flatten_documents">
+<a class="viewcode-back" href="../../../odmlib.dataset_json_1_1.html#odmlib.dataset_json_1_1.DefineFlattener.flatten_documents">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">flatten_documents</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DatasetJSON</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Flatten leaf (external document reference) elements.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            DatasetJSON: One row per leaf element.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">columns</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">_make_column</span><span class="p">(</span><span class="s2">&quot;DEFINE.DOC.ID&quot;</span><span class="p">,</span> <span class="s2">&quot;ID&quot;</span><span class="p">,</span> <span class="s2">&quot;Document ID&quot;</span><span class="p">,</span> <span class="n">key_seq</span><span class="o">=</span><span class="mi">1</span><span class="p">),</span>
+            <span class="n">_make_column</span><span class="p">(</span><span class="s2">&quot;DEFINE.DOC.HREF&quot;</span><span class="p">,</span> <span class="s2">&quot;href&quot;</span><span class="p">,</span> <span class="s2">&quot;Document Href&quot;</span><span class="p">),</span>
+            <span class="n">_make_column</span><span class="p">(</span><span class="s2">&quot;DEFINE.DOC.TITLE&quot;</span><span class="p">,</span> <span class="s2">&quot;title&quot;</span><span class="p">,</span> <span class="s2">&quot;Document Title&quot;</span><span class="p">),</span>
+        <span class="p">]</span>
+
+        <span class="n">rows</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">leaves</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_mdv</span><span class="p">,</span> <span class="s2">&quot;leaf&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">or</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">lf</span> <span class="ow">in</span> <span class="n">leaves</span><span class="p">:</span>
+            <span class="n">rows</span><span class="o">.</span><span class="n">append</span><span class="p">([</span>
+                <span class="n">_safe_get</span><span class="p">(</span><span class="n">lf</span><span class="p">,</span> <span class="s2">&quot;ID&quot;</span><span class="p">),</span>
+                <span class="n">_safe_get</span><span class="p">(</span><span class="n">lf</span><span class="p">,</span> <span class="s2">&quot;href&quot;</span><span class="p">),</span>
+                <span class="n">_safe_get</span><span class="p">(</span><span class="n">lf</span><span class="p">,</span> <span class="s2">&quot;title&quot;</span><span class="p">,</span> <span class="s2">&quot;_content&quot;</span><span class="p">),</span>
+            <span class="p">])</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_make_dataset</span><span class="p">(</span><span class="s2">&quot;documents&quot;</span><span class="p">,</span> <span class="s2">&quot;Document References&quot;</span><span class="p">,</span>
+                                  <span class="n">columns</span><span class="p">,</span> <span class="n">rows</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="DefineFlattener.flatten_codelists">
+<a class="viewcode-back" href="../../../odmlib.dataset_json_1_1.html#odmlib.dataset_json_1_1.DefineFlattener.flatten_codelists">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">flatten_codelists</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DatasetJSON</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Flatten CodeList elements.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            DatasetJSON: One row per CodeList.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">columns</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">_make_column</span><span class="p">(</span><span class="s2">&quot;DEFINE.CL.OID&quot;</span><span class="p">,</span> <span class="s2">&quot;OID&quot;</span><span class="p">,</span> <span class="s2">&quot;CodeList OID&quot;</span><span class="p">,</span> <span class="n">key_seq</span><span class="o">=</span><span class="mi">1</span><span class="p">),</span>
+            <span class="n">_make_column</span><span class="p">(</span><span class="s2">&quot;DEFINE.CL.NAME&quot;</span><span class="p">,</span> <span class="s2">&quot;Name&quot;</span><span class="p">,</span> <span class="s2">&quot;CodeList Name&quot;</span><span class="p">),</span>
+            <span class="n">_make_column</span><span class="p">(</span><span class="s2">&quot;DEFINE.CL.DATATYPE&quot;</span><span class="p">,</span> <span class="s2">&quot;DataType&quot;</span><span class="p">,</span> <span class="s2">&quot;Data Type&quot;</span><span class="p">),</span>
+            <span class="n">_make_column</span><span class="p">(</span><span class="s2">&quot;DEFINE.CL.ISNONSTANDARD&quot;</span><span class="p">,</span> <span class="s2">&quot;IsNonStandard&quot;</span><span class="p">,</span>
+                         <span class="s2">&quot;Is Non-Standard&quot;</span><span class="p">),</span>
+            <span class="n">_make_column</span><span class="p">(</span><span class="s2">&quot;DEFINE.CL.STANDARDOID&quot;</span><span class="p">,</span> <span class="s2">&quot;StandardOID&quot;</span><span class="p">,</span>
+                         <span class="s2">&quot;Standard OID&quot;</span><span class="p">),</span>
+            <span class="n">_make_column</span><span class="p">(</span><span class="s2">&quot;DEFINE.CL.SASFORMATNAME&quot;</span><span class="p">,</span> <span class="s2">&quot;SASFormatName&quot;</span><span class="p">,</span>
+                         <span class="s2">&quot;SAS Format Name&quot;</span><span class="p">),</span>
+            <span class="n">_make_column</span><span class="p">(</span><span class="s2">&quot;DEFINE.CL.COMMENTOID&quot;</span><span class="p">,</span> <span class="s2">&quot;CommentOID&quot;</span><span class="p">,</span> <span class="s2">&quot;Comment OID&quot;</span><span class="p">),</span>
+            <span class="n">_make_column</span><span class="p">(</span><span class="s2">&quot;DEFINE.CL.DESCRIPTIONTEXT&quot;</span><span class="p">,</span> <span class="s2">&quot;DescriptionText&quot;</span><span class="p">,</span>
+                         <span class="s2">&quot;Description&quot;</span><span class="p">),</span>
+            <span class="n">_make_column</span><span class="p">(</span><span class="s2">&quot;DEFINE.CL.EXTERNALDICTIONARY&quot;</span><span class="p">,</span> <span class="s2">&quot;ExternalDictionary&quot;</span><span class="p">,</span>
+                         <span class="s2">&quot;External Dictionary&quot;</span><span class="p">),</span>
+            <span class="n">_make_column</span><span class="p">(</span><span class="s2">&quot;DEFINE.CL.EXTERNALVERSION&quot;</span><span class="p">,</span> <span class="s2">&quot;ExternalVersion&quot;</span><span class="p">,</span>
+                         <span class="s2">&quot;External Version&quot;</span><span class="p">),</span>
+            <span class="n">_make_column</span><span class="p">(</span><span class="s2">&quot;DEFINE.CL.EXTERNALREF&quot;</span><span class="p">,</span> <span class="s2">&quot;ExternalRef&quot;</span><span class="p">,</span>
+                         <span class="s2">&quot;External Ref&quot;</span><span class="p">),</span>
+            <span class="n">_make_column</span><span class="p">(</span><span class="s2">&quot;DEFINE.CL.EXTERNALHREF&quot;</span><span class="p">,</span> <span class="s2">&quot;ExternalHref&quot;</span><span class="p">,</span>
+                         <span class="s2">&quot;External Href&quot;</span><span class="p">),</span>
+        <span class="p">]</span>
+
+        <span class="n">rows</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">code_lists</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_mdv</span><span class="p">,</span> <span class="s2">&quot;CodeList&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">or</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">cl</span> <span class="ow">in</span> <span class="n">code_lists</span><span class="p">:</span>
+            <span class="n">rows</span><span class="o">.</span><span class="n">append</span><span class="p">([</span>
+                <span class="n">_safe_get</span><span class="p">(</span><span class="n">cl</span><span class="p">,</span> <span class="s2">&quot;OID&quot;</span><span class="p">),</span>
+                <span class="n">_safe_get</span><span class="p">(</span><span class="n">cl</span><span class="p">,</span> <span class="s2">&quot;Name&quot;</span><span class="p">),</span>
+                <span class="n">_safe_get</span><span class="p">(</span><span class="n">cl</span><span class="p">,</span> <span class="s2">&quot;DataType&quot;</span><span class="p">),</span>
+                <span class="n">_safe_get</span><span class="p">(</span><span class="n">cl</span><span class="p">,</span> <span class="s2">&quot;IsNonStandard&quot;</span><span class="p">),</span>
+                <span class="n">_safe_get</span><span class="p">(</span><span class="n">cl</span><span class="p">,</span> <span class="s2">&quot;StandardOID&quot;</span><span class="p">),</span>
+                <span class="n">_safe_get</span><span class="p">(</span><span class="n">cl</span><span class="p">,</span> <span class="s2">&quot;SASFormatName&quot;</span><span class="p">),</span>
+                <span class="n">_safe_get</span><span class="p">(</span><span class="n">cl</span><span class="p">,</span> <span class="s2">&quot;CommentOID&quot;</span><span class="p">),</span>
+                <span class="n">_safe_get</span><span class="p">(</span><span class="n">cl</span><span class="p">,</span> <span class="s2">&quot;Description&quot;</span><span class="p">,</span> <span class="s2">&quot;TranslatedText&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;_content&quot;</span><span class="p">),</span>
+                <span class="n">_safe_get</span><span class="p">(</span><span class="n">cl</span><span class="p">,</span> <span class="s2">&quot;ExternalCodeList&quot;</span><span class="p">,</span> <span class="s2">&quot;Dictionary&quot;</span><span class="p">),</span>
+                <span class="n">_safe_get</span><span class="p">(</span><span class="n">cl</span><span class="p">,</span> <span class="s2">&quot;ExternalCodeList&quot;</span><span class="p">,</span> <span class="s2">&quot;Version&quot;</span><span class="p">),</span>
+                <span class="n">_safe_get</span><span class="p">(</span><span class="n">cl</span><span class="p">,</span> <span class="s2">&quot;ExternalCodeList&quot;</span><span class="p">,</span> <span class="s2">&quot;ref&quot;</span><span class="p">),</span>
+                <span class="n">_safe_get</span><span class="p">(</span><span class="n">cl</span><span class="p">,</span> <span class="s2">&quot;ExternalCodeList&quot;</span><span class="p">,</span> <span class="s2">&quot;href&quot;</span><span class="p">),</span>
+            <span class="p">])</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_make_dataset</span><span class="p">(</span><span class="s2">&quot;codelists&quot;</span><span class="p">,</span> <span class="s2">&quot;CodeList Definitions&quot;</span><span class="p">,</span>
+                                  <span class="n">columns</span><span class="p">,</span> <span class="n">rows</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="DefineFlattener.flatten_codelist_terms">
+<a class="viewcode-back" href="../../../odmlib.dataset_json_1_1.html#odmlib.dataset_json_1_1.DefineFlattener.flatten_codelist_terms">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">flatten_codelist_terms</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DatasetJSON</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Flatten CodeListItem and EnumeratedItem elements within CodeLists.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            DatasetJSON: One row per CodeListItem or EnumeratedItem.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">columns</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">_make_column</span><span class="p">(</span><span class="s2">&quot;DEFINE.CLT.CODELISTOID&quot;</span><span class="p">,</span> <span class="s2">&quot;CodeListOID&quot;</span><span class="p">,</span>
+                         <span class="s2">&quot;CodeList OID&quot;</span><span class="p">,</span> <span class="n">key_seq</span><span class="o">=</span><span class="mi">1</span><span class="p">),</span>
+            <span class="n">_make_column</span><span class="p">(</span><span class="s2">&quot;DEFINE.CLT.CODEDVALUE&quot;</span><span class="p">,</span> <span class="s2">&quot;CodedValue&quot;</span><span class="p">,</span>
+                         <span class="s2">&quot;Coded Value&quot;</span><span class="p">,</span> <span class="n">key_seq</span><span class="o">=</span><span class="mi">2</span><span class="p">),</span>
+            <span class="n">_make_column</span><span class="p">(</span><span class="s2">&quot;DEFINE.CLT.RANK&quot;</span><span class="p">,</span> <span class="s2">&quot;Rank&quot;</span><span class="p">,</span> <span class="s2">&quot;Rank&quot;</span><span class="p">),</span>
+            <span class="n">_make_column</span><span class="p">(</span><span class="s2">&quot;DEFINE.CLT.ORDERNUMBER&quot;</span><span class="p">,</span> <span class="s2">&quot;OrderNumber&quot;</span><span class="p">,</span>
+                         <span class="s2">&quot;Order Number&quot;</span><span class="p">,</span> <span class="s2">&quot;integer&quot;</span><span class="p">),</span>
+            <span class="n">_make_column</span><span class="p">(</span><span class="s2">&quot;DEFINE.CLT.EXTENDEDVALUE&quot;</span><span class="p">,</span> <span class="s2">&quot;ExtendedValue&quot;</span><span class="p">,</span>
+                         <span class="s2">&quot;Extended Value&quot;</span><span class="p">),</span>
+            <span class="n">_make_column</span><span class="p">(</span><span class="s2">&quot;DEFINE.CLT.DECODEDTEXT&quot;</span><span class="p">,</span> <span class="s2">&quot;DecodedText&quot;</span><span class="p">,</span>
+                         <span class="s2">&quot;Decoded Text&quot;</span><span class="p">),</span>
+        <span class="p">]</span>
+
+        <span class="n">rows</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">code_lists</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_mdv</span><span class="p">,</span> <span class="s2">&quot;CodeList&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">or</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">cl</span> <span class="ow">in</span> <span class="n">code_lists</span><span class="p">:</span>
+            <span class="n">cl_oid</span> <span class="o">=</span> <span class="n">cl</span><span class="o">.</span><span class="n">OID</span>
+
+            <span class="c1"># CodeListItems (have Decode)</span>
+            <span class="n">cli_items</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">cl</span><span class="p">,</span> <span class="s2">&quot;CodeListItem&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">or</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">cli</span> <span class="ow">in</span> <span class="n">cli_items</span><span class="p">:</span>
+                <span class="n">rows</span><span class="o">.</span><span class="n">append</span><span class="p">([</span>
+                    <span class="n">cl_oid</span><span class="p">,</span>
+                    <span class="n">_safe_get</span><span class="p">(</span><span class="n">cli</span><span class="p">,</span> <span class="s2">&quot;CodedValue&quot;</span><span class="p">),</span>
+                    <span class="n">_safe_get</span><span class="p">(</span><span class="n">cli</span><span class="p">,</span> <span class="s2">&quot;Rank&quot;</span><span class="p">),</span>
+                    <span class="n">_safe_get</span><span class="p">(</span><span class="n">cli</span><span class="p">,</span> <span class="s2">&quot;OrderNumber&quot;</span><span class="p">),</span>
+                    <span class="n">_safe_get</span><span class="p">(</span><span class="n">cli</span><span class="p">,</span> <span class="s2">&quot;ExtendedValue&quot;</span><span class="p">),</span>
+                    <span class="n">_safe_get</span><span class="p">(</span><span class="n">cli</span><span class="p">,</span> <span class="s2">&quot;Decode&quot;</span><span class="p">,</span> <span class="s2">&quot;TranslatedText&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;_content&quot;</span><span class="p">),</span>
+                <span class="p">])</span>
+
+            <span class="c1"># EnumeratedItems (no Decode)</span>
+            <span class="n">ei_items</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">cl</span><span class="p">,</span> <span class="s2">&quot;EnumeratedItem&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">or</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">ei</span> <span class="ow">in</span> <span class="n">ei_items</span><span class="p">:</span>
+                <span class="n">rows</span><span class="o">.</span><span class="n">append</span><span class="p">([</span>
+                    <span class="n">cl_oid</span><span class="p">,</span>
+                    <span class="n">_safe_get</span><span class="p">(</span><span class="n">ei</span><span class="p">,</span> <span class="s2">&quot;CodedValue&quot;</span><span class="p">),</span>
+                    <span class="n">_safe_get</span><span class="p">(</span><span class="n">ei</span><span class="p">,</span> <span class="s2">&quot;Rank&quot;</span><span class="p">),</span>
+                    <span class="n">_safe_get</span><span class="p">(</span><span class="n">ei</span><span class="p">,</span> <span class="s2">&quot;OrderNumber&quot;</span><span class="p">),</span>
+                    <span class="n">_safe_get</span><span class="p">(</span><span class="n">ei</span><span class="p">,</span> <span class="s2">&quot;ExtendedValue&quot;</span><span class="p">),</span>
+                    <span class="kc">None</span><span class="p">,</span>  <span class="c1"># EnumeratedItems have no Decode</span>
+                <span class="p">])</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_make_dataset</span><span class="p">(</span><span class="s2">&quot;codelist_terms&quot;</span><span class="p">,</span>
+                                  <span class="s2">&quot;CodeList Terms&quot;</span><span class="p">,</span> <span class="n">columns</span><span class="p">,</span> <span class="n">rows</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="DefineFlattener.flatten_aliases">
+<a class="viewcode-back" href="../../../odmlib.dataset_json_1_1.html#odmlib.dataset_json_1_1.DefineFlattener.flatten_aliases">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">flatten_aliases</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DatasetJSON</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Flatten Alias elements from every element type that carries them.</span>
+
+<span class="sd">        Normalized one-row-per-Alias table keyed by the owning element.</span>
+<span class="sd">        Covers ItemGroupDef, ItemDef, CodeList, and the CodeListItem /</span>
+<span class="sd">        EnumeratedItem terms (which the codelist_terms table cannot hold</span>
+<span class="sd">        an Alias for).  ``Member`` disambiguates a codelist term by its</span>
+<span class="sd">        CodedValue; it is empty for the OID-addressable element types.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            DatasetJSON: One row per Alias.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">columns</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">_make_column</span><span class="p">(</span><span class="s2">&quot;DEFINE.AL.PARENTTYPE&quot;</span><span class="p">,</span> <span class="s2">&quot;ParentType&quot;</span><span class="p">,</span>
+                         <span class="s2">&quot;Parent Element Type&quot;</span><span class="p">,</span> <span class="n">key_seq</span><span class="o">=</span><span class="mi">1</span><span class="p">),</span>
+            <span class="n">_make_column</span><span class="p">(</span><span class="s2">&quot;DEFINE.AL.PARENTOID&quot;</span><span class="p">,</span> <span class="s2">&quot;ParentOID&quot;</span><span class="p">,</span>
+                         <span class="s2">&quot;Parent OID&quot;</span><span class="p">,</span> <span class="n">key_seq</span><span class="o">=</span><span class="mi">2</span><span class="p">),</span>
+            <span class="n">_make_column</span><span class="p">(</span><span class="s2">&quot;DEFINE.AL.MEMBER&quot;</span><span class="p">,</span> <span class="s2">&quot;Member&quot;</span><span class="p">,</span>
+                         <span class="s2">&quot;CodeList Term Coded Value&quot;</span><span class="p">,</span> <span class="n">key_seq</span><span class="o">=</span><span class="mi">3</span><span class="p">),</span>
+            <span class="n">_make_column</span><span class="p">(</span><span class="s2">&quot;DEFINE.AL.CONTEXT&quot;</span><span class="p">,</span> <span class="s2">&quot;Context&quot;</span><span class="p">,</span> <span class="s2">&quot;Context&quot;</span><span class="p">),</span>
+            <span class="n">_make_column</span><span class="p">(</span><span class="s2">&quot;DEFINE.AL.NAME&quot;</span><span class="p">,</span> <span class="s2">&quot;Name&quot;</span><span class="p">,</span> <span class="s2">&quot;Name&quot;</span><span class="p">),</span>
+        <span class="p">]</span>
+
+        <span class="n">rows</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="k">def</span><span class="w"> </span><span class="nf">_emit</span><span class="p">(</span><span class="n">parent_type</span><span class="p">,</span> <span class="n">parent_oid</span><span class="p">,</span> <span class="n">member</span><span class="p">,</span> <span class="n">element</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">alias</span> <span class="ow">in</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">element</span><span class="p">,</span> <span class="s2">&quot;Alias&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">or</span> <span class="p">[]:</span>
+                <span class="n">rows</span><span class="o">.</span><span class="n">append</span><span class="p">([</span>
+                    <span class="n">parent_type</span><span class="p">,</span> <span class="n">parent_oid</span><span class="p">,</span> <span class="n">member</span><span class="p">,</span>
+                    <span class="n">_safe_get</span><span class="p">(</span><span class="n">alias</span><span class="p">,</span> <span class="s2">&quot;Context&quot;</span><span class="p">),</span>
+                    <span class="n">_safe_get</span><span class="p">(</span><span class="n">alias</span><span class="p">,</span> <span class="s2">&quot;Name&quot;</span><span class="p">),</span>
+                <span class="p">])</span>
+
+        <span class="k">for</span> <span class="n">igd</span> <span class="ow">in</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_mdv</span><span class="p">,</span> <span class="s2">&quot;ItemGroupDef&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">or</span> <span class="p">[]:</span>
+            <span class="n">_emit</span><span class="p">(</span><span class="s2">&quot;ItemGroupDef&quot;</span><span class="p">,</span> <span class="n">igd</span><span class="o">.</span><span class="n">OID</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="n">igd</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">idf</span> <span class="ow">in</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_mdv</span><span class="p">,</span> <span class="s2">&quot;ItemDef&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">or</span> <span class="p">[]:</span>
+            <span class="n">_emit</span><span class="p">(</span><span class="s2">&quot;ItemDef&quot;</span><span class="p">,</span> <span class="n">idf</span><span class="o">.</span><span class="n">OID</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="n">idf</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">cl</span> <span class="ow">in</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_mdv</span><span class="p">,</span> <span class="s2">&quot;CodeList&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">or</span> <span class="p">[]:</span>
+            <span class="n">_emit</span><span class="p">(</span><span class="s2">&quot;CodeList&quot;</span><span class="p">,</span> <span class="n">cl</span><span class="o">.</span><span class="n">OID</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="n">cl</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">cli</span> <span class="ow">in</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">cl</span><span class="p">,</span> <span class="s2">&quot;CodeListItem&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">or</span> <span class="p">[]:</span>
+                <span class="n">_emit</span><span class="p">(</span><span class="s2">&quot;CodeListItem&quot;</span><span class="p">,</span> <span class="n">cl</span><span class="o">.</span><span class="n">OID</span><span class="p">,</span>
+                      <span class="n">_safe_get</span><span class="p">(</span><span class="n">cli</span><span class="p">,</span> <span class="s2">&quot;CodedValue&quot;</span><span class="p">),</span> <span class="n">cli</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">ei</span> <span class="ow">in</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">cl</span><span class="p">,</span> <span class="s2">&quot;EnumeratedItem&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">or</span> <span class="p">[]:</span>
+                <span class="n">_emit</span><span class="p">(</span><span class="s2">&quot;EnumeratedItem&quot;</span><span class="p">,</span> <span class="n">cl</span><span class="o">.</span><span class="n">OID</span><span class="p">,</span>
+                      <span class="n">_safe_get</span><span class="p">(</span><span class="n">ei</span><span class="p">,</span> <span class="s2">&quot;CodedValue&quot;</span><span class="p">),</span> <span class="n">ei</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_make_dataset</span><span class="p">(</span><span class="s2">&quot;aliases&quot;</span><span class="p">,</span> <span class="s2">&quot;Alias Definitions&quot;</span><span class="p">,</span>
+                                  <span class="n">columns</span><span class="p">,</span> <span class="n">rows</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="DefineFlattener.flatten_origins">
+<a class="viewcode-back" href="../../../odmlib.dataset_json_1_1.html#odmlib.dataset_json_1_1.DefineFlattener.flatten_origins">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">flatten_origins</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DatasetJSON</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Flatten the full ItemDef Origin trees (one row per Origin).</span>
+
+<span class="sd">        The inline OriginType / OriginSource columns on the variables and</span>
+<span class="sd">        value_level tables only capture the first Origin&#39;s Type and Source.</span>
+<span class="sd">        This table captures every Origin with its Description (text and</span>
+<span class="sd">        language) and DocumentRef leafIDs, enabling lossless rebuild.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            DatasetJSON: One row per Origin within each ItemDef.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">columns</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">_make_column</span><span class="p">(</span><span class="s2">&quot;DEFINE.OR.ITEMOID&quot;</span><span class="p">,</span> <span class="s2">&quot;ItemOID&quot;</span><span class="p">,</span> <span class="s2">&quot;Item OID&quot;</span><span class="p">,</span>
+                         <span class="n">key_seq</span><span class="o">=</span><span class="mi">1</span><span class="p">),</span>
+            <span class="n">_make_column</span><span class="p">(</span><span class="s2">&quot;DEFINE.OR.ORDERNUMBER&quot;</span><span class="p">,</span> <span class="s2">&quot;OrderNumber&quot;</span><span class="p">,</span>
+                         <span class="s2">&quot;Origin Order&quot;</span><span class="p">,</span> <span class="s2">&quot;integer&quot;</span><span class="p">,</span> <span class="n">key_seq</span><span class="o">=</span><span class="mi">2</span><span class="p">),</span>
+            <span class="n">_make_column</span><span class="p">(</span><span class="s2">&quot;DEFINE.OR.TYPE&quot;</span><span class="p">,</span> <span class="s2">&quot;Type&quot;</span><span class="p">,</span> <span class="s2">&quot;Origin Type&quot;</span><span class="p">),</span>
+            <span class="n">_make_column</span><span class="p">(</span><span class="s2">&quot;DEFINE.OR.SOURCE&quot;</span><span class="p">,</span> <span class="s2">&quot;Source&quot;</span><span class="p">,</span> <span class="s2">&quot;Origin Source&quot;</span><span class="p">),</span>
+            <span class="n">_make_column</span><span class="p">(</span><span class="s2">&quot;DEFINE.OR.DESCRIPTIONTEXT&quot;</span><span class="p">,</span> <span class="s2">&quot;DescriptionText&quot;</span><span class="p">,</span>
+                         <span class="s2">&quot;Description&quot;</span><span class="p">),</span>
+            <span class="n">_make_column</span><span class="p">(</span><span class="s2">&quot;DEFINE.OR.DESCRIPTIONLANG&quot;</span><span class="p">,</span> <span class="s2">&quot;DescriptionLang&quot;</span><span class="p">,</span>
+                         <span class="s2">&quot;Description Language&quot;</span><span class="p">),</span>
+            <span class="n">_make_column</span><span class="p">(</span><span class="s2">&quot;DEFINE.OR.DOCUMENTREFLEAFIDS&quot;</span><span class="p">,</span> <span class="s2">&quot;DocumentRefLeafIDs&quot;</span><span class="p">,</span>
+                         <span class="s2">&quot;Document Ref Leaf IDs&quot;</span><span class="p">),</span>
+        <span class="p">]</span>
+
+        <span class="n">rows</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">idf</span> <span class="ow">in</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_mdv</span><span class="p">,</span> <span class="s2">&quot;ItemDef&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">or</span> <span class="p">[]:</span>
+            <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">origin</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="n">idf</span><span class="p">,</span> <span class="s2">&quot;Origin&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">or</span> <span class="p">[]):</span>
+                <span class="n">leaf_ids</span> <span class="o">=</span> <span class="p">[</span>
+                    <span class="n">_safe_get</span><span class="p">(</span><span class="n">dr</span><span class="p">,</span> <span class="s2">&quot;leafID&quot;</span><span class="p">)</span>
+                    <span class="k">for</span> <span class="n">dr</span> <span class="ow">in</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">origin</span><span class="p">,</span> <span class="s2">&quot;DocumentRef&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">or</span> <span class="p">[]</span>
+                    <span class="k">if</span> <span class="n">_safe_get</span><span class="p">(</span><span class="n">dr</span><span class="p">,</span> <span class="s2">&quot;leafID&quot;</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+                <span class="p">]</span>
+                <span class="n">rows</span><span class="o">.</span><span class="n">append</span><span class="p">([</span>
+                    <span class="n">idf</span><span class="o">.</span><span class="n">OID</span><span class="p">,</span>
+                    <span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span>
+                    <span class="n">_safe_get</span><span class="p">(</span><span class="n">origin</span><span class="p">,</span> <span class="s2">&quot;Type&quot;</span><span class="p">),</span>
+                    <span class="n">_safe_get</span><span class="p">(</span><span class="n">origin</span><span class="p">,</span> <span class="s2">&quot;Source&quot;</span><span class="p">),</span>
+                    <span class="n">_safe_get</span><span class="p">(</span><span class="n">origin</span><span class="p">,</span> <span class="s2">&quot;Description&quot;</span><span class="p">,</span> <span class="s2">&quot;TranslatedText&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span>
+                              <span class="s2">&quot;_content&quot;</span><span class="p">),</span>
+                    <span class="n">_safe_get</span><span class="p">(</span><span class="n">origin</span><span class="p">,</span> <span class="s2">&quot;Description&quot;</span><span class="p">,</span> <span class="s2">&quot;TranslatedText&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span>
+                              <span class="s2">&quot;lang&quot;</span><span class="p">),</span>
+                    <span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">leaf_ids</span><span class="p">)</span> <span class="k">if</span> <span class="n">leaf_ids</span> <span class="k">else</span> <span class="kc">None</span><span class="p">,</span>
+                <span class="p">])</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_make_dataset</span><span class="p">(</span><span class="s2">&quot;origins&quot;</span><span class="p">,</span> <span class="s2">&quot;Origin Definitions&quot;</span><span class="p">,</span>
+                                  <span class="n">columns</span><span class="p">,</span> <span class="n">rows</span><span class="p">)</span></div>
+</div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2020, Sam Hume.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

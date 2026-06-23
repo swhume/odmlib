@@ -1,0 +1,376 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ns_registry &mdash; odmlib 0.2.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=938c9ccc"></script>
+      <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            odmlib
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">User Guides</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../guides/getting_started.html">Getting Started with odmlib</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guides/reading_documents.html">Reading ODM Documents</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guides/permissive_loading.html">Permissive Loading Mode</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guides/creating_documents.html">Creating ODM Documents</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guides/validation.html">Validating ODM Documents</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guides/model_reference.html">Model Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guides/interoperability.html">Interoperability: Dataset-JSON and Pandas</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guides/dataset_json.html">Working with Dataset-JSON v1.1</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../modules.html">odmlib</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../odmlib.odm_1_3_2.html">odm_1_3_2 package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../odmlib.odm_2_0.html">odm_2_0 package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../odmlib.define_2_0.html">define_2_0 package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../odmlib.define_2_1.html">define_2_1 package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../odmlib.dataset_1_0_1.html">odmlib.dataset_1_0_1 module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../odmlib.ct_1_1_1.html">odmlib.ct_1_1_1 module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../odmlib.arm_1_0.html">odmlib.arm_1_0 module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../odmlib.dataset_json_1_1.html">odmlib.dataset_json_1_1</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../odmlib.dataframe.html">odmlib.dataframe</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Project</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../changelog.html">Changelog</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">odmlib</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">Module code</a></li>
+      <li class="breadcrumb-item active">ns_registry</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for ns_registry</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Global registry for XML namespace prefix-to-URI mappings.</span>
+
+<span class="sd">This module provides :class:`Borg` and :class:`NamespaceRegistry` for</span>
+<span class="sd">managing XML namespace declarations used in ODM and Define-XML documents.</span>
+
+<span class="sd">The Borg pattern ensures that all instances of :class:`NamespaceRegistry`</span>
+<span class="sd">share the same state, providing a convenient global registry without</span>
+<span class="sd">requiring a strict singleton or global variable.</span>
+
+<span class="sd">Example::</span>
+
+<span class="sd">    import odmlib.ns_registry as NS</span>
+
+<span class="sd">    NS.NamespaceRegistry(prefix=&quot;odm&quot;,</span>
+<span class="sd">        uri=&quot;http://www.cdisc.org/ns/odm/v1.3&quot;,</span>
+<span class="sd">        is_default=True, is_reset=True)</span>
+<span class="sd">    NS.NamespaceRegistry(prefix=&quot;def&quot;,</span>
+<span class="sd">        uri=&quot;http://www.cdisc.org/ns/def/v2.1&quot;)</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">validators</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">odmlib.exceptions</span><span class="w"> </span><span class="kn">import</span> <span class="n">OdmlibNamespaceError</span>
+
+
+<div class="viewcode-block" id="Borg">
+<a class="viewcode-back" href="../modules.html#ns_registry.Borg">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">Borg</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Borg pattern base class providing shared state across instances.</span>
+
+<span class="sd">    All instances of subclasses share the same ``namespaces`` and</span>
+<span class="sd">    ``default_namespace`` dictionaries, enabling a singleton-like</span>
+<span class="sd">    namespace registry without requiring a true singleton.</span>
+
+<span class="sd">    Class Attributes:</span>
+<span class="sd">        namespaces (dict): Maps prefix to URI for all registered namespaces.</span>
+<span class="sd">        default_namespace (dict): Maps the default namespace prefix to URI.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">namespaces</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="n">default_namespace</span> <span class="o">=</span> <span class="p">{}</span>
+
+<div class="viewcode-block" id="Borg.reset">
+<a class="viewcode-back" href="../modules.html#ns_registry.Borg.reset">[docs]</a>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">reset</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Reset all shared namespace state to empty dicts.</span>
+
+<span class="sd">        Should be called between tests or when reinitializing the registry</span>
+<span class="sd">        from scratch to prevent cross-test state leakage.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">cls</span><span class="o">.</span><span class="n">namespaces</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">cls</span><span class="o">.</span><span class="n">default_namespace</span> <span class="o">=</span> <span class="p">{}</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="NamespaceRegistry">
+<a class="viewcode-back" href="../modules.html#ns_registry.NamespaceRegistry">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">NamespaceRegistry</span><span class="p">(</span><span class="n">Borg</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Global registry for XML namespace prefix-to-URI mappings.</span>
+
+<span class="sd">    Uses the Borg pattern so all instances share state. Manages namespace</span>
+<span class="sd">    prefix registration and provides methods for XML serialization.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        prefix (str): Namespace prefix (e.g., &quot;odm&quot;, &quot;def&quot;, &quot;xs&quot;).</span>
+<span class="sd">        uri (str): Namespace URI (must be a valid URL).</span>
+<span class="sd">        is_default (bool): If True, this becomes the default namespace</span>
+<span class="sd">            (used for xmlns= in XML output).</span>
+<span class="sd">        is_reset (bool): If True, clears all existing entries first.</span>
+
+<span class="sd">    Raises:</span>
+<span class="sd">        OdmlibNamespaceError: If the URI is not a valid URL.</span>
+
+<span class="sd">    Example::</span>
+
+<span class="sd">        import odmlib.ns_registry as NS</span>
+<span class="sd">        NS.NamespaceRegistry(prefix=&quot;odm&quot;,</span>
+<span class="sd">            uri=&quot;http://www.cdisc.org/ns/odm/v1.3&quot;,</span>
+<span class="sd">            is_default=True, is_reset=True)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">prefix</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">uri</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">is_default</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">is_reset</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">is_reset</span><span class="p">:</span>
+            <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">prefix</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">uri</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">validators</span><span class="o">.</span><span class="n">url</span><span class="p">(</span><span class="n">uri</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_update_registry</span><span class="p">(</span><span class="n">prefix</span><span class="p">,</span> <span class="n">uri</span><span class="p">,</span> <span class="n">is_default</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">OdmlibNamespaceError</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;Namespace uri is not a valid url: </span><span class="si">{</span><span class="n">uri</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                    <span class="n">hint</span><span class="o">=</span><span class="s2">&quot;Provide a valid URI, e.g., &#39;http://www.cdisc.org/ns/odm/v1.3&#39;&quot;</span><span class="p">,</span>
+                <span class="p">)</span>
+
+<div class="viewcode-block" id="NamespaceRegistry.get_odm_namespace_entries">
+<a class="viewcode-back" href="../modules.html#ns_registry.NamespaceRegistry.get_odm_namespace_entries">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_odm_namespace_entries</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return namespace entries as xmlns= strings for XML serialization.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            list[str]: A list of strings like ``[&quot;xmlns=http://...&quot;, &quot;xmlns:def=http://...&quot;]``.</span>
+<span class="sd">                The first entry is always the default namespace.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">entries</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;xmlns=&quot;</span> <span class="o">+</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">default_namespace</span><span class="o">.</span><span class="n">values</span><span class="p">())[</span><span class="mi">0</span><span class="p">]]</span>
+        <span class="k">for</span> <span class="n">prefix</span><span class="p">,</span> <span class="n">uri</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">namespaces</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">prefix</span> <span class="o">!=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">default_namespace</span><span class="o">.</span><span class="n">keys</span><span class="p">())[</span><span class="mi">0</span><span class="p">]:</span>
+                <span class="n">entries</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;xmlns:&quot;</span> <span class="o">+</span> <span class="n">prefix</span> <span class="o">+</span> <span class="s2">&quot;=&quot;</span> <span class="o">+</span> <span class="n">uri</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">entries</span></div>
+
+
+<div class="viewcode-block" id="NamespaceRegistry.get_ns_entry_dict">
+<a class="viewcode-back" href="../modules.html#ns_registry.NamespaceRegistry.get_ns_entry_dict">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_ns_entry_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">prefix</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return a ``{prefix: uri}`` dict for the given prefix, or ``{}`` if not found.</span>
+
+<span class="sd">        Used by loaders to build the ``namespaces`` dict for ElementTree</span>
+<span class="sd">        ``find`` and ``findall`` calls.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            prefix (str): Namespace prefix to look up.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            dict: ``{prefix: uri}`` if registered, otherwise ``{}``.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">prefix</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">namespaces</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">{</span><span class="n">prefix</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">namespaces</span><span class="p">[</span><span class="n">prefix</span><span class="p">]}</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">{}</span></div>
+
+
+<div class="viewcode-block" id="NamespaceRegistry.get_ns_attribute_name">
+<a class="viewcode-back" href="../modules.html#ns_registry.NamespaceRegistry.get_ns_attribute_name">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_ns_attribute_name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">prefix</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the full ElementTree-style attribute name with namespace braces.</span>
+
+<span class="sd">        For the default namespace, returns the bare ``name``. For</span>
+<span class="sd">        non-default namespaces, returns ``{uri}name``.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            name (str): The local attribute name.</span>
+<span class="sd">            prefix (str): The namespace prefix.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            str: The qualified attribute name (e.g., ``&quot;{http://...}lang&quot;``</span>
+<span class="sd">                or ``&quot;lang&quot;`` for the default namespace).</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            OdmlibNamespaceError: If ``prefix`` has not been registered.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">prefix</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">namespaces</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">prefix</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">default_namespace</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">name</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">return</span> <span class="s2">&quot;{&quot;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">namespaces</span><span class="p">[</span><span class="n">prefix</span><span class="p">]</span> <span class="o">+</span> <span class="s2">&quot;}&quot;</span> <span class="o">+</span> <span class="n">name</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">OdmlibNamespaceError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;Error: Namespace with prefix </span><span class="si">{</span><span class="n">prefix</span><span class="si">}</span><span class="s2"> has not been registered&quot;</span><span class="p">,</span>
+                <span class="n">hint</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;Register the namespace first: NamespaceRegistry(prefix=&#39;</span><span class="si">{</span><span class="n">prefix</span><span class="si">}</span><span class="s2">&#39;, uri=&#39;...&#39;)&quot;</span><span class="p">,</span>
+            <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="NamespaceRegistry.get_prefix_ns_from_uri">
+<a class="viewcode-back" href="../modules.html#ns_registry.NamespaceRegistry.get_prefix_ns_from_uri">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_prefix_ns_from_uri</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">uri</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the prefix for a given namespace URI.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            uri (str): The namespace URI to look up (case-insensitive match).</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            str: The registered prefix for that URI.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            OdmlibNamespaceError: If no prefix is registered for ``uri``.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">prefix</span><span class="p">,</span> <span class="n">ns_uri</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">namespaces</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">uri</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="n">ns_uri</span><span class="o">.</span><span class="n">lower</span><span class="p">():</span>
+                <span class="k">return</span> <span class="n">prefix</span>
+        <span class="k">raise</span> <span class="n">OdmlibNamespaceError</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;Error: Namespace with URI </span><span class="si">{</span><span class="n">uri</span><span class="si">}</span><span class="s2"> has not been registered&quot;</span><span class="p">,</span>
+            <span class="n">hint</span><span class="o">=</span><span class="s2">&quot;Register the namespace URI first via NamespaceRegistry(prefix=..., uri=...)&quot;</span><span class="p">,</span>
+        <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="NamespaceRegistry.set_odm_namespace_attributes">
+<a class="viewcode-back" href="../modules.html#ns_registry.NamespaceRegistry.set_odm_namespace_attributes">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">set_odm_namespace_attributes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">odm_elem</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Set xmlns attributes on an ElementTree root element.</span>
+
+<span class="sd">        Adds ``xmlns`` for the default namespace and ``xmlns:prefix``</span>
+<span class="sd">        for each additional namespace to the element&#39;s ``attrib`` dict.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            odm_elem (ET.Element): The root XML element to annotate.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">odm_elem</span><span class="o">.</span><span class="n">attrib</span><span class="p">[</span><span class="s2">&quot;xmlns&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">default_namespace</span><span class="o">.</span><span class="n">values</span><span class="p">())[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">prefix</span><span class="p">,</span> <span class="n">uri</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">namespaces</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">prefix</span> <span class="o">!=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">default_namespace</span><span class="o">.</span><span class="n">keys</span><span class="p">())[</span><span class="mi">0</span><span class="p">]:</span>
+                <span class="n">odm_elem</span><span class="o">.</span><span class="n">attrib</span><span class="p">[</span><span class="s2">&quot;xmlns:&quot;</span> <span class="o">+</span> <span class="n">prefix</span><span class="p">]</span> <span class="o">=</span> <span class="n">uri</span></div>
+
+
+<div class="viewcode-block" id="NamespaceRegistry.set_odm_namespace_attributes_string">
+<a class="viewcode-back" href="../modules.html#ns_registry.NamespaceRegistry.set_odm_namespace_attributes_string">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">set_odm_namespace_attributes_string</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">odm_str</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Add xmlns attributes to an ODM XML string.</span>
+
+<span class="sd">        Replaces the opening ``&lt;ODM`` tag in ``odm_str`` with a version</span>
+<span class="sd">        that includes all registered namespace declarations.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            odm_str (str): An ODM XML string whose root element is ``&lt;ODM&gt;``.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            str: The modified XML string with xmlns attributes injected.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">ns_str</span> <span class="o">=</span> <span class="s2">&quot;&lt;ODM xmlns=</span><span class="se">\&quot;</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">default_namespace</span><span class="o">.</span><span class="n">values</span><span class="p">())[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\&quot;</span><span class="s2">&quot;</span>
+        <span class="k">for</span> <span class="n">prefix</span><span class="p">,</span> <span class="n">uri</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">namespaces</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">prefix</span> <span class="o">!=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">default_namespace</span><span class="o">.</span><span class="n">keys</span><span class="p">())[</span><span class="mi">0</span><span class="p">]:</span>
+                <span class="n">ns_str</span> <span class="o">+=</span> <span class="s2">&quot; xmlns:&quot;</span> <span class="o">+</span> <span class="n">prefix</span> <span class="o">+</span> <span class="s2">&quot;=</span><span class="se">\&quot;</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="n">uri</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\&quot;</span><span class="s2">&quot;</span>
+        <span class="n">odm_ns_str</span> <span class="o">=</span> <span class="n">odm_str</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;&lt;ODM&quot;</span><span class="p">,</span> <span class="n">ns_str</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">odm_ns_str</span></div>
+
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_update_registry</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">prefix</span><span class="p">,</span> <span class="n">uri</span><span class="p">,</span> <span class="n">is_default</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Add or update an entry in the shared namespace registry.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            prefix (str): Namespace prefix.</span>
+<span class="sd">            uri (str): Namespace URI.</span>
+<span class="sd">            is_default (bool): If True, also records this as the default namespace.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">namespaces</span><span class="p">[</span><span class="n">prefix</span><span class="p">]</span> <span class="o">=</span> <span class="n">uri</span>
+        <span class="k">if</span> <span class="n">is_default</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">default_namespace</span><span class="p">[</span><span class="n">prefix</span><span class="p">]</span> <span class="o">=</span> <span class="n">uri</span>
+
+<div class="viewcode-block" id="NamespaceRegistry.remove_registry_entry">
+<a class="viewcode-back" href="../modules.html#ns_registry.NamespaceRegistry.remove_registry_entry">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">remove_registry_entry</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">prefix</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Remove a namespace entry by prefix.</span>
+
+<span class="sd">        Removes the prefix from both ``namespaces`` and</span>
+<span class="sd">        ``default_namespace`` (if present).</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            prefix (str): The namespace prefix to remove.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">prefix</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">namespaces</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">namespaces</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">prefix</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">prefix</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">default_namespace</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">default_namespace</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">prefix</span><span class="p">)</span></div>
+</div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2020, Sam Hume.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

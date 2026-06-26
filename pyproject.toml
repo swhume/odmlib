@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "odmlib"
-version = "0.2.0rc1"
+version = "0.2.0"
 description = "Python library for working with CDISC ODM documents and extensions"
 readme = "README.md"
 license = {text = "MIT"}

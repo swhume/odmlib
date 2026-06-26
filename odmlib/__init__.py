@@ -3,7 +3,7 @@ from importlib.metadata import version, PackageNotFoundError
 try:
     __version__ = version("odmlib")
 except PackageNotFoundError:
-    __version__ = "0.2.0rc1"
+    __version__ = "0.2.0"
 
 from odmlib.exceptions import (
     OdmlibError,

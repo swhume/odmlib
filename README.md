@@ -1,7 +1,7 @@
 # odmlib
 
 [![CI](https://github.com/swhume/odmlib/actions/workflows/ci.yml/badge.svg)](https://github.com/swhume/odmlib/actions/workflows/ci.yml)
-[![PyPI version](https://badge.fury.io/py/odmlib.svg)](https://badge.fury.io/py/odmlib)
+[![PyPI version](https://img.shields.io/pypi/v/odmlib)](https://pypi.org/project/odmlib/)
 [![Python versions](https://img.shields.io/pypi/pyversions/odmlib)](https://pypi.org/project/odmlib/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE.md)
 

@@ -141,12 +141,11 @@ class TestCreateOdm(unittest.TestCase):
         itd.Alias.append(ODM.Alias(Context="SDTM", Name="BRTHDTC"))
         root.Study[0].MetaDataVersion[0].ItemDef.append(itd)
 
+        # to_xml_string() output is self-contained (includes xmlns declarations)
         odm_xml_string = root.to_xml_string()
-        # add namespaces
-        nsr = NS.NamespaceRegistry()
-        odm_str = nsr.set_odm_namespace_attributes_string(odm_xml_string)
+        self.assertIn('xmlns="http://www.cdisc.org/ns/odm/v1.3"', odm_xml_string)
         with open("./data/simple_create_from_string.xml", "w") as xml_file:
-            xml_file.write(odm_str)
+            xml_file.write(odm_xml_string)
 
         loader = LD.ODMLoader(OL.XMLODMLoader(model_package="odm_1_3_2", ns_uri="http://www.cdisc.org/ns/odm/v1.3"))
         loader.open_odm_document("./data/simple_create_from_string.xml")

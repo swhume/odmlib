@@ -7,6 +7,118 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed — validation correctness (code-review remediation)
+- **Cerberus schema isolation**: each `MetadataSchema` now uses a private
+  `SchemaRegistry` instead of the process-global `cerberus.schema_registry`.
+  Previously, instantiating checkers for two model versions (e.g. ODM 1.3.2
+  and Define-XML 2.1) silently corrupted each other's schemas — the last
+  checker instantiated won for every shared schema name, rejecting valid
+  documents and accepting invalid ones. (`*/rules/metadata_schema.py`)
+- **Define-XML leaf references are now validated**: `leaf/@ID` definitions and
+  `DocumentRef/@leafID` / `ItemGroupDef/@def:ArchiveLocationID` references are
+  surfaced to the OID checkers. A dangling `leafID` previously passed
+  `verify_oids()` silently. (`odm_element.py`, `oid_generator.py`)
+- **Duplicate OIDs on skip-listed elements are now detected**:
+  `DynamicOIDRef.add_oid` checks uniqueness before honouring `skip_elem`, so
+  duplicate `ItemGroupDef` OIDs in Define-XML are caught (skip_elem now only
+  exempts an element from reference-target checking).
+- **Deprecated manual `OIDRef` crash guards**: `add_oid_ref` no longer raises
+  `KeyError` on unregistered attributes (e.g. `SignatureOID`), and
+  `check_unreferenced_oids` no longer raises `KeyError` for element types
+  missing from `def_ref` (all three model packages).
+- **Conformance schema drift**: `Presentation` added to the ODM 1.3.2
+  `MetaDataVersion` cerberus schema (valid documents were rejected as
+  "unknown field"); `Repeating` is now `required` for
+  StudyEventDef/FormDef/ItemGroupDef, matching the model and the spec.
+- **Valueset lookup follows inheritance**: `ValidValues` resolves the
+  `ClassName.attr` valueset key via the MRO, so subclasses of model classes
+  keep their parents' valueset validation.
+
+### Fixed — namespaces and serialization
+- **Per-document namespaces**: documents loaded via `ODMLoader` remember the
+  namespace registry state they were loaded under; `write_xml()` and
+  `to_xml_string()` use that snapshot, so loading a second document (e.g.
+  ODM 2.0 after ODM 1.3.2) no longer changes the `xmlns` a previously loaded
+  document serializes with. (`ns_registry.py`, `loader.py`, `odm_element.py`)
+- **`to_xml_string()` output is namespace-well-formed**: it now includes
+  `xmlns` declarations (previously prefixed tags like `def:ValueListDef`
+  had no declaration anywhere, so the string could not be re-parsed).
+  `set_odm_namespace_attributes_string()` is a no-op on such strings.
+- **Only used prefixes are declared**: serialization emits `xmlns:` entries
+  only for prefixes actually present in the tree, so importing an unrelated
+  model package (arm/ct/dataset) no longer pollutes output; the redundant
+  `xmlns:xml` declaration is gone (the `xml` prefix is reserved).
+- **ARM namespace registration**: `arm_1_0` no longer registers itself as the
+  *default* namespace (import-order dependent corruption); the registry now
+  keeps a single default (a new default replaces the previous one), and an
+  empty registry raises `OdmlibNamespaceError` instead of `IndexError`.
+
+### Fixed — parsing and loading
+- **Security — DOCTYPE rejection**: XML parsing rejects documents containing a
+  DOCTYPE declaration (billion-laughs / entity-expansion DoS defense) via a
+  cheap expat prolog pre-scan; ODM never requires DTDs. (`odm_parser.py`)
+- **Clear parse errors**: malformed XML/JSON and unknown root elements now
+  raise `OdmlibParsingError` (with hints) instead of raw `ParseError`,
+  `JSONDecodeError`, or `AttributeError` (all six loaders + parser).
+- **Encoding**: JSON reads use `utf-8-sig` (BOM tolerant) and JSON/XML writes
+  use UTF-8 explicitly, instead of the platform default encoding.
+- **ODM 2.0 clinical data parsing**: `ODMParser.AdminData/ClinicalData/
+  ReferenceData` honour the configured namespace registry instead of a
+  hardcoded ODM v1.3 URI (they silently returned `[]` for ODM 2.0 documents).
+
+### Fixed — object model
+- **Auto-created children no longer leak into output**: reading an unset
+  optional child element still auto-creates it (the
+  `rc.ErrorMessage.TranslatedText.append(...)` idiom is preserved) but
+  serialization skips auto-created elements that were never populated —
+  read-only inspection previously injected spurious empty elements (e.g.
+  `<BasicDefinitions/>`) into XML/JSON output. Reading a child whose class
+  has required attributes returns `None` instead of relying on the
+  deprecated `ValueError` base of `OdmlibRequiredAttributeError`.
+- **`find`/`find_all`/`find_by` guards**: searching an unset single child or
+  a scalar attribute name returns `None`/`[]` instead of raising
+  `AttributeError`.
+- **Restricted subclasses are now consistent**: assigning a field that a
+  subclass deliberately dropped (e.g. `Question` on a Define-XML `ItemDef`)
+  raises `OdmlibTypeError` instead of silently storing a value that
+  serialized inconsistently or not at all; constructor kwarg checking and
+  the required-attribute check now use the class's effective field set.
+- **Single-child type validation**: an `ODMObject` descriptor validates the
+  items when a list is assigned (previously ANY list was accepted unchecked).
+- **ODMBuilder scope pointers**: `add_study`/`add_metadata_version`/
+  `add_item_group_def` clear stale current-element pointers, so
+  `with_description()`/`with_alias()` no longer attach to a previous
+  ItemDef/MetaDataVersion after a new scope opens.
+- **Converter dataset-name collisions**: `dataset_xml_to_dataset_json` warns
+  and keys a colliding dataset by its full `ItemGroupOID` instead of
+  silently overwriting (e.g. `IG.AE` vs `SUPP.AE` both deriving "AE").
+- **DataFrame row drops are visible**: `dataframe_to_items` warns (with row
+  index and reason) for rows that fail element construction instead of
+  silently returning fewer elements.
+
+### Added
+- **`merge_fields=True` class keyword** for model subclassing: a subclass
+  declared as `class MyItemDef(ODM.ItemDef, merge_fields=True)` inherits all
+  base-class fields/elements without redeclaring them (redeclaring a field
+  moves it to the subclass position). The default remains the historical
+  declare-from-scratch behaviour that the Define-XML models use to restrict
+  inherited ODM fields. (`ODMMeta`)
+- **Context managers are read-only by default** (breaking): `open_odm()` /
+  `open_define()` without an `output_file` no longer rewrite the input file
+  on exit. Writing requires an explicit `output_file`, or `write_on_exit=True`
+  to opt in to an in-place update.
+
+### Performance
+- Format-validation regexes (datetime/partial/incomplete/SAS names) are
+  compiled once at import instead of on every attribute assignment.
+- Compiled XML schemas are cached by path (`ODMSchemaValidator` no longer
+  recompiles the XSD per instance); cerberus `Validator` objects are cached
+  per `MetadataSchema` instance.
+- Removed no-op filter-dict allocations from the `to_dict`/OID/order
+  traversals; Define manual checkers set `is_verified` so
+  `unreferenced_oids()` no longer re-runs the full verification walk;
+  `dataframe.py` avoids `iterrows`.
+
 ## [0.2.0]- 2026-06-23
 
 ### Added

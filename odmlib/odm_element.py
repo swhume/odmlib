@@ -44,11 +44,14 @@ class ODMMeta(type):
     """
 
     @classmethod
-    def __prepare__(cls, name, bases):
+    def __prepare__(cls, name, bases, **kwargs):
         """ preserves the order of declarations in each class """
         return OrderedDict()
 
-    def __new__(cls, clsname, bases, clsdict):
+    def __init__(cls, clsname, bases, clsdict, merge_fields=False):
+        super().__init__(clsname, bases, dict(clsdict))
+
+    def __new__(cls, clsname, bases, clsdict, merge_fields=False):
         """Create a new ODM element class.
 
         Scans ``clsdict`` for :class:`~odmlib.typed.ODMObject`,
@@ -61,41 +64,61 @@ class ODMMeta(type):
             clsname (str): Name of the class being created.
             bases (tuple): Base classes.
             clsdict (OrderedDict): Class namespace dictionary (ordered).
+            merge_fields (bool): When True, seed ``_fields``/``_elems``/
+                ``_attrs``/``_attr_ns`` from the base classes so the
+                subclass inherits every declared field without having to
+                redeclare it (redeclaring a field moves it to the
+                subclass's declared position).  The default (False) keeps
+                the historical behaviour where a subclass declares its
+                effective field set from scratch — the mechanism the
+                Define-XML models use to *restrict* inherited ODM fields.
 
         Returns:
             type: The newly constructed class object.
         """
         # variables created in classes become the class attributes
-        # fields = [key for key, val in clsdict.items() if isinstance(val, (DESC.Descriptor, ODMMeta))]
-        clsdict["_fields"] = []
-        clsdict["_elems"] = {}
-        clsdict["_attrs"] = {}
-        clsdict["_attr_ns"] = {}
+        fields = []
+        elems = {}
+        attrs = {}
+        attr_ns = {}
+        if merge_fields:
+            # seed from the bases (reversed so the first base wins conflicts)
+            for base in reversed(bases):
+                for name in getattr(base, "_fields", []):
+                    if name in fields:
+                        fields.remove(name)
+                    fields.append(name)
+                elems.update(getattr(base, "_elems", {}))
+                attrs.update(getattr(base, "_attrs", {}))
+                attr_ns.update(getattr(base, "_attr_ns", {}))
+        clsdict["_fields"] = fields
+        clsdict["_elems"] = elems
+        clsdict["_attrs"] = attrs
+        clsdict["_attr_ns"] = attr_ns
         for key, val in clsdict.items():
             if isinstance(val, (T.ODMObject, T.ODMListObject)):
-                clsdict["_elems"][key] = val
+                if key in fields:
+                    fields.remove(key)
+                attrs.pop(key, None)
+                elems[key] = val
                 clsdict[key].name = key
-                clsdict["_fields"].append(key)
+                fields.append(key)
             elif isinstance(val, (DESC.Descriptor, ODMMeta)):
-                clsdict["_attrs"][key] = val
+                if key in fields:
+                    fields.remove(key)
+                elems.pop(key, None)
+                attrs[key] = val
                 clsdict[key].name = key
-                clsdict["_fields"].append(key)
+                fields.append(key)
                 if val.namespace != "odm":
-                    clsdict["_attr_ns"][key] = val.namespace
+                    attr_ns[key] = val.namespace
+                else:
+                    attr_ns.pop(key, None)
 
-        # for name in fields:
-        #     clsdict[name].name = name
-
-        #clsdict["_fields"] = fields
-        # the default class namespace is odm
+        # the default class namespace is odm (merged subclasses inherit theirs)
         if "namespace" not in clsdict:
-            clsdict["namespace"] = "odm"
-        # elems = {key: val for key, val in clsdict.items() if isinstance(val, (T.ODMObject, T.ODMListObject))}
-        # clsdict["_elems"] = elems
-        # add attribute non-default namespaces
-        # ns = {key: val.namespace for key, val in clsdict.items() if isinstance(val, (DESC.Descriptor, ODMMeta))
-        #       if val.namespace != "odm"}
-        # clsdict["_attr_ns"] = ns
+            if not (merge_fields and any(hasattr(base, "namespace") for base in bases)):
+                clsdict["namespace"] = "odm"
 
         clsobj = super().__new__(cls, clsname, bases, dict(clsdict))
         return clsobj
@@ -108,17 +131,23 @@ class ODMWriter:
     """
 
     @staticmethod
-    def write_odm(odm_file, odm_elem):
+    def write_odm(odm_file, odm_elem, ns_snapshot=None):
         """
         after converting ODMLIB to ElementTree, write the ElementTree to an ODM file
         :param odm_file: path and file to write the ODM XML
         :param odm_elem: Element object to write to ODM (presumably an ODM root)
+        :param ns_snapshot: optional per-document namespace snapshot (as returned
+            by NamespaceRegistry.snapshot()); when omitted, the shared registry
+            state is used
         """
         tree = ET.ElementTree(odm_elem)
         root = tree.getroot()
-        # workaround for elementtree NS bug - NamespaceRegistry assumes at least 1 default NS has been set
         nsr = NS.NamespaceRegistry()
-        nsr.set_odm_namespace_attributes(root)
+        if ns_snapshot:
+            nsr.set_odm_namespace_attributes(
+                root, namespaces=ns_snapshot["namespaces"], default=ns_snapshot["default"])
+        else:
+            nsr.set_odm_namespace_attributes(root)
         tree.write(odm_file, xml_declaration=True, encoding='UTF-8', method='xml', short_empty_elements=True)
 
 
@@ -165,7 +194,7 @@ class ODMElement(metaclass=ODMMeta):
             OdmlibRequiredAttributeError: If a required attribute is missing.
         """
         for name, val in kwargs.items():
-            if name not in self.__class__.__dict__.keys():
+            if name not in self._fields and name not in self.__class__.__dict__:
                 # strip out non-default elementtree namespaces from the XML to work with just the name e.g. xml:lang
                 if "}" in name:
                     name = name[name.find('}') + 1:]
@@ -176,12 +205,12 @@ class ODMElement(metaclass=ODMMeta):
                             attribute=name,
                             element_type=self.__class__.__name__,
                             hint=f"Valid attributes for {self.__class__.__name__}: "
-                                 f"{', '.join(k for k in self.__class__.__dict__ if not k.startswith('_'))}",
+                                 f"{', '.join(k for k in self._fields if not k.startswith('_'))}",
                         )
                     continue
             setattr(self, name, val)
         if not _mode.is_permissive(_mode.ValidationMode.SKIP_REQUIRED):
-            for attr, obj in self.__class__.__dict__.items():
+            for attr, obj in self._attrs.items():
                 if isinstance(obj, DESC.Descriptor) and (not isinstance(obj, T.ODMObject)) and (attr not in self.__dict__) and obj.required:
                     raise OdmlibRequiredAttributeError(
                         f"Missing required keyword argument {attr} in {self.__class__.__name__}",
@@ -204,17 +233,26 @@ class ODMElement(metaclass=ODMMeta):
             OdmlibTypeError: If ``key`` is not a declared attribute on this class.
         """
         """ ensure the object being added is a type that belongs to the class """
-        if not any(key in cls.__dict__ for cls in type(self).__mro__):
-            if not _mode.is_permissive(_mode.ValidationMode.SKIP_TYPE):
-                raise OdmlibTypeError(
-                    f"Assignment error: {self.__class__.__name__} does not have a defined attribute {key}",
-                    attribute=key,
-                    element_type=self.__class__.__name__,
-                )
-            else:
-                self.__dict__[key] = value
-                return
-        super().__setattr__(key, value)
+        if key in self._fields:
+            super().__setattr__(key, value)
+            return
+        # non-descriptor class attributes keep the historical MRO lookup, but
+        # a descriptor deliberately dropped by a restricted subclass (e.g. the
+        # Define-XML models omitting ODM-only children) must not be assignable
+        # — previously such assignments succeeded and then serialized
+        # inconsistently or not at all
+        if any(key in cls.__dict__ for cls in type(self).__mro__) \
+                and not isinstance(getattr(type(self), key, None), DESC.Descriptor):
+            super().__setattr__(key, value)
+            return
+        if not _mode.is_permissive(_mode.ValidationMode.SKIP_TYPE):
+            raise OdmlibTypeError(
+                f"Assignment error: {self.__class__.__name__} does not have a defined attribute {key}",
+                attribute=key,
+                element_type=self.__class__.__name__,
+            )
+        else:
+            self.__dict__[key] = value
 
     def to_json(self) -> str:
         """
@@ -265,17 +303,28 @@ class ODMElement(metaclass=ODMMeta):
             if isinstance(obj, list) and obj:
                 for o in obj:
                     o.to_xml(odm_elem, top_elem)
-            elif isinstance(obj, ODMElement):
+            elif isinstance(obj, ODMElement) and not DESC.is_pristine_auto_created(obj):
                 obj.to_xml(odm_elem, top_elem)
         return top_elem
 
     def to_xml_string(self) -> str:
         """Convert this element to an XML string.
 
+        The string includes xmlns declarations for the default namespace and
+        any prefixes used in the serialized tree, so the result is
+        namespace-well-formed and can be re-parsed on its own.
+
         Returns:
             str: UTF-8 XML representation of this element.
         """
         elem = self.to_xml()
+        nsr = NS.NamespaceRegistry()
+        snapshot = NS.get_document_namespaces(self)
+        if snapshot:
+            nsr.set_odm_namespace_attributes(
+                elem, namespaces=snapshot["namespaces"], default=snapshot["default"])
+        else:
+            nsr.set_odm_namespace_attributes(elem)
         xml_str = ET.tostring(elem, encoding='UTF-8', method='xml')
         return xml_str.decode("utf-8")
 
@@ -287,10 +336,10 @@ class ODMElement(metaclass=ODMMeta):
         """
         # Note: namespaces used in the XML serialization are not part of the dictionary or json serializations
         property_dict = {}
-        odm_content = {attr: obj for attr, obj in self.__dict__.items() if attr not in ["_fields", "_attr_ns", "_elems", "_attrs"]}
-        for attr, obj in odm_content.items():
+        for attr, obj in self.__dict__.items():
             if isinstance(obj, ODMElement):
-                property_dict[attr] = obj.to_dict()                    # element
+                if not DESC.is_pristine_auto_created(obj):
+                    property_dict[attr] = obj.to_dict()                # element
             elif isinstance(obj, list):
                 property_dict[attr] = [o.to_dict() for o in obj]       # list of ELEMENTS
             elif obj is not None:
@@ -341,9 +390,12 @@ class ODMElement(metaclass=ODMMeta):
                 if o.__dict__.get(attr) == val:
                     return o
             return None
-        else:
+        elif isinstance(obj_list, ODMElement):
             if obj_list.__dict__.get(attr) == val:
                 return obj_list
+            return None
+        else:
+            # unset single element (None) or a scalar attribute name
             return None
 
     def find_all(self, obj_name: str, attr: str, val: Any) -> List[ODMElement]:
@@ -359,9 +411,12 @@ class ODMElement(metaclass=ODMMeta):
         obj_list = getattr(self, obj_name)
         if isinstance(obj_list, list):
             return [o for o in obj_list if o.__dict__.get(attr) == val]
-        else:
+        elif isinstance(obj_list, ODMElement):
             if obj_list.__dict__.get(attr) == val:
                 return [obj_list]
+            return []
+        else:
+            # unset single element (None) or a scalar attribute name
             return []
 
     def find_by(self, obj_name: str, **kwargs: Any) -> Optional[ODMElement]:
@@ -375,7 +430,7 @@ class ODMElement(metaclass=ODMMeta):
         """
         obj_list = getattr(self, obj_name)
         if not isinstance(obj_list, list):
-            obj_list = [obj_list]
+            obj_list = [obj_list] if isinstance(obj_list, ODMElement) else []
         for o in obj_list:
             if all(o.__dict__.get(k) == v for k, v in kwargs.items()):
                 return o
@@ -389,8 +444,15 @@ class ODMElement(metaclass=ODMMeta):
         :param odm_writer: object used to write the elementree XML to a file
         """
         odm_elem = self.to_xml()
+        writer_cls = odm_writer
         odm_writer = odm_writer()
-        odm_writer.write_odm(odm_file, odm_elem)
+        if writer_cls is ODMWriter:
+            # use the namespaces this document was loaded under, if known,
+            # so later loads of other documents cannot change its xmlns
+            odm_writer.write_odm(odm_file, odm_elem,
+                                 ns_snapshot=NS.get_document_namespaces(self))
+        else:
+            odm_writer.write_odm(odm_file, odm_elem)
 
     def write_json(self, odm_file: str) -> None:
         """
@@ -398,7 +460,7 @@ class ODMElement(metaclass=ODMMeta):
 
         :param odm_file: string ODM filename and path
         """
-        with open(odm_file, 'w') as outfile:
+        with open(odm_file, 'w', encoding='utf-8') as outfile:
             json.dump(self.to_dict(), outfile)
 
     def build_oid_index(self) -> IDX.OIDIndex:
@@ -420,8 +482,7 @@ class ODMElement(metaclass=ODMMeta):
 
         :return oid_index: object that provices a dictionary lookup based on OID
         """
-        odm_content = {attr: obj for attr, obj in self.__dict__.items() if attr not in ["_fields", "_attr_ns", "_elems", "_attrs"]}
-        for attr, obj in odm_content.items():
+        for attr, obj in self.__dict__.items():
             if isinstance(obj, ODMElement):
                 obj._init_oid_index(idx)                    # element
             elif isinstance(obj, list):
@@ -463,18 +524,21 @@ class ODMElement(metaclass=ODMMeta):
 
         :param oid_checker: object used to check OIDs for uniqueness and Def/Ref check
         """
-        odm_content = {attr: obj for attr, obj in self.__dict__.items() if attr not in ["_fields", "_attr_ns", "_elems", "_attrs"]}
-        for attr, obj in odm_content.items():
+        for attr, obj in self.__dict__.items():
             if isinstance(obj, ODMElement):
                 obj._init_oid_check(oid_checker)                    # element
             elif isinstance(obj, list):
                 for o in obj:
                     o._init_oid_check(oid_checker)                  # list of ELEMENTS
             else:
-                # assumes consistency in OID naming. Exceptions: FileOID and PriorFileOID in ODM
+                # assumes consistency in OID naming. Exceptions: FileOID and PriorFileOID in ODM.
+                # Define-XML document references are ID-based rather than OID-named:
+                # leaf/@ID is the definition, referenced by leafID and def:ArchiveLocationID.
                 if attr == "OID":
                     oid_checker.add_oid(obj, self.__class__.__name__)
-                elif "OID" in attr:
+                elif attr == "ID" and self.__class__.__name__ == "leaf":
+                    oid_checker.add_oid(obj, self.__class__.__name__)
+                elif "OID" in attr or attr in ("leafID", "ArchiveLocationID"):
                     oid_checker.add_oid_ref(obj, attr)
         return
 
@@ -527,7 +591,6 @@ class ODMElement(metaclass=ODMMeta):
             OdmlibElementOrderError: If any element has children out of
                 order. Use :meth:`reorder_object` to fix automatically.
         """
-        odm_content = {attr: obj for attr, obj in self.__dict__.items() if attr not in ["_fields", "_attr_ns", "_elems", "_attrs"]}
         obj_list = [key for key in list(self.__dict__.keys()) if key != "_content" and key not in self._attrs]
         elem_list = [elem for elem in self._elems if elem in obj_list]
         if obj_list != elem_list:
@@ -537,7 +600,7 @@ class ODMElement(metaclass=ODMMeta):
                 element_type=self.__class__.__name__,
                 hint="Use reorder_object() to fix element ordering automatically",
             )
-        for attr, obj in odm_content.items():
+        for attr, obj in self.__dict__.items():
             if isinstance(obj, ODMElement):
                 obj.verify_order()
             elif isinstance(obj, list):

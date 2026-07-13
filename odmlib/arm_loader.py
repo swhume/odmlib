@@ -38,7 +38,7 @@ import odmlib.ns_registry as NS
 import json
 import importlib
 import xml.etree.ElementTree as ET
-from odmlib.exceptions import OdmlibLoaderStateError
+from odmlib.exceptions import OdmlibLoaderStateError, OdmlibParsingError
 
 
 class XMLArmLoader(DL.DocumentLoader):
@@ -82,13 +82,13 @@ class XMLArmLoader(DL.DocumentLoader):
             An odmlib element object populated from ``elem``.
         """
         elem_name = elem.tag[elem.tag.find('}') + 1:]
-        elem_class = getattr(self.ARM, elem_name)
+        elem_class = DL.resolve_model_class(self.ARM, elem_name)
         if elem.text and not elem.text.isspace():
             attrib = {**elem.attrib, **{"_content": elem.text}}
             odm_obj = elem_class(**attrib)
         else:
             odm_obj = elem_class(**elem.attrib)
-        odm_obj_dict = elem_class.__dict__.items()
+        odm_obj_dict = elem_class._elems.items()
         for k, v in odm_obj_dict:
             if type(v).__name__ == "ODMObject":
                 namespace = self.nsr.get_ns_entry_dict(v.namespace)
@@ -238,9 +238,9 @@ class JSONArmLoader(DL.DocumentLoader):
             An odmlib element object populated from ``odm_dict``.
         """
         attrib = {k: value for k, value in odm_dict.items() if not isinstance(value, (list, dict))}
-        elem_class = getattr(self.ARM, key)
+        elem_class = DL.resolve_model_class(self.ARM, key)
         odm_obj = elem_class(**attrib)
-        odm_obj_items = elem_class.__dict__.items()
+        odm_obj_items = elem_class._elems.items()
         for k, v in odm_obj_items:
             if type(v).__name__ == "ODMObject":
                 if k in odm_dict:
@@ -263,8 +263,15 @@ class JSONArmLoader(DL.DocumentLoader):
             dict: The parsed JSON as a Python dictionary.
         """
         self.filename = filename
-        with open(self.filename) as json_in:
-            self.odm_dict = json.load(json_in)
+        # utf-8-sig tolerates a UTF-8 BOM and avoids platform-default encodings
+        with open(self.filename, encoding="utf-8-sig") as json_in:
+            try:
+                self.odm_dict = json.load(json_in)
+            except json.JSONDecodeError as ex:
+                raise OdmlibParsingError(
+                    f"Unable to parse JSON document {self.filename}: {ex}",
+                    hint="Verify the file contains valid JSON.",
+                ) from ex
         return self.odm_dict
 
     def create_document_from_string(self, odm_string: str) -> dict:
@@ -276,7 +283,13 @@ class JSONArmLoader(DL.DocumentLoader):
         Returns:
             dict: The parsed JSON as a Python dictionary.
         """
-        self.odm_dict = json.loads(odm_string)
+        try:
+            self.odm_dict = json.loads(odm_string)
+        except json.JSONDecodeError as ex:
+            raise OdmlibParsingError(
+                f"Unable to parse JSON document from string: {ex}",
+                hint="Verify the string contains valid JSON.",
+            ) from ex
         return self.odm_dict
 
     def load_odm(self) -> Any:

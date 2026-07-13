@@ -13,6 +13,33 @@ Loaders are not typically used directly; pass an instance to
 """
 from abc import ABC, abstractmethod
 
+from odmlib.exceptions import OdmlibParsingError
+
+
+def resolve_model_class(model_module, elem_name):
+    """Return the model class for an element tag, or raise a clear error.
+
+    Previously an unknown element in a document surfaced as a bare
+    ``AttributeError`` from ``getattr`` deep inside the recursive load.
+
+    Args:
+        model_module: The imported model module (e.g. odmlib.odm_1_3_2.model).
+        elem_name: The element tag / dict key naming the class.
+
+    Raises:
+        OdmlibParsingError: If the model has no class for ``elem_name``.
+    """
+    try:
+        return getattr(model_module, elem_name)
+    except AttributeError:
+        raise OdmlibParsingError(
+            f"Unknown element '{elem_name}' — the "
+            f"{model_module.__name__} model has no matching class",
+            hint="Check that the document matches the loader's model_package, "
+                 "or use a custom extension model (local_model) that defines "
+                 "this element.",
+        ) from None
+
 
 class DocumentLoader(ABC):
     """Abstract base class for odmlib document loaders.

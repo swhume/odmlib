@@ -56,6 +56,7 @@ Example::
     print(df[["OID", "Name", "DataType"]].to_string())
 """
 from __future__ import annotations
+import warnings
 from typing import Any, Optional
 
 try:
@@ -365,9 +366,9 @@ def dataframe_to_dataset_json(
             dataType=data_type,
         ))
 
-    # Build rows, converting NaN to None
+    # Build rows, converting NaN to None (itertuples is much faster than iterrows)
     rows = []
-    for _, row in df.iterrows():
+    for row in df.itertuples(index=False, name=None):
         row_values = []
         for val in row:
             try:
@@ -450,11 +451,13 @@ def dataframe_to_items(
     mapping = column_mapping or {}
 
     elements: list[Any] = []
-    for _, row in df.iterrows():
+    # to_dict("records") avoids iterrows' per-row Series construction and
+    # its dtype promotion (values keep their native per-cell types)
+    for row_idx, record in enumerate(df.to_dict(orient="records")):
         kwargs: dict[str, Any] = {}
         for col in df.columns:
             attr_name = mapping.get(col, col)
-            val = row[col]
+            val = record[col]
             # Skip NaN / None / pd.NA values
             try:
                 if pd.notna(val):
@@ -465,8 +468,13 @@ def dataframe_to_items(
                     kwargs[attr_name] = val
         try:
             elements.append(cls(**kwargs))
-        except (TypeError, ValueError, AttributeError):
-            # Skip rows that cannot construct a valid element
-            pass
+        except (TypeError, ValueError, AttributeError) as ex:
+            # skipped rows must be visible: silent drops made the returned
+            # list shorter than the DataFrame with no signal to the caller
+            warnings.warn(
+                f"Skipping DataFrame row {row_idx} — could not construct "
+                f"{element_type}: {ex}",
+                stacklevel=2,
+            )
 
     return elements

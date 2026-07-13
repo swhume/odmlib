@@ -151,6 +151,13 @@ class ODMBuilder:
                 OID=OID, StudyName=study_name, ProtocolName=protocol_name,
                 Description=desc, **kwargs)
         self._studies.append(self._current_study)
+        # a new Study starts a new scope: stale pointers from a previous
+        # study must not receive later with_*/attach_to_current() calls
+        self._current_mdv = None
+        self._current_igd = None
+        self._current_item_def = None
+        self._current_sed = None
+        self._current_form_def = None
         return self
 
     # ------------------------------------------------------------------
@@ -169,6 +176,11 @@ class ODMBuilder:
         M = self._model
         self._current_mdv = M.MetaDataVersion(**kwargs)
         self._current_study.MetaDataVersion.append(self._current_mdv)
+        # a new MetaDataVersion starts a new scope for definitions
+        self._current_igd = None
+        self._current_item_def = None
+        self._current_sed = None
+        self._current_form_def = None
         return self
 
     # ------------------------------------------------------------------
@@ -187,6 +199,9 @@ class ODMBuilder:
         M = self._model
         self._current_igd = M.ItemGroupDef(**kwargs)
         self._current_mdv.ItemGroupDef.append(self._current_igd)
+        # the new ItemGroupDef is now the "most recent element": clear the
+        # previous ItemDef so with_description()/with_alias() target this one
+        self._current_item_def = None
         return self
 
     # ------------------------------------------------------------------

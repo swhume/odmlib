@@ -21,7 +21,7 @@ from odmlib.exceptions import OdmlibOIDError, OdmlibDeprecationWarning
 
 
 class OIDRef:
-    def __init__(self, skip_attrs=[], skip_elems=[]):
+    def __init__(self, skip_attrs=None, skip_elems=None):
         warnings.warn(
             "OIDRef is deprecated. Use odmlib.oid_generator.create_oid_checker('odm_1_3_2') instead.",
             OdmlibDeprecationWarning,
@@ -34,8 +34,8 @@ class OIDRef:
         self._init_ref_def()
         self.def_ref = {}
         self._init_def_ref()
-        self.skip_attr = ["FileOID", "PriorFileOID"] + skip_attrs
-        self.skip_elem = ["ODM"] + skip_elems
+        self.skip_attr = ["FileOID", "PriorFileOID"] + (skip_attrs or [])
+        self.skip_elem = ["ODM"] + (skip_elems or [])
         self.is_verified = False
 
     def add_oid(self, oid, element):
@@ -51,7 +51,7 @@ class OIDRef:
             self.oid[oid] = element
 
     def add_oid_ref(self, oid, attr):
-        if attr not in self.skip_attr:
+        if attr not in self.skip_attr and attr in self.oid_ref:
             self.oid_ref[attr].add(oid)
 
     def is_oids_verified(self):
@@ -84,8 +84,8 @@ class OIDRef:
         """ identify ELEMENTS that are defined but not used """
         orphans = {}
         for oid, elem in self.oid.items():
-            for ref in self.def_ref[elem]:
-                if oid not in self.oid_ref[ref]:
+            for ref in self.def_ref.get(elem, []):
+                if oid not in self.oid_ref.get(ref, set()):
                     orphans[oid] = ref
         return orphans
 

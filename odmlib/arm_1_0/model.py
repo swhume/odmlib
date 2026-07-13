@@ -15,7 +15,9 @@ import odmlib.odm_element as OE
 import odmlib.typed as T
 import odmlib.ns_registry as NS
 
-NS.NamespaceRegistry(prefix="arm", uri="http://www.cdisc.org/ns/arm/v1.0", is_default=True)
+# arm is an extension namespace embedded in Define-XML documents whose default
+# namespace must remain ODM — it must never be registered as the default
+NS.NamespaceRegistry(prefix="arm", uri="http://www.cdisc.org/ns/arm/v1.0")
 
 
 # ---------------------------------------------------------------------------

@@ -74,6 +74,17 @@ _REF_DEF_OVERRIDES: dict[str, str] = {
 }
 
 
+# Define-XML document references are ID-based rather than OID-named:
+# leaf/@ID is the definition, referenced by DocumentRef/@leafID and
+# ItemGroupDef/@def:ArchiveLocationID.  These pairs are surfaced by
+# ODMElement._init_oid_check alongside the OID-named attributes; they
+# are only wired up when the target class exists in the model package.
+_ID_REF_DEF_PAIRS: dict[str, str] = {
+    "leafID": "leaf",
+    "ArchiveLocationID": "leaf",
+}
+
+
 # ---------------------------------------------------------------------------
 # Discovery helpers
 # ---------------------------------------------------------------------------
@@ -122,6 +133,8 @@ def discover_oid_definitions(model_classes: dict[str, type]) -> list[str]:
         attrs = getattr(cls, "_attrs", {})
         if "OID" in attrs:
             oid_defs.append(name)
+        elif "ID" in attrs and name in _ID_REF_DEF_PAIRS.values():
+            oid_defs.append(name)
     return oid_defs
 
 
@@ -145,7 +158,7 @@ def discover_oid_references(model_classes: dict[str, type]) -> dict[str, list[st
     for cls_name, cls in model_classes.items():
         attrs = getattr(cls, "_attrs", {})
         for attr_name in attrs:
-            if "OID" in attr_name and attr_name != "OID":
+            if ("OID" in attr_name and attr_name != "OID") or attr_name in _ID_REF_DEF_PAIRS:
                 if attr_name not in refs:
                     refs[attr_name] = []
                 refs[attr_name].append(cls_name)
@@ -182,6 +195,13 @@ def build_ref_def_mapping(
     oid_def_set = set(oid_defs)
 
     for attr_name in ref_attrs:
+        # --- Step 0: ID-based ref/def pairs (Define-XML leaf references) -------
+        if attr_name in _ID_REF_DEF_PAIRS:
+            target = _ID_REF_DEF_PAIRS[attr_name]
+            if target in model_classes:
+                ref_def[attr_name] = target
+            continue
+
         # --- Step 1: check overrides ------------------------------------------
         if attr_name in _REF_DEF_OVERRIDES:
             target = _REF_DEF_OVERRIDES[attr_name]
@@ -282,8 +302,13 @@ class DynamicOIDRef:
         self.def_ref = build_def_ref_mapping(self.ref_def)
 
         # --- Runtime state (populated during verify_oids traversal) ---
-        # self.oid: OID value → element class name (for definition elements)
+        # self.oid: OID value → element class name (reference targets only;
+        # excludes skip_elem element types)
         self.oid: dict[str, str] = {}
+        # self.unique_oids: OID value → element class name for EVERY
+        # definition, including skip_elem types — skip_elem only exempts an
+        # element from reference-target checking, not from uniqueness
+        self.unique_oids: dict[str, str] = {}
         # self.oid_ref: attr name → set of referenced OID values
         self.oid_ref: dict[str, set] = {attr: set() for attr in self.ref_def}
         self.is_verified: bool = False
@@ -309,18 +334,19 @@ class DynamicOIDRef:
         Raises:
             OdmlibOIDError: If *oid* is already registered (duplicate OID).
         """
-        if element in self.skip_elem:
-            return
-        if oid in self.oid:
+        if oid in self.unique_oids:
             from odmlib.exceptions import OdmlibOIDError
             raise OdmlibOIDError(
                 f"OID {oid} is not unique - element {element}",
                 attribute="OID",
                 hint=(
                     f"Each OID must be unique within a MetaDataVersion. "
-                    f"OID '{oid}' is already defined in a {self.oid[oid]} element."
+                    f"OID '{oid}' is already defined in a {self.unique_oids[oid]} element."
                 ),
             )
+        self.unique_oids[oid] = element
+        if element in self.skip_elem:
+            return
         self.oid[oid] = element
 
     def add_oid_ref(self, oid: str, attr: str) -> None:

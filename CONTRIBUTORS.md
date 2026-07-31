@@ -9,16 +9,17 @@ open-source communities.
 ## Contributors
 Thanks to the following people for their contributions:
 
-| User Name                                               | Contributions            |
-|---------------------------------------------------------|--------------------------|
-| [@swhume](https://github.com/swhume)                    | Project Lead             |
-| [@lexjansen](https://github.com/lexjansen)              | 🏗️ Model, 💻 Code |
-| [@michaelkilhullen](https://github.com/michaelkilhullen) | 🏗️ Model, 💻 Code       |
-| [@SFJohnson24](https://github.com/SFJohnson24)          | 🐛 Bug reports, 💡 Ideas |
-| [@gerrycampion](https://github.com/gerrycampion)        | 🐛 Bug reports, 💡 Ideas |
-| [@nhaydel](https://github.com/nhaydel)                  | 💻 Code                  |
-| [@pendingintent](https://github.com/pendingintent) | 📖 Documentation         |
-| [@DiTo97](https://github.com/DiTo97)                    | 💡 Ideas and feedback    |
+| User Name                                                | Contributions            |
+|----------------------------------------------------------|--------------------------|
+| [@swhume](https://github.com/swhume)                     | Project Lead             |
+| [@lexjansen](https://github.com/lexjansen)               | 🏗️ Model, 💻 Code        |
+| [@michaelkilhullen](https://github.com/michaelkilhullen) | 🏗️ Model, 💻 Code        |
+| [@SFJohnson24](https://github.com/SFJohnson24)           | 🐛 Bug reports, 💡 Ideas |
+| [@gerrycampion](https://github.com/gerrycampion)         | 🐛 Bug reports, 💡 Ideas |
+| [@nhaydel](https://github.com/nhaydel)                   | 💻 Code                  |
+| [@pendingintent](https://github.com/pendingintent)       | 📖 Documentation         |
+| [@DiTo97](https://github.com/DiTo97)                     | 💡 Ideas and feedback    |
+| [@glow-mdsol](https://github.com/glow-mdsol)             | 💻 Code                  |
 
 ## Types of Contributions
 We recognize all forms of contribution, including:

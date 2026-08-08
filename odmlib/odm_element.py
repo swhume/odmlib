@@ -24,11 +24,85 @@ from odmlib.exceptions import (
     OdmlibError,
     OdmlibTypeError,
     OdmlibRequiredAttributeError,
+    OdmlibConformanceError,
     OdmlibElementOrderError,
+    OdmlibErrorLimitError,
     OdmlibWarning,
     ErrorCollector,
+    is_collecting_checker,
+    _ErrorLimitReached,
 )
 import odmlib.mode as _mode
+
+
+# ---------------------------------------------------------------------------
+# Validation helpers (module-level; shared by the fail-fast and collect paths)
+# ---------------------------------------------------------------------------
+
+def _raise_error(error, element=None):
+    """Reporter for fail-fast traversals: re-raise immediately.
+
+    The *element* argument is accepted and ignored so fail-fast and collecting
+    reporters share one signature.
+    """
+    raise error
+
+
+def _element_label(element):
+    """Short identifier for an element, safe on partially-built objects.
+
+    Reads ``__dict__`` directly — going through the descriptors would raise
+    :class:`~odmlib.exceptions.OdmlibRequiredAttributeError` on an element
+    loaded in permissive mode.
+    """
+    oid = element.__dict__.get("OID") or element.__dict__.get("ID")
+    name = type(element).__name__
+    return f"{name}(OID={oid})" if oid else name
+
+
+def _collecting_reporter(collector):
+    """Build a reporter that records errors instead of raising.
+
+    Stamps ``element_path`` *after* construction so ``str(error)`` (built by
+    ``_format()`` during ``__init__``) is byte-identical to fail-fast mode,
+    while still letting callers tell apart N errors carrying the same message.
+    """
+    def report(error, element=None):
+        if element is not None:
+            error.element_path = _element_label(element)
+        collector.add_error(error)
+    return report
+
+
+def _run_validation_layer(collector, layer):
+    """Run one validation layer, absorbing the ``max_errors`` sentinel.
+
+    A layer that reports through the collector may hit the cap mid-walk; the
+    sentinel unwinds it. A layer that still *raises* an ``OdmlibError`` — a
+    checker without the collecting protocol, or an error we cannot expand —
+    contributes that single error.
+    """
+    try:
+        layer()
+    except _ErrorLimitReached:
+        return
+    except OdmlibError as e:
+        try:
+            collector.add_error(e)
+        except _ErrorLimitReached:
+            return
+
+
+def _warn_if_checker_dirty(oid_checker):
+    """Warn when an OID checker still holds state from a previous run."""
+    if getattr(oid_checker, "oid", None) or getattr(oid_checker, "unique_oids", None):
+        warnings.warn(
+            "oid_checker already holds OID definitions from a previous run; every "
+            "OID will be reported as a duplicate. Call reset() on the checker, or "
+            "create a new one with create_oid_checker().",
+            OdmlibWarning,
+            stacklevel=3,
+        )
 
 
 class ODMMeta(type):
@@ -590,23 +664,42 @@ class ODMElement(metaclass=ODMMeta):
         Raises:
             OdmlibElementOrderError: If any element has children out of
                 order. Use :meth:`reorder_object` to fix automatically.
+
+        See also:
+            :meth:`validate` with ``collect_errors=True`` reports *every*
+            misordered element in one pass instead of just the first.
+        """
+        self._verify_order(_raise_error)
+        return True
+
+    def _verify_order(self, report) -> None:
+        """Walk the tree, reporting every element whose children are misordered.
+
+        Args:
+            report: Callable ``(error, element)``. :func:`_raise_error` gives
+                fail-fast semantics; :func:`_collecting_reporter` accumulates.
+
+        Recursion continues into the children of a misordered element:
+        ordering is a per-element property and :meth:`reorder_object` is not
+        recursive, so a caller in collect mode needs the complete list to fix
+        a document in one round. Fail-fast never reaches that code, so its
+        behaviour is unchanged.
         """
         obj_list = [key for key in list(self.__dict__.keys()) if key != "_content" and key not in self._attrs]
         elem_list = [elem for elem in self._elems if elem in obj_list]
         if obj_list != elem_list:
-            raise OdmlibElementOrderError(
+            report(OdmlibElementOrderError(
                 f"The order of elements in {self.__class__.__name__} should be "
                 f"{', '.join(key for key in self._elems.keys())}",
                 element_type=self.__class__.__name__,
                 hint="Use reorder_object() to fix element ordering automatically",
-            )
+            ), self)
         for attr, obj in self.__dict__.items():
             if isinstance(obj, ODMElement):
-                obj.verify_order()
+                obj._verify_order(report)
             elif isinstance(obj, list):
                 for o in obj:
-                    o.verify_order()
-        return True
+                    o._verify_order(report)
 
     def reorder_object(self) -> None:
         """Reorder this element's children to match model declaration order.
@@ -633,21 +726,69 @@ class ODMElement(metaclass=ODMMeta):
         for name, elem in ordered_obj.items():
             self.__dict__[name] = elem
 
-    def validate(self, collect_errors=False, oid_checker=None, conformance_checker=None):
+    def validate(self, collect_errors=False, oid_checker=None,
+                 conformance_checker=None, max_errors=None):
         """Validate this element and all children.
 
+        Runs up to three layers: element order, OID uniqueness and ref/def
+        integrity, and Cerberus conformance. In collect mode each layer
+        enumerates *every* problem it can find rather than stopping at its
+        first.
+
         Args:
-            collect_errors: If True, accumulate all errors and return them as a
-                list instead of raising on the first failure. Defaults to False
-                (fail-fast, existing behaviour).
-            oid_checker: Optional OIDRef instance for OID validation.
-            conformance_checker: Optional MetadataSchema instance for
-                conformance validation.
+            collect_errors: If True, accumulate every error each layer can
+                find and return them as a list instead of raising on the first
+                failure. Defaults to False (fail-fast, existing behaviour).
+            oid_checker: Optional OID checker — a
+                :class:`~odmlib.oid_generator.DynamicOIDRef` from
+                :func:`~odmlib.oid_generator.create_oid_checker`, or a
+                deprecated ``rules.oid_ref.OIDRef``. Checkers that do not
+                implement the collecting protocol (see
+                :func:`~odmlib.exceptions.is_collecting_checker`) still work,
+                but contribute at most one error to the list.
+            conformance_checker: Optional ``MetadataSchema`` instance. In
+                collect mode the bundled Cerberus result is expanded into one
+                error per failing field; in fail-fast mode the single bundled
+                :class:`~odmlib.exceptions.OdmlibConformanceError` is raised
+                unchanged.
+            max_errors: Optional cap on collected errors. Collection stops the
+                moment the cap is reached and a final
+                :class:`~odmlib.exceptions.OdmlibErrorLimitError` is appended,
+                so the list holds at most ``max_errors + 1`` entries. ``None``
+                (the default) collects everything. Ignored when
+                ``collect_errors`` is False. ``max_errors=0`` checks nothing
+                and returns just the limit marker.
 
         Returns:
             If ``collect_errors=False``: ``True`` (or raises on first error).
-            If ``collect_errors=True``: list of :class:`~odmlib.exceptions.OdmlibError`
-            instances (empty list means valid).
+            If ``collect_errors=True``: list of
+            :class:`~odmlib.exceptions.OdmlibError` instances (an empty list
+            means valid).
+
+        Note:
+            OID checkers are stateful. Use one checker instance per document,
+            or call ``reset()`` on a ``DynamicOIDRef`` between runs —
+            otherwise the second pass reports every OID as a duplicate.
+
+            Only :class:`~odmlib.exceptions.OdmlibError` subclasses are
+            collected. Any other exception (a bug in a custom checker, an
+            ``AttributeError`` from a malformed permissively-loaded tree)
+            propagates in both modes. Note that
+            :class:`~odmlib.exceptions.OdmlibTypeError` *is* an
+            ``OdmlibError`` and is therefore collected.
+
+        Example::
+
+            errors = odm.validate(collect_errors=True, oid_checker=checker,
+                                  max_errors=100)
+            for err in errors:
+                print(err)
+
+        .. versionchanged:: 0.2.1
+            Each layer now reports every problem it finds. Previously
+            ``collect_errors=True`` returned at most one error per layer
+            (three in total), so ``len(errors)`` may be larger than before.
+            Added ``max_errors``.
         """
         if not collect_errors:
             # Fail-fast — preserves existing behaviour exactly
@@ -658,24 +799,47 @@ class ODMElement(metaclass=ODMMeta):
                 self.verify_conformance(conformance_checker)
             return True
 
-        collector = ErrorCollector()
+        collector = ErrorCollector(max_errors=max_errors)
 
-        try:
-            self.verify_order()
-        except OdmlibError as e:
-            collector.add_error(e)
+        def _order_layer():
+            self._verify_order(_collecting_reporter(collector))
 
-        if oid_checker:
-            try:
+        def _oid_layer():
+            if is_collecting_checker(oid_checker):
+                with oid_checker.collecting(collector):
+                    self._init_oid_check(oid_checker)
+                    oid_checker.check_oid_refs()
+            else:
+                # Deprecated or duck-typed checker without the collecting
+                # protocol: fail-fast, one error for the whole layer.
                 self.verify_oids(oid_checker)
-            except OdmlibError as e:
-                collector.add_error(e)
 
-        if conformance_checker:
+        def _conformance_layer():
             try:
                 self.verify_conformance(conformance_checker)
-            except OdmlibError as e:
-                collector.add_error(e)
+            except OdmlibConformanceError as e:
+                for expanded in e.expand():
+                    collector.add_error(expanded)
 
+        layers = [_order_layer]
+        if oid_checker:
+            _warn_if_checker_dirty(oid_checker)
+            layers.append(_oid_layer)
+        if conformance_checker:
+            layers.append(_conformance_layer)
+
+        for layer in layers:
+            if collector.is_full:
+                collector.truncated = True      # stopped early for any reason
+                break
+            _run_validation_layer(collector, layer)
+
+        if collector.truncated:
+            collector.errors.append(OdmlibErrorLimitError(
+                f"Validation stopped after {max_errors} errors "
+                f"(max_errors={max_errors}); additional problems may exist.",
+                hint="Fix the reported errors and re-run validate(), or raise "
+                     "max_errors (max_errors=None collects every error).",
+            ))
         return collector.errors
 

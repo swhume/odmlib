@@ -27,6 +27,7 @@ import importlib
 import warnings
 from typing import Any, Optional
 
+from odmlib.exceptions import ErrorReporting, OdmlibOIDError
 from odmlib.odm_element import ODMElement
 import odmlib.typed as T
 
@@ -252,7 +253,7 @@ def build_def_ref_mapping(
 # Main dynamic checker
 # ---------------------------------------------------------------------------
 
-class DynamicOIDRef:
+class DynamicOIDRef(ErrorReporting):
     """Dynamically-generated OID ref/def checker.
 
     Drop-in replacement for the manually-coded ``OIDRef`` classes in the
@@ -262,6 +263,19 @@ class DynamicOIDRef:
     Implements the same interface as the manual ``OIDRef`` classes so it can
     be passed directly to
     :meth:`~odmlib.odm_element.ODMElement.verify_oids`.
+
+    Via the :class:`~odmlib.exceptions.ErrorReporting` mixin it also supports
+    the collecting-checker protocol, so
+    :meth:`~odmlib.odm_element.ODMElement.validate` with
+    ``collect_errors=True`` reports *every* duplicate and every bad reference
+    rather than only the first. The deprecated manual ``OIDRef`` classes do
+    not, and contribute at most one error.
+
+    Note:
+        A checker accumulates every OID it sees, so it is single-use per
+        document. Call :meth:`reset` before validating a second document (or
+        re-validating the same one), otherwise every OID is reported as a
+        duplicate.
 
     Args:
         model_package: Model package name, e.g. ``"odm_1_3_2"`` or
@@ -333,17 +347,28 @@ class DynamicOIDRef:
 
         Raises:
             OdmlibOIDError: If *oid* is already registered (duplicate OID).
+                Inside a :meth:`~odmlib.exceptions.ErrorReporting.collecting`
+                block the error goes to the sink instead and the traversal
+                continues, so the reference checks that follow still run.
+
+        Note:
+            On a duplicate, the **first** definition is kept — that is what
+            the error message asserts, and it keeps :attr:`oid` stable so the
+            reference pass gives a deterministic verdict. A corner case worth
+            knowing: if the first definition is a ``skip_elem`` type it lands
+            only in :attr:`unique_oids`, so the reference pass then reports
+            "not found" for everything pointing at it.
         """
         if oid in self.unique_oids:
-            from odmlib.exceptions import OdmlibOIDError
-            raise OdmlibOIDError(
+            self.report(OdmlibOIDError(
                 f"OID {oid} is not unique - element {element}",
                 attribute="OID",
                 hint=(
                     f"Each OID must be unique within a MetaDataVersion. "
                     f"OID '{oid}' is already defined in a {self.unique_oids[oid]} element."
                 ),
-            )
+            ))
+            return                                   # first definition wins
         self.unique_oids[oid] = element
         if element in self.skip_elem:
             return
@@ -386,27 +411,31 @@ class DynamicOIDRef:
 
         Raises:
             OdmlibOIDError: On the first invalid or mismatched reference.
+                Inside a :meth:`~odmlib.exceptions.ErrorReporting.collecting`
+                block every bad reference is reported to the sink instead.
         """
-        from odmlib.exceptions import OdmlibOIDError
-
         self.is_verified = True
         for attr, oid_set in self.oid_ref.items():
             if attr in self.skip_attr:
                 continue
-            for oid in oid_set:
+            # oid_set is a set, so iteration order varies with PYTHONHASHSEED.
+            # Sort for stable, reproducible error ordering. key=str guards
+            # against a non-string OID from a permissive load.
+            for oid in sorted(oid_set, key=str):
                 if oid not in self.oid:
-                    raise OdmlibOIDError(
+                    self.report(OdmlibOIDError(
                         f"OID {oid} referenced in attribute {attr} is not found.",
                         attribute=attr,
                         hint=(
                             f"Define an element with OID '{oid}' before "
                             f"referencing it via {attr}."
                         ),
-                    )
+                    ))
+                    continue        # one error per bad ref, not two
                 expected_type = self.ref_def.get(attr)
                 actual_type = self.oid.get(oid)
                 if expected_type and actual_type and expected_type != actual_type:
-                    raise OdmlibOIDError(
+                    self.report(OdmlibOIDError(
                         f"OID reference for attribute {attr} element types do "
                         f"not match: {expected_type} and {actual_type}",
                         attribute=attr,
@@ -415,8 +444,23 @@ class DynamicOIDRef:
                             f"{expected_type}, but OID '{oid}' is defined on "
                             f"a {actual_type}."
                         ),
-                    )
+                    ))
         return True
+
+    def reset(self) -> None:
+        """Clear all state collected by a previous verification pass.
+
+        A checker accumulates every OID it sees, so reusing one instance for a
+        second document — or a second ``validate()`` call on the same document
+        — reports every OID as a duplicate. Call ``reset()`` between runs, or
+        build a fresh checker with
+        :func:`~odmlib.oid_generator.create_oid_checker`.
+        """
+        self.oid.clear()
+        self.unique_oids.clear()
+        for oid_set in self.oid_ref.values():
+            oid_set.clear()
+        self.is_verified = False
 
     def check_unreferenced_oids(self) -> dict[str, str]:
         """Find OID definitions that are not referenced anywhere.

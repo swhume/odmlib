@@ -105,8 +105,8 @@ The recommended workflow for handling non-conformant files:
         if item.DataType not in ["text", "integer", "float"]:
             item.DataType = "text"
 
-    # Step 4: Validate
-    errors = odm.validate(collect_errors=True)
+    # Step 4: Validate (max_errors caps a badly broken document)
+    errors = odm.validate(collect_errors=True, max_errors=100)
     if not errors:
         odm.write_xml("fixed_define.xml")
     else:
@@ -157,7 +157,9 @@ Safety Notes
   conform to the ODM specification.
 
 - Always call ``validate(collect_errors=True)`` before serializing for
-  production use.
+  production use.  Every layer reports all the problems it finds, so a
+  badly broken document can yield a long list — pass ``max_errors`` to
+  cap it and work through the issues in batches.
 
 - The permissive mode affects only the current context (thread or
   coroutine); other threads and coroutines remain in strict mode.

@@ -5,7 +5,55 @@ All notable changes to odmlib will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [0.2.1] - 2026-08-08
+
+### Fixed — `collect_errors=True` now collects every error
+
+- **`validate(collect_errors=True)` returned at most three errors.** It wrapped
+  each of its three validation layers in a single `try/except`, and every layer
+  was itself fail-fast, so the returned list held at most one error per layer
+  no matter how broken the document was. A document with 50 misordered elements
+  reported 1. Each layer now enumerates every problem it finds
+  (`odm_element.py`, `oid_generator.py`, `exceptions.py`):
+  - **Order**: one error per misordered element; the walk now recurses into the
+    children of a misordered element instead of aborting.
+  - **OID**: one error per duplicate OID and per bad reference. A duplicate no
+    longer aborts the traversal, so the reference checks — which previously
+    never ran at all once a duplicate was found — now execute. On a duplicate
+    the *first* definition is kept.
+  - **Conformance**: the bundled Cerberus result is expanded into one
+    `OdmlibConformanceError` per failing field, each with a dotted `field_path`
+    and the complete raw dict still on `cerberus_errors`.
+
+  **Behaviour change:** `len(errors)` may now be larger than before for the
+  same document, and errors are no longer at predictable list positions —
+  filter by exception type rather than by index. Fail-fast mode
+  (`collect_errors=False`, the default) is unchanged.
+
+### Added
+- **`validate(max_errors=N)`**: caps collection on a badly broken document.
+  Validation stops the moment the cap is reached — enforced inside each layer,
+  not by truncating afterwards — and a final `OdmlibErrorLimitError` is
+  appended, so the list holds at most `N + 1` entries. Defaults to `None`
+  (uncapped).
+- **Collecting-checker protocol** (`odmlib.exceptions`): the `ErrorReporting`
+  mixin (`report()` / `collecting()`) and the `is_collecting_checker()`
+  capability check. `DynamicOIDRef` implements it; the deprecated manual
+  `OIDRef` classes and duck-typed custom checkers do not and degrade gracefully
+  to one error for the OID layer. `verify_oids()` also collects when a sink is
+  installed via `with checker.collecting(collector):`.
+- **`DynamicOIDRef.reset()`**: clears accumulated OID state so one checker can
+  validate a second document. `validate()` now warns in collect mode when
+  handed a checker that still holds state from a previous run.
+- **`flatten_cerberus_errors()`** and `OdmlibConformanceError.expand()` /
+  `.field_path` for per-field conformance reporting.
+- `ErrorCollector` accepts `max_errors` and exposes `is_full` / `truncated`.
+  Uncapped collectors never raise, so existing usage is unaffected.
+
+### Changed
+- `DynamicOIDRef.check_oid_refs` iterates its reference sets in sorted order.
+  Previously *which* bad reference was reported first varied with
+  `PYTHONHASHSEED`; error ordering is now deterministic in both modes.
 
 ### Fixed — validation correctness (code-review remediation)
 - **Cerberus schema isolation**: each `MetadataSchema` now uses a private
@@ -548,6 +596,7 @@ checker = create_oid_checker("odm_1_3_2")
 - Last release using legacy `setup.py` packaging
 - See git history for details
 
-[Unreleased]: https://github.com/swhume/odmlib/compare/v0.2.0...HEAD
+[Unreleased]: https://github.com/swhume/odmlib/compare/v0.2.1...HEAD
+[0.2.1]: https://github.com/swhume/odmlib/compare/v0.2.0...v0.2.1
 [0.2.0]: https://github.com/swhume/odmlib/compare/v0.1.4...v0.2.0
 [0.1.4]: https://github.com/swhume/odmlib/releases/tag/v0.1.4

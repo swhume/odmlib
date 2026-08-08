@@ -261,8 +261,8 @@ with permissive():
     loader.open_odm_document("broken_define.xml")
     odm = loader.root()
 
-# Fix issues, then validate
-errors = odm.validate(collect_errors=True)
+# Fix issues, then validate (max_errors caps a badly broken document)
+errors = odm.validate(collect_errors=True, max_errors=100)
 ```
 
 ## Serialization
@@ -322,7 +322,9 @@ validator = ODMSchemaValidator(standard="define", version="2.1")
 
 ### Combined validation with error collection
 
-Collect all errors in a single pass instead of stopping at the first failure:
+Collect every error in a single pass instead of stopping at the first failure.
+Each layer — element order, OID integrity, and conformance — reports *all* the
+problems it finds, so one run gives you the complete picture:
 
 ```python
 from odmlib.oid_generator import create_oid_checker
@@ -332,6 +334,17 @@ errors = odm.validate(collect_errors=True, oid_checker=checker)
 for err in errors:
     print(err)
 ```
+
+Use `max_errors` to cap the list on a badly broken document — the final entry is
+then an `OdmlibErrorLimitError` marking that more problems may exist:
+
+```python
+errors = odm.validate(collect_errors=True, oid_checker=checker, max_errors=100)
+```
+
+An OID checker accumulates every OID it sees, so use one per document or call
+`checker.reset()` between runs. The deprecated `rules/oid_ref.py` `OIDRef`
+classes do not support error collection and contribute at most one error.
 
 ### Element ordering
 

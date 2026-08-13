@@ -10,7 +10,7 @@ dist/
 .idea/
 
 # Claude Code (local)
-.claude/
+.claude/*.json
 
 # Test / coverage artifacts
 .hypothesis/

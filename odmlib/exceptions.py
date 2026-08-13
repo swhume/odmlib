@@ -14,6 +14,7 @@ Deprecation schedule:
             Update ``except ValueError`` → ``except OdmlibValidationError``
             and ``except TypeError`` → ``except OdmlibTypeError``.
 """
+import contextlib
 import warnings
 
 
@@ -23,6 +24,16 @@ import warnings
 
 class OdmlibError(Exception):
     """Base exception for all odmlib errors."""
+
+
+class _ErrorLimitReached(Exception):
+    """Internal sentinel: a collector hit its ``max_errors`` cap.
+
+    Deliberately **not** an :class:`OdmlibError`, so ``except OdmlibError``
+    clauses inside the validation layers (and in user code) cannot swallow it
+    and it can never end up in the list returned by
+    :meth:`~odmlib.odm_element.ODMElement.validate`.
+    """
 
 
 # ---------------------------------------------------------------------------
@@ -67,20 +78,100 @@ class OdmlibOIDError(OdmlibValidationError):
     """Raised for OID uniqueness or ref/def integrity failures."""
 
 
+def flatten_cerberus_errors(errors, prefix=""):
+    """Flatten a nested Cerberus error dict into ``(dotted_path, message)`` pairs.
+
+    Cerberus reports ``{field: [msg | {subkey: [...]}, ...]}`` where *subkey*
+    is a nested field name or, for sequences, the integer index of the
+    offending list item::
+
+        {'ItemGroupDef': [{0: [{'Name': ['required field']}]}]}
+        -> [('ItemGroupDef.0.Name', 'required field')]
+
+    Args:
+        errors: A Cerberus error dict (typically
+            ``OdmlibConformanceError.cerberus_errors``). Anything that is not
+            a dict yields an empty list.
+        prefix: Dotted path accumulated so far; used by the recursion.
+
+    Returns:
+        list: ``(path, message)`` tuples in Cerberus' own document order,
+        which is deterministic — no sets are involved.
+    """
+    flattened = []
+    if not isinstance(errors, dict):
+        return flattened
+    for field, issues in errors.items():
+        path = f"{prefix}.{field}" if prefix else str(field)
+        if not isinstance(issues, (list, tuple)):
+            issues = [issues]
+        for issue in issues:
+            if isinstance(issue, dict):
+                flattened.extend(flatten_cerberus_errors(issue, path))
+            else:
+                flattened.append((path, str(issue)))
+    return flattened
+
+
 class OdmlibConformanceError(OdmlibValidationError):
     """Raised when Cerberus conformance validation fails.
 
+    A single instance normally bundles *every* violation Cerberus found, so
+    :meth:`~odmlib.odm_element.ODMElement.validate` calls :meth:`expand` in
+    collect mode to turn it into one error per failing field.
+
     Attributes:
         cerberus_errors: The raw Cerberus error dict for programmatic access.
+            On errors produced by :meth:`expand` this remains the **complete**
+            dict for the document, shared by reference with its siblings.
+        field_path: Dotted path to the single failing field
+            (e.g. ``"ItemGroupDef.0.Name"``). Set only on errors produced by
+            :meth:`expand`; ``None`` on the bundled error.
     """
 
-    def __init__(self, message, *, cerberus_errors=None, **kwargs):
+    def __init__(self, message, *, cerberus_errors=None, field_path=None, **kwargs):
         self.cerberus_errors = cerberus_errors or {}
+        self.field_path = field_path
         super().__init__(message, **kwargs)
+
+    def expand(self):
+        """Split this bundled error into one error per failing leaf field.
+
+        Returns:
+            list: One :class:`OdmlibConformanceError` per Cerberus leaf
+            message, each carrying ``field_path``, ``attribute`` (the leaf
+            name) and ``element_path`` (the containing path). Returns
+            ``[self]`` when there is no Cerberus payload to split — e.g. the
+            "No conformance schema registered" error — so nothing is lost.
+        """
+        leaves = flatten_cerberus_errors(self.cerberus_errors)
+        if not leaves:
+            return [self]
+        expanded = []
+        for path, message in leaves:
+            container, _, leaf = path.rpartition(".")
+            expanded.append(OdmlibConformanceError(
+                f"{path}: {message}",
+                cerberus_errors=self.cerberus_errors,
+                field_path=path,
+                attribute=leaf,
+                element_path=container or None,
+                element_type=self.element_type,
+                hint=self.hint,
+            ))
+        return expanded
 
 
 class OdmlibElementOrderError(OdmlibValidationError):
     """Raised when child elements are not in the order required by the ODM spec."""
+
+
+class OdmlibErrorLimitError(OdmlibValidationError):
+    """Appended as the final entry when ``validate(max_errors=N)`` stops early.
+
+    Its presence means validation was truncated and additional problems may
+    exist. It is never raised — only collected.
+    """
 
 
 class OdmlibSchemaValidationError(OdmlibValidationError):
@@ -214,34 +305,60 @@ class OdmlibInteroperabilityWarning(OdmlibWarning):
 class ErrorCollector:
     """Accumulates validation errors instead of raising immediately.
 
-    Pass to :meth:`~odmlib.odm_element.ODMElement.validate` with
-    ``collect_errors=True`` to gather all errors in a single pass rather
-    than stopping at the first failure.
+    Also serves as the *sink* for the collecting-checker protocol: a checker
+    that mixes in :class:`ErrorReporting` hands its errors here instead of
+    raising, so one pass surfaces every problem it can find.
 
     Example::
 
-        collector = ErrorCollector()
         errors = odm.validate(collect_errors=True, oid_checker=checker)
-        if errors:
-            for err in errors:
-                print(err)
+        for err in errors:
+            print(err)
+
+    Args:
+        max_errors: Optional cap. Once this many errors are collected, the
+            next :meth:`add_error` sets :attr:`truncated` and raises the
+            internal ``_ErrorLimitReached`` sentinel to unwind the in-progress
+            validation walk. ``None`` (the default) collects everything and
+            never raises, so hand-built ``ErrorCollector()`` instances behave
+            exactly as before.
 
     Attributes:
         errors: List of :class:`OdmlibError` instances collected so far.
         warnings: List of :class:`OdmlibWarning` instances collected so far.
+        max_errors: The cap, or ``None`` for uncapped.
+        truncated: True once the cap stopped collection short.
     """
 
-    def __init__(self):
+    def __init__(self, max_errors=None):
         self.errors = []
         self.warnings = []
+        self.max_errors = max_errors
+        self.truncated = False
 
     @property
     def has_errors(self):
         """True if any errors have been collected."""
         return len(self.errors) > 0
 
+    @property
+    def is_full(self):
+        """True when ``max_errors`` is set and that many errors are collected."""
+        return self.max_errors is not None and len(self.errors) >= self.max_errors
+
     def add_error(self, error):
-        """Add an :class:`OdmlibError` to the collection."""
+        """Add an :class:`OdmlibError` to the collection.
+
+        Raises:
+            _ErrorLimitReached: If the collector is already at ``max_errors``.
+                Never raised when ``max_errors`` is ``None``.
+        """
+        # Check before appending so `truncated` only flips when a *further*
+        # error was genuinely available — a run that finds exactly max_errors
+        # problems gets no misleading "more may exist" marker.
+        if self.is_full:
+            self.truncated = True
+            raise _ErrorLimitReached()
         self.errors.append(error)
 
     def add_warning(self, warning):
@@ -261,3 +378,90 @@ class ErrorCollector:
         msg = f"{len(self.errors)} validation errors found:\n"
         msg += "\n".join(f"  {i + 1}. {err}" for i, err in enumerate(self.errors))
         raise OdmlibValidationError(msg)
+
+
+# ---------------------------------------------------------------------------
+# Collecting-checker protocol
+# ---------------------------------------------------------------------------
+
+class ErrorReporting:
+    """Mixin giving a validation checker an optional error sink.
+
+    A checker that mixes this in replaces ``raise SomeOdmlibError(...)`` with
+    ``self.report(SomeOdmlibError(...))``. With no sink installed (the
+    default) :meth:`report` re-raises, so fail-fast behaviour is identical to
+    raising directly. Inside a :meth:`collecting` block the error is handed to
+    the sink and the checker keeps going, so a single pass surfaces every
+    problem rather than only the first.
+
+    Third-party checkers may opt in by inheriting this mixin, or by
+    duck-typing ``supports_error_collection = True`` plus :meth:`report` and
+    :meth:`collecting`. Checkers that do neither still work — they simply
+    contribute at most one error, exactly as before (see
+    :func:`is_collecting_checker`).
+
+    Note:
+        Not thread-safe: the sink lives on the instance. Checkers are already
+        stateful (they accumulate OIDs), so use one checker per document per
+        thread.
+    """
+
+    supports_error_collection = True
+    _error_sink = None                       # class-level default => fail-fast
+
+    def report(self, error):
+        """Raise *error* (fail-fast) or hand it to the installed sink.
+
+        Args:
+            error: The :class:`OdmlibError` describing the problem.
+
+        Raises:
+            OdmlibError: The error itself, when no sink is installed.
+            _ErrorLimitReached: When the sink is full (see
+                :class:`ErrorCollector`).
+        """
+        sink = self._error_sink
+        if sink is None:
+            raise error
+        sink.add_error(error)
+
+    @contextlib.contextmanager
+    def collecting(self, sink):
+        """Install *sink* for the duration of the block, then restore.
+
+        Args:
+            sink: Any object with an ``add_error(error)`` method — normally an
+                :class:`ErrorCollector`.
+
+        Example::
+
+            collector = ErrorCollector()
+            with checker.collecting(collector):
+                odm.verify_oids(checker)
+            for err in collector.errors:
+                print(err)
+        """
+        previous = self.__dict__.get("_error_sink")
+        self.__dict__["_error_sink"] = sink
+        try:
+            yield self
+        finally:
+            if previous is None:
+                self.__dict__.pop("_error_sink", None)
+            else:
+                self.__dict__["_error_sink"] = previous
+
+
+def is_collecting_checker(checker):
+    """Return True if *checker* implements the collecting-checker protocol.
+
+    Used by :meth:`~odmlib.odm_element.ODMElement.validate` to decide whether
+    a checker can enumerate every problem or should fall back to fail-fast
+    (one error for the whole layer). Duck-typed checkers qualify without
+    inheriting :class:`ErrorReporting`.
+    """
+    return (
+        bool(getattr(checker, "supports_error_collection", False))
+        and callable(getattr(checker, "report", None))
+        and callable(getattr(checker, "collecting", None))
+    )

@@ -1,3 +1,4 @@
+import os
 import xml.etree.ElementTree as ET
 import xmlschema as XSD
 import odmlib.ns_registry as NS
@@ -5,10 +6,80 @@ from abc import ABC, abstractmethod
 from typing import Optional
 import json
 from . import schema_manager as SM
+from odmlib.exceptions import OdmlibParsingError
 from odmlib.exceptions import OdmlibSchemaValidationError  # noqa: F401  re-exported
 
 ODM_NS = {'odm': 'http://www.cdisc.org/ns/odm/v1.3'}
 ODM_PREFIX = "odm:"
+
+# compiled XSDs are expensive (the ODM/Define schemas import many
+# sub-schemas); cache them by path so validating many files does not
+# recompile the schema per ODMSchemaValidator instance
+_SCHEMA_CACHE: dict = {}
+
+
+def _compiled_schema(xsd_file):
+    if xsd_file not in _SCHEMA_CACHE:
+        _SCHEMA_CACHE[xsd_file] = XSD.XMLSchema(xsd_file)
+    return _SCHEMA_CACHE[xsd_file]
+
+
+class _DoctypeFound(Exception):
+    pass
+
+
+class _PrologScanned(Exception):
+    pass
+
+
+def _reject_doctype(chunks):
+    """Scan the XML prolog and raise if a DOCTYPE declaration is present.
+
+    ODM documents never need a DTD, and internal entity definitions enable
+    entity-expansion denial-of-service attacks (billion laughs / quadratic
+    blowup) that the stdlib parser does not defend against. A DOCTYPE can
+    only appear before the root element, so scanning stops as soon as the
+    root element opens; a malformed prolog is left for the real parser to
+    report.
+
+    Args:
+        chunks: Iterable of str or bytes chunks of the document.
+    """
+    from xml.parsers import expat
+
+    parser = expat.ParserCreate()
+
+    def _on_doctype(name, sysid, pubid, has_internal_subset):
+        raise _DoctypeFound
+
+    def _on_root_element(name, attrs):
+        raise _PrologScanned
+
+    parser.StartDoctypeDeclHandler = _on_doctype
+    parser.StartElementHandler = _on_root_element
+    try:
+        chunk = b""
+        for chunk in chunks:
+            parser.Parse(chunk, False)
+        parser.Parse(b"" if isinstance(chunk, bytes) else "", True)
+    except _PrologScanned:
+        return
+    except _DoctypeFound:
+        raise OdmlibParsingError(
+            "DOCTYPE declarations are not allowed in ODM documents",
+            hint="Remove the <!DOCTYPE ...> declaration; DTDs enable "
+                 "entity-expansion attacks and are never required by ODM.",
+        ) from None
+    except expat.ExpatError:
+        return
+
+
+def _reject_doctype_in_file(odm_file):
+    """Run :func:`_reject_doctype` over a file path (skips file-like objects)."""
+    if not isinstance(odm_file, (str, bytes, os.PathLike)):
+        return
+    with open(odm_file, "rb") as xml_in:
+        _reject_doctype(iter(lambda: xml_in.read(65536), b""))
 
 
 class SchemaValidator(ABC):
@@ -66,7 +137,7 @@ class ODMSchemaValidator(SchemaValidator):
                     "pass xsd_file='/path/to/your/schema.xsd' instead."
                 )
             xsd_file = SM.get_schema_path(standard, version)
-        self.xsd = XSD.XMLSchema(xsd_file)
+        self.xsd = _compiled_schema(str(xsd_file))
 
     def validate_tree(self, tree):
         result = self.xsd.is_valid(tree)
@@ -132,15 +203,18 @@ class ElementParser:
         return self.mdv
 
     def AdminData(self):
-        self.admin_data = self.root.findall(ODM_PREFIX + "AdminData", ODM_NS)
+        ns = self.nsr.default_namespace if self.nsr else ODM_NS
+        self.admin_data = self.root.findall(ODM_PREFIX + "AdminData", ns)
         return self.admin_data
 
     def ClinicalData(self):
-        self.clinical_data = self.root.findall(ODM_PREFIX + "ClinicalData", ODM_NS)
+        ns = self.nsr.default_namespace if self.nsr else ODM_NS
+        self.clinical_data = self.root.findall(ODM_PREFIX + "ClinicalData", ns)
         return self.clinical_data
 
     def ReferenceData(self):
-        self.reference_data = self.root.findall(ODM_PREFIX + "ReferenceData", ODM_NS)
+        ns = self.nsr.default_namespace if self.nsr else ODM_NS
+        self.reference_data = self.root.findall(ODM_PREFIX + "ReferenceData", ns)
         return self.reference_data
 
 
@@ -151,13 +225,27 @@ class ODMParser(BaseParser, ElementParser):
 
     def parse(self):
         self.register_namespaces()
-        odm_tree = ET.parse(self.odm_file)
+        _reject_doctype_in_file(self.odm_file)
+        try:
+            odm_tree = ET.parse(self.odm_file)
+        except ET.ParseError as ex:
+            raise OdmlibParsingError(
+                f"Unable to parse XML document {self.odm_file}: {ex}",
+                hint="Verify the file is well-formed XML.",
+            ) from ex
         self.root = odm_tree.getroot()
         return self.root
 
     def parse_tree(self):
         self.register_namespaces()
-        return ET.parse(self.odm_file)
+        _reject_doctype_in_file(self.odm_file)
+        try:
+            return ET.parse(self.odm_file)
+        except ET.ParseError as ex:
+            raise OdmlibParsingError(
+                f"Unable to parse XML document {self.odm_file}: {ex}",
+                hint="Verify the file is well-formed XML.",
+            ) from ex
 
 
 class ODMStringParser(BaseParser, ElementParser):
@@ -167,13 +255,26 @@ class ODMStringParser(BaseParser, ElementParser):
 
     def parse(self):
         self.register_namespaces()
-        self.root = ET.fromstring(self.odm_string)
+        _reject_doctype([self.odm_string])
+        try:
+            self.root = ET.fromstring(self.odm_string)
+        except ET.ParseError as ex:
+            raise OdmlibParsingError(
+                f"Unable to parse XML document from string: {ex}",
+                hint="Verify the string is well-formed XML.",
+            ) from ex
         return self.root
 
     def parse_tree(self):
         self.register_namespaces()
-        #return ET.ElementTree(ET.fromstring(self.odm_string))
-        return ET.fromstring(self.odm_string)
+        _reject_doctype([self.odm_string])
+        try:
+            return ET.fromstring(self.odm_string)
+        except ET.ParseError as ex:
+            raise OdmlibParsingError(
+                f"Unable to parse XML document from string: {ex}",
+                hint="Verify the string is well-formed XML.",
+            ) from ex
 
 
 class ODMJSONStringParser:

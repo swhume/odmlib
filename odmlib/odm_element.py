@@ -24,11 +24,85 @@ from odmlib.exceptions import (
     OdmlibError,
     OdmlibTypeError,
     OdmlibRequiredAttributeError,
+    OdmlibConformanceError,
     OdmlibElementOrderError,
+    OdmlibErrorLimitError,
     OdmlibWarning,
     ErrorCollector,
+    is_collecting_checker,
+    _ErrorLimitReached,
 )
 import odmlib.mode as _mode
+
+
+# ---------------------------------------------------------------------------
+# Validation helpers (module-level; shared by the fail-fast and collect paths)
+# ---------------------------------------------------------------------------
+
+def _raise_error(error, element=None):
+    """Reporter for fail-fast traversals: re-raise immediately.
+
+    The *element* argument is accepted and ignored so fail-fast and collecting
+    reporters share one signature.
+    """
+    raise error
+
+
+def _element_label(element):
+    """Short identifier for an element, safe on partially-built objects.
+
+    Reads ``__dict__`` directly — going through the descriptors would raise
+    :class:`~odmlib.exceptions.OdmlibRequiredAttributeError` on an element
+    loaded in permissive mode.
+    """
+    oid = element.__dict__.get("OID") or element.__dict__.get("ID")
+    name = type(element).__name__
+    return f"{name}(OID={oid})" if oid else name
+
+
+def _collecting_reporter(collector):
+    """Build a reporter that records errors instead of raising.
+
+    Stamps ``element_path`` *after* construction so ``str(error)`` (built by
+    ``_format()`` during ``__init__``) is byte-identical to fail-fast mode,
+    while still letting callers tell apart N errors carrying the same message.
+    """
+    def report(error, element=None):
+        if element is not None:
+            error.element_path = _element_label(element)
+        collector.add_error(error)
+    return report
+
+
+def _run_validation_layer(collector, layer):
+    """Run one validation layer, absorbing the ``max_errors`` sentinel.
+
+    A layer that reports through the collector may hit the cap mid-walk; the
+    sentinel unwinds it. A layer that still *raises* an ``OdmlibError`` — a
+    checker without the collecting protocol, or an error we cannot expand —
+    contributes that single error.
+    """
+    try:
+        layer()
+    except _ErrorLimitReached:
+        return
+    except OdmlibError as e:
+        try:
+            collector.add_error(e)
+        except _ErrorLimitReached:
+            return
+
+
+def _warn_if_checker_dirty(oid_checker):
+    """Warn when an OID checker still holds state from a previous run."""
+    if getattr(oid_checker, "oid", None) or getattr(oid_checker, "unique_oids", None):
+        warnings.warn(
+            "oid_checker already holds OID definitions from a previous run; every "
+            "OID will be reported as a duplicate. Call reset() on the checker, or "
+            "create a new one with create_oid_checker().",
+            OdmlibWarning,
+            stacklevel=3,
+        )
 
 
 class ODMMeta(type):
@@ -44,11 +118,14 @@ class ODMMeta(type):
     """
 
     @classmethod
-    def __prepare__(cls, name, bases):
+    def __prepare__(cls, name, bases, **kwargs):
         """ preserves the order of declarations in each class """
         return OrderedDict()
 
-    def __new__(cls, clsname, bases, clsdict):
+    def __init__(cls, clsname, bases, clsdict, merge_fields=False):
+        super().__init__(clsname, bases, dict(clsdict))
+
+    def __new__(cls, clsname, bases, clsdict, merge_fields=False):
         """Create a new ODM element class.
 
         Scans ``clsdict`` for :class:`~odmlib.typed.ODMObject`,
@@ -61,41 +138,61 @@ class ODMMeta(type):
             clsname (str): Name of the class being created.
             bases (tuple): Base classes.
             clsdict (OrderedDict): Class namespace dictionary (ordered).
+            merge_fields (bool): When True, seed ``_fields``/``_elems``/
+                ``_attrs``/``_attr_ns`` from the base classes so the
+                subclass inherits every declared field without having to
+                redeclare it (redeclaring a field moves it to the
+                subclass's declared position).  The default (False) keeps
+                the historical behaviour where a subclass declares its
+                effective field set from scratch — the mechanism the
+                Define-XML models use to *restrict* inherited ODM fields.
 
         Returns:
             type: The newly constructed class object.
         """
         # variables created in classes become the class attributes
-        # fields = [key for key, val in clsdict.items() if isinstance(val, (DESC.Descriptor, ODMMeta))]
-        clsdict["_fields"] = []
-        clsdict["_elems"] = {}
-        clsdict["_attrs"] = {}
-        clsdict["_attr_ns"] = {}
+        fields = []
+        elems = {}
+        attrs = {}
+        attr_ns = {}
+        if merge_fields:
+            # seed from the bases (reversed so the first base wins conflicts)
+            for base in reversed(bases):
+                for name in getattr(base, "_fields", []):
+                    if name in fields:
+                        fields.remove(name)
+                    fields.append(name)
+                elems.update(getattr(base, "_elems", {}))
+                attrs.update(getattr(base, "_attrs", {}))
+                attr_ns.update(getattr(base, "_attr_ns", {}))
+        clsdict["_fields"] = fields
+        clsdict["_elems"] = elems
+        clsdict["_attrs"] = attrs
+        clsdict["_attr_ns"] = attr_ns
         for key, val in clsdict.items():
             if isinstance(val, (T.ODMObject, T.ODMListObject)):
-                clsdict["_elems"][key] = val
+                if key in fields:
+                    fields.remove(key)
+                attrs.pop(key, None)
+                elems[key] = val
                 clsdict[key].name = key
-                clsdict["_fields"].append(key)
+                fields.append(key)
             elif isinstance(val, (DESC.Descriptor, ODMMeta)):
-                clsdict["_attrs"][key] = val
+                if key in fields:
+                    fields.remove(key)
+                elems.pop(key, None)
+                attrs[key] = val
                 clsdict[key].name = key
-                clsdict["_fields"].append(key)
+                fields.append(key)
                 if val.namespace != "odm":
-                    clsdict["_attr_ns"][key] = val.namespace
+                    attr_ns[key] = val.namespace
+                else:
+                    attr_ns.pop(key, None)
 
-        # for name in fields:
-        #     clsdict[name].name = name
-
-        #clsdict["_fields"] = fields
-        # the default class namespace is odm
+        # the default class namespace is odm (merged subclasses inherit theirs)
         if "namespace" not in clsdict:
-            clsdict["namespace"] = "odm"
-        # elems = {key: val for key, val in clsdict.items() if isinstance(val, (T.ODMObject, T.ODMListObject))}
-        # clsdict["_elems"] = elems
-        # add attribute non-default namespaces
-        # ns = {key: val.namespace for key, val in clsdict.items() if isinstance(val, (DESC.Descriptor, ODMMeta))
-        #       if val.namespace != "odm"}
-        # clsdict["_attr_ns"] = ns
+            if not (merge_fields and any(hasattr(base, "namespace") for base in bases)):
+                clsdict["namespace"] = "odm"
 
         clsobj = super().__new__(cls, clsname, bases, dict(clsdict))
         return clsobj
@@ -108,17 +205,23 @@ class ODMWriter:
     """
 
     @staticmethod
-    def write_odm(odm_file, odm_elem):
+    def write_odm(odm_file, odm_elem, ns_snapshot=None):
         """
         after converting ODMLIB to ElementTree, write the ElementTree to an ODM file
         :param odm_file: path and file to write the ODM XML
         :param odm_elem: Element object to write to ODM (presumably an ODM root)
+        :param ns_snapshot: optional per-document namespace snapshot (as returned
+            by NamespaceRegistry.snapshot()); when omitted, the shared registry
+            state is used
         """
         tree = ET.ElementTree(odm_elem)
         root = tree.getroot()
-        # workaround for elementtree NS bug - NamespaceRegistry assumes at least 1 default NS has been set
         nsr = NS.NamespaceRegistry()
-        nsr.set_odm_namespace_attributes(root)
+        if ns_snapshot:
+            nsr.set_odm_namespace_attributes(
+                root, namespaces=ns_snapshot["namespaces"], default=ns_snapshot["default"])
+        else:
+            nsr.set_odm_namespace_attributes(root)
         tree.write(odm_file, xml_declaration=True, encoding='UTF-8', method='xml', short_empty_elements=True)
 
 
@@ -165,7 +268,7 @@ class ODMElement(metaclass=ODMMeta):
             OdmlibRequiredAttributeError: If a required attribute is missing.
         """
         for name, val in kwargs.items():
-            if name not in self.__class__.__dict__.keys():
+            if name not in self._fields and name not in self.__class__.__dict__:
                 # strip out non-default elementtree namespaces from the XML to work with just the name e.g. xml:lang
                 if "}" in name:
                     name = name[name.find('}') + 1:]
@@ -176,12 +279,12 @@ class ODMElement(metaclass=ODMMeta):
                             attribute=name,
                             element_type=self.__class__.__name__,
                             hint=f"Valid attributes for {self.__class__.__name__}: "
-                                 f"{', '.join(k for k in self.__class__.__dict__ if not k.startswith('_'))}",
+                                 f"{', '.join(k for k in self._fields if not k.startswith('_'))}",
                         )
                     continue
             setattr(self, name, val)
         if not _mode.is_permissive(_mode.ValidationMode.SKIP_REQUIRED):
-            for attr, obj in self.__class__.__dict__.items():
+            for attr, obj in self._attrs.items():
                 if isinstance(obj, DESC.Descriptor) and (not isinstance(obj, T.ODMObject)) and (attr not in self.__dict__) and obj.required:
                     raise OdmlibRequiredAttributeError(
                         f"Missing required keyword argument {attr} in {self.__class__.__name__}",
@@ -204,17 +307,26 @@ class ODMElement(metaclass=ODMMeta):
             OdmlibTypeError: If ``key`` is not a declared attribute on this class.
         """
         """ ensure the object being added is a type that belongs to the class """
-        if not any(key in cls.__dict__ for cls in type(self).__mro__):
-            if not _mode.is_permissive(_mode.ValidationMode.SKIP_TYPE):
-                raise OdmlibTypeError(
-                    f"Assignment error: {self.__class__.__name__} does not have a defined attribute {key}",
-                    attribute=key,
-                    element_type=self.__class__.__name__,
-                )
-            else:
-                self.__dict__[key] = value
-                return
-        super().__setattr__(key, value)
+        if key in self._fields:
+            super().__setattr__(key, value)
+            return
+        # non-descriptor class attributes keep the historical MRO lookup, but
+        # a descriptor deliberately dropped by a restricted subclass (e.g. the
+        # Define-XML models omitting ODM-only children) must not be assignable
+        # — previously such assignments succeeded and then serialized
+        # inconsistently or not at all
+        if any(key in cls.__dict__ for cls in type(self).__mro__) \
+                and not isinstance(getattr(type(self), key, None), DESC.Descriptor):
+            super().__setattr__(key, value)
+            return
+        if not _mode.is_permissive(_mode.ValidationMode.SKIP_TYPE):
+            raise OdmlibTypeError(
+                f"Assignment error: {self.__class__.__name__} does not have a defined attribute {key}",
+                attribute=key,
+                element_type=self.__class__.__name__,
+            )
+        else:
+            self.__dict__[key] = value
 
     def to_json(self) -> str:
         """
@@ -265,17 +377,28 @@ class ODMElement(metaclass=ODMMeta):
             if isinstance(obj, list) and obj:
                 for o in obj:
                     o.to_xml(odm_elem, top_elem)
-            elif isinstance(obj, ODMElement):
+            elif isinstance(obj, ODMElement) and not DESC.is_pristine_auto_created(obj):
                 obj.to_xml(odm_elem, top_elem)
         return top_elem
 
     def to_xml_string(self) -> str:
         """Convert this element to an XML string.
 
+        The string includes xmlns declarations for the default namespace and
+        any prefixes used in the serialized tree, so the result is
+        namespace-well-formed and can be re-parsed on its own.
+
         Returns:
             str: UTF-8 XML representation of this element.
         """
         elem = self.to_xml()
+        nsr = NS.NamespaceRegistry()
+        snapshot = NS.get_document_namespaces(self)
+        if snapshot:
+            nsr.set_odm_namespace_attributes(
+                elem, namespaces=snapshot["namespaces"], default=snapshot["default"])
+        else:
+            nsr.set_odm_namespace_attributes(elem)
         xml_str = ET.tostring(elem, encoding='UTF-8', method='xml')
         return xml_str.decode("utf-8")
 
@@ -287,10 +410,10 @@ class ODMElement(metaclass=ODMMeta):
         """
         # Note: namespaces used in the XML serialization are not part of the dictionary or json serializations
         property_dict = {}
-        odm_content = {attr: obj for attr, obj in self.__dict__.items() if attr not in ["_fields", "_attr_ns", "_elems", "_attrs"]}
-        for attr, obj in odm_content.items():
+        for attr, obj in self.__dict__.items():
             if isinstance(obj, ODMElement):
-                property_dict[attr] = obj.to_dict()                    # element
+                if not DESC.is_pristine_auto_created(obj):
+                    property_dict[attr] = obj.to_dict()                # element
             elif isinstance(obj, list):
                 property_dict[attr] = [o.to_dict() for o in obj]       # list of ELEMENTS
             elif obj is not None:
@@ -341,9 +464,12 @@ class ODMElement(metaclass=ODMMeta):
                 if o.__dict__.get(attr) == val:
                     return o
             return None
-        else:
+        elif isinstance(obj_list, ODMElement):
             if obj_list.__dict__.get(attr) == val:
                 return obj_list
+            return None
+        else:
+            # unset single element (None) or a scalar attribute name
             return None
 
     def find_all(self, obj_name: str, attr: str, val: Any) -> List[ODMElement]:
@@ -359,9 +485,12 @@ class ODMElement(metaclass=ODMMeta):
         obj_list = getattr(self, obj_name)
         if isinstance(obj_list, list):
             return [o for o in obj_list if o.__dict__.get(attr) == val]
-        else:
+        elif isinstance(obj_list, ODMElement):
             if obj_list.__dict__.get(attr) == val:
                 return [obj_list]
+            return []
+        else:
+            # unset single element (None) or a scalar attribute name
             return []
 
     def find_by(self, obj_name: str, **kwargs: Any) -> Optional[ODMElement]:
@@ -375,7 +504,7 @@ class ODMElement(metaclass=ODMMeta):
         """
         obj_list = getattr(self, obj_name)
         if not isinstance(obj_list, list):
-            obj_list = [obj_list]
+            obj_list = [obj_list] if isinstance(obj_list, ODMElement) else []
         for o in obj_list:
             if all(o.__dict__.get(k) == v for k, v in kwargs.items()):
                 return o
@@ -389,8 +518,15 @@ class ODMElement(metaclass=ODMMeta):
         :param odm_writer: object used to write the elementree XML to a file
         """
         odm_elem = self.to_xml()
+        writer_cls = odm_writer
         odm_writer = odm_writer()
-        odm_writer.write_odm(odm_file, odm_elem)
+        if writer_cls is ODMWriter:
+            # use the namespaces this document was loaded under, if known,
+            # so later loads of other documents cannot change its xmlns
+            odm_writer.write_odm(odm_file, odm_elem,
+                                 ns_snapshot=NS.get_document_namespaces(self))
+        else:
+            odm_writer.write_odm(odm_file, odm_elem)
 
     def write_json(self, odm_file: str) -> None:
         """
@@ -398,7 +534,7 @@ class ODMElement(metaclass=ODMMeta):
 
         :param odm_file: string ODM filename and path
         """
-        with open(odm_file, 'w') as outfile:
+        with open(odm_file, 'w', encoding='utf-8') as outfile:
             json.dump(self.to_dict(), outfile)
 
     def build_oid_index(self) -> IDX.OIDIndex:
@@ -420,8 +556,7 @@ class ODMElement(metaclass=ODMMeta):
 
         :return oid_index: object that provices a dictionary lookup based on OID
         """
-        odm_content = {attr: obj for attr, obj in self.__dict__.items() if attr not in ["_fields", "_attr_ns", "_elems", "_attrs"]}
-        for attr, obj in odm_content.items():
+        for attr, obj in self.__dict__.items():
             if isinstance(obj, ODMElement):
                 obj._init_oid_index(idx)                    # element
             elif isinstance(obj, list):
@@ -463,18 +598,21 @@ class ODMElement(metaclass=ODMMeta):
 
         :param oid_checker: object used to check OIDs for uniqueness and Def/Ref check
         """
-        odm_content = {attr: obj for attr, obj in self.__dict__.items() if attr not in ["_fields", "_attr_ns", "_elems", "_attrs"]}
-        for attr, obj in odm_content.items():
+        for attr, obj in self.__dict__.items():
             if isinstance(obj, ODMElement):
                 obj._init_oid_check(oid_checker)                    # element
             elif isinstance(obj, list):
                 for o in obj:
                     o._init_oid_check(oid_checker)                  # list of ELEMENTS
             else:
-                # assumes consistency in OID naming. Exceptions: FileOID and PriorFileOID in ODM
+                # assumes consistency in OID naming. Exceptions: FileOID and PriorFileOID in ODM.
+                # Define-XML document references are ID-based rather than OID-named:
+                # leaf/@ID is the definition, referenced by leafID and def:ArchiveLocationID.
                 if attr == "OID":
                     oid_checker.add_oid(obj, self.__class__.__name__)
-                elif "OID" in attr:
+                elif attr == "ID" and self.__class__.__name__ == "leaf":
+                    oid_checker.add_oid(obj, self.__class__.__name__)
+                elif "OID" in attr or attr in ("leafID", "ArchiveLocationID"):
                     oid_checker.add_oid_ref(obj, attr)
         return
 
@@ -526,24 +664,42 @@ class ODMElement(metaclass=ODMMeta):
         Raises:
             OdmlibElementOrderError: If any element has children out of
                 order. Use :meth:`reorder_object` to fix automatically.
+
+        See also:
+            :meth:`validate` with ``collect_errors=True`` reports *every*
+            misordered element in one pass instead of just the first.
         """
-        odm_content = {attr: obj for attr, obj in self.__dict__.items() if attr not in ["_fields", "_attr_ns", "_elems", "_attrs"]}
+        self._verify_order(_raise_error)
+        return True
+
+    def _verify_order(self, report) -> None:
+        """Walk the tree, reporting every element whose children are misordered.
+
+        Args:
+            report: Callable ``(error, element)``. :func:`_raise_error` gives
+                fail-fast semantics; :func:`_collecting_reporter` accumulates.
+
+        Recursion continues into the children of a misordered element:
+        ordering is a per-element property and :meth:`reorder_object` is not
+        recursive, so a caller in collect mode needs the complete list to fix
+        a document in one round. Fail-fast never reaches that code, so its
+        behaviour is unchanged.
+        """
         obj_list = [key for key in list(self.__dict__.keys()) if key != "_content" and key not in self._attrs]
         elem_list = [elem for elem in self._elems if elem in obj_list]
         if obj_list != elem_list:
-            raise OdmlibElementOrderError(
+            report(OdmlibElementOrderError(
                 f"The order of elements in {self.__class__.__name__} should be "
                 f"{', '.join(key for key in self._elems.keys())}",
                 element_type=self.__class__.__name__,
                 hint="Use reorder_object() to fix element ordering automatically",
-            )
-        for attr, obj in odm_content.items():
+            ), self)
+        for attr, obj in self.__dict__.items():
             if isinstance(obj, ODMElement):
-                obj.verify_order()
+                obj._verify_order(report)
             elif isinstance(obj, list):
                 for o in obj:
-                    o.verify_order()
-        return True
+                    o._verify_order(report)
 
     def reorder_object(self) -> None:
         """Reorder this element's children to match model declaration order.
@@ -570,21 +726,69 @@ class ODMElement(metaclass=ODMMeta):
         for name, elem in ordered_obj.items():
             self.__dict__[name] = elem
 
-    def validate(self, collect_errors=False, oid_checker=None, conformance_checker=None):
+    def validate(self, collect_errors=False, oid_checker=None,
+                 conformance_checker=None, max_errors=None):
         """Validate this element and all children.
 
+        Runs up to three layers: element order, OID uniqueness and ref/def
+        integrity, and Cerberus conformance. In collect mode each layer
+        enumerates *every* problem it can find rather than stopping at its
+        first.
+
         Args:
-            collect_errors: If True, accumulate all errors and return them as a
-                list instead of raising on the first failure. Defaults to False
-                (fail-fast, existing behaviour).
-            oid_checker: Optional OIDRef instance for OID validation.
-            conformance_checker: Optional MetadataSchema instance for
-                conformance validation.
+            collect_errors: If True, accumulate every error each layer can
+                find and return them as a list instead of raising on the first
+                failure. Defaults to False (fail-fast, existing behaviour).
+            oid_checker: Optional OID checker — a
+                :class:`~odmlib.oid_generator.DynamicOIDRef` from
+                :func:`~odmlib.oid_generator.create_oid_checker`, or a
+                deprecated ``rules.oid_ref.OIDRef``. Checkers that do not
+                implement the collecting protocol (see
+                :func:`~odmlib.exceptions.is_collecting_checker`) still work,
+                but contribute at most one error to the list.
+            conformance_checker: Optional ``MetadataSchema`` instance. In
+                collect mode the bundled Cerberus result is expanded into one
+                error per failing field; in fail-fast mode the single bundled
+                :class:`~odmlib.exceptions.OdmlibConformanceError` is raised
+                unchanged.
+            max_errors: Optional cap on collected errors. Collection stops the
+                moment the cap is reached and a final
+                :class:`~odmlib.exceptions.OdmlibErrorLimitError` is appended,
+                so the list holds at most ``max_errors + 1`` entries. ``None``
+                (the default) collects everything. Ignored when
+                ``collect_errors`` is False. ``max_errors=0`` checks nothing
+                and returns just the limit marker.
 
         Returns:
             If ``collect_errors=False``: ``True`` (or raises on first error).
-            If ``collect_errors=True``: list of :class:`~odmlib.exceptions.OdmlibError`
-            instances (empty list means valid).
+            If ``collect_errors=True``: list of
+            :class:`~odmlib.exceptions.OdmlibError` instances (an empty list
+            means valid).
+
+        Note:
+            OID checkers are stateful. Use one checker instance per document,
+            or call ``reset()`` on a ``DynamicOIDRef`` between runs —
+            otherwise the second pass reports every OID as a duplicate.
+
+            Only :class:`~odmlib.exceptions.OdmlibError` subclasses are
+            collected. Any other exception (a bug in a custom checker, an
+            ``AttributeError`` from a malformed permissively-loaded tree)
+            propagates in both modes. Note that
+            :class:`~odmlib.exceptions.OdmlibTypeError` *is* an
+            ``OdmlibError`` and is therefore collected.
+
+        Example::
+
+            errors = odm.validate(collect_errors=True, oid_checker=checker,
+                                  max_errors=100)
+            for err in errors:
+                print(err)
+
+        .. versionchanged:: 0.2.1
+            Each layer now reports every problem it finds. Previously
+            ``collect_errors=True`` returned at most one error per layer
+            (three in total), so ``len(errors)`` may be larger than before.
+            Added ``max_errors``.
         """
         if not collect_errors:
             # Fail-fast — preserves existing behaviour exactly
@@ -595,24 +799,47 @@ class ODMElement(metaclass=ODMMeta):
                 self.verify_conformance(conformance_checker)
             return True
 
-        collector = ErrorCollector()
+        collector = ErrorCollector(max_errors=max_errors)
 
-        try:
-            self.verify_order()
-        except OdmlibError as e:
-            collector.add_error(e)
+        def _order_layer():
+            self._verify_order(_collecting_reporter(collector))
 
-        if oid_checker:
-            try:
+        def _oid_layer():
+            if is_collecting_checker(oid_checker):
+                with oid_checker.collecting(collector):
+                    self._init_oid_check(oid_checker)
+                    oid_checker.check_oid_refs()
+            else:
+                # Deprecated or duck-typed checker without the collecting
+                # protocol: fail-fast, one error for the whole layer.
                 self.verify_oids(oid_checker)
-            except OdmlibError as e:
-                collector.add_error(e)
 
-        if conformance_checker:
+        def _conformance_layer():
             try:
                 self.verify_conformance(conformance_checker)
-            except OdmlibError as e:
-                collector.add_error(e)
+            except OdmlibConformanceError as e:
+                for expanded in e.expand():
+                    collector.add_error(expanded)
 
+        layers = [_order_layer]
+        if oid_checker:
+            _warn_if_checker_dirty(oid_checker)
+            layers.append(_oid_layer)
+        if conformance_checker:
+            layers.append(_conformance_layer)
+
+        for layer in layers:
+            if collector.is_full:
+                collector.truncated = True      # stopped early for any reason
+                break
+            _run_validation_layer(collector, layer)
+
+        if collector.truncated:
+            collector.errors.append(OdmlibErrorLimitError(
+                f"Validation stopped after {max_errors} errors "
+                f"(max_errors={max_errors}); additional problems may exist.",
+                hint="Fix the reported errors and re-run validate(), or raise "
+                     "max_errors (max_errors=None collects every error).",
+            ))
         return collector.errors
 

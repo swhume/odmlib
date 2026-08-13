@@ -12,6 +12,7 @@ Functions:
 from __future__ import annotations
 
 import datetime
+import warnings
 from typing import Any, Optional
 
 from odmlib.dataset_json_1_1.model import DatasetJSON, Column
@@ -123,7 +124,19 @@ def dataset_xml_to_dataset_json(
         )
         if rows:
             ds.rows = rows
-        result[ds_name] = ds
+        if ds_name in result:
+            # two ItemGroupOIDs share a name suffix (e.g. "IG.AE" and
+            # "SUPP.AE"); silently overwriting would lose a dataset, so the
+            # colliding entry is stored under its full OID instead
+            warnings.warn(
+                f"Dataset name '{ds_name}' derived from ItemGroupOID '{oid}' "
+                f"collides with an existing dataset; storing it under its "
+                f"full OID key '{oid}' instead",
+                stacklevel=2,
+            )
+            result[oid] = ds
+        else:
+            result[ds_name] = ds
 
     return result
 

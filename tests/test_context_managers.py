@@ -75,13 +75,24 @@ class TestOpenOdmXML(TestCase):
         self.assertEqual(ctx.format, "xml")
 
     def test_open_odm_in_place_update(self):
-        """open_odm() with no output_file writes back to the input file."""
+        """open_odm() with write_on_exit=True writes back to the input file."""
         in_path = os.path.join(self.tmpdir, "inplace.xml")
         shutil.copy(CDASH_XML, in_path)
-        with open_odm(in_path) as odm:
+        with open_odm(in_path, write_on_exit=True) as odm:
             odm.SourceSystem = "InPlaceTest"
         with open_odm(in_path) as odm2:
             self.assertEqual(odm2.SourceSystem, "InPlaceTest")
+
+    def test_open_odm_default_is_read_only(self):
+        """open_odm() with no output_file must NOT modify the input file."""
+        in_path = os.path.join(self.tmpdir, "readonly.xml")
+        shutil.copy(CDASH_XML, in_path)
+        with open(in_path, "rb") as f:
+            original = f.read()
+        with open_odm(in_path) as odm:
+            odm.SourceSystem = "ShouldNotPersist"
+        with open(in_path, "rb") as f:
+            self.assertEqual(f.read(), original)
 
 
 class TestOpenOdmJSON(TestCase):
@@ -288,9 +299,11 @@ class TestContextManagerClasses(TestCase):
         ctx = open_define("define.xml")
         self.assertIsInstance(ctx, DefineContext)
 
-    def test_odmcontext_write_on_exit_default_true(self):
-        """ODMContext.write_on_exit defaults to True (unchanged historical behaviour)."""
+    def test_odmcontext_write_on_exit_default_depends_on_output_file(self):
+        """Without output_file the default is read-only; with one, writing is on."""
         ctx = ODMContext("study.xml")
+        self.assertFalse(ctx._write_on_exit)
+        ctx = ODMContext("study.xml", output_file="study_v2.xml")
         self.assertTrue(ctx._write_on_exit)
 
     def test_odmcontext_write_on_exit_false_stored(self):

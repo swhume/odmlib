@@ -35,7 +35,10 @@ class TestItemDef(TestCase):
     def test_set_invalid_description(self):
         rc = DEFINE.RangeCheck(Comparator="EQ", SoftHard="Soft", ItemOID="IT.DA.DAORRES")
         rc.CheckValue = [DEFINE.CheckValue(_content="DIABP")]
-        self.item.RangeCheck = [rc]
+        # Define-XML ItemDef deliberately drops ODM's RangeCheck child; the
+        # assignment previously succeeded silently but never serialized
+        with self.assertRaises(TypeError):
+            self.item.RangeCheck = [rc]
         # Description requires a Description object, not a RangeCheck object
         with self.assertRaises(TypeError):
             self.item.Description = rc

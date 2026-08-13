@@ -3,7 +3,7 @@ from importlib.metadata import version, PackageNotFoundError
 try:
     __version__ = version("odmlib")
 except PackageNotFoundError:
-    __version__ = "0.2.0"
+    __version__ = "0.2.1.dev0"
 
 from odmlib.exceptions import (
     OdmlibError,
@@ -12,6 +12,7 @@ from odmlib.exceptions import (
     OdmlibOIDError,
     OdmlibConformanceError,
     OdmlibElementOrderError,
+    OdmlibErrorLimitError,
     OdmlibSchemaValidationError,
     OdmlibTypeError,
     OdmlibParsingError,
@@ -22,6 +23,9 @@ from odmlib.exceptions import (
     OdmlibDeprecationWarning,
     OdmlibInteroperabilityWarning,
     ErrorCollector,
+    ErrorReporting,
+    is_collecting_checker,
+    flatten_cerberus_errors,
 )
 from odmlib.mode import ValidationMode, permissive, get_mode, set_mode
 from odmlib.context import open_odm, open_define

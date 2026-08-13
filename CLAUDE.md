@@ -31,6 +31,14 @@ pip install -e .
 
 **Dev dependencies (installed via `.[dev]`):** pytest, pytest-cov, sphinx, sphinx-rtd-theme, mypy
 
+## Conduction Code Reviews
+
+Read REVIEW.md and execute a codebase analysis following all listed constraints.
+
+## For Planning and Research
+
+For research and codebase exploration, use parallel Explore subagents by default.
+
 ## Running Tests
 
 The project uses Python's built-in `unittest` framework. Tests can be run via pytest (preferred) or unittest directly:

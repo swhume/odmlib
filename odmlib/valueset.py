@@ -34,7 +34,7 @@ class ValueSetLoader:
         if cls._cache is None:
             data_dir = Path(__file__).parent / 'data'
             json_path = data_dir / 'valuesets.json'
-            with open(json_path, 'r') as f:
+            with open(json_path, 'r', encoding='utf-8') as f:
                 cls._cache = json.load(f)
             cls._build_version_map()
         return cls._cache

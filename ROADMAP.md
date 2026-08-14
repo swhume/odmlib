@@ -233,9 +233,11 @@ All `odmlib_examples` programs run against v0.2.0. v0.3.0 work is cleanup and po
 
 ARM 1.0 has the model (48 classes, full docstrings) and 30 tests but lags other major model packages in supporting infrastructure. v0.3.0 closes the highest-priority gaps:
 
-- Add Sphinx API reference page (`docs/source/odmlib.arm_1_0.rst`); list it in `index.rst`.
+- ~~Add Sphinx API reference page (`docs/source/odmlib.arm_1_0.rst`); list it in `index.rst`.~~ Done.
 - Add an ARM how-to guide in `docs/source/guides/`.
-- Register ARM in `oid_generator_config.py` so `create_oid_checker("arm_1_0")` works.
+- ~~Register ARM in `oid_generator_config.py` so `create_oid_checker("arm_1_0")` works.~~ Done.
+- ~~Bundle the ARM 1.0 XSD and register it in `schema_manager._MAIN_SCHEMA` so ARM documents
+  can be schema-validated through `ODMSchemaValidator`.~~ Done (not originally on the roadmap).
 - Expand ARM test coverage to better match other major models.
 
 Remaining ARM items (Cerberus rules, type stubs) target v0.4.0 alongside the broader type-hint work.
@@ -410,10 +412,11 @@ ARM 1.0 has a complete model with full docstring coverage but lags other major p
 |------|--------|--------|
 | Model classes (48) | ✅ Complete | — |
 | Docstrings on all classes | ✅ Complete | — |
-| Tests (30 currently) | 🟡 Light coverage | Expand in v0.3.0 |
-| Sphinx API reference page | ❌ Missing | v0.3.0 |
+| Tests (47 currently) | 🟡 Light coverage | Expand in v0.3.0 |
+| Bundled XSD + schema validation | ✅ Complete | — |
+| Sphinx API reference page | ✅ Complete | — |
 | How-to guide | ❌ Missing | v0.3.0 |
-| OID checker registration | ❌ Missing | v0.3.0 |
+| OID checker registration | ✅ Complete | — |
 | Cerberus conformance rules | ❌ Missing | v0.4.0 |
 | Type stubs / inline type hints | ❌ Missing | v0.4.0 |
 

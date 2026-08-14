@@ -126,15 +126,25 @@ mdv = odm.Study.MetaDataVersion
 ard = mdv.AnalysisResultDisplays            # container; supports len()/index/iter
 ```
 
-odmlib does **not** bundle an ARM XSD (the packaged Define-XML 2.1 schema doesn't declare
-the `arm:` namespace), so schema-validate ARM only by pointing `ODMSchemaValidator` at an
-ARM-aware schema via `xsd_file=`. The object-model + OID validation (`validate(...)`) needs
-no schema files and works on ARM as on any model.
+odmlib **bundles** an ARM XSD, so schema-validate ARM without any download:
+
+```python
+from odmlib.odm_parser import ODMSchemaValidator
+validator = ODMSchemaValidator(standard="arm", version="1.0-define2.1")
+validator.validate_file("define-adam.xml")
+```
+
+Use `("arm","1.0-define2.1")` for a Define-XML 2.1 document — the pairing `arm_1_0` models —
+and `("arm","1.0")` for a Define-XML 2.0 one. They are not interchangeable: the `def:`
+namespace URI differs, so the wrong pairing rejects the document. Both are supersets of
+their base Define-XML schema, so they also validate ARM-free Define-XML. The object-model +
+OID validation (`validate(...)`) needs no schema files and works on ARM as on any model.
 
 ## Namespace URIs (for `ns_uri=` on explicit loaders)
 
 - ODM 1.3.2: `http://www.cdisc.org/ns/odm/v1.3`
 - Define-XML 2.1 (`def:`): `http://www.cdisc.org/ns/def/v2.1`
+- ARM 1.0 (`arm:`): `http://www.cdisc.org/ns/arm/v1.0`
 - CT-XML: `http://ncicb.nci.nih.gov/xml/odm/EVS/CDISC`
 
 The loaders derive these from the model package automatically when `ns_uri=None`; override

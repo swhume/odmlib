@@ -5,6 +5,48 @@ All notable changes to odmlib will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Added — ARM 1.0 XSD schema validation
+
+- **ARM documents can now be schema-validated against a bundled CDISC XSD.**
+  Previously odmlib shipped no ARM schema, so validating Analysis Results
+  Metadata meant supplying your own via `xsd_file=`. Two schema sets are now
+  bundled under `odmlib/schemas/arm/`, registered in
+  `schema_manager._MAIN_SCHEMA` and reachable through the existing
+  `ODMSchemaValidator` API:
+
+  ```python
+  from odmlib.odm_parser import ODMSchemaValidator
+  validator = ODMSchemaValidator(standard="arm", version="1.0-define2.1")
+  validator.validate_file("define-adam.xml")
+  ```
+
+  | `(standard, version)` | Validates |
+  |---|---|
+  | `("arm", "1.0")` | ARM 1.0 in a Define-XML 2.0 document (CDISC original) |
+  | `("arm", "1.0-define2.1")` | ARM 1.0 in a Define-XML 2.1 document |
+
+  Two sets are required because ARM layers onto Define-XML, and Define-XML 2.0
+  and 2.1 use different `def:` namespace URIs — the pairings are not
+  interchangeable. Use `"1.0-define2.1"` with `odmlib.arm_1_0`, which extends
+  `odmlib.define_2_1`. The `1.0-define2.1` schema set is derived by odmlib from
+  the CDISC ARM 1.0 schema by retargeting the Define-XML dependency; element and
+  type declarations are unchanged from the original.
+
+  Both ARM schemas are supersets of their base Define-XML schema, so either also
+  validates an ARM-free Define-XML document of the matching version.
+
+### Fixed — ARM `AnalysisResult` serialized in a schema-invalid element order
+
+- **`arm_1_0.model.AnalysisResult` declared its child elements in the wrong
+  order,** so every ARM document odmlib wrote failed XSD validation. Descriptor
+  declaration order is serialization order, and the ARM schema requires the
+  sequence `Description, AnalysisDatasets, Documentation, ProgrammingCode`;
+  the model declared `AnalysisDatasets` last. `AnalysisDatasets` has been moved
+  ahead of `Documentation`. Reading ARM documents was unaffected — only output
+  was wrong, which went unnoticed while no ARM XSD was bundled to check it.
+
 ## [0.2.1] - 2026-08-08
 
 ### Fixed — `collect_errors=True` now collects every error

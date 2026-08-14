@@ -9,6 +9,8 @@ Demonstrates:
     reported in a single pass
   * max_errors=N to cap the list on a badly broken document
   * fail-fast mode (the default) still raises on the first problem
+  * XSD validation against the bundled CDISC schemas -- a separate layer that
+    catches structural defects validate() does not
 
 validate() is both a gate and a report. For the parts it does NOT cover --
 orphan OIDs, usage lookup, OID inventory -- see report_oid_integrity.py.
@@ -105,6 +107,44 @@ def fail_fast(label, odm):
         print(f"{label}: VALID")
 
 
+def schema_validate():
+    """XSD validation: a different layer, catching different defects.
+
+    validate() checks the object model (OIDs, conformance, order). XSD checks
+    the *serialized* file against the official CDISC schema, which odmlib
+    bundles -- nothing to download. Select one by (standard, version):
+
+        ("odm","1.3.2")  ("odm","2.0")  ("define","2.0")  ("define","2.1")
+        ("arm","1.0")    ARM 1.0 inside a Define-XML 2.0 document
+        ("arm","1.0-define2.1")  ARM 1.0 inside a Define-XML 2.1 document
+
+    ARM has two entries because it layers onto Define-XML and the two
+    Define-XML versions use different def: namespace URIs; they are not
+    interchangeable. Use "1.0-define2.1" with the arm_1_0 model package.
+
+    Both standard and version are required -- there is no default. For a
+    custom or local schema, pass xsd_file="/path/to/schema.xsd" instead.
+    """
+    import os
+    import tempfile
+    from odmlib.odm_parser import ODMSchemaValidator
+
+    validator = ODMSchemaValidator(standard="odm", version="1.3.2")
+
+    with tempfile.TemporaryDirectory() as tmp:
+        path = os.path.join(tmp, "good.xml")
+        good_document().write_xml(path)
+
+        # validate_file() returns None on success and raises on failure
+        validator.validate_file(path)
+        print("good_document: XSD VALID")
+
+        # iter_errors() enumerates every schema problem instead of raising on
+        # the first -- the better choice when producing a report
+        errors = list(validator.xsd.iter_errors(path))
+        print(f"good_document: {len(errors)} schema errors")
+
+
 if __name__ == "__main__":
     warnings.simplefilter("ignore")
     print("odmlib", odmlib.__version__)
@@ -119,3 +159,6 @@ if __name__ == "__main__":
     print("\n-- collect_errors=False (default): fail fast --")
     fail_fast("good_document", good_document())
     fail_fast("broken_document", broken_document())
+
+    print("\n-- XSD validation against the bundled CDISC schema --")
+    schema_validate()

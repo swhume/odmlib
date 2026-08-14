@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding = "UTF-8"?>
+<xs:schema targetNamespace = "http://www.cdisc.org/ns/arm/v1.0"
+        xmlns:xs = "http://www.w3.org/2001/XMLSchema"
+        xmlns:odm = "http://www.cdisc.org/ns/odm/v1.3"
+        xmlns:arm = "http://www.cdisc.org/ns/arm/v1.0"
+        xmlns:def = "http://www.cdisc.org/ns/def/v2.1"
+        xmlns:xlink = "http://www.w3.org/1999/xlink"
+        elementFormDefault = "qualified" attributeFormDefault = "unqualified">
+
+  <!--
+      Analysis Results Metadata 1.0.0 arm-ns schema
+      as developed by the CDISC ADaM Metadata Sub-Team
+
+      Derived by odmlib from the CDISC ARM 1.0.0 arm-ns schema, with the
+      Define-XML dependency retargeted from def/v2.0 to def/v2.1. Element and
+      type declarations below are unchanged from the CDISC original; only the
+      def namespace URI and the three schemaLocation paths differ.
+  -->
+
+    <xs:import namespace = "http://www.w3.org/1999/xlink"     schemaLocation = "../../define/2.1/xlink.xsd"/>
+    <xs:import namespace = "http://www.cdisc.org/ns/odm/v1.3" schemaLocation = "../../odm/1.3.2/ODM1-3-2-foundation.xsd"/>
+    <xs:import namespace = "http://www.cdisc.org/ns/def/v2.1" schemaLocation = "../../define/2.1/define-ns.xsd"/>
+
+
+    <xs:element name = "AnalysisResultDisplays">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element ref = "arm:ResultDisplay" minOccurs = "1" maxOccurs="unbounded"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name = "ResultDisplay">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element ref="odm:Description" minOccurs="1" maxOccurs="1" />
+                <xs:element ref="def:DocumentRef" minOccurs="0" maxOccurs="unbounded" />
+                <xs:element ref="arm:AnalysisResult" minOccurs="1" maxOccurs="unbounded" />
+            </xs:sequence>
+            <xs:attribute name = "OID" use = "required" type = "odm:oid"/>
+            <xs:attribute name = "Name" use = "required" type = "odm:text"/>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name = "AnalysisResult">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element ref="odm:Description" minOccurs="1" maxOccurs="1" />
+                <xs:element ref="arm:AnalysisDatasets" minOccurs="1" maxOccurs="1" />
+                <xs:element ref="arm:Documentation" minOccurs="0" maxOccurs="1" />
+                <xs:element ref="arm:ProgrammingCode" minOccurs="0" maxOccurs="1" />
+            </xs:sequence>
+            <xs:attribute name = "OID" use = "required" type = "odm:oid"/>
+            <xs:attribute name = "ParameterOID" use = "optional" type = "odm:oid"/>
+            <xs:attribute name = "AnalysisReason" use = "required" type = "arm:AnalysisReason"/>
+            <xs:attribute name = "AnalysisPurpose" use = "required" type = "arm:AnalysisPurpose"/>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name = "AnalysisDatasets">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element ref = "arm:AnalysisDataset" minOccurs = "1" maxOccurs="unbounded"/>
+            </xs:sequence>
+            <xs:attribute ref="def:CommentOID" use="optional" />
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name = "AnalysisDataset">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element ref = "def:WhereClauseRef" minOccurs = "0" maxOccurs="1" />
+                <xs:element ref = "arm:AnalysisVariable" minOccurs = "0"  maxOccurs="unbounded"/>
+            </xs:sequence>
+            <xs:attribute name="ItemGroupOID" type="odm:oid" use="required"/>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name = "AnalysisVariable">
+        <xs:complexType>
+            <xs:attribute name = "ItemOID" type = "odm:oidref" use="required"/>
+        </xs:complexType>
+    </xs:element>
+
+
+    <xs:element name = "Documentation">
+        <xs:complexType>
+            <xs:sequence>
+              <xs:element ref="odm:Description" minOccurs="1" maxOccurs="1" />
+              <xs:element ref="def:DocumentRef" minOccurs="0" maxOccurs="unbounded" />
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name = "ProgrammingCode">
+        <xs:complexType>
+            <xs:sequence>
+              <xs:element ref="arm:Code" minOccurs="0" maxOccurs="1" />
+              <xs:element ref="def:DocumentRef" minOccurs="0" maxOccurs="unbounded" />
+            </xs:sequence>
+            <xs:attribute name="Context" type="odm:text" use="optional"/>
+        </xs:complexType>
+    </xs:element>
+
+
+    <xs:element name = "Code">
+        <xs:simpleType>
+          <xs:restriction base = "odm:text" />
+      </xs:simpleType>
+    </xs:element>
+
+
+    <xs:simpleType name = "AnalysisReason">
+      <xs:union>
+        <xs:simpleType>
+          <xs:restriction base = "odm:text" />
+        </xs:simpleType>
+        <xs:simpleType>
+          <xs:restriction base = "odm:text">
+            <xs:enumeration value = "SPECIFIED IN PROTOCOL"/>
+            <xs:enumeration value = "SPECIFIED IN SAP"/>
+            <xs:enumeration value = "DATA DRIVEN"/>
+            <xs:enumeration value = "REQUESTED BY REGULATORY AGENCY"/>
+        </xs:restriction>
+        </xs:simpleType>
+      </xs:union>
+    </xs:simpleType>
+
+    <xs:simpleType name = "AnalysisPurpose">
+      <xs:union>
+        <xs:simpleType>
+          <xs:restriction base = "odm:text" />
+        </xs:simpleType>
+        <xs:simpleType>
+          <xs:restriction base = "odm:text">
+            <xs:enumeration value = "PRIMARY OUTCOME MEASURE"/>
+            <xs:enumeration value = "SECONDARY OUTCOME MEASURE"/>
+            <xs:enumeration value = "EXPLORATORY OUTCOME MEASURE"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:union>
+    </xs:simpleType>
+
+</xs:schema>

@@ -201,13 +201,15 @@ first error. Only `OdmlibError` subclasses are collected — a bug in a custom c
 `AttributeError` from a malformed tree still propagates rather than being reported as a
 document defect.
 
-For full **XSD/schema validation**, odmlib *bundles* the official ODM and Define-XML
+For full **XSD/schema validation**, odmlib *bundles* the official ODM, Define-XML, and ARM
 schemas, so you don't download anything: `ODMSchemaValidator(standard="define",
 version="2.1")` (valid pairs: `("odm","1.3.2")`, `("odm","2.0")`, `("define","2.0")`,
-`("define","2.1")`). Use `validator.xsd.iter_errors(file)` to collect every schema error
-with its `.reason` and `.path`. Pass `xsd_file=` only for a custom/local schema. (No ARM
-XSD is bundled.) Conformance and XSD validation are complementary — see
-`references/validation.md`.
+`("define","2.1")`, `("arm","1.0")`, `("arm","1.0-define2.1")`). Use
+`validator.xsd.iter_errors(file)` to collect every schema error with its `.reason` and
+`.path`. Pass `xsd_file=` only for a custom/local schema. For ARM (ADaM), pick the pairing
+matching the document's Define-XML version — `("arm","1.0-define2.1")` is what `arm_1_0`
+models; the two are not interchangeable. Conformance and XSD validation are complementary —
+see `references/validation.md`.
 
 ### Loading non-conformant files: permissive mode, then repair
 

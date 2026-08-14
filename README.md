@@ -10,16 +10,16 @@ documents and extensions including Define-XML, Dataset-XML, and CT-XML.
 
 ## Supported Standards
 
-| Standard | Package | Status |
-|----------|---------|--------|
-| ODM 1.3.2 | `odmlib.odm_1_3_2` | Stable |
-| ODM 2.0 | `odmlib.odm_2_0` | Draft |
-| Define-XML 2.0 | `odmlib.define_2_0` | Stable |
-| Define-XML 2.1 | `odmlib.define_2_1` | Stable |
-| Dataset-XML 1.0.1 | `odmlib.dataset_1_0_1` | Stable |
-| CT-XML 1.1.1 | `odmlib.ct_1_1_1` | Stable |
-| ARM 1.0 | `odmlib.arm_1_0` | Stable |
-| Dataset-JSON v1.1 | `odmlib.dataset_json_1_1` | Stable |
+| Standard | Package | Status | Bundled XSD |
+|----------|---------|--------|-------------|
+| ODM 1.3.2 | `odmlib.odm_1_3_2` | Stable | ✅ |
+| ODM 2.0 | `odmlib.odm_2_0` | Draft | ✅ |
+| Define-XML 2.0 | `odmlib.define_2_0` | Stable | ✅ |
+| Define-XML 2.1 | `odmlib.define_2_1` | Stable | ✅ |
+| Dataset-XML 1.0.1 | `odmlib.dataset_1_0_1` | Stable | — |
+| CT-XML 1.1.1 | `odmlib.ct_1_1_1` | Stable | — |
+| ARM 1.0 | `odmlib.arm_1_0` | Stable | ✅ |
+| Dataset-JSON v1.1 | `odmlib.dataset_json_1_1` | Stable | — |
 
 ## Features
 
@@ -27,6 +27,7 @@ documents and extensions including Define-XML, Dataset-XML, and CT-XML.
 - **Type-validated attributes**: all assignments validated at assignment time
 - **Bidirectional serialization**: convert between XML, JSON, and Python dicts
 - **Validation**: OID uniqueness, ref/def integrity, Cerberus conformance, element ordering
+- **Bundled CDISC schemas**: XSD validation for ODM, Define-XML, and ARM with no downloads
 - **Dynamic OID checking**: automatic ref/def mapping via model introspection
 - **Extensible**: create custom extensions by subclassing model classes
 - **Builder API**: fluent `ODMBuilder` for programmatic document construction
@@ -133,6 +134,12 @@ for rd in mdv.AnalysisResultDisplays:
     print(f"{rd.OID}: {rd.Name}")
     for ar in rd.AnalysisResult:
         print(f"  Result: {ar.OID} ({ar.AnalysisPurpose})")
+
+# Schema-validate it against the bundled ARM XSD
+from odmlib.odm_parser import ODMSchemaValidator
+
+validator = ODMSchemaValidator(standard="arm", version="1.0-define2.1")
+validator.validate_file("define-adam.xml")
 ```
 
 ## Creating Documents
@@ -310,14 +317,36 @@ odm.verify_conformance(validator)      # raises on failure
 
 ### XML schema (XSD) validation
 
+odmlib bundles the official CDISC schemas, so there is nothing to download.
+Select one by `(standard, version)`:
+
 ```python
 from odmlib.odm_parser import ODMSchemaValidator
 
-validator = ODMSchemaValidator()                   # uses packaged ODM 1.3.2 XSD
+validator = ODMSchemaValidator(standard="odm", version="1.3.2")
 validator.validate_file("study.xml")               # raises OdmlibSchemaValidationError on failure
+```
 
-# Custom schema or different standard/version
-validator = ODMSchemaValidator(standard="define", version="2.1")
+| `standard` | `version` | Validates |
+|------------|-----------|-----------|
+| `"odm"`    | `"1.3.2"` | ODM 1.3.2 |
+| `"odm"`    | `"2.0"`   | ODM 2.0 |
+| `"define"` | `"2.0"`   | Define-XML 2.0 |
+| `"define"` | `"2.1"`   | Define-XML 2.1 |
+| `"arm"`    | `"1.0"`   | ARM 1.0 in a Define-XML 2.0 document |
+| `"arm"`    | `"1.0-define2.1"` | ARM 1.0 in a Define-XML 2.1 document |
+
+ARM has two entries because it layers onto Define-XML, and the two Define-XML
+versions use different `def:` namespace URIs. Pick the one matching your
+document — `"1.0-define2.1"` is the pairing `odmlib.arm_1_0` models. The ARM
+schemas are supersets of the corresponding Define-XML schema, so they also
+validate ARM-free Define-XML documents.
+
+Both `standard` and `version` are required; there is no default. For a custom
+or local schema, pass a path instead:
+
+```python
+validator = ODMSchemaValidator(xsd_file="/path/to/schema.xsd")
 ```
 
 ### Combined validation with error collection

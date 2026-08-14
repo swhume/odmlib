@@ -229,13 +229,17 @@ odm.validate(conformance_checker=conformance)
 
 ```python
 from odmlib.odm_parser import ODMSchemaValidator     # XSD validation (schemas are bundled)
-# bundled pairs: ("odm","1.3.2"), ("odm","2.0"), ("define","2.0"), ("define","2.1")
+# bundled pairs: ("odm","1.3.2"), ("odm","2.0"), ("define","2.0"), ("define","2.1"),
+#                ("arm","1.0"), ("arm","1.0-define2.1")
 validator = ODMSchemaValidator(standard="define", version="2.1")
 validator.validate_file("define.xml")                # raises OdmlibSchemaValidationError
 validator.validate_tree(parsed_tree)                 # -> bool
 for err in validator.xsd.iter_errors("define.xml"):  # collect all, with .reason / .path
     print(err.reason, err.path)
-# custom/local (e.g. ARM-aware) schema only:
+# ARM (ADaM): match the document's Define-XML version; the pairings are not interchangeable
+ODMSchemaValidator(standard="arm", version="1.0-define2.1")   # def: v2.1 — what arm_1_0 models
+ODMSchemaValidator(standard="arm", version="1.0")             # def: v2.0
+# custom/local schema only:
 # ODMSchemaValidator(xsd_file="/path/to/schema.xsd")
 ```
 

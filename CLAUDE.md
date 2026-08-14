@@ -16,6 +16,7 @@ XML and JSON serialization support.
 - Dataset-XML 1.0.1 (`odmlib.dataset_1_0_1`)
 - CT-XML 1.1.1 (`odmlib.ct_1_1_1`)
 - ARM 1.0 (`odmlib.arm_1_0`)
+- Dataset-JSON 1.1 (`odmlib.dataset_json_1_1`)
 
 ## Development Setup
 
@@ -154,6 +155,38 @@ Uses Cerberus schemas (see `rules/metadata_schema.py` in each model package):
 - `verify_conformance(validator)` checks structure against schema
 - Schemas are manually maintained per model (not auto-generated yet)
 
+### XSD Schema Validation
+
+odmlib bundles the official CDISC XSDs under `odmlib/schemas/<standard>/<version>/`
+and validates against them via `ODMSchemaValidator` (odm_parser.py):
+
+```python
+from odmlib.odm_parser import ODMSchemaValidator
+validator = ODMSchemaValidator(standard="define", version="2.1")
+validator.validate_file("define.xml")   # raises OdmlibSchemaValidationError
+validator.validate_tree(tree)           # returns bool
+```
+
+`schema_manager.py::_MAIN_SCHEMA` maps `(standard, version)` → root XSD filename.
+Registered pairs: `("odm","1.3.2")`, `("odm","2.0")`, `("define","2.0")`,
+`("define","2.1")`, `("arm","1.0")`, `("arm","1.0-define2.1")`.
+
+**Key rule:** a `_MAIN_SCHEMA` key must exactly match its on-disk directory name —
+`get_schema_path` builds `odmlib/schemas/<standard>/<version>/<filename>`. A key that
+doesn't match resolves to a non-existent path and fails only at validation time.
+
+**ARM has two entries** because ARM 1.0 layers onto Define-XML and the two Define-XML
+versions use different `def:` namespace URIs:
+- `("arm","1.0")` — the CDISC original, redefines `define/2.0`
+- `("arm","1.0-define2.1")` — odmlib-derived, redefines `define/2.1`; this is the
+  pairing `odmlib.arm_1_0.model` targets, since that model extends `define_2_1.model`
+
+Both are supersets of their base Define-XML schema, so they also validate ARM-free
+Define-XML documents. Compiled schemas are cached by path in `odm_parser._SCHEMA_CACHE`.
+
+Both `standard` and `version` are required — there is no default. Pass
+`xsd_file=<path>` for a custom or local schema.
+
 ### Element Ordering
 
 ODM requires specific element order in XML. odmlib enforces this:
@@ -239,6 +272,8 @@ To create proprietary extensions:
 3. Register any new namespaces
 4. Use `local_model=True` in loader with module path
 5. Update OID checkers and Cerberus schemas if needed
+6. If the extension ships its own XSD, add it under `odmlib/schemas/<standard>/<version>/`
+   and register the pair in `schema_manager._MAIN_SCHEMA` (directory name must match the key)
 
 ## Known Limitations
 

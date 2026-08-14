@@ -299,12 +299,42 @@ odmlib:
     # Define-XML 2.0 / 2.1
     validator = ODMSchemaValidator(standard="define", version="2.1")
 
+    # ARM 1.0 (Analysis Results Metadata) in a Define-XML 2.1 document
+    validator = ODMSchemaValidator(standard="arm", version="1.0-define2.1")
+
     # Validate a file directly (raises OdmlibSchemaValidationError on failure)
     validator.validate_file("study.xml")
 
     # Or validate an already-parsed ElementTree (returns bool)
     tree = ODMParser("study.xml").parse_tree()
     is_valid = validator.validate_tree(tree)
+
+Both ``standard`` and ``version`` are required; there is no default.
+
+Validating ARM (Analysis Results Metadata)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+ARM 1.0 is an extension embedded in a Define-XML document rather than a
+standalone document type, so odmlib bundles two ARM schema sets — one per
+Define-XML version:
+
+.. list-table::
+   :header-rows: 1
+
+   * - ``(standard, version)``
+     - Validates
+   * - ``("arm", "1.0")``
+     - ARM 1.0 inside a Define-XML **2.0** document (the CDISC original)
+   * - ``("arm", "1.0-define2.1")``
+     - ARM 1.0 inside a Define-XML **2.1** document
+
+The two are **not** interchangeable: Define-XML 2.0 and 2.1 use different
+``def:`` namespace URIs, so the wrong pairing rejects the document on the
+first ``def:``-prefixed attribute it encounters. Use ``"1.0-define2.1"``
+with :mod:`odmlib.arm_1_0`, which extends :mod:`odmlib.define_2_1`.
+
+Both ARM schemas are supersets of their base Define-XML schema, so either
+one also validates an ARM-free Define-XML document of the matching version.
 
 For a custom or local XSD that is not bundled with odmlib, pass an
 explicit ``xsd_file`` path:

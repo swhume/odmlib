@@ -38,6 +38,10 @@ Available Model Packages
      - CT-XML 1.1.1
      - :class:`~odmlib.odm_loader.XMLODMLoader` with ``model_package="ct_1_1_1"``
      - Controlled terminology
+   * - ``odmlib.arm_1_0``
+     - ARM 1.0
+     - :class:`~odmlib.arm_loader.XMLArmLoader`, :class:`~odmlib.arm_loader.JSONArmLoader`
+     - Analysis Results Metadata; extends Define-XML 2.1
 
 ODM 1.3.2 Model Structure
 --------------------------

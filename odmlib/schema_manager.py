@@ -8,6 +8,8 @@ _MAIN_SCHEMA = {
     ("odm", "2.0"): "ODM.xsd",
     ("define", "2.0"): "define2-0-0.xsd",
     ("define", "2.1"): "define2-1-0.xsd",
+    ("arm", "1.0"): "arm1-0-0.xsd",             # ARM 1.0 over Define-XML 2.0
+    ("arm", "1.0-define2.1"): "arm1-0-0.xsd",   # ARM 1.0 over Define-XML 2.1
 }
 
 

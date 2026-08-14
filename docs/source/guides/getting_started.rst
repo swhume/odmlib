@@ -45,6 +45,12 @@ Supported Standards
    * - CT-XML 1.1.1
      - ``odmlib.ct_1_1_1``
      - Stable
+   * - ARM 1.0
+     - ``odmlib.arm_1_0``
+     - Stable
+   * - Dataset-JSON 1.1
+     - ``odmlib.dataset_json_1_1``
+     - Stable
 
 Quick Start
 -----------

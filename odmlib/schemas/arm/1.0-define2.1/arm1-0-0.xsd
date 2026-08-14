@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema targetNamespace="http://www.cdisc.org/ns/odm/v1.3"
+           xmlns="http://www.cdisc.org/ns/odm/v1.3"
+           xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           xmlns:def="http://www.cdisc.org/ns/def/v2.1"
+           xmlns:arm = "http://www.cdisc.org/ns/arm/v1.0"
+           elementFormDefault="qualified" attributeFormDefault="unqualified">
+
+  <!--
+      Analysis Results Metadata 1.0.0 arm1-0-0 schema
+      as developed by the CDISC ADaM Metadata Sub-Team
+
+      odmlib variant pairing ARM 1.0.0 with Define-XML 2.1 rather than 2.0.
+      Use this root schema to validate a Define-XML 2.1 document that carries
+      arm: Analysis Results Metadata.
+  -->
+
+    <xs:include  schemaLocation="arm-extension.xsd"/>
+
+</xs:schema>

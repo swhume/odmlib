@@ -253,12 +253,13 @@ elements involved.
   `OdmlibConformanceError.cerberus_errors` holds a field-by-field dict.
 - **XSD** (`odmlib.odm_parser.ODMSchemaValidator`) validates the serialized file against the
   official CDISC `.xsd`. It catches structural/schema issues conformance does not. odmlib
-  **bundles** the ODM and Define-XML schemas, so resolve them by `(standard, version)` —
+  **bundles** the ODM, Define-XML, and ARM schemas, so resolve them by `(standard, version)` —
   no download required:
 
 ```python
 from odmlib.odm_parser import ODMSchemaValidator
-# bundled-schema pairs: ("odm","1.3.2"), ("odm","2.0"), ("define","2.0"), ("define","2.1")
+# bundled-schema pairs: ("odm","1.3.2"), ("odm","2.0"), ("define","2.0"), ("define","2.1"),
+#                       ("arm","1.0"), ("arm","1.0-define2.1")
 validator = ODMSchemaValidator(standard="define", version="2.1")
 validator.validate_file("define.xml")            # raises OdmlibSchemaValidationError on failure
 validator.validate_tree(tree)                    # -> bool, for an already-parsed ElementTree
@@ -268,9 +269,14 @@ for err in validator.xsd.iter_errors("define.xml"):
     print(err.reason, "@", err.path)
 ```
 
+For an ARM (ADaM) document pick the pairing that matches its Define-XML version —
+`("arm","1.0-define2.1")` for `def:` v2.1 (what `arm_1_0` models), `("arm","1.0")` for v2.0.
+They are not interchangeable; the wrong one rejects the document on its first `def:`
+attribute. Both also validate ARM-free Define-XML, being supersets of the base schema.
+
 Pass `xsd_file="/path/to/schema.xsd"` only for a custom or local schema not bundled with
-odmlib (for example, an ARM-aware Define schema — odmlib ships no ARM XSD). For
-submission-grade output, run both: conformance during construction, XSD on the written file.
+odmlib. For submission-grade output, run both: conformance during construction, XSD on the
+written file.
 
 ## Order: usually automatic, sometimes not
 

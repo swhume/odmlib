@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema targetNamespace="http://www.cdisc.org/ns/odm/v1.3"
+           xmlns="http://www.cdisc.org/ns/odm/v1.3"
+           xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           xmlns:arm="http://www.cdisc.org/ns/arm/v1.0"
+           elementFormDefault="qualified" attributeFormDefault="unqualified">
+
+    <xs:import namespace="http://www.cdisc.org/ns/arm/v1.0" schemaLocation="arm-ns.xsd"/>
+
+    <xs:redefine schemaLocation="../../define/2.1/define-extension.xsd">
+
+       <xs:group name="MetaDataVersionElementExtension">
+         <xs:sequence>
+           <xs:group ref="MetaDataVersionElementExtension"/>
+           <xs:group ref="MetaDataVersionElementContents"/>
+         </xs:sequence>
+       </xs:group>
+
+    </xs:redefine>
+
+    <xs:group name="MetaDataVersionElementContents">
+      <xs:sequence>
+        <xs:element ref="arm:AnalysisResultDisplays" minOccurs="0" maxOccurs="1"/>
+      </xs:sequence>
+    </xs:group>
+
+</xs:schema>

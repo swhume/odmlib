@@ -162,7 +162,7 @@ Every model object subclasses `ODMElement` and inherits:
 ```python
 # Serialize
 .to_json() -> str            .to_dict() -> dict
-.to_xml(...) -> Element      .to_xml_string() -> str    # Element carries NO xmlns; string does
+.to_xml(...) -> Element      .to_xml_string(*, xml_declaration=False) -> str   # Element: NO xmlns
 .write_xml(odm_file)         .write_json(odm_file)
 
 # Search the subtree
@@ -205,11 +205,11 @@ noisy that dict is depends on the model package's `skip_elem` set (`odm_1_3_2` s
 
 ### Serialization details
 
-`to_xml_string()` takes **no arguments** in 0.2.1. It calls `to_xml()`, attaches the xmlns
-declarations, and returns UTF-8 text **without** an XML declaration.
+`to_xml_string()` calls `to_xml()`, attaches the xmlns declarations, and returns UTF-8 text.
+The XML declaration is omitted unless you ask for it.
 
 ```python
-.to_xml_string() -> str      # self-contained: default xmlns + every USED prefix; no <?xml ...?>
+.to_xml_string(*, xml_declaration=False) -> str   # self-contained: default xmlns + every USED prefix
 .to_xml(parent_elem=None, top_elem=None) -> Element   # NO xmlns anywhere; prefix-literal tags
 .write_xml(odm_file, odm_writer=ODMWriter)            # <?xml ...?> + the to_xml_string() bytes
 ```
@@ -221,29 +221,36 @@ declarations, and returns UTF-8 text **without** an XML declaration.
   re-load it with `FileOID` intact and every `Study` silently dropped. `ET.canonicalize()`
   also fails on it. Use `to_xml_string()`; use `to_xml()` only to graft fragments.
 - **Byte relationship:** `write_xml()` output ==
-  `b"<?xml version='1.0' encoding='UTF-8'?>\n" + to_xml_string().encode("utf-8")`. Both paths
-  use `short_empty_elements=True` and identical attribute order.
-- **Any element serializes**, not just the root — but see the namespace-binding caveat below.
+  `b"<?xml version='1.0' encoding='UTF-8'?>\n" + to_xml_string().encode("utf-8")`, and ==
+  `to_xml_string(xml_declaration=True).encode("utf-8")` exactly. Both paths use
+  `short_empty_elements=True` and identical attribute order. `xml_declaration` is
+  keyword-only and defaults to `False`, which is what `load_odm_string()` expects.
+- **Any element serializes**, not just the root — see the namespace-binding note below.
 - **XSD validation accepts a string**: `ODMSchemaValidator(...).xsd.iter_errors(xml_string)`
   works with no file involved.
 
 #### Namespace binding helpers (`odmlib.ns_registry`)
 
 ```python
-NS.get_document_namespaces(odm_obj) -> dict | None    # the per-document snapshot, or None
-NS.bind_document_namespaces(odm_obj, snapshot=None)   # attach a snapshot to an element
+NS.get_document_namespaces(odm_obj) -> dict | None                     # snapshot, or None
+NS.bind_document_namespaces(odm_obj, snapshot=None, recursive=False)   # attach a snapshot
 ```
 
 A loaded document's namespaces are captured as a snapshot so a later load of a different
-document cannot change how it serializes. The snapshot is bound **only** to objects the loader
-returns directly — `root()`, `Study()`, `MetaDataVersion()`, `create_odmlib()`. An element
-reached by walking the tree (`define.Study.MetaDataVersion`), or constructed after the load and
-grafted in, has **no** snapshot and falls back to current global registry state — so its
-`to_xml_string()` can emit a different `xmlns:def` than its own root. Rebind it explicitly:
+document cannot change how it serializes. The loader binds it **recursively**, so every
+descendant is covered too — `define.Study.MetaDataVersion.to_xml_string()` emits the same
+`xmlns:def` as its root even after another model package re-registers the prefix globally.
+
+**Still not covered:** an element *constructed after the load* and grafted in has no snapshot
+and falls back to current global registry state. Bind it explicitly:
 
 ```python
-NS.bind_document_namespaces(mdv, NS.get_document_namespaces(define))
+NS.bind_document_namespaces(new_elem, NS.get_document_namespaces(define))
 ```
+
+`recursive=True` is what the loader uses; call it yourself when you build a subtree
+independently and want the whole thing bound in one call. The walk is `id()`-guarded, so
+cycles terminate, and it costs ~1.4 ms for a 2 000-element document.
 
 ## 6. Validation: OID checker, conformance, XSD, modes
 

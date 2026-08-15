@@ -62,9 +62,14 @@ class ODMLoader:
         document later can change it; binding a snapshot lets write_xml /
         to_xml_string serialize this document with the namespaces it was
         actually loaded under.
+
+        Bound recursively so that serializing a nested element reached by walking
+        the tree behaves like serializing its root. Elements constructed *after*
+        the load and grafted in are not covered - bind those explicitly with
+        ``NS.bind_document_namespaces(new_elem, NS.get_document_namespaces(root))``.
         """
         if odm_obj is not None:
-            NS.bind_document_namespaces(odm_obj, snapshot=self._ns_snapshot)
+            NS.bind_document_namespaces(odm_obj, snapshot=self._ns_snapshot, recursive=True)
         return odm_obj
 
     def create_odmlib(self, odm_doc: Any, odm_key: Optional[str] = None) -> Any:

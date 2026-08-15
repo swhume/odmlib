@@ -7,6 +7,75 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added — `to_xml_string(xml_declaration=True)`
+
+- **`ODMElement.to_xml_string()` accepts a keyword-only `xml_declaration` flag.**
+  The string path previously had no way to emit an XML declaration, so callers
+  handing a string to a consumer that requires one had to prepend it by hand —
+  and comparing a string against a `write_xml()` file silently disagreed on the
+  first 39 bytes. The two paths now line up exactly:
+
+  ```python
+  odm.to_xml_string()                        # bytes write_xml() writes AFTER <?xml ...?>
+  odm.to_xml_string(xml_declaration=True)    # exactly what write_xml() writes
+  ```
+
+  **The default stays `False`** — this string is the documented input to
+  `ODMLoader.load_odm_string()` and 0.2.1 shipped it declaration-free, so
+  flipping it would silently change output for every existing caller. The
+  parameter is keyword-only. `dataset_json_1_1.model.DatasetJSON.to_xml_string()`
+  accepts the same keyword so it still raises the intended `NotImplementedError`
+  rather than a `TypeError`. Pinned by
+  `tests/test_xml_string_serialization.py::TestXmlDeclarationOption`.
+
+### Fixed — nested elements serialized with the wrong namespace
+
+- **A nested element reached by walking a loaded tree now serializes with the
+  namespaces its document was loaded under.** The per-document namespace
+  snapshot was bound only to the objects the loader returns directly
+  (`root()`, `Study()`, `MetaDataVersion()`, `create_odmlib()`). Anything
+  reached by walking — `define.Study.MetaDataVersion` — had no snapshot and fell
+  back to current global registry state, so merely importing a second Define
+  model package changed its output:
+
+  ```python
+  import odmlib.define_2_0.model            # re-registers def: -> v2.0 globally
+  define.to_xml_string()                    # root:   xmlns:def=".../def/v2.1"  (right)
+  define.Study.MetaDataVersion.to_xml_string()   # nested: ".../def/v2.0"  (WRONG)
+  ```
+
+  `ns_registry.bind_document_namespaces()` takes a new `recursive=False`
+  parameter, and `loader.ODMLoader._bind_namespaces()` passes `recursive=True`,
+  which covers all four loader entry points and the `open_odm`/`open_define`
+  context managers. `write_xml()` on a nested element is fixed by the same
+  change. Measured cost: 1.4 ms to bind all 2 086 elements of a 136 KB
+  Define-XML file, sharing one snapshot dict. Pinned by
+  `tests/test_xml_string_serialization.py::TestNestedElementNamespaceBinding`.
+
+  **Residual limitation:** an element *constructed after* the load and grafted
+  in still carries no snapshot and uses global state. Bind it explicitly:
+
+  ```python
+  import odmlib.ns_registry as NS
+  NS.bind_document_namespaces(new_elem, NS.get_document_namespaces(root))
+  ```
+
+### Deprecated — `NamespaceRegistry.set_odm_namespace_attributes_string()`
+
+- **Emits `OdmlibDeprecationWarning`; will be removed in 0.3.0.** Since 0.2.1
+  `to_xml_string()` declares its own namespaces, which makes this string-patching
+  helper a no-op on any string it would normally be given. It has no callers in
+  odmlib. Remove the call; no replacement is needed.
+
+### Changed — a misnamed serialization test
+
+- **`test_schema_ordered_serialization.py::test_to_xml_string_round_trip_unchanged`
+  never called `to_xml_string()`** — it used raw `ET.tostring()`, which is false
+  coverage of exactly the path that went untested. Renamed to
+  `test_to_xml_element_order_survives_reparse` (its body is a valid element-order
+  test) and a real `to_xml_string()` round-trip added beside it as
+  `test_to_xml_string_round_trip_preserves_order`.
+
 ### Added — ARM 1.0 XSD schema validation
 
 - **ARM documents can now be schema-validated against a bundled CDISC XSD.**

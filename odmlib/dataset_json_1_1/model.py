@@ -40,8 +40,12 @@ class DatasetJSONElement(OE.ODMElement):
         """
         raise NotImplementedError("Dataset-JSON does not support XML serialization")
 
-    def to_xml_string(self):
+    def to_xml_string(self, *, xml_declaration=False):
         """Dataset-JSON does not support XML serialization.
+
+        Accepts the same keyword as :meth:`ODMElement.to_xml_string` so that
+        ``to_xml_string(xml_declaration=True)`` raises the intended
+        NotImplementedError rather than a TypeError.
 
         Raises:
             NotImplementedError: Always.

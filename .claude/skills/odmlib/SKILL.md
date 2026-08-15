@@ -321,8 +321,18 @@ at all — declarations are attached by `to_xml_string()` and by `ODMWriter.writ
   string, `FileOID` reads back correctly, and **every `Study` is gone** (`len(odm.Study) == 0`),
   with no exception raised. A smoke test passes; the data is lost.
 
-Reach for `to_xml()` only to graft a fragment into a tree you are assembling yourself, and
-declare namespaces on the finished root.
+**When you want a tree, use `to_element()`.** It parses `to_xml_string()`, so you get Clark
+notation (`{http://www.cdisc.org/ns/def/v2.1}leaf`) and namespace-aware `find()`,
+`ET.canonicalize()`, `ET.indent()` pretty-printing and grafting into a host document all work:
+
+```python
+elem = define.Study.MetaDataVersion.ItemGroupDef[0].to_element()
+elem.find("{http://www.cdisc.org/ns/def/v2.1}leaf")          # resolves
+ET.Element("SubmissionPackage").append(elem)                 # embeds correctly
+```
+
+It costs one serialize + reparse (~8 ms for a 166 KB Define document). `to_xml()` is the
+internal tree builder behind `to_xml_string()` and `ODMWriter` — not something to call.
 
 **String vs file.** `write_xml()` writes the XML declaration and then exactly the bytes
 `to_xml_string()` returns:

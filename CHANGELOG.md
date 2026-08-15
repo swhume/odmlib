@@ -7,6 +7,38 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added — `to_element()`
+
+- **`ODMElement.to_element()` returns a standard, namespace-resolved ElementTree Element.**
+  Getting a tree out of odmlib previously meant `to_xml()`, which builds the library's
+  internal serialization buffer: prefix-literal tags (`def:leaf`, not Clark notation) and
+  **no** `xmlns` declarations. That tree cannot be re-parsed on its own for Define-XML
+  (`ParseError: unbound prefix`), lands in no namespace for ODM, fails
+  `ET.canonicalize()`, and does not support namespace-aware `find()`. `to_element()`
+  returns a tree parsed from `to_xml_string()`, so all of those work:
+
+  ```python
+  elem = define.Study.MetaDataVersion.ItemGroupDef[0].to_element()
+  elem.find("{http://www.cdisc.org/ns/def/v2.1}leaf")   # namespace-aware find
+  host = ET.Element("SubmissionPackage"); host.append(elem)   # embeds correctly
+  ET.indent(ET.ElementTree(elem))                       # pretty-prints and re-parses
+  ```
+
+  It costs one serialize + reparse — about 8 ms for a 166 KB Define-XML document.
+  `DatasetJSONElement.to_element()` raises `NotImplementedError`, matching its sibling
+  `to_xml` / `to_xml_string` / `write_xml` overrides. Pinned by
+  `tests/test_xml_string_serialization.py::TestToElement`.
+
+  **`to_xml()` is unchanged and is not deprecated** — it remains the shared tree builder
+  behind `to_xml_string()` and `write_xml()`, and existing callers keep working. It has
+  been demoted in the documentation from the head of the serialization list to a
+  trailing "internal tree builder" entry; prefer `to_element()` when you want a tree.
+
+  One caveat: re-serializing a `to_element()` tree with `ET.tostring()` picks prefixes
+  from ElementTree's process-global `register_namespace()` map, so the prefix spelling
+  may differ from the source (`odm:ODM` rather than a default `xmlns`). The namespaces
+  are identical. Use `to_xml_string()` or `write_xml()` when exact output matters.
+
 ### Added — `to_xml_string(xml_declaration=True)`
 
 - **`ODMElement.to_xml_string()` accepts a keyword-only `xml_declaration` flag.**

@@ -162,7 +162,8 @@ Every model object subclasses `ODMElement` and inherits:
 ```python
 # Serialize
 .to_json() -> str            .to_dict() -> dict
-.to_xml(...) -> Element      .to_xml_string(*, xml_declaration=False) -> str   # Element: NO xmlns
+.to_element() -> Element     .to_xml_string(*, xml_declaration=False) -> str
+.to_xml(...) -> Element      # internal tree builder: NO xmlns -- prefer to_element()
 .write_xml(odm_file)         .write_json(odm_file)
 
 # Search the subtree
@@ -210,6 +211,7 @@ The XML declaration is omitted unless you ask for it.
 
 ```python
 .to_xml_string(*, xml_declaration=False) -> str   # self-contained: default xmlns + every USED prefix
+.to_element() -> Element                          # namespace-resolved tree (Clark notation)
 .to_xml(parent_elem=None, top_elem=None) -> Element   # NO xmlns anywhere; prefix-literal tags
 .write_xml(odm_file, odm_writer=ODMWriter)            # <?xml ...?> + the to_xml_string() bytes
 ```
@@ -219,7 +221,15 @@ The XML declaration is omitted unless you ask for it.
   attached. `ET.tostring()` on it produces markup that fails to parse for Define-XML
   (`ParseError: unbound prefix`) and parses into *no namespace* for ODM — where odmlib will
   re-load it with `FileOID` intact and every `Study` silently dropped. `ET.canonicalize()`
-  also fails on it. Use `to_xml_string()`; use `to_xml()` only to graft fragments.
+  also fails on it. It is the shared tree builder behind `to_xml_string()` and `ODMWriter`,
+  not an API to reach for.
+- **`to_element()` is the one that gives you a tree.** It parses `to_xml_string()`, so tags
+  are Clark notation (`{http://www.cdisc.org/ns/def/v2.1}leaf`) and namespace-aware
+  `find()`, `ET.canonicalize()`, `ET.indent()` pretty-printing and grafting into a host
+  document all work. Costs one serialize + reparse (~8 ms for a 166 KB Define document).
+  Caveat: re-serializing it with `ET.tostring()` picks prefixes from ElementTree's global
+  `register_namespace()` map, so you may see `odm:ODM` instead of a default `xmlns` — the
+  namespaces are the same. Use `to_xml_string()`/`write_xml()` when exact output matters.
 - **Byte relationship:** `write_xml()` output ==
   `b"<?xml version='1.0' encoding='UTF-8'?>\n" + to_xml_string().encode("utf-8")`, and ==
   `to_xml_string(xml_declaration=True).encode("utf-8")` exactly. Both paths use

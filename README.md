@@ -279,7 +279,7 @@ All odmlib elements support bidirectional conversion:
 ```python
 # To/from XML
 xml_string = item_def.to_xml_string()   # self-contained: declares its own xmlns
-xml_elem = item_def.to_xml()            # xml.etree.ElementTree.Element
+xml_elem = item_def.to_element()        # namespace-resolved ElementTree Element
 
 # To/from JSON
 json_string = mdv.to_json()
@@ -298,12 +298,17 @@ odm.to_xml_string()                       # the bytes write_xml() writes AFTER <
 odm.to_xml_string(xml_declaration=True)   # exactly what write_xml() writes
 ```
 
-`to_xml()` is different: it returns a *serialization buffer* with literal prefixed tags
-(`def:leaf`) and **no** `xmlns` at all. `ET.tostring(obj.to_xml())` is therefore not a
+`to_element()` gives you a real tree — Clark-notation tags
+(`{http://www.cdisc.org/ns/def/v2.1}leaf`), so namespace-aware `find()`,
+`ET.canonicalize()`, `ET.indent()` pretty-printing, and grafting into a host document all
+work. It costs one serialize + reparse (~8 ms for a 166 KB Define-XML document).
+
+`to_xml()` is different: it is odmlib's internal *serialization buffer*, with literal
+prefixed tags (`def:leaf`) and **no** `xmlns` at all — the shared tree builder behind
+`to_xml_string()` and `write_xml()`. `ET.tostring(obj.to_xml())` is therefore not a
 substitute — on Define-XML it fails to parse (`unbound prefix`), and on ODM it parses into
 no namespace, which odmlib will re-load with the `FileOID` intact and every `Study`
-silently dropped. Use `to_xml_string()`; use `to_xml()` only to graft a fragment into a
-tree you are assembling yourself.
+silently dropped. Use `to_xml_string()` for text and `to_element()` when you want a tree.
 
 ## Validation
 

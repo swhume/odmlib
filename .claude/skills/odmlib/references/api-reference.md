@@ -161,8 +161,8 @@ Every model object subclasses `ODMElement` and inherits:
 
 ```python
 # Serialize
-.to_json() -> str           .to_dict() -> dict
-.to_xml(...) -> Element      .to_xml_string() -> str
+.to_json() -> str            .to_dict() -> dict
+.to_xml(...) -> Element      .to_xml_string() -> str    # Element carries NO xmlns; string does
 .write_xml(odm_file)         .write_json(odm_file)
 
 # Search the subtree
@@ -202,6 +202,48 @@ it returns a `dict` mapping orphan OID → the ref attribute expected to point a
 noisy that dict is depends on the model package's `skip_elem` set (`odm_1_3_2` skips only
 `ODM`, so structural OIDs appear; `define_2_1` skips `Study`/`MetaDataVersion`/
 `ItemGroupDef` too).
+
+### Serialization details
+
+`to_xml_string()` takes **no arguments** in 0.2.1. It calls `to_xml()`, attaches the xmlns
+declarations, and returns UTF-8 text **without** an XML declaration.
+
+```python
+.to_xml_string() -> str      # self-contained: default xmlns + every USED prefix; no <?xml ...?>
+.to_xml(parent_elem=None, top_elem=None) -> Element   # NO xmlns anywhere; prefix-literal tags
+.write_xml(odm_file, odm_writer=ODMWriter)            # <?xml ...?> + the to_xml_string() bytes
+```
+
+- **The Element from `to_xml()` is not a document.** Tags/attributes are literal
+  `prefix:name` strings (`def:leaf`, `xlink:href`), not Clark notation, and no `xmlns` is
+  attached. `ET.tostring()` on it produces markup that fails to parse for Define-XML
+  (`ParseError: unbound prefix`) and parses into *no namespace* for ODM — where odmlib will
+  re-load it with `FileOID` intact and every `Study` silently dropped. `ET.canonicalize()`
+  also fails on it. Use `to_xml_string()`; use `to_xml()` only to graft fragments.
+- **Byte relationship:** `write_xml()` output ==
+  `b"<?xml version='1.0' encoding='UTF-8'?>\n" + to_xml_string().encode("utf-8")`. Both paths
+  use `short_empty_elements=True` and identical attribute order.
+- **Any element serializes**, not just the root — but see the namespace-binding caveat below.
+- **XSD validation accepts a string**: `ODMSchemaValidator(...).xsd.iter_errors(xml_string)`
+  works with no file involved.
+
+#### Namespace binding helpers (`odmlib.ns_registry`)
+
+```python
+NS.get_document_namespaces(odm_obj) -> dict | None    # the per-document snapshot, or None
+NS.bind_document_namespaces(odm_obj, snapshot=None)   # attach a snapshot to an element
+```
+
+A loaded document's namespaces are captured as a snapshot so a later load of a different
+document cannot change how it serializes. The snapshot is bound **only** to objects the loader
+returns directly — `root()`, `Study()`, `MetaDataVersion()`, `create_odmlib()`. An element
+reached by walking the tree (`define.Study.MetaDataVersion`), or constructed after the load and
+grafted in, has **no** snapshot and falls back to current global registry state — so its
+`to_xml_string()` can emit a different `xmlns:def` than its own root. Rebind it explicitly:
+
+```python
+NS.bind_document_namespaces(mdv, NS.get_document_namespaces(define))
+```
 
 ## 6. Validation: OID checker, conformance, XSD, modes
 

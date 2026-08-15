@@ -143,13 +143,22 @@ the same pass.
 an OID-shaped attribute which is *not* a real reference, pass it in `extra_skip_attrs` so it
 is not treated as a dangling ref.
 
-**Not every ID-like link is covered.** Reference discovery keys off the `OID` *suffix*, so
-in `define_2_1` the checked reference attributes are exactly `ItemOID`, `CodeListOID`,
-`MethodOID`, `CommentOID`, `WhereClauseOID`, `ValueListOID`, `StandardOID`, and
-`RoleCodeListOID`. Define-XML's `def:leaf/@ID` ↔ `ItemGroupDef/@def:ArchiveLocationID` pair
-is **not** among them — a `leaf` reference pointing at nothing passes `verify_oids()`
-silently. Check that link yourself (or via XSD, which does enforce `IDREF`) if your document
-relies on it.
+**`def:ArchiveLocationID` *is* checked (since 0.2.1).** Reference discovery keys off the `OID`
+*suffix*, which in `define_2_1` covers `ItemOID`, `CodeListOID`, `MethodOID`, `CommentOID`,
+`WhereClauseOID`, `ValueListOID`, `StandardOID`, and `RoleCodeListOID`. Define-XML's
+`def:leaf/@ID` ↔ `ItemGroupDef/@def:ArchiveLocationID` pair does not fit that suffix rule, so
+`ArchiveLocationID` (and `leafID`, which also points at a `leaf`) is special-cased alongside the
+`*OID` attributes. Dangling one reports
+
+```
+OdmlibOIDError: OID LF.DOES.NOT.EXIST referenced in attribute ArchiveLocationID is not found.
+```
+
+Before 0.2.1 this link was unchecked and passed `verify_oids()` silently — if you are pinned to
+an older odmlib, verify it yourself or rely on XSD, which enforces `IDREF`.
+
+Genuinely uncovered links are those that are neither `*OID`-suffixed nor explicitly wired: check
+those yourself or via XSD.
 
 ### `unreferenced_oids()` returns a dict, not a list
 

@@ -18,8 +18,9 @@ Example::
         uri="http://www.cdisc.org/ns/def/v2.1")
 """
 import validators
+import warnings
 import weakref
-from odmlib.exceptions import OdmlibNamespaceError
+from odmlib.exceptions import OdmlibDeprecationWarning, OdmlibNamespaceError
 
 
 # Side table associating loaded document roots with the namespace state in
@@ -30,20 +31,61 @@ from odmlib.exceptions import OdmlibNamespaceError
 _DOCUMENT_NAMESPACES: "weakref.WeakKeyDictionary" = weakref.WeakKeyDictionary()
 
 
-def bind_document_namespaces(odm_obj, snapshot=None):
+def _is_odm_element(obj):
+    """True for odmlib model objects, without importing them.
+
+    ``odm_element`` imports this module, so a real isinstance check would be circular.
+    Every model class gets ``_elems`` from ``ODMMeta``, which makes it a reliable marker.
+    """
+    return hasattr(obj, "_elems") and hasattr(obj, "__dict__")
+
+
+def _bind_one(odm_obj, snapshot):
+    try:
+        _DOCUMENT_NAMESPACES[odm_obj] = snapshot
+    except TypeError:
+        pass  # objects that do not support weak references fall back to global state
+
+
+def bind_document_namespaces(odm_obj, snapshot=None, recursive=False):
     """Associate *odm_obj* with a namespace snapshot for serialization.
 
     Args:
         odm_obj: A loaded odmlib element (typically the document root).
         snapshot: A dict as returned by :meth:`NamespaceRegistry.snapshot`.
             When ``None``, the registry's current state is captured.
+        recursive: When True, also bind every descendant element, so that
+            serializing a child reached by walking the tree
+            (``define.Study.MetaDataVersion``) uses the same namespaces as its
+            root instead of falling back to current global registry state.
     """
+    # Resolve the snapshot exactly once so the whole walk shares one dict. Resolving
+    # per node would mint a fresh dict each time and defeat any identity-based guard.
     if snapshot is None:
         snapshot = NamespaceRegistry().snapshot()
-    try:
-        _DOCUMENT_NAMESPACES[odm_obj] = snapshot
-    except TypeError:
-        pass  # objects that do not support weak references fall back to global state
+    if not recursive:
+        _bind_one(odm_obj, snapshot)
+        return
+
+    # Guard on id(), not on "already mapped to this snapshot" - the latter cannot
+    # distinguish a revisit from a legitimate rebind and degenerates on cycles.
+    # Every object here stays reachable from odm_obj for the duration, so ids are stable.
+    visited = set()
+    stack = [odm_obj]
+    while stack:
+        obj = stack.pop()
+        if obj is None or id(obj) in visited:
+            continue
+        visited.add(id(obj))
+        _bind_one(obj, snapshot)
+        children = getattr(obj, "__dict__", None)
+        if not children:
+            continue
+        for value in children.values():
+            if isinstance(value, list):
+                stack.extend(item for item in value if _is_odm_element(item))
+            elif _is_odm_element(value):
+                stack.append(value)
 
 
 def get_document_namespaces(odm_obj):
@@ -266,6 +308,12 @@ class NamespaceRegistry(Borg):
     def set_odm_namespace_attributes_string(self, odm_str):
         """Add xmlns attributes to an ODM XML string.
 
+        .. deprecated:: 0.2.2
+            :meth:`ODMElement.to_xml_string` has declared its own namespaces since
+            0.2.1, so this string-patching helper is a no-op on any string it would
+            normally be handed. It has no callers in odmlib and will be removed in
+            0.3.0. Remove the call; no replacement is needed.
+
         Replaces the opening ``<ODM`` tag in ``odm_str`` with a version
         that includes all registered namespace declarations.
 
@@ -275,6 +323,13 @@ class NamespaceRegistry(Borg):
         Returns:
             str: The modified XML string with xmlns attributes injected.
         """
+        warnings.warn(
+            "NamespaceRegistry.set_odm_namespace_attributes_string() is deprecated and "
+            "will be removed in 0.3.0. to_xml_string() already emits its own xmlns "
+            "declarations, so this call is a no-op for strings it produces.",
+            OdmlibDeprecationWarning,
+            stacklevel=2,
+        )
         # no-op when the root element already declares a namespace (e.g. a
         # string produced by to_xml_string(), which is now self-contained)
         root_tag_end = odm_str.find(">", odm_str.find("<ODM"))

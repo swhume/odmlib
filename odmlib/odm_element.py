@@ -11,7 +11,7 @@ from :class:`ODMElement` and use descriptors from :mod:`odmlib.typed` to define
 their attributes and child elements.
 """
 from __future__ import annotations
-from typing import Any, Optional, List
+from typing import Any, Optional, List, cast
 import odmlib.descriptor as DESC
 import odmlib.typed as T
 import odmlib.ns_registry as NS
@@ -381,17 +381,35 @@ class ODMElement(metaclass=ODMMeta):
                 obj.to_xml(odm_elem, top_elem)
         return top_elem
 
-    def to_xml_string(self) -> str:
+    def to_xml_string(self, *, xml_declaration: bool = False) -> str:
         """Convert this element to an XML string.
 
         The string includes xmlns declarations for the default namespace and
         any prefixes used in the serialized tree, so the result is
         namespace-well-formed and can be re-parsed on its own.
 
+        The two serialization paths line up exactly, which makes a string and a
+        file interchangeable for comparison purposes:
+
+        * ``xml_declaration=False`` (the default) returns precisely the bytes
+          :meth:`write_xml` produces *after* its ``<?xml ...?>`` line.
+        * ``xml_declaration=True`` returns precisely what :meth:`write_xml`
+          writes, declaration included.
+
+        The default stays ``False``: this string is the documented input to
+        ``ODMLoader.load_odm_string()``, and 0.2.1 shipped it declaration-free.
+
+        Args:
+            xml_declaration: When True, prepend
+                ``<?xml version='1.0' encoding='UTF-8'?>`` and a newline.
+                Keyword-only.
+
         Returns:
             str: UTF-8 XML representation of this element.
         """
-        elem = self.to_xml()
+        # a top-level to_xml() always returns the root it created; the Optional in its
+        # signature is for the recursive child calls, which return top_elem instead
+        elem = cast(ET.Element, self.to_xml())
         nsr = NS.NamespaceRegistry()
         snapshot = NS.get_document_namespaces(self)
         if snapshot:
@@ -399,8 +417,11 @@ class ODMElement(metaclass=ODMMeta):
                 elem, namespaces=snapshot["namespaces"], default=snapshot["default"])
         else:
             nsr.set_odm_namespace_attributes(elem)
-        xml_str = ET.tostring(elem, encoding='UTF-8', method='xml')
-        return xml_str.decode("utf-8")
+        # xml_declaration= overrides ElementTree's encoding heuristic, which otherwise
+        # suppresses the declaration because 'UTF-8'.lower() is a recognized default.
+        xml_bytes: bytes = ET.tostring(elem, encoding='UTF-8', method='xml',
+                                       xml_declaration=xml_declaration)
+        return xml_bytes.decode("utf-8")
 
     def to_dict(self) -> dict:
         """

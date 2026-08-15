@@ -331,29 +331,27 @@ declare namespaces on the finished root.
 file_bytes == b"<?xml version='1.0' encoding='UTF-8'?>\n" + obj.to_xml_string().encode("utf-8")
 ```
 
-`to_xml_string()` takes no arguments in 0.2.1 — there is no `xml_declaration=` option, so prepend
-the declaration yourself if a consumer requires one. Do not compare a string to a file without
-accounting for it.
+Use the keyword-only `xml_declaration=True` when a consumer needs the declaration; the default
+stays `False`, which is what `load_odm_string()` expects. Do not compare a string to a file
+without accounting for that 39-byte difference.
 
-**Namespaces on nested elements — a live gap.** The per-document namespace snapshot is bound only
-to objects the loader hands back directly (`root()`, `Study()`, `MetaDataVersion()`,
-`create_odmlib()`). An element reached by *walking the tree* has no snapshot and falls back to
-whatever the global registry holds now, so importing a second model package can silently change
-its namespace:
+**Namespaces on nested elements.** Loading captures a per-document namespace snapshot, and the
+loader binds it *recursively*, so a child reached by walking the tree serializes exactly like its
+root even after another model package changes the global registry:
 
 ```python
-mdv = define.Study.MetaDataVersion       # walked to, NOT handed back -> unbound
-import odmlib.define_2_0.model           # legitimate: an app handling both Define versions
-define.to_xml_string()                   # root: correct, xmlns:def=".../def/v2.1"
-mdv.to_xml_string()                      # nested: WRONG, xmlns:def=".../def/v2.0"
+mdv = define.Study.MetaDataVersion       # bound recursively at load time
+import odmlib.define_2_0.model           # re-registers def: -> v2.0 globally
+define.to_xml_string()                   # root:   xmlns:def=".../def/v2.1"
+mdv.to_xml_string()                      # nested: xmlns:def=".../def/v2.1"  (same)
 ```
 
-Two ways out: take the element from the loader (`loader.MetaDataVersion()` *is* bound), or rebind
-it explicitly — this also applies to any element you construct after the load and graft in:
+**The one case still not covered:** an element you *construct after the load* and graft in has no
+snapshot and falls back to current global state. Bind it explicitly:
 
 ```python
 import odmlib.ns_registry as NS
-NS.bind_document_namespaces(mdv, NS.get_document_namespaces(define))
+NS.bind_document_namespaces(new_elem, NS.get_document_namespaces(define))
 ```
 
 ## A reliable working loop for odmlib tasks

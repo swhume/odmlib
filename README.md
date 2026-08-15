@@ -278,8 +278,8 @@ All odmlib elements support bidirectional conversion:
 
 ```python
 # To/from XML
-xml_string = item_def.to_xml_string()
-xml_elem = item_def.to_xml()           # xml.etree.ElementTree.Element
+xml_string = item_def.to_xml_string()   # self-contained: declares its own xmlns
+xml_elem = item_def.to_xml()            # xml.etree.ElementTree.Element
 
 # To/from JSON
 json_string = mdv.to_json()
@@ -289,6 +289,21 @@ python_dict = mdv.to_dict()
 odm.write_xml("output.xml")
 odm.write_json("output.json")
 ```
+
+`to_xml_string()` adds the xmlns declarations the tree actually uses, so the result
+re-parses and schema-validates on its own. The string and file paths line up exactly:
+
+```python
+odm.to_xml_string()                       # the bytes write_xml() writes AFTER <?xml ...?>
+odm.to_xml_string(xml_declaration=True)   # exactly what write_xml() writes
+```
+
+`to_xml()` is different: it returns a *serialization buffer* with literal prefixed tags
+(`def:leaf`) and **no** `xmlns` at all. `ET.tostring(obj.to_xml())` is therefore not a
+substitute — on Define-XML it fails to parse (`unbound prefix`), and on ODM it parses into
+no namespace, which odmlib will re-load with the `FileOID` intact and every `Study`
+silently dropped. Use `to_xml_string()`; use `to_xml()` only to graft a fragment into a
+tree you are assembling yourself.
 
 ## Validation
 

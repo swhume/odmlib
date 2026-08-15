@@ -118,11 +118,23 @@ mdv = loader.MetaDataVersion()  # Get first MetaDataVersion
 
 All `ODMElement` objects support bidirectional conversion:
 
-- **to_xml()** → ElementTree, then write with `write_xml(filename)`
+- **to_xml()** → ElementTree, carrying **no** xmlns declarations (see below)
+- **to_xml_string()** → self-contained XML string; `xml_declaration=True` (keyword-only)
+  prepends `<?xml version='1.0' encoding='UTF-8'?>`
 - **to_json()** → JSON string, or `write_json(filename)`
 - **to_dict()** → Python dict (namespace info stripped)
 
 The `ODMWriter` class handles writing XML with proper namespace registration.
+
+String and file output line up exactly: `to_xml_string()` returns the bytes `write_xml()`
+writes *after* its declaration, and `to_xml_string(xml_declaration=True)` returns exactly
+what `write_xml()` writes.
+
+**Never `ET.tostring(obj.to_xml())`.** `to_xml()` emits prefix-literal tags (`def:leaf`,
+not Clark notation) and no `xmlns`; declarations are attached by `to_xml_string()` and
+`ODMWriter.write_odm()`. On Define-XML that markup raises `ParseError: unbound prefix`; on
+ODM it parses into no namespace and re-loads with `FileOID` correct and every `Study` gone,
+with no exception.
 
 ### Namespace Management
 
@@ -131,6 +143,16 @@ The `ODMWriter` class handles writing XML with proper namespace registration.
 - Handles default namespace designation
 - Injects xmlns attributes into XML serialization
 - Each model package registers its namespaces at import time
+
+Because that state is process-wide, loading a document captures a **per-document snapshot**
+(`bind_document_namespaces` / `get_document_namespaces`), which serialization consults
+first — so opening a second document cannot change how the first one is written. The
+loader binds the snapshot **recursively**, so nested elements reached by walking the tree
+(`define.Study.MetaDataVersion`) serialize like their root.
+
+**Residual limitation:** an element constructed *after* the load and grafted in carries no
+snapshot and falls back to global state. Bind it explicitly:
+`NS.bind_document_namespaces(new_elem, NS.get_document_namespaces(root))`.
 
 **Important:** Use `NS.NamespaceRegistry.reset()` to clear state between tests.
 

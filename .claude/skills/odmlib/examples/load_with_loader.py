@@ -80,13 +80,15 @@ if __name__ == "__main__":
     print("string declares its own xmlns ->",
           ET.fromstring(xml_text).tag)          # {http://www.cdisc.org/ns/odm/v1.3}ODM
 
-    # The file is the XML declaration followed by exactly those bytes. to_xml_string()
-    # takes no arguments in 0.2.1, so prepend the declaration yourself if you need it.
+    # The file is the XML declaration followed by exactly those bytes -- or ask for the
+    # declaration with the keyword-only xml_declaration=True and get the file verbatim.
     with open(INPUT, "rb") as fh:
         file_bytes = fh.read()
     XML_DECL = b"<?xml version='1.0' encoding='UTF-8'?>\n"
     assert file_bytes == XML_DECL + xml_text.encode("utf-8")
+    assert file_bytes == source.to_xml_string(xml_declaration=True).encode("utf-8")
     print("write_xml() bytes == XML declaration + to_xml_string() -> True")
+    print("write_xml() bytes == to_xml_string(xml_declaration=True) -> True")
 
     # --- The anti-pattern: ET.tostring(obj.to_xml()) ---
     # to_xml() is a serialization BUFFER: prefix-literal tags, no xmlns anywhere.

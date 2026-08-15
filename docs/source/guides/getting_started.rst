@@ -137,7 +137,9 @@ to register XML namespaces before creating or loading documents. Call
 :meth:`~odmlib.ns_registry.Borg.reset` to clear namespace state between
 independent operations.
 
-**Bidirectional serialization**: All elements support :meth:`~odmlib.odm_element.ODMElement.to_xml`,
+**Bidirectional serialization**: All elements support
+:meth:`~odmlib.odm_element.ODMElement.to_xml_string`,
+:meth:`~odmlib.odm_element.ODMElement.to_element`,
 :meth:`~odmlib.odm_element.ODMElement.to_json`, and
 :meth:`~odmlib.odm_element.ODMElement.to_dict` for conversion back to
 standard formats.

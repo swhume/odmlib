@@ -233,12 +233,13 @@ class ODMElement(metaclass=ODMMeta):
     (e.g., Study, ItemDef, MetaDataVersion) inherit from this class.
 
     Serialization:
-        - :meth:`to_xml` -- generate ElementTree XML
-        - :meth:`to_xml_string` -- XML as a string
+        - :meth:`to_xml_string` -- XML as a string (self-contained; declares its own xmlns)
+        - :meth:`to_element` -- namespace-resolved ElementTree Element
         - :meth:`to_dict` -- Python dict (namespace info stripped)
         - :meth:`to_json` -- JSON string
         - :meth:`write_xml` -- write XML to file
         - :meth:`write_json` -- write JSON to file
+        - :meth:`to_xml` -- internal tree builder; no xmlns (prefer :meth:`to_element`)
 
     Validation:
         - :meth:`verify_oids` -- OID uniqueness and ref/def integrity
@@ -337,7 +338,15 @@ class ODMElement(metaclass=ODMMeta):
         return json.dumps(self.to_dict())
 
     def to_xml(self, parent_elem: Optional[ET.Element] = None, top_elem: Optional[ET.Element] = None) -> Optional[ET.Element]:
-        """Generate ElementTree XML from the odmlib object hierarchy.
+        """Build odmlib's internal ElementTree serialization buffer.
+
+        **Prefer :meth:`to_element` if you want a tree to work with.** The Element
+        returned here carries **no** xmlns declarations and uses prefix-literal tags
+        (``def:leaf``) rather than Clark notation, so on its own it cannot be re-parsed
+        for Define-XML (``ParseError: unbound prefix``), lands in no namespace for ODM,
+        fails ``ET.canonicalize()``, and does not support namespace-aware ``find()``.
+        Declarations are attached downstream by :meth:`to_xml_string` and
+        :class:`ODMWriter`. This method exists as the shared tree builder for those two.
 
         Children are emitted in the model declaration order recorded in
         ``_elems`` by :class:`ODMMeta` (i.e. the order in which descriptors
@@ -422,6 +431,32 @@ class ODMElement(metaclass=ODMMeta):
         xml_bytes: bytes = ET.tostring(elem, encoding='UTF-8', method='xml',
                                        xml_declaration=xml_declaration)
         return xml_bytes.decode("utf-8")
+
+    def to_element(self) -> ET.Element:
+        """Return this element as a standard, namespace-resolved ElementTree Element.
+
+        Unlike :meth:`to_xml`, which builds odmlib's internal serialization buffer with
+        prefix-literal tags (``def:leaf``) and no declarations, this returns a tree parsed
+        from :meth:`to_xml_string`. Tags and attributes use Clark notation
+        (``{http://www.cdisc.org/ns/def/v2.1}leaf``), so namespace-aware ``find()``,
+        ``ET.canonicalize()``, ``ET.indent()`` pretty-printing, and grafting the result
+        into a host document you are assembling yourself all behave correctly.
+
+        This is the method to reach for when you want an ``Element``; ``to_xml()`` is the
+        internal tree builder and its output is not a self-contained document.
+
+        Costs one serialize + reparse (~8 ms for a 166 KB Define-XML document).
+
+        Note that re-serializing the result with ``ET.tostring()`` picks prefixes from
+        ElementTree's process-global ``register_namespace()`` map, so the prefix spelling
+        may differ from the source document (``odm:ODM`` rather than a default ``xmlns``).
+        The namespaces themselves are identical. Use :meth:`to_xml_string` or
+        :meth:`write_xml` when you need odmlib's exact output.
+
+        :return: a namespace-resolved ``ET.Element``
+        :raises OdmlibNamespaceError: if no default namespace is registered
+        """
+        return ET.fromstring(self.to_xml_string())
 
     def to_dict(self) -> dict:
         """

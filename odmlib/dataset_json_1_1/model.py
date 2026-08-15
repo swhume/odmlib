@@ -52,6 +52,17 @@ class DatasetJSONElement(OE.ODMElement):
         """
         raise NotImplementedError("Dataset-JSON does not support XML serialization")
 
+    def to_element(self):
+        """Dataset-JSON does not support XML serialization.
+
+        Overridden explicitly so the failure comes from here rather than from
+        inside :meth:`to_xml_string`, which would give a confusing traceback.
+
+        Raises:
+            NotImplementedError: Always.
+        """
+        raise NotImplementedError("Dataset-JSON does not support XML serialization")
+
     def write_xml(self, odm_file, odm_writer=None):
         """Dataset-JSON does not support XML serialization.
 

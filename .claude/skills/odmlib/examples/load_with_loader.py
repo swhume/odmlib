@@ -11,6 +11,7 @@ Demonstrates:
   * to_xml_string() is self-contained (declares its own xmlns) and how its bytes
     relate to write_xml() output
   * why ET.tostring(obj.to_xml()) is NOT a substitute -- it loses data silently on ODM
+  * to_element() for a real, namespace-resolved ElementTree tree
   * the Define-XML variant (set model_package="define_2_1" explicitly)
 
 Run:  python load_with_loader.py   (creates its own input first)
@@ -104,6 +105,13 @@ if __name__ == "__main__":
     print("  FileOID reads back correctly:", broken.FileOID)
     print("  Study count:", len(broken.Study), "(was", len(source.Study),
           ") <- silent data loss, no exception")
+
+    # --- The fix: to_element() when you actually want a tree ---
+    # It parses to_xml_string(), so tags are Clark notation and namespaces resolve.
+    elem = source.to_element()
+    print("\nto_element():")
+    print("  root tag        ", elem.tag)                       # {…/odm/v1.3}ODM
+    print("  Study resolves? ", elem.find("{http://www.cdisc.org/ns/odm/v1.3}Study") is not None)
 
     # --- Define-XML variant: the Define loader's own default is define_2_0,
     #     so name the version you mean. (No define file here, just the idiom.) ---

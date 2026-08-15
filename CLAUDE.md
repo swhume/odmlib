@@ -118,9 +118,12 @@ mdv = loader.MetaDataVersion()  # Get first MetaDataVersion
 
 All `ODMElement` objects support bidirectional conversion:
 
-- **to_xml()** → ElementTree, carrying **no** xmlns declarations (see below)
 - **to_xml_string()** → self-contained XML string; `xml_declaration=True` (keyword-only)
   prepends `<?xml version='1.0' encoding='UTF-8'?>`
+- **to_element()** → namespace-resolved ElementTree Element (Clark notation). Use this when
+  you want a tree — it parses, embeds, canonicalizes and pretty-prints correctly
+- **to_xml()** → the internal tree builder shared by `to_xml_string()` and `ODMWriter`;
+  carries **no** xmlns declarations and uses prefix-literal tags (see below)
 - **to_json()** → JSON string, or `write_json(filename)`
 - **to_dict()** → Python dict (namespace info stripped)
 
@@ -134,7 +137,8 @@ what `write_xml()` writes.
 not Clark notation) and no `xmlns`; declarations are attached by `to_xml_string()` and
 `ODMWriter.write_odm()`. On Define-XML that markup raises `ParseError: unbound prefix`; on
 ODM it parses into no namespace and re-loads with `FileOID` correct and every `Study` gone,
-with no exception.
+with no exception. **Use `to_element()`** when you want an Element — it returns a
+namespace-resolved tree that does not have any of these problems.
 
 ### Namespace Management
 

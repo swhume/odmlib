@@ -101,6 +101,12 @@ class TestXmlDeclarationOption(TestCase):
         with self.assertRaises(NotImplementedError):
             ds.to_xml_string()
 
+    def test_dataset_json_to_element_raises(self):
+        """to_element() must raise from its own override, not from to_xml_string()."""
+        ds = DatasetJSON.__new__(DatasetJSON)
+        with self.assertRaises(NotImplementedError):
+            ds.to_element()
+
 
 class TestXmlDeclarationOptionDefine21(TestCase):
     """The same byte relationship on a real Define-XML 2.1 document."""
@@ -229,6 +235,70 @@ class TestNestedElementNamespaceBinding(TestCase):
         path = os.path.join(DATA_DIR, "defineV21-SDTM.xml")
         with open_define(path, write_on_exit=False) as define:
             self.assertIsNotNone(NS.get_document_namespaces(define.Study.MetaDataVersion))
+
+
+class TestToElement(TestCase):
+    """to_element() returns a real, namespace-resolved tree - unlike to_xml()."""
+
+    def setUp(self):
+        NS.NamespaceRegistry(prefix="def", uri=DEFINE_NS)
+        NS.NamespaceRegistry(prefix="xs", uri="http://www.w3.org/2001/XMLSchema-instance")
+        NS.NamespaceRegistry(prefix="xml", uri="http://www.w3.org/XML/1998/namespace")
+        NS.NamespaceRegistry(prefix="xlink", uri="http://www.w3.org/1999/xlink")
+        loader = LD.ODMLoader(DL.XMLDefineLoader(model_package="define_2_1", ns_uri=DEFINE_NS))
+        loader.open_odm_document(os.path.join(DATA_DIR, "defineV21-SDTM.xml"))
+        self.define = loader.root()
+        self.igd = self.define.Study.MetaDataVersion.ItemGroupDef[0]
+
+    def test_returns_clark_notation(self):
+        self.assertEqual(self.define.to_element().tag, "{" + ODM_NS + "}ODM")
+
+    def test_namespace_aware_find_works(self):
+        """The whole point: def: resolves to a URI, so a namespaced find matches."""
+        self.assertIsNotNone(self.define.to_element().find(".//{" + DEFINE_NS + "}leaf"))
+
+    def test_canonicalize_succeeds(self):
+        """to_xml() fails here with 'unbound prefix'; to_element() must not."""
+        ET.canonicalize(ET.tostring(self.igd.to_element(), encoding="unicode"))
+
+    def test_embeds_into_a_host_document(self):
+        host = ET.Element("SubmissionPackage")
+        host.append(self.igd.to_element())
+        ET.fromstring(ET.tostring(host, encoding="unicode"))     # must not raise
+
+    def test_embedding_a_raw_to_xml_tree_still_fails(self):
+        """Pins why to_element() exists: the raw buffer is not embeddable."""
+        host = ET.Element("SubmissionPackage")
+        host.append(self.igd.to_xml())
+        with self.assertRaises(ET.ParseError):
+            ET.fromstring(ET.tostring(host, encoding="unicode"))
+
+    def test_pretty_print_round_trips(self):
+        tree = ET.ElementTree(self.igd.to_element())
+        ET.indent(tree)
+        ET.fromstring(ET.tostring(tree.getroot(), encoding="unicode"))   # must not raise
+
+    def test_works_on_a_model_built_object(self):
+        """A model-built element has no namespace snapshot; the registry supplies it."""
+        itd = ODM.ItemDef(OID="IT.AGE", Name="Age", DataType="integer")
+        self.assertEqual(itd.to_element().tag, "{" + ODM_NS + "}ItemDef")
+
+    def test_matches_the_written_file_structurally(self):
+        """to_element() must describe the same document write_xml() puts on disk.
+
+        Compared as (tag, attrib) structure rather than canonical text: both trees are
+        Clark-notation, so this is prefix-independent. A text comparison would not be -
+        C14N preserves prefix choice, and re-serializing a Clark tree picks prefixes from
+        the process-global ET.register_namespace() map, which odmlib mutates.
+        """
+        def structure(elem):
+            return [(e.tag, tuple(sorted(e.attrib.items()))) for e in elem.iter()]
+
+        with tempfile.TemporaryDirectory() as tmp:
+            path = os.path.join(tmp, "define_out.xml")
+            self.define.write_xml(path)
+            from_file = ET.parse(path).getroot()
+        self.assertEqual(structure(self.define.to_element()), structure(from_file))
 
 
 class TestSetOdmNamespaceAttributesStringDeprecated(TestCase):

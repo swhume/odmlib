@@ -97,7 +97,22 @@ Define-2.1-specific classes include: `ItemGroupDef`/`ItemDef` (extended with Def
 attributes), `ValueListDef`, `ValueListRef`, `WhereClauseDef`, `WhereClauseRef`,
 `CommentDef`, `MethodDef`, `Origin`, `CodeList` (with `ExternalCodeList`), `leaf`, `title`,
 `DocumentRef`, `PDFPageRef`, `AnnotatedCRF`, `SupplementalDoc`, `Standards`/`Standard`,
-`Class`/`SubClass`. Default `def:` namespace URI: `http://www.cdisc.org/ns/def/v2.1`.
+`Class`/`SubClass`. The URI bound to the `def:` prefix is
+`http://www.cdisc.org/ns/def/v2.1`.
+
+**A Define-XML document's *default* (unprefixed) namespace is the ODM one**, not the Define one
+— the root element is `ODM`, and `def:` is an additional prefix layered on top:
+
+```xml
+<ODM xmlns="http://www.cdisc.org/ns/odm/v1.3"
+     xmlns:def="http://www.cdisc.org/ns/def/v2.1"
+     xmlns:xlink="http://www.w3.org/1999/xlink" ...>
+```
+
+So a serialized Define-XML document resolves its root to `{http://www.cdisc.org/ns/odm/v1.3}ODM`,
+and only `def:`-prefixed elements (`def:leaf`, `def:ValueListDef`, …) land in the Define
+namespace. Expecting the Define URI to be the default is a common source of failed XPath
+lookups and wrong XSD pairings.
 
 ## Dataset-JSON 1.1 (`dataset_json_1_1`)
 
@@ -142,8 +157,11 @@ OID validation (`validate(...)`) needs no schema files and works on ARM as on an
 
 ## Namespace URIs (for `ns_uri=` on explicit loaders)
 
-- ODM 1.3.2: `http://www.cdisc.org/ns/odm/v1.3`
-- Define-XML 2.1 (`def:`): `http://www.cdisc.org/ns/def/v2.1`
+ODM's URI is the *default* namespace in every one of these documents, including Define-XML and
+ARM; the others are prefix bindings.
+
+- ODM 1.3.2 (default, unprefixed): `http://www.cdisc.org/ns/odm/v1.3`
+- Define-XML 2.1 (`def:` prefix): `http://www.cdisc.org/ns/def/v2.1`
 - ARM 1.0 (`arm:`): `http://www.cdisc.org/ns/arm/v1.0`
 - CT-XML: `http://ncicb.nci.nih.gov/xml/odm/EVS/CDISC`
 

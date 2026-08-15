@@ -8,6 +8,9 @@ Demonstrates:
   * LD.ODMLoader(OL.XMLODMLoader(...)) for ODM
   * loader.root() vs loader.MetaDataVersion() (an object, NOT a list)
   * loader.load_odm_string(...) to parse from memory
+  * to_xml_string() is self-contained (declares its own xmlns) and how its bytes
+    relate to write_xml() output
+  * why ET.tostring(obj.to_xml()) is NOT a substitute -- it loses data silently on ODM
   * the Define-XML variant (set model_package="define_2_1" explicitly)
 
 Run:  python load_with_loader.py   (creates its own input first)
@@ -15,6 +18,7 @@ Writes: ./odmlib_skill_output/loader_input.xml (under the current working direct
 """
 import os
 import warnings
+import xml.etree.ElementTree as ET
 
 import odmlib
 from odmlib import ODMBuilder
@@ -69,6 +73,35 @@ if __name__ == "__main__":
     loader2 = LD.ODMLoader(OL.XMLODMLoader(model_package="odm_1_3_2"))
     loader2.load_odm_string(xml_text)
     print("from string: FileOID =", loader2.root().FileOID)
+
+    # to_xml_string() is self-contained: it declares the default namespace and every
+    # prefix the subtree actually uses, so it re-parses and schema-validates on its own.
+    assert 'xmlns="http://www.cdisc.org/ns/odm/v1.3"' in xml_text
+    print("string declares its own xmlns ->",
+          ET.fromstring(xml_text).tag)          # {http://www.cdisc.org/ns/odm/v1.3}ODM
+
+    # The file is the XML declaration followed by exactly those bytes. to_xml_string()
+    # takes no arguments in 0.2.1, so prepend the declaration yourself if you need it.
+    with open(INPUT, "rb") as fh:
+        file_bytes = fh.read()
+    XML_DECL = b"<?xml version='1.0' encoding='UTF-8'?>\n"
+    assert file_bytes == XML_DECL + xml_text.encode("utf-8")
+    print("write_xml() bytes == XML declaration + to_xml_string() -> True")
+
+    # --- The anti-pattern: ET.tostring(obj.to_xml()) ---
+    # to_xml() is a serialization BUFFER: prefix-literal tags, no xmlns anywhere.
+    # On Define-XML this raises ParseError: unbound prefix. On ODM it is worse --
+    # it parses cleanly into NO namespace, and the data quietly disappears.
+    bad = ET.tostring(source.to_xml(), encoding="UTF-8").decode("utf-8")
+    print("\nanti-pattern ET.tostring(to_xml()):")
+    print("  contains xmlns? ", "xmlns" in bad)             # False
+    print("  root tag        ", ET.fromstring(bad).tag)     # 'ODM' -- no namespace
+    loader3 = LD.ODMLoader(OL.XMLODMLoader(model_package="odm_1_3_2"))
+    loader3.load_odm_string(bad)
+    broken = loader3.root()
+    print("  FileOID reads back correctly:", broken.FileOID)
+    print("  Study count:", len(broken.Study), "(was", len(source.Study),
+          ") <- silent data loss, no exception")
 
     # --- Define-XML variant: the Define loader's own default is define_2_0,
     #     so name the version you mean. (No define file here, just the idiom.) ---

@@ -10,7 +10,9 @@ description: >-
   these models. Trigger it when a task mentions odmlib, an .xml/.json ODM / Define-XML /
   Dataset-JSON document, CDISC study metadata, or clinical-trial data definitions — and
   ALSO when odmlib is not named but the user is clearly creating, loading, modifying,
-  validating, merging, or round-tripping CDISC ODM-family metadata in Python. Hand-rolling
+  validating, merging, serializing, or round-tripping CDISC ODM-family metadata in Python,
+  including serializing one of these documents to an XML string or comparing string and
+  file output. Hand-rolling
   XML or JSON for these standards is error-prone; odmlib is the canonical, schema-aware way
   to do it right, so prefer this skill over building the markup by hand.
 ---
@@ -35,7 +37,10 @@ documents may look fine and still fail schema validation or a regulatory load. o
 encodes the rules, so a correctly built object tree serializes to conformant output.
 
 If you ever find yourself writing `ElementTree` calls, f-string XML, or raw JSON for one
-of these standards, stop and use the model instead.
+of these standards, stop and use the model instead. This applies on the way *out* too:
+`ET.tostring(obj.to_xml())` looks like the obvious way to get XML text from an odmlib
+object and is broken — use `to_xml_string()`. See
+*Serializing to a string, not a file* below for why.
 
 ## First steps for any odmlib task
 
@@ -291,6 +296,66 @@ created, and the API rewards it differently:
   also inherit `ValueError`/`TypeError` for compatibility, but that dual inheritance is being
   removed in 0.3.0, so write `except OdmlibError` now to stay future-proof.
 
+### Serializing to a string, not a file
+
+`to_xml_string()` is the string path, and it is the *only* one that carries its own namespace
+declarations. It works on **any** element, not just the document root, and it declares the
+default namespace plus every prefix actually used in that subtree (the reserved `xml` prefix is
+never declared). The result is namespace-well-formed and can be re-parsed or schema-validated on
+its own:
+
+```python
+xml_str = odm.to_xml_string()                      # self-contained; no fixup needed
+loader.load_odm_string(xml_str)                    # round-trips back into objects
+ODMSchemaValidator(standard="define", version="2.1").xsd.iter_errors(xml_str)  # takes a STRING
+```
+
+**Never `ET.tostring(obj.to_xml())`.** `to_xml()` builds a *serialization buffer*, not a
+document: it emits prefix-literal tags (`def:leaf`, not Clark notation) and adds **no** `xmlns`
+at all — declarations are attached by `to_xml_string()` and by `ODMWriter.write_odm`, never by
+`to_xml()`. The two failure modes are asymmetric, and the quiet one is the dangerous one:
+
+- **Define-XML fails loudly** — `ET.fromstring(ET.tostring(define.to_xml()))` raises
+  `ParseError: unbound prefix`.
+- **ODM 1.3.2 fails silently** — it parses fine, *into no namespace*. odmlib will re-load that
+  string, `FileOID` reads back correctly, and **every `Study` is gone** (`len(odm.Study) == 0`),
+  with no exception raised. A smoke test passes; the data is lost.
+
+Reach for `to_xml()` only to graft a fragment into a tree you are assembling yourself, and
+declare namespaces on the finished root.
+
+**String vs file.** `write_xml()` writes the XML declaration and then exactly the bytes
+`to_xml_string()` returns:
+
+```python
+file_bytes == b"<?xml version='1.0' encoding='UTF-8'?>\n" + obj.to_xml_string().encode("utf-8")
+```
+
+`to_xml_string()` takes no arguments in 0.2.1 — there is no `xml_declaration=` option, so prepend
+the declaration yourself if a consumer requires one. Do not compare a string to a file without
+accounting for it.
+
+**Namespaces on nested elements — a live gap.** The per-document namespace snapshot is bound only
+to objects the loader hands back directly (`root()`, `Study()`, `MetaDataVersion()`,
+`create_odmlib()`). An element reached by *walking the tree* has no snapshot and falls back to
+whatever the global registry holds now, so importing a second model package can silently change
+its namespace:
+
+```python
+mdv = define.Study.MetaDataVersion       # walked to, NOT handed back -> unbound
+import odmlib.define_2_0.model           # legitimate: an app handling both Define versions
+define.to_xml_string()                   # root: correct, xmlns:def=".../def/v2.1"
+mdv.to_xml_string()                      # nested: WRONG, xmlns:def=".../def/v2.0"
+```
+
+Two ways out: take the element from the loader (`loader.MetaDataVersion()` *is* bound), or rebind
+it explicitly — this also applies to any element you construct after the load and graft in:
+
+```python
+import odmlib.ns_registry as NS
+NS.bind_document_namespaces(mdv, NS.get_document_namespaces(define))
+```
+
 ## A reliable working loop for odmlib tasks
 
 1. Identify standard + version → model package.
@@ -310,8 +375,8 @@ Read these as needed — they hold the detail that does not belong in the workfl
 
 - `references/api-reference.md` — the public API surface: imports, the facade, `ODMBuilder`
   methods, the loader classes, `ODMElement` methods (`find`/`find_by`/`write_*`/`verify_*`/
-  `validate`), the exception hierarchy, and validation modes. Start here when you need an
-  exact name or signature.
+  `validate`), the serialization methods and the namespace-binding helpers, the exception
+  hierarchy, and validation modes. Start here when you need an exact name or signature.
 - `references/models.md` — the model packages and their key classes, the ODM 1.3.2 vs 2.0
   structural differences, namespace URIs, and version-specific notes.
 - `references/validation.md` — the full validation story: conformance vs OID vs order vs XSD,
@@ -325,7 +390,9 @@ Copy an example out or run it from a writable directory; nothing is written besi
 script. Read them for working idioms;
 run them to confirm behavior in the current environment. They cover: creating ODM (builder
 + raw, with a CodeList and bundled-schema XSD check), read-modify-write via the facade, the
-explicit loader, validation (a caught dangling OID reference, and a demonstration that
+explicit loader (including `to_xml_string()` round-tripping, its byte relationship to
+`write_xml()`, and the `ET.tostring(obj.to_xml())` anti-pattern), validation (a caught
+dangling OID reference, and a demonstration that
 `collect_errors=True` reports all three planted defects plus `max_errors` truncation), OID
 reporting beyond what `validate()` covers — orphans, usage lookup, inventory
 (`report_oid_integrity.py`) — permissive repair, a Dataset-JSON NDJSON round-trip, and a

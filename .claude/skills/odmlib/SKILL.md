@@ -46,8 +46,32 @@ object and is broken — use `to_xml_string()`. See
 
 1. Confirm odmlib is available and note the version: `python -c "import odmlib; print(odmlib.__version__)"`. If it is missing, `pip install odmlib`.
 
-   > This skill describes **odmlib 0.2.1**, and ships with it. Confirm with
-   > `odmlib.__version__`.
+   > **This skill describes odmlib 0.2.1 and later**, and ships with it. 0.2.1 is the single
+   > floor for everything below, including all of *Serializing to a string, not a file*.
+   > On **0.2.0** `to_xml_string()` is merely `ET.tostring(self.to_xml())` and emits **no
+   > `xmlns` at all** — Define-XML output will not re-parse (`ParseError: unbound prefix`)
+   > and ODM output re-loads with `FileOID` intact and **every `Study` silently gone**. If
+   > you are on 0.2.0, upgrade before writing serialization code.
+
+   **Detect capabilities; do not compare version strings.** A version number is the wrong
+   gate here: under PEP 440 a pre-release sorts *below* its release (`0.2.1.dev0 < 0.2.1`),
+   the same `.dev` string names a different tree on different days, and a skill copied into
+   `~/.claude/skills/` outlives any venv up- or downgrade. Two lines settle it:
+
+   ```python
+   import inspect
+   from odmlib.odm_element import ODMElement
+
+   has_xml_decl  = "xml_declaration" in inspect.signature(ODMElement.to_xml_string).parameters
+   has_to_element = hasattr(ODMElement, "to_element")
+   ```
+
+   Where a comparison is genuinely unavoidable, parse — never compare strings with `>=`:
+
+   ```python
+   from packaging.version import Version
+   Version(odmlib.__version__) >= Version("0.2.1.dev0")   # admits pre-releases of the floor
+   ```
 
 2. Identify the **standard and version** in play, which picks the *model package*:
 
@@ -211,7 +235,10 @@ schemas, so you don't download anything: `ODMSchemaValidator(standard="define",
 version="2.1")` (valid pairs: `("odm","1.3.2")`, `("odm","2.0")`, `("define","2.0")`,
 `("define","2.1")`, `("arm","1.0")`, `("arm","1.0-define2.1")`). Use
 `validator.xsd.iter_errors(file)` to collect every schema error with its `.reason` and
-`.path`. Pass `xsd_file=` only for a custom/local schema. For ARM (ADaM), pick the pairing
+`.path` — note that it accepts a *string* of XML as readily as a path, but that it **raises
+`xmlschema.exceptions.XMLResourceParseError` on input that is not well-formed XML** instead of
+yielding, so parse with `ET.fromstring()` first if a crash is not the outcome you want. Pass
+`xsd_file=` only for a custom/local schema. For ARM (ADaM), pick the pairing
 matching the document's Define-XML version — `("arm","1.0-define2.1")` is what `arm_1_0`
 models; the two are not interchangeable. Conformance and XSD validation are complementary —
 see `references/validation.md`.
@@ -298,6 +325,10 @@ created, and the API rewards it differently:
 
 ### Serializing to a string, not a file
 
+> **Read `references/api-reference.md` → *Serialization details* before writing serialization
+> code.** It carries the exact signatures, the `to_element()` re-serialization caveat, and the
+> `ns_registry` binding helpers. Needs odmlib **0.2.1** — see the version floor in *First steps*.
+
 `to_xml_string()` is the string path, and it is the *only* one that carries its own namespace
 declarations. It works on **any** element, not just the document root, and it declares the
 default namespace plus every prefix actually used in that subtree (the reserved `xml` prefix is
@@ -309,6 +340,21 @@ xml_str = odm.to_xml_string()                      # self-contained; no fixup ne
 loader.load_odm_string(xml_str)                    # round-trips back into objects
 ODMSchemaValidator(standard="define", version="2.1").xsd.iter_errors(xml_str)  # takes a STRING
 ```
+
+Two things that catch people out here:
+
+- **`iter_errors()` raises on malformed XML rather than yielding.** It reports *schema* errors,
+  but a string that is not well-formed XML at all raises `xmlschema.exceptions.XMLResourceParseError`
+  out of the generator instead of appearing in the results. If you are validating a string that
+  might be broken (a fixture, something you mutated, output from another tool), parse it with
+  `ET.fromstring()` first — a `ParseError` there is a diagnosis; the raise from `iter_errors()`
+  is a crash.
+- **XSD validation of a string does not replace `validate()`.** A schema pass says the markup is
+  structurally legal; it says nothing about duplicate OIDs, `*Ref` attributes pointing at OIDs no
+  element defines, or missing required attributes the schema happens not to mandate. Run
+  `validate(collect_errors=True, oid_checker=..., conformance_checker=...)` as well — step 5 of
+  *A reliable working loop* below. This matters most for a document you **built** rather than
+  loaded, which is exactly when the string path is in play.
 
 **Never `ET.tostring(obj.to_xml())`.** `to_xml()` builds a *serialization buffer*, not a
 document: it emits prefix-literal tags (`def:leaf`, not Clark notation) and adds **no** `xmlns`
@@ -335,15 +381,21 @@ It costs one serialize + reparse (~8 ms for a 166 KB Define document). `to_xml()
 internal tree builder behind `to_xml_string()` and `ODMWriter` — not something to call.
 
 **String vs file.** `write_xml()` writes the XML declaration and then exactly the bytes
-`to_xml_string()` returns:
+`to_xml_string()` returns. The keyword that closes the 39-byte gap lives on
+**`to_xml_string()`** — not on `write_xml()`:
 
 ```python
+.to_xml_string(*, xml_declaration: bool = False) -> str     # keyword-only
+
+# both of these hold exactly, for ODM and Define alike:
 file_bytes == b"<?xml version='1.0' encoding='UTF-8'?>\n" + obj.to_xml_string().encode("utf-8")
+file_bytes == obj.to_xml_string(xml_declaration=True).encode("utf-8")
 ```
 
-Use the keyword-only `xml_declaration=True` when a consumer needs the declaration; the default
-stays `False`, which is what `load_odm_string()` expects. Do not compare a string to a file
-without accounting for that 39-byte difference.
+Reach for `to_xml_string(xml_declaration=True)` when a consumer needs the declaration — a file
+you write yourself, a byte-for-byte comparison against `write_xml()` output. The default stays
+`False`, which is what `load_odm_string()` expects. Do not compare a string to a file without
+accounting for that difference.
 
 **Namespaces on nested elements.** Loading captures a per-document namespace snapshot, and the
 loader binds it *recursively*, so a child reached by walking the tree serializes exactly like its
@@ -363,6 +415,27 @@ snapshot and falls back to current global state. Bind it explicitly:
 import odmlib.ns_registry as NS
 NS.bind_document_namespaces(new_elem, NS.get_document_namespaces(define))
 ```
+
+### Testing odmlib code
+
+Three traps specific to testing against this library, none of them obvious from a passing
+first run:
+
+- **A fresh OID checker per test, not per module.** `create_oid_checker(...)` accumulates
+  every OID it sees, so a checker built in `setUpClass` (or shared across parametrized cases)
+  reports a false *"OID … is not unique"* for everything in the second test onward. Build it
+  inside the test, or `checker.reset()` in `setUp`.
+- **The namespace registry is process-wide state, so reset it between tests.** odmlib's own
+  suite does this with an `autouse` fixture (`tests/conftest.py`) that resets the Borg
+  singleton to *ODM 1.3.2 only* before every test — which means a test that needs `def:`,
+  `xlink:` or `xml:` must re-register them itself in `setUp` (see
+  `tests/test_odm_loader_define_string.py`). A Define test that passes alone and fails in
+  the suite is almost always this.
+- **Probes must tolerate empty collections.** The failure modes worth testing for produce
+  *structurally valid but empty* documents — a string that lost its namespaces re-loads with
+  `FileOID` intact and `Study` empty. A test that asserts on `odm.Study[0]` then raises
+  `IndexError` and takes the harness down instead of reporting the failure it was written to
+  catch. Check `len(...)` first and report; save the indexing for after.
 
 ## A reliable working loop for odmlib tasks
 

@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.2.1] - 2026-08-16
+
 ### Added — `to_element()`
 
 - **`ODMElement.to_element()` returns a standard, namespace-resolved ElementTree Element.**
@@ -147,8 +149,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   the model declared `AnalysisDatasets` last. `AnalysisDatasets` has been moved
   ahead of `Documentation`. Reading ARM documents was unaffected — only output
   was wrong, which went unnoticed while no ARM XSD was bundled to check it.
-
-## [0.2.1] - 2026-08-08
 
 ### Fixed — `collect_errors=True` now collects every error
 

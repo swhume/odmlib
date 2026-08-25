@@ -1,13 +1,16 @@
 """ODM 2.0 model: construction, round-trip, and v0.2.0 safe-subset coverage.
 
-Dedicated odm_2_0 element suite added with the v0.2.0 ODM 2.0 Model/XSD
-remediation (``ODM20-MODEL-XSD-DIFFERENCES_PLAN.md``). Covers:
+Dedicated odm_2_0 element suite, begun with the v0.2.0 ODM 2.0 Model/XSD
+remediation and extended through the v0.2.1 alignment phases (see
+``ODM_XSD_ALIGNMENT.md``). Covers:
 
-- 3.6  ``TranslatedText.Type`` is required (XSD-aligned) + permissive escape.
-- 3.8  ``Arm`` / ``CheckValue`` de-duplication (descriptor-consistent).
-- 3.9  the 12 newly-registered odm_2_0 value-set keys (accept + strict
-       reject + permissive bypass).
+- ``TranslatedText.Type`` is required (XSD-aligned) + permissive escape.
+- ``Arm`` / ``CheckValue`` de-duplication (descriptor-consistent).
+- the newly-registered odm_2_0 value-set keys (accept + strict reject +
+  permissive bypass), and the value sets that match the XSD exactly.
 - general construction + XML/JSON/dict round-trip for the major classes.
+- one section per alignment phase: shape, XSD child order, schema validity
+  and loader round-trip for every class that phase changed.
 
 The conftest autouse fixture resets the NamespaceRegistry before each test,
 so every setUp re-registers the ODM 2.0 namespace set.

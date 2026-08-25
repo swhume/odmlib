@@ -5,8 +5,8 @@ one of these started life as an ``xfail(strict=True)`` pinning a gap the
 v0.2.1 ODM 2.0 alignment work closed; the markers came off as each gap was
 fixed, and the assertions stay behind so the alignment cannot regress.
 
-See ``ODM20-MODEL-XSD-DIFFERENCES_PLAN.md`` §3.1-§3.5 and §6 for the gaps,
-and §3.7 for the ItemDef attribute set (closed earlier in v0.2.1).
+See ``ODM_XSD_ALIGNMENT.md`` for the full model/XSD comparison, the
+deliberate approximations that remain, and the work still scoped to v0.3.0.
 """
 from unittest import TestCase
 
@@ -56,8 +56,8 @@ class TestODM2StructuralAlignment(TestCase):
             "StudyEventGroupRef" in elems or "StudyEventRef" in elems)
 
     def test_itemdef_attribute_set_matches_xsd(self):
-        # Closed in v0.2.1, alignment plan §3.7: the ItemDef attribute set was aligned
-        # with the ODM 2.0 XSD. See CHANGELOG and UPDATE_ODM20_ITEMDEF.md.
+        # Closed in v0.2.1: the ItemDef attribute set was aligned with the
+        # ODM 2.0 XSD. See the CHANGELOG entry for that release.
         fields = set(ODM2.ItemDef._fields)
         self.assertNotIn("FractionDigits", fields)
         self.assertNotIn("DatasetVarName", fields)

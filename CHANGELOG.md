@@ -341,6 +341,50 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `unreferenced_oids()` no longer re-runs the full verification walk;
   `dataframe.py` avoids `iterrows`.
 
+### Fixed — ODM v2.0 model/XSD alignment (the five structural gaps)
+
+v0.2.0 shipped with five ODM 2.0 structural features that produced schema-invalid output
+if used, listed under *Known Limitations* in that release as deferred to v0.2.1. All five
+are closed. `tests/test_odm_2_0_known_gaps.py` kept its assertions as regression guards
+after the `xfail(strict=True)` markers came off, so none of them can quietly reopen.
+
+- **`ConditionDef` gained the XSD-required `MethodSignature`**, and its `Description`
+  became required. Every `ConditionDef` odmlib built was previously schema-invalid, and so
+  transitively was any `CollectionExceptionConditionOID` pointing at one.
+- **`FormalExpression` became element-based.** See the breaking change below.
+- **`Protocol` no longer carries `StudyEventRef`.** The ODM 2.0 XSD reaches study events
+  through `StudyEventGroupRef` → `StudyEventGroupDef`, so `Protocol` gained
+  `StudyEventGroupRef`, `StudyTimings` and `WorkflowRef` instead.
+- **`MetaDataVersion.StudyTiming` moved to `Protocol/StudyTimings`**, its XSD position. A
+  new `StudyTimings` container holds the `StudyTiming` elements, which makes the four
+  timing-constraint classes reachable in a valid document for the first time.
+- **`StudyEventGroupDef` gained its required child group** — `StudyEventGroupRef` and
+  `StudyEventRef`, plus the optional `WorkflowRef` and `Coding`. It previously could not
+  satisfy its own content model at all.
+
+**Breaking within draft ODM 2.0: `FormalExpression` no longer takes `_content`.** The XSD
+models the expression as a choice of exactly one `Code` (inline source) or
+`ExternalCodeLib` (a reference to an external library), not as element text. Code that
+constructed `FormalExpression(Context=..., _content="...")` under `model_package="odm_2_0"`
+now raises `OdmlibTypeError`; the expression text moves into a `Code` child:
+
+```python
+# before (schema-invalid)
+FormalExpression(Context="Python", _content="age >= 18")
+# after
+FormalExpression(Context="Python", Code=Code(_content="age >= 18"))
+```
+
+ODM 1.3.2 and Define-XML `FormalExpression` are unchanged and remain text-based.
+`ODMBuilder.add_method_def(formal_expression=...)` and `add_condition_def(...)` still take
+plain text and wrap it correctly for whichever model package is in use, so builder callers
+need no change.
+
+Two follow-on gaps found while verifying the five also closed: `CommentDef` and `Leaf`
+became `MetaDataVersion` children — both classes already existed but were unreachable from
+a document, so a `CommentOID` could never resolve — and `DocumentRef`'s `leafID` attribute
+was corrected to `LeafID`, the spelling the XSD requires.
+
 ### Changed — ODM v2.0 model/XSD alignment (phase 1)
 
 Comparing `odmlib/odm_2_0/model.py` against the bundled ODM 2.0 XSD mechanically —

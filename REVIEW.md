@@ -1,6 +1,6 @@
 # Claude Code Review Configuration
 
-This repository contains the `odmlib v0.2.0` codebase. This file establishes strict operational parameters and constraints for Claude Code sessions analyzing this repository.
+This repository contains the `odmlib v0.2.1` codebase. This file establishes strict operational parameters and constraints for Claude Code sessions analyzing this repository.
 
 ## 🚫 Critical Constraints & Execution Rules
 

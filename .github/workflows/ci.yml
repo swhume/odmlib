@@ -35,8 +35,16 @@ jobs:
           python -m pip install --upgrade pip
           pip install -e ".[dev]"
 
+      # Skill tests are excluded here and run once, in the single cell below.
       - name: Run tests
-        run: python -m pytest tests/ -v --tb=short
+        run: python -m pytest tests/ -v --tb=short --ignore-glob='*test_skill_*.py'
+
+      # The skill tests assert Python-level API facts, file checksums, and that
+      # the bundled examples execute -- none of which is platform-specific, so
+      # one cell is enough. Running the 8 examples on all 12 adds cost, not signal.
+      - name: Skill checks
+        if: matrix.python-version == '3.12' && matrix.os == 'ubuntu-latest'
+        run: python -m pytest tests/test_skill_contract.py tests/test_skill_bundle.py tests/test_skill_examples.py -v --tb=short
 
       - name: Run tests with coverage
         if: matrix.python-version == '3.12' && matrix.os == 'ubuntu-latest'

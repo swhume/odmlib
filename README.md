@@ -59,6 +59,39 @@ With optional Pandas support:
 pip install odmlib[dataframe]
 ```
 
+## Claude Code Skill
+
+odmlib ships a [Claude Code](https://claude.com/claude-code) skill that teaches Claude how to
+use this library correctly — the right loader per standard, namespace registration, element
+ordering, validation layers, and the serialization pitfalls that are easy to get wrong by hand.
+
+The skill lives in this repository at `.claude/skills/odmlib/`. It is **not** part of the PyPI
+package, so `pip install odmlib` does not install it — copy the directory into whichever
+`.claude/skills/` directory you want it available from:
+
+```bash
+git clone https://github.com/swhume/odmlib.git
+
+# For one project:
+mkdir -p /path/to/your-project/.claude/skills
+cp -r odmlib/.claude/skills/odmlib /path/to/your-project/.claude/skills/
+
+# Or for every project on this machine:
+mkdir -p ~/.claude/skills
+cp -r odmlib/.claude/skills/odmlib ~/.claude/skills/
+```
+
+Claude picks the skill up automatically when a task involves ODM, Define-XML, Dataset-JSON,
+or ARM content — you do not need to name it.
+
+**The skill describes odmlib 0.2.1 and later.** Several behaviors it documents (namespace-aware
+`to_xml_string()`, opt-in context-manager writing, full error enumeration under
+`collect_errors=True`) do not hold on 0.2.0, so upgrade before relying on it.
+
+If Claude generates incorrect odmlib code while using the skill, please
+[open a skill feedback issue](https://github.com/swhume/odmlib/issues/new?template=skill-feedback.yml) —
+those reports are what the skill is refined against.
+
 ## Loading Documents
 
 ### Load an ODM-XML file
@@ -223,18 +256,24 @@ odm.write_xml("study.xml")
 
 ### Context Managers
 
-Context managers load a document on entry and write it back on clean exit,
-making read-modify-write workflows concise.
+Context managers load a document on entry, making read-modify-write workflows
+concise. **Writing is opt-in** (since 0.2.1): a bare `open_odm(path)` loads
+read-only and writes nothing on exit. Ask for a write by passing `output_file=`
+to write elsewhere, or `write_on_exit=True` to update the input file in place.
 
 ```python
 from odmlib.context import open_odm, open_define
 
-# Modify an ODM file in-place
-with open_odm("study.xml") as odm:
+# Update an ODM file in place (explicit opt-in via write_on_exit=True)
+with open_odm("study.xml", write_on_exit=True) as odm:
     odm.FileOID = "F.002"
     mdv = odm.Study[0].MetaDataVersion[0]
     mdv.ItemGroupDef.append(new_igd)
-# study.xml is overwritten automatically
+# study.xml is overwritten on clean exit
+
+# Without write_on_exit= or output_file=, the load is READ-ONLY
+with open_odm("study.xml") as odm:
+    odm.FileOID = "F.002"       # discarded on exit; study.xml is untouched
 
 # Write to a different output file
 with open_odm("study.xml", output_file="study_updated.xml") as odm:
@@ -246,12 +285,13 @@ with open_odm("study.xml", write_on_exit=False) as odm:
     print(len(odm.Study[0].MetaDataVersion[0].ItemDef))
 
 # Define-XML (defaults to define_2_1 model)
+# NOTE: in Define-XML, Study and MetaDataVersion are single objects, not lists
 with open_define("define.xml") as define:
-    mdv = define.Study[0].MetaDataVersion[0]
+    mdv = define.Study.MetaDataVersion
     print(len(mdv.ItemDef))
 
 # JSON format is auto-detected from the file extension
-with open_odm("study.json") as odm:
+with open_odm("study.json", write_on_exit=True) as odm:
     odm.FileOID = "F.002"
 ```
 

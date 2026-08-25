@@ -5,16 +5,14 @@ description: >-
   transform CDISC ODM, Define-XML, Dataset-JSON, and Analysis Results Metadata (ARM)
   using the odmlib library. Use this skill whenever a developer works with ODM-family
   content in Python — parsing or generating study metadata, ItemGroupDef / ItemDef /
-  CodeList / MethodDef definitions, MetaDataVersion structures, Define-XML data definition
-  documents (define.xml), Dataset-JSON datasets, ARM analysis results, or extensions of
-  these models. Trigger it when a task mentions odmlib, an .xml/.json ODM / Define-XML /
+  CodeList / MethodDef, MetaDataVersion structures, Define-XML documents (define.xml),
+  Dataset-JSON datasets, ARM analysis results, or extensions of these models. Trigger it
+  when a task mentions odmlib, an .xml/.json ODM / Define-XML /
   Dataset-JSON document, CDISC study metadata, or clinical-trial data definitions — and
   ALSO when odmlib is not named but the user is clearly creating, loading, modifying,
-  validating, merging, serializing, or round-tripping CDISC ODM-family metadata in Python,
-  including serializing one of these documents to an XML string or comparing string and
-  file output. Hand-rolling
-  XML or JSON for these standards is error-prone; odmlib is the canonical, schema-aware way
-  to do it right, so prefer this skill over building the markup by hand.
+  validating, merging, serializing, or round-tripping CDISC ODM-family metadata in Python.
+  Hand-rolling XML or JSON for these standards is error-prone; odmlib is the canonical,
+  schema-aware way to do it right, so prefer this skill over building the markup by hand.
 ---
 
 # odmlib: working with CDISC ODM, Define-XML, Dataset-JSON, and ARM
@@ -46,8 +44,12 @@ object and is broken — use `to_xml_string()`. See
 
 1. Confirm odmlib is available and note the version: `python -c "import odmlib; print(odmlib.__version__)"`. If it is missing, `pip install odmlib`.
 
-   > **This skill describes odmlib 0.2.1 and later**, and ships with it. 0.2.1 is the single
-   > floor for everything below, including all of *Serializing to a string, not a file*.
+   > **This skill describes odmlib 0.2.1 and later.** It lives in the odmlib repository at
+   > `.claude/skills/odmlib/` and is **not** part of the PyPI package — installing odmlib
+   > does not install the skill. To install it, copy that directory into a project's
+   > `.claude/skills/`, or into `~/.claude/skills/` to make it available everywhere.
+   > 0.2.1 is the single floor for everything below, including all of *Serializing to a
+   > string, not a file*.
    > On **0.2.0** `to_xml_string()` is merely `ET.tostring(self.to_xml())` and emits **no
    > `xmlns` at all** — Define-XML output will not re-parse (`ParseError: unbound prefix`)
    > and ODM output re-loads with `FileOID` intact and **every `Study` silently gone**. If
@@ -98,8 +100,11 @@ same `ODMElement` objects).
 
 - **Context-manager facade** — `open_odm()` / `open_define()` from `odmlib.context`. Best
   for the common load → modify → save (or read-only) workflow. It auto-detects XML vs JSON
-  from the extension, derives the namespace from the model package, and writes the file
-  back on a clean exit. Least code, hardest to misuse.
+  from the extension and derives the namespace from the model package. **Writing is
+  opt-in** (since 0.2.1): a bare `open_odm("study.xml")` loads read-only and writes nothing
+  on exit. Enable writing one of two ways — pass `output_file=` to write the result
+  somewhere else, or `write_on_exit=True` to update the input file in place. Least code,
+  hardest to misuse.
 - **Explicit loader** — `LD.ODMLoader(OL.XMLODMLoader(...))` / `DL.XMLDefineLoader(...)` /
   `AL.XMLArmLoader(...)`. Reach for this when you need to override the namespace URI
   (`ns_uri=`), pull a specific `MetaDataVersion(idx)` or `Study(idx)` without loading the
@@ -142,14 +147,21 @@ See `examples/create_odm.py` (both styles) and `examples/define_roundtrip.py`.
 ## The two load idioms, side by side
 
 ```python
-# Facade — load, modify, auto-save on clean exit
+# Facade — three write modes; writing is OPT-IN
 from odmlib.context import open_odm
-with open_odm("study.xml") as odm:                  # writes study.xml back on exit
+
+# 1. Default: READ-ONLY. Nothing is written on exit, edits inside are discarded.
+with open_odm("study.xml") as odm:
     mdv = odm.Study[0].MetaDataVersion[0]           # ODM: Study/MDV are LISTS
     print(len(mdv.ItemGroupDef))
 
-with open_odm("study.xml", write_on_exit=False) as odm:   # read-only, never writes
-    print(odm.FileOID)
+# 2. output_file= : load one file, write the modified document to another.
+with open_odm("study.xml", output_file="study_v2.xml") as odm:
+    odm.FileOID = "ODM.STUDY.V2"                    # -> study_v2.xml, input untouched
+
+# 3. write_on_exit=True : update the input file IN PLACE.
+with open_odm("study.xml", write_on_exit=True) as odm:
+    odm.FileOID = "ODM.STUDY.V2"                    # -> overwrites study.xml
 
 # Explicit loader — namespace control, partial loads, strings, ARM/CT
 import odmlib.odm_loader as OL
@@ -253,6 +265,7 @@ to strict and validate once repaired:
 from odmlib import permissive, ValidationMode
 from odmlib.context import open_define
 
+# write_on_exit=False is belt-and-braces here — the default is already read-only
 with open_define("broken.xml", permissive=True, write_on_exit=False) as define:
     ...  # inspect; relaxed checks while inside the block
 
@@ -284,8 +297,8 @@ created, and the API rewards it differently:
    (`build_oid_index().find_all(oid)`). `create_oid_checker(pkg)` also exposes `ref_def`,
    `def_ref`, `oid`, `oid_ref`, `oid_defs`, `skip_attr`, and `skip_elem` if you want to
    build an OID inventory. Full example: `examples/report_oid_integrity.py`.
-5. **`unreferenced_oids(checker)` returns a `dict`** (orphan OID → expected ref attribute),
-   despite being annotated `-> list`. It is noisier under `odm_*` than `define_*`, which
+5. **`unreferenced_oids(checker)` returns a `dict`** (orphan OID → expected ref attribute).
+   It is noisier under `odm_*` than `define_*`, which
    already skips the structural elements. Call it on a checker that has already been through
    a **collect-mode** `validate()` — after a *fail-fast* duplicate failure the checker is
    left half-populated and `unreferenced_oids()` raises a misleading duplicate error naming
@@ -465,8 +478,10 @@ Read these as needed — they hold the detail that does not belong in the workfl
 - `references/dataset-json.md` — Dataset-JSON 1.1 specifics and the conversion helpers.
 
 Runnable, self-contained examples live in `examples/` — each one executes against an
-installed odmlib and writes its output to `./odmlib_skill_output/` under the **current
+installed odmlib and writes any output under `./odmlib_skill_output/` in the **current
 working directory**, never into the skill directory (which is read-only once installed).
+Some write nothing at all: `report_oid_integrity.py` only prints, and
+`validate_document.py` works inside a `tempfile.TemporaryDirectory()`.
 Copy an example out or run it from a writable directory; nothing is written beside the
 script. Read them for working idioms;
 run them to confirm behavior in the current environment. They cover: creating ODM (builder

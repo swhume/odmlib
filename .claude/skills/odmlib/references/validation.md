@@ -160,13 +160,12 @@ an older odmlib, verify it yourself or rely on XSD, which enforces `IDREF`.
 Genuinely uncovered links are those that are neither `*OID`-suffixed nor explicitly wired: check
 those yourself or via XSD.
 
-### `unreferenced_oids()` returns a dict, not a list
+### `unreferenced_oids()` returns a dict
 
-The method is annotated `-> list` and its docstring says "list" — **both are wrong**. It
-returns `check_unreferenced_oids()`, which is `dict[str, str]` mapping each orphan OID to
+It returns `check_unreferenced_oids()`, which is `dict[str, str]` mapping each orphan OID to
 the *reference attribute* that would have pointed at it (falling back to the defining
 element's class name when no ref attribute targets that class). `if orphans:` behaves the
-same either way, so the mistake stays hidden until you iterate.
+same for a dict or a list, so iterate the items to get anything useful out of it.
 
 ```python
 orphans = odm.unreferenced_oids(checker)   # dict: orphan OID -> expected ref attribute
@@ -315,7 +314,8 @@ to strict and validate the repaired result.
 from odmlib import permissive, ValidationMode
 from odmlib.context import open_define
 
-# whole-document relaxation during load, read-only:
+# whole-document relaxation during load, read-only.
+# write_on_exit=False is belt-and-braces here — the default is already read-only:
 with open_define("legacy.xml", permissive=True, write_on_exit=False) as define:
     ...   # inspect
 
@@ -341,13 +341,16 @@ reads work in strict mode.
 
 A common task (e.g. a Define-XML template seeded with `__PLACEHOLDER__` values that violate
 the data types and value lists) is to find out *everything* wrong with a file at once.
-XSD validation is the only layer that genuinely enumerates, so lead with it, then add a
-permissive load for the OID pass — remembering that the OID pass reports one problem:
+`validate(collect_errors=True, ...)` is the tool for that: with both checkers supplied it
+enumerates every order, OID, and conformance defect in one pass. XSD validation is the
+complementary layer — it catches what the model does not encode (element content models,
+xs:pattern facets, wrong namespaces), so run both and merge the two reports.
 
 ```python
 import odmlib.define_loader as DL
 import odmlib.loader as LD
-from odmlib import create_oid_checker, permissive
+from odmlib import create_oid_checker, permissive, OdmlibOIDError
+from odmlib.define_2_1.rules.metadata_schema import MetadataSchema
 from odmlib.odm_parser import ODMSchemaValidator
 
 # 1. schema-validate the file and list every XSD error
@@ -355,18 +358,30 @@ validator = ODMSchemaValidator(standard="define", version="2.1")
 schema_errors = list(validator.xsd.iter_errors("define-template.xml"))
 print(f"{len(schema_errors)} schema errors")
 
-# 2. permissively load (strict would refuse it), then check OID integrity
+# 2. permissively load (strict would refuse it) ...
 loader = LD.ODMLoader(DL.XMLDefineLoader(model_package="define_2_1"))
 with permissive():
     loader.open_odm_document("define-template.xml")
     odm = loader.root()
 
+# 3. ... then enumerate EVERY odmlib-visible defect in one collect-mode pass
 checker = create_oid_checker("define_2_1")
-try:
-    odm.verify_oids(checker)                  # first OID defect only
-    print("no OID defects")
-except OdmlibOIDError as e:
-    print("first OID defect:", e)             # for ALL of them, see report_oid_integrity.py
+errors = odm.validate(
+    collect_errors=True,
+    oid_checker=checker,
+    conformance_checker=MetadataSchema(),
+    max_errors=200,                 # cap the noise on a badly broken template
+)
+print(f"{len(errors)} odmlib defects")
+for e in errors:
+    print(" ", e)
+
+oid_problems = [e for e in errors if isinstance(e, OdmlibOIDError)]
+print(f"{len(oid_problems)} of them are OID defects")
+
+# 4. quality signal, not an error — so validate() stays silent about it.
+#    Safe here because `checker` has been through a COLLECT-mode pass, which
+#    populates it fully; after a fail-fast verify_oids() it would be half-built.
 print("unreferenced:", odm.unreferenced_oids(checker))   # dict, may be empty
 ```
 

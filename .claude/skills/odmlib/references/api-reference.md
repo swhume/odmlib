@@ -72,15 +72,28 @@ Available packages: `odm_1_3_2`, `odm_2_0`, `define_2_0`, `define_2_1`, `dataset
 
 ```python
 open_odm(input_file, output_file=None, model_package="odm_1_3_2",
-         format=None, permissive=False, write_on_exit=True) -> ODMContext
+         format=None, permissive=False, write_on_exit=None) -> ODMContext
 open_define(input_file, output_file=None, model_package="define_2_1",
-            format=None, permissive=False, write_on_exit=True) -> DefineContext
+            format=None, permissive=False, write_on_exit=None) -> DefineContext
 ```
 
 Used as context managers; `__enter__` returns the loaded root object. `format` auto-detects
-from the extension (`.json` → JSON, else XML). On a clean exit the document is written to
-`output_file` (defaults to `input_file`) unless `write_on_exit=False`. `permissive=True`
-loads in fully permissive mode; pass a `ValidationMode` flag for targeted relaxation.
+from the extension (`.json` → JSON, else XML).
+
+**Writing is opt-in** — a breaking change in 0.2.1. With the default `write_on_exit=None`,
+the document is written on a clean exit *only if* `output_file` was supplied; a bare
+`open_odm("study.xml")` loads read-only and writes nothing. The three modes:
+
+| `write_on_exit` | `output_file` | Result on clean exit |
+|---|---|---|
+| `None` (default) | omitted | **nothing is written** — read-only |
+| `None` (default) | given | written to `output_file` |
+| `True` | omitted | written in place to `input_file` |
+| `True` | given | written to `output_file` |
+| `False` | either | nothing is written (explicit read-only) |
+
+`permissive=True` loads in fully permissive mode; pass a `ValidationMode` flag for targeted
+relaxation.
 
 ### Explicit loaders
 
@@ -90,7 +103,7 @@ import odmlib.define_loader as DL   # XMLDefineLoader, JSONDefineLoader
 import odmlib.arm_loader    as AL   # XMLArmLoader, JSONArmLoader
 import odmlib.loader        as LD   # ODMLoader facade wrapper
 
-OL.XMLODMLoader(model_package="odm_1_3_2", ns_uri=None, local_model=False)
+OL.XMLODMLoader(model_package="odm_1_3_2", ns_uri=None, local_model=False, nsr=None)
 OL.JSONODMLoader(model_package="odm_1_3_2")
 DL.XMLDefineLoader(model_package="define_2_0", ns_uri=None, ...)   # set define_2_1 explicitly!
 DL.JSONDefineLoader(model_package="define_2_0")
@@ -98,7 +111,10 @@ AL.XMLArmLoader(model_package="arm_1_0", ...)
 ```
 
 `ns_uri=None` derives the namespace from the model package. `local_model=True` treats
-`model_package` as a full importable module path (for custom/extension models).
+`model_package` as a full importable module path (for custom/extension models). `nsr=`
+accepts a pre-configured `NamespaceRegistry` to parse with instead of the one the loader
+builds itself — needed only when a document carries prefixes the model package does not
+register; leave it `None` otherwise.
 
 Wrap a specialized loader in `LD.ODMLoader` and drive it:
 
@@ -134,9 +150,11 @@ remain reachable.
 .add_code_list(OID, Name, DataType, items=None, **kwargs)
    # items=[{"CodedValue": "M", "Decode": "Male"}]  -> CodeListItem (with Decode)
    # items=[{"CodedValue": "SYSBP"}]                -> EnumeratedItem (no Decode)
-.add_method_def(OID, Name, Type, description, formal_expression=None, expression_context=None, **kwargs)
-.add_condition_def(OID, Name, description=None, formal_expression=None, expression_context=None, **kwargs)
-.add_measurement_unit(OID, Name, symbol, **kwargs)
+.add_method_def(OID, Name, Type, description, formal_expression=None,
+                expression_context="Python", lang="en", **kwargs)
+.add_condition_def(OID, Name, description=None, formal_expression=None,
+                   expression_context="Python", lang="en", **kwargs)
+.add_measurement_unit(OID, Name, symbol, lang="en", **kwargs)
 .add_study_event_def(**kwargs) / .add_study_event_ref(**kwargs)
 .add_form_def(**kwargs) / .add_form_ref(**kwargs)        # ODM 1.3.2 only
 .add_item_group_ref(**kwargs)
@@ -144,7 +162,7 @@ remain reachable.
 .with_question(text, lang="en")              # most-recent ItemDef
 .with_codelist_ref(codelist_oid)             # most-recent ItemDef
 .with_measurement_unit_ref(mu_oid)           # most-recent ItemDef (ODM 1.3.2)
-.with_range_check(comparator, check_values, soft_hard=None, ErrorMessage=None, **kwargs)
+.with_range_check(comparator, check_values, soft_hard="Soft", **kwargs)   # no ErrorMessage param
 .with_alias(context, name)
 .attach(parent, element) / .attach_to_current(element)   # graft a pre-built element
 .current                                     # PROPERTY (no parens): dict of active context
@@ -154,6 +172,21 @@ remain reachable.
 
 `add_form_*` and `with_measurement_unit_ref` raise on ODM 2.0 (those constructs do not
 exist there). The builder constructs the correct study shape per model automatically.
+
+Two things about the defaults above:
+
+- **They are real values, not `None`.** `expression_context="Python"` and
+  `soft_hard="Soft"` land in the generated document whether or not you pass them. Override
+  them explicitly if your study needs `SASv9`, `XPath`, or a `"Hard"` range check.
+- **`with_range_check` has no `ErrorMessage` parameter.** `RangeCheck.ErrorMessage` is a
+  child *element*, not a string attribute, so `ErrorMessage="Out of range"` falls through
+  `**kwargs` and raises `OdmlibTypeError`. Build the element and pass it:
+
+  ```python
+  import odmlib.odm_1_3_2.model as ODM
+  builder.with_range_check("GE", [18], soft_hard="Hard", ErrorMessage=ODM.ErrorMessage(
+      TranslatedText=[ODM.TranslatedText(_content="Age must be >= 18", lang="en")]))
+  ```
 
 ## 5. `ODMElement` — methods on every element
 
@@ -198,8 +231,8 @@ mode. Full OID enumeration needs a checker implementing the collecting protocol 
 `DynamicOIDRef` from `create_oid_checker()` does, the deprecated `OIDRef` classes do not
 and contribute at most one error. See `references/validation.md`.
 
-`unreferenced_oids()` is annotated `-> list` and its docstring says "list" — both are wrong,
-it returns a `dict` mapping orphan OID → the ref attribute expected to point at it. How
+`unreferenced_oids()` returns a `dict` mapping orphan OID → the ref attribute expected to
+point at it. How
 noisy that dict is depends on the model package's `skip_elem` set (`odm_1_3_2` skips only
 `ODM`, so structural OIDs appear; `define_2_1` skips `Study`/`MetaDataVersion`/
 `ItemGroupDef` too).

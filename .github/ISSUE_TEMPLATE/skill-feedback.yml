@@ -1,0 +1,112 @@
+name: Claude generated incorrect odmlib code
+description: Report a case where the odmlib Claude Code skill produced wrong, broken, or non-idiomatic code.
+title: "[skill] "
+labels: ["skill", "documentation"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for reporting this — real failure modes are what the skill is refined against.
+
+        This template is for the **Claude Code skill** (`.claude/skills/odmlib/`): Claude wrote
+        odmlib code that did not work, used a deprecated or non-existent API, or ignored a
+        documented pattern. For a bug in the library itself, please open a regular bug report
+        instead.
+
+  - type: textarea
+    id: prompt
+    attributes:
+      label: Prompt used
+      description: What you asked Claude, as close to verbatim as you can.
+      placeholder: "Create a Define-XML 2.1 document with two ItemGroupDefs and validate it."
+    validations:
+      required: true
+
+  - type: textarea
+    id: generated
+    attributes:
+      label: Code Claude generated
+      description: Paste the generated code. Trim to the part that is wrong if it is long.
+      render: python
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: What you expected instead
+      description: >-
+        The correct code, the API that should have been used, or a description of the right
+        behavior. If you already know the fix, say so — it speeds this up considerably.
+    validations:
+      required: true
+
+  - type: textarea
+    id: actual
+    attributes:
+      label: What actually happened
+      description: >-
+        Traceback, validation errors, or wrong output. If the code ran without error but
+        produced an incorrect document, show the relevant part of that document.
+      render: shell
+    validations:
+      required: false
+
+  - type: input
+    id: odmlib-version
+    attributes:
+      label: odmlib version
+      description: 'Output of: python -c "import odmlib; print(odmlib.__version__)"'
+      placeholder: "0.2.1"
+    validations:
+      required: true
+
+  - type: input
+    id: skill-version
+    attributes:
+      label: Skill commit or version
+      description: >-
+        The commit the skill was copied from, if you know it. From a clone:
+        git log -1 --format=%h -- .claude/skills/odmlib
+      placeholder: "2a93f07"
+    validations:
+      required: false
+
+  - type: dropdown
+    id: skill-location
+    attributes:
+      label: Where is the skill installed?
+      options:
+        - Working inside a clone of the odmlib repository
+        - Copied into a project's .claude/skills/
+        - Copied into ~/.claude/skills/
+        - Not sure
+    validations:
+      required: false
+
+  - type: input
+    id: model
+    attributes:
+      label: Claude model
+      description: Which model produced the code, if known.
+      placeholder: "Claude Opus 4.6"
+    validations:
+      required: false
+
+  - type: textarea
+    id: standards
+    attributes:
+      label: Standard(s) involved
+      description: e.g. ODM 1.3.2, ODM 2.0, Define-XML 2.1, Dataset-JSON 1.1, ARM 1.0, CT-XML.
+    validations:
+      required: false
+
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Before submitting
+      options:
+        - label: The skill was actually loaded (Claude referenced odmlib patterns, not generic XML handling).
+          required: false
+        - label: I am on odmlib 0.2.1 or later — the skill does not describe 0.2.0 behavior.
+          required: false

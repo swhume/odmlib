@@ -75,14 +75,17 @@ _REF_DEF_OVERRIDES: dict[str, str] = {
 }
 
 
-# Define-XML document references are ID-based rather than OID-named:
-# leaf/@ID is the definition, referenced by DocumentRef/@leafID and
+# Document references are ID-based rather than OID-named: leaf/@ID
+# (Define-XML) and Leaf/@ID (ODM 2.0) are the definitions, referenced by
+# DocumentRef/@leafID, DocumentRef/@LeafID and
 # ItemGroupDef/@def:ArchiveLocationID.  These pairs are surfaced by
 # ODMElement._init_oid_check alongside the OID-named attributes; they
 # are only wired up when the target class exists in the model package.
 _ID_REF_DEF_PAIRS: dict[str, str] = {
     "leafID": "leaf",
     "ArchiveLocationID": "leaf",
+    # ODM 2.0 spells the element Leaf and the reference LeafID.
+    "LeafID": "Leaf",
 }
 
 

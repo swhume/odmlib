@@ -1,3 +1,5 @@
+import os
+import tempfile
 import unittest
 import odmlib.odm_1_3_2.model as ODM
 import datetime
@@ -7,12 +9,17 @@ import odmlib.ns_registry as NS
 import odmlib.odm_loader as OL
 import odmlib.loader as LD
 
-ODM_XML_FILE = "./data/simple_create.xml"
-ODM_JSON_FILE = "./data/simple_create.json"
-
 
 class TestCreateOdm(unittest.TestCase):
     def setUp(self) -> None:
+        # Write generated documents to a throw-away directory. Writing them into
+        # the tracked data/ fixtures left a dirty working tree after every run,
+        # because CreationDateTime/AsOfDateTime change on each execution.
+        tmp_dir = tempfile.TemporaryDirectory()
+        self.addCleanup(tmp_dir.cleanup)
+        self.odm_xml_file = os.path.join(tmp_dir.name, "simple_create.xml")
+        self.odm_json_file = os.path.join(tmp_dir.name, "simple_create.json")
+        self.odm_xml_string_file = os.path.join(tmp_dir.name, "simple_create_from_string.xml")
         current_datetime = datetime.datetime.now(datetime.timezone.utc).isoformat()
         root = ODM.ODM(FileOID="ODM.DEMO.001", Granularity="Metadata", AsOfDateTime=current_datetime,
                        CreationDateTime=current_datetime, ODMVersion="1.3.2", FileType="Snapshot",
@@ -64,15 +71,15 @@ class TestCreateOdm(unittest.TestCase):
         root.Study[0].MetaDataVersion[0].ItemDef.append(itd)
 
         # save the new ODM document to an ODM XML file
-        root.write_xml(ODM_XML_FILE)
+        root.write_xml(self.odm_xml_file)
 
         # save the same ODM document to a JSON file
-        root.write_json(ODM_JSON_FILE)
+        root.write_json(self.odm_json_file)
 
 
     def test_read_odm_xml(self):
         loader = LD.ODMLoader(OL.XMLODMLoader(model_package="odm_1_3_2", ns_uri="http://www.cdisc.org/ns/odm/v1.3"))
-        loader.open_odm_document(ODM_XML_FILE)
+        loader.open_odm_document(self.odm_xml_file)
         mdv = loader.MetaDataVersion()
         item_list = mdv.ItemDef
         item = item_list[0]
@@ -82,7 +89,7 @@ class TestCreateOdm(unittest.TestCase):
 
     def test_read_odm_json(self):
         loader = LD.ODMLoader(OL.JSONODMLoader(model_package="odm_1_3_2"))
-        loader.open_odm_document(ODM_JSON_FILE)
+        loader.open_odm_document(self.odm_json_file)
         mdv = loader.MetaDataVersion()
         igd_list = mdv.ItemGroupDef
         igd = igd_list[0]
@@ -144,11 +151,11 @@ class TestCreateOdm(unittest.TestCase):
         # to_xml_string() output is self-contained (includes xmlns declarations)
         odm_xml_string = root.to_xml_string()
         self.assertIn('xmlns="http://www.cdisc.org/ns/odm/v1.3"', odm_xml_string)
-        with open("./data/simple_create_from_string.xml", "w") as xml_file:
+        with open(self.odm_xml_string_file, "w") as xml_file:
             xml_file.write(odm_xml_string)
 
         loader = LD.ODMLoader(OL.XMLODMLoader(model_package="odm_1_3_2", ns_uri="http://www.cdisc.org/ns/odm/v1.3"))
-        loader.open_odm_document("./data/simple_create_from_string.xml")
+        loader.open_odm_document(self.odm_xml_string_file)
         mdv = loader.MetaDataVersion()
         item_list = mdv.ItemDef
         item = item_list[0]

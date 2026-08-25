@@ -11,6 +11,27 @@ NS.NamespaceRegistry(prefix="xlink", uri="http://www.w3.org/1999/xlink")
 class TranslatedText(OE.ODMElement):
     """A piece of text in a specific language, used inside Description and similar elements.
 
+    .. note::
+
+       **Known approximation.** The XSD types TranslatedText as
+       ``mixed="true"`` with an optional ``xhtml:div`` child, so a document
+       may mark the text up as XHTML. odmlib models the text-only form: an
+       ``xhtml:div`` present in a source document is dropped on load, and
+       cannot be written. Plain-text TranslatedText -- overwhelmingly the
+       common case -- round-trips exactly.
+
+       Two things stand behind this. Faithful XHTML would need a model class
+       for every element ``ODM-xhtml.xsd`` allows (``p``, ``b``, ``table``
+       and the rest, deeply recursive and themselves mixed), because the
+       loader resolves children by tag name against this module. And odmlib
+       never reads ElementTree's ``tail``, so text *following* a child
+       element is lost silently even where the child is modelled. An opaque
+       text-only ``div`` was tried in v0.2.1 and withdrawn: it could not
+       carry markup either -- text assigned to it is XML-escaped on write --
+       so it added a foreign-namespace dependency for no gain. Validate with
+       :class:`~odmlib.odm_parser.ODMSchemaValidator` if a source document
+       may contain markup.
+
     Attributes:
         lang (str): BCP 47 language tag (xml:lang attribute), e.g. "en".
         Type (str, required): Media-type qualifier for the text (XSD type
@@ -40,9 +61,17 @@ class Title(OE.ODMElement):
 
 
 class Leaf(OE.ODMElement):
+    """A document location referenced by DocumentRef/@LeafID.
+
+    Attributes:
+        ID (str, required): Identifier targeted by DocumentRef/@LeafID.
+        href (str, required): URL of the document (``xlink:href``).
+        Title (required): Human-readable document title.
+    """
+
     ID = T.ID(required=True)
     href = T.String(required=True, namespace="xlink")
-    Title = T.ODMObject(element_class=Title)
+    Title = T.ODMObject(required=True, element_class=Title)
 
 
 class PDFPageRef(OE.ODMElement):
@@ -50,25 +79,65 @@ class PDFPageRef(OE.ODMElement):
     PageRefs = T.String()
     FirstPage = T.PositiveInteger()
     LastPage = T.PositiveInteger()
+    Title = T.String()
 
 
 class DocumentRef(OE.ODMElement):
-    leafID = T.IDRef(required=True)
+    """A reference to a Leaf carrying the location of a supporting document.
+
+    .. versionchanged:: 0.2.1
+       The attribute was renamed ``leafID`` -> ``LeafID`` to match
+       ``DocumentRefAttributeDefinition`` in the ODM 2.0 XSD. The lower-case
+       spelling made every odm_2_0 document containing a DocumentRef fail
+       schema validation. ODM 2.0's ``SourceItem`` keeps a lower-case
+       ``leafID``, and Define-XML's DocumentRef is unaffected.
+
+    Attributes:
+        LeafID (str, required): ID of the Leaf holding the document location.
+        PDFPageRef (list): Page references within the referenced PDF.
+    """
+
+    LeafID = T.IDRef(required=True)
     PDFPageRef = T.ODMListObject(element_class=PDFPageRef)
 
 
 class AnnotatedCRF(OE.ODMElement):
-    DocumentRef = T.ODMObject(required=True, element_class=DocumentRef)
+    """References to the annotated CRF documents for a MetaDataVersion.
+
+    Attributes:
+        DocumentRef (list, required): One or more document references.
+    """
+
+    DocumentRef = T.ODMListObject(required=True, element_class=DocumentRef)
 
 
 class SupplementalDoc(OE.ODMElement):
-    DocumentRef = T.ODMObject(required=True, element_class=DocumentRef)
+    """References to supplemental documents for a MetaDataVersion.
+
+    Attributes:
+        DocumentRef (list, required): One or more document references.
+    """
+
+    DocumentRef = T.ODMListObject(required=True, element_class=DocumentRef)
 
 
 class CommentDef(OE.ODMElement):
+    """A reusable comment referenced by the CommentOID attributes in the metadata.
+
+    .. versionchanged:: 0.2.1
+       Aligned with the ODM 2.0 XSD: ``Description`` became required
+       (``minOccurs="1"``) and ``DocumentRef`` became a list
+       (``maxOccurs="unbounded"``); it previously held a single reference.
+
+    Attributes:
+        OID (str, required): Unique identifier, targeted by CommentOID.
+        Description (required): The comment text.
+        DocumentRef (list): References to documents supporting the comment.
+    """
+
     OID = T.OID(required=True)
-    Description = T.ODMObject(element_class=Description)
-    DocumentRef = T.ODMObject(element_class=DocumentRef)
+    Description = T.ODMObject(required=True, element_class=Description)
+    DocumentRef = T.ODMListObject(element_class=DocumentRef)
 
 
 class Coding(OE.ODMElement):
@@ -115,19 +184,42 @@ class Include(OE.ODMElement):
             is being included.
         MetaDataVersionOID (str, required): OID reference to the specific
             MetaDataVersion being included.
+        href (str): URL of the document holding the included metadata.
     """
 
     StudyOID = T.OIDRef(required=True)
     MetaDataVersionOID = T.OIDRef(required=True)
+    href = T.String()
 
 
 class Standard(OE.ODMElement):
+    """A CDISC standard a MetaDataVersion conforms to.
+
+    .. versionchanged:: 0.2.1
+       ``Name``, ``Type``, ``PublishingSet`` and ``Status`` are value-set
+       checked. All four have enumerated XSD types but were modelled as plain
+       strings, so ``Standard(Type="Nonsense")`` built without complaint.
+       ``Status`` is an *extensible* vocabulary in the XSD (a union with
+       ``xs:string``), so its listed terms are documentation and other values
+       are still accepted.
+
+    Attributes:
+        OID (str, required): Unique identifier.
+        Name (str, required): The standard, e.g. "SDTMIG", "CDISC/NCI".
+        Type (str, required): "IG" for an implementation guide, "CT" for
+            controlled terminology.
+        PublishingSet (str): The publishing set, e.g. "SDTM", "ADaM".
+        Version (str, required): Version of the standard.
+        Status (str, required): Development status, e.g. "Final"; extensible.
+        CommentOID (str): OID of an associated CommentDef.
+    """
+
     OID = T.OID(required=True)
-    Name = T.String(required=True)
-    Type = T.String(required=True)
-    PublishingSet = T.String(required=False)
+    Name = T.ValueSetString(required=True)
+    Type = T.ValueSetString(required=True)
+    PublishingSet = T.ValueSetString(required=False)
     Version = T.String(required=True)
-    Status = T.String(required=False)
+    Status = T.ValueSetString(required=True)
     CommentOID = T.OIDRef(required=False)
 
 
@@ -198,33 +290,14 @@ class StudyStructure(OE.ODMElement):
         Description: Optional description of the study structure.
         Arm (list): One or more arms (treatment groups) in the trial.
         Epoch (list): One or more epochs (time periods) in the trial.
-        WorkflowRef (list): References to workflows associated with the
-            overall study structure.
+        WorkflowRef: Reference to the workflow associated with the overall
+            study structure.
     """
 
     Description = T.ODMObject(element_class=Description)
     Arm = T.ODMListObject(element_class=Arm)
     Epoch = T.ODMListObject(element_class=Epoch)
-    WorkflowRef = T.ODMListObject(element_class=WorkflowRef)
-
-
-class Protocol(OE.ODMElement):
-    """Defines the overall structure of the study protocol in ODM 2.0.
-
-    Lists the study events that constitute the protocol, along with any
-    aliases.
-
-    Attributes:
-        Description: Optional human-readable description.
-        StudyEventRef (list): Ordered references to StudyEventDef elements
-            that make up this protocol.
-        Alias (list): Alternative names for this protocol in external contexts.
-    """
-
-    Description = T.ODMObject(element_class=Description)
-    StudyStructure = T.ODMObject(element_class=StudyStructure)
-    StudyEventRef = T.ODMListObject(element_class=StudyEventRef)
-    Alias = T.ODMListObject(element_class=Alias)
+    WorkflowRef = T.ODMObject(element_class=WorkflowRef)
 
 
 class ItemGroupRef(OE.ODMElement):
@@ -243,6 +316,7 @@ class ItemGroupRef(OE.ODMElement):
     """
 
     ItemGroupOID = T.OIDRef(required=True)
+    MethodOID = T.OIDRef()
     OrderNumber = T.Integer(required=False)
     Mandatory = T.ValueSetString(required=True)
     CollectionExceptionConditionOID = T.OIDRef()
@@ -259,7 +333,8 @@ class StudyEventDef(OE.ODMElement):
     CommentOID = T.OIDRef(required=False)
     Description = T.ODMObject(element_class=Description)
     ItemGroupRef = T.ODMListObject(element_class=ItemGroupRef)
-    WorkflowRef = T.ODMListObject(element_class=WorkflowRef)
+    WorkflowRef = T.ODMObject(element_class=WorkflowRef)
+    Coding = T.ODMListObject(element_class=Coding)
     Alias = T.ODMListObject(element_class=Alias)
 
     def __len__(self):
@@ -276,48 +351,86 @@ class StudyEventDef(OE.ODMElement):
         return iter(self.ItemGroupRef)
 
 
-class ArchiveLayout(OE.ODMElement):
-    """Describes a PDF-based presentation layout for an ODM element.
+class Selection(OE.ODMElement):
+    """A path expression selecting a value within a Resource.
+
+    .. versionadded:: 0.2.1
+       Added so SourceItem can satisfy the ODM 2.0 XSD. The path previously
+       lived on the non-XSD ``SourceItem.Path`` attribute.
 
     Attributes:
-        OID (str, required): Unique identifier for this archive layout.
-        PdfFileName (str, required): Name of the PDF file containing the layout.
-        PresentationOID (str): OID reference to the associated Presentation
-            element, if any.
+        Path (str, required): Path expression locating the source value.
     """
 
-    OID = T.OID(required=True)
-    PdfFileName = T.FileName(required=True)
-    PresentationOID = T.OIDRef(required=False)
+    Path = T.String(required=True)
 
-    def __len__(self):
-        return len(self.ItemGroupRef)
 
-    def __getitem__(self, position):
-        return self.ItemGroupRef[position]
+class Resource(OE.ODMElement):
+    """A named source of data referenced by a SourceItem.
 
-    def __iter__(self):
-        return iter(self.ItemGroupRef)
+    .. versionadded:: 0.2.1
+       Added so SourceItem can satisfy the ODM 2.0 XSD, where Resource is a
+       required child element. Its Name/Attribute/Label previously lived on
+       the non-XSD ``SourceItem`` attributes of the same names.
+
+    Attributes:
+        Type (str, required): Kind of resource, e.g. a system or file type.
+        Name (str, required): Name of the source resource.
+        Attribute (str): Name of the source attribute within the resource.
+        Label (str): Human-readable label for the resource.
+        Selection (list): Path expressions locating values in the resource.
+    """
+
+    Type = T.String(required=True)
+    Name = T.Name(required=True)
+    Attribute = T.String()
+    Label = T.String()
+    Selection = T.ODMListObject(element_class=Selection)
 
 
 class SourceItem(OE.ODMElement):
     """Identifies the source of an item's data within an Origin element.
 
+    .. versionchanged:: 0.2.1
+       Aligned with the ODM 2.0 XSD. The attribute set now matches
+       SourceItemAttributeDefinition: ``leadID`` was corrected to ``leafID``
+       (and retyped from IDRef to OIDRef, matching ``type="oidref"``), and
+       the missing ``ItemOID``, ``MetaDataVersionOID``, ``StudyOID`` and
+       ``Name`` were added.
+
+       The content model was corrected too. ``Resource``, ``Attribute``,
+       ``Path`` and ``Label`` were **removed as attributes** -- they appear
+       nowhere in the XSD -- and replaced by the required ``Resource`` child
+       element (``minOccurs="1"``), which carries ``Type``/``Name``/
+       ``Attribute``/``Label`` and holds ``Selection`` children carrying
+       ``Path``. The optional ``Coding`` child was added at its XSD
+       position. Before this a SourceItem could not be serialized in
+       schema-valid form.
+
+       **Breaking within draft ODM 2.0:** code setting
+       ``SourceItem(Resource=..., Attribute=..., Path=..., Label=...)`` must
+       move those values onto a ``Resource`` element, and ``Path`` onto a
+       ``Selection`` beneath it.
+
     Attributes:
-        leadID (str): ID reference for the lead source.
+        ItemOID (str): OID of the source ItemDef.
         ItemGroupOID (str): OID of the source ItemGroupDef.
-        Resource (str): Name of the source resource.
-        Attribute (str): Name of the source attribute within the resource.
-        Path (str): Path expression locating the source value.
-        Label (str): Human-readable label for the source.
+        MetaDataVersionOID (str): OID of the source MetaDataVersion.
+        StudyOID (str): OID of the source Study.
+        leafID (str): Reference to the Leaf holding the source document.
+        Name (str): Name of the source item.
+        Resource (list, required): One or more source resources.
+        Coding (list): External terminology codings for this source item.
     """
 
-    leadID = T.IDRef()
+    ItemOID = T.OIDRef()
     ItemGroupOID = T.OIDRef()
-    Resource = T.String()
-    Attribute = T.String()
-    Path = T.String()
-    Label = T.String()
+    MetaDataVersionOID = T.OIDRef()
+    StudyOID = T.OIDRef()
+    leafID = T.OIDRef()
+    Name = T.Name()
+    Resource = T.ODMListObject(required=True, element_class=Resource)
+    Coding = T.ODMListObject(element_class=Coding)
 
 
 class SourceItems(OE.ODMElement):
@@ -329,25 +442,33 @@ class SourceItems(OE.ODMElement):
     """
 
     SourceItem = T.ODMListObject(element_class=SourceItem, required=True)
+    Coding = T.ODMListObject(element_class=Coding)
 
 
 class Origin(OE.ODMElement):
     """Describes the origin or provenance of an item's data.
 
+    .. versionchanged:: 0.2.1
+       Children reordered to the XSD sequence -- ``Description``,
+       ``SourceItems``, ``DocumentRef``. odmlib serializes in declaration
+       order, so the previous order emitted DocumentRef first and the
+       document failed schema validation.
+
     Attributes:
         Type (str, required): Category of origin, e.g. "CRF", "Derived",
             "Predecessor", "Protocol", "eDT".
         Source (str): More specific source within the Type category.
-        DocumentRef (list): References to source documents.
         Description: Human-readable description of the origin.
         SourceItems: Structured source location details.
+        DocumentRef (list): References to source documents.
     """
 
     Type = T.ValueSetString(required=True)
     Source = T.ValueSetString()
-    DocumentRef = T.ODMListObject(element_class=DocumentRef)
     Description = T.ODMObject(element_class=Description)
     SourceItems = T.ODMObject(element_class=SourceItems)
+    Coding = T.ODMListObject(element_class=Coding)
+    DocumentRef = T.ODMListObject(element_class=DocumentRef)
 
 
 class WhereClauseRef(OE.ODMElement):
@@ -368,17 +489,113 @@ class ErrorMessage(OE.ODMElement):
     TranslatedText = T.ODMListObject(required=True, element_class=TranslatedText)
 
 
+class Code(OE.ODMElement):
+    """The inline source text of a FormalExpression.
+
+    Attributes:
+        _content (str, required): The expression source, written in the
+            language named by the parent FormalExpression's Context.
+    """
+
+    _content = T.String(required=True)
+
+
+class ExternalCodeLib(OE.ODMElement):
+    """A reference to a FormalExpression held in an external code library.
+
+    Attributes:
+        Library (str, required): Name of the external code library.
+        Method (str): Name of the method or function within the library.
+        Version (str): Version of the library.
+        ref (str): Identifier of the expression within the library.
+        href (str): URL locating the library or the expression.
+    """
+
+    Library = T.Name(required=True)
+    Method = T.Name()
+    Version = T.String()
+    ref = T.String()
+    href = T.String()
+
+
 class FormalExpression(OE.ODMElement):
     """A formal expression (e.g. a computation or condition) in a specified language.
 
+    In ODM 2.0 the expression is element-based: the XSD requires a choice of
+    exactly one Code (inline source) or ExternalCodeLib (a reference to an
+    external library).
+
+    .. versionchanged:: 0.2.1
+       Aligned with the ODM 2.0 XSD. ``_content`` was removed -- the
+       expression text now lives in a ``Code`` child. ODM 1.3.2
+       FormalExpression is unchanged and remains text-based.
+
+    .. note::
+
+       **Known approximation.** The XSD requires exactly one of ``Code`` or
+       ``ExternalCodeLib``. odmlib has no way to express an ``xs:choice`` --
+       the metaclass sorts descriptors into attributes and children and has
+       no concept of mutual exclusion -- so both are declared optional here.
+       Setting neither, or both, builds an object odmlib accepts and the
+       schema rejects. There is no Cerberus conformance schema for
+       ``odm_2_0`` to enforce it in either, so
+       :class:`~odmlib.odm_parser.ODMSchemaValidator` is the check that
+       catches it.
+
     Attributes:
-        Context (str, required): The language or context of the expression,
-            e.g. an XPath version string.
-        _content (str, required): The expression text.
+        Context (str): The language or context of the expression, e.g. an
+            XPath version string.
+        Code: The inline expression source.
+        ExternalCodeLib: A reference to the expression in an external library.
     """
 
-    Context = T.String(required=True)
-    _content = T.String(required=True)
+    Context = T.String()
+    Code = T.ODMObject(element_class=Code)
+    ExternalCodeLib = T.ODMObject(element_class=ExternalCodeLib)
+
+
+class Parameter(OE.ODMElement):
+    """Declares an input parameter for a MethodDef signature.
+
+    Attributes:
+        Name (str, required): Name of the parameter.
+        Definition (str): Human-readable definition of the parameter.
+        DataType (str, required): Data type of the parameter value.
+        OrderNumber (int): Position of this parameter in the signature.
+    """
+
+    Name = T.Name(required=True)
+    Definition = T.String()
+    DataType = T.ValueSetString(required=True)
+    OrderNumber = T.PositiveInteger()
+
+
+class ReturnValue(OE.ODMElement):
+    """Declares a return value for a MethodDef signature.
+
+    Attributes:
+        Name (str, required): Name of the return value.
+        Definition (str): Human-readable definition of the return value.
+        DataType (str, required): Data type of the return value.
+        OrderNumber (int): Position of this return value in the signature.
+    """
+
+    Name = T.Name(required=True)
+    Definition = T.String()
+    DataType = T.ValueSetString(required=True)
+    OrderNumber = T.PositiveInteger()
+
+
+class MethodSignature(OE.ODMElement):
+    """Describes the formal input/output signature of a MethodDef.
+
+    Attributes:
+        Parameter (list): Zero or more input parameters.
+        ReturnValue (list): Zero or more return values.
+    """
+
+    Parameter = T.ODMListObject(element_class=Parameter)
+    ReturnValue = T.ODMListObject(element_class=ReturnValue)
 
 
 class RangeCheck(OE.ODMElement):
@@ -386,7 +603,9 @@ class RangeCheck(OE.ODMElement):
 
     Comparator = T.ValueSetString(required=False)
     SoftHard = T.ValueSetString()
+    ItemOID = T.OIDRef()
     CheckValue = T.ODMListObject(element_class=CheckValue)
+    MethodSignature = T.ODMObject(element_class=MethodSignature)
     FormalExpression = T.ODMListObject(element_class=FormalExpression)
     ErrorMessage = T.ODMObject(element_class=ErrorMessage)
 
@@ -441,6 +660,43 @@ class ValueListDef(OE.ODMElement):
     ItemRef = T.ODMListObject(required=True, element_class=ItemRef)
 
 
+class SubClass(OE.ODMElement):
+    """A subclass within a dataset class hierarchy.
+
+    .. versionadded:: 0.2.1
+
+    .. note::
+
+       The ODM 2.0 XSD models the hierarchy through the flat ``ParentClass``
+       attribute rather than by nesting SubClass elements, so this class has
+       no children.
+
+    Attributes:
+        Name (str, required): The subclass name, e.g. "ADVERSE EVENT".
+        ParentClass (str): The class or subclass this one sits beneath.
+    """
+
+    Name = T.ValueSetString(required=True)
+    ParentClass = T.ValueSetString()
+
+
+class Class(OE.ODMElement):
+    """The general observation class of an ItemGroupDef.
+
+    .. versionadded:: 0.2.1
+       ODM 2.0 models the dataset class as a child *element* with a ``Name``
+       attribute, not as the Define-XML-style ``ItemGroupDef/@Class``
+       attribute.
+
+    Attributes:
+        Name (str, required): The class name, e.g. "FINDINGS".
+        SubClass (list): Subclasses beneath this class.
+    """
+
+    Name = T.ValueSetString(required=True)
+    SubClass = T.ODMListObject(element_class=SubClass)
+
+
 class ItemGroupDef(OE.ODMElement):
     """ represents ODM v2.0 ItemGroupDef and can serialize as JSON or XML"""
 
@@ -453,17 +709,21 @@ class ItemGroupDef(OE.ODMElement):
     Domain = T.String(required=False)
     Type = T.ValueSetString(required=True)
     Purpose = T.String(required=False)
+    Structure = T.String(required=False)
+    ArchiveLocationID = T.OIDRef(required=False)
     StandardOID = T.OIDRef(required=False)
     IsNonStandard = T.ValueSetString(required=False)
     HasNoData = T.ValueSetString(required=False)
     CommentOID = T.OIDRef(required=False)
     Description = T.ODMObject(element_class=Description)
+    Class = T.ODMObject(element_class=Class)
     ItemGroupRef = T.ODMListObject(element_class=ItemGroupRef)
     ItemRef = T.ODMListObject(element_class=ItemRef)
     Coding = T.ODMListObject(element_class=Coding)
-    WorkflowRef = T.ODMListObject(element_class=WorkflowRef)
+    WorkflowRef = T.ODMObject(element_class=WorkflowRef)
     Origin = T.ODMListObject(element_class=Origin)
     Alias = T.ODMListObject(element_class=Alias)
+    Leaf = T.ODMObject(element_class=Leaf)
 
     def __len__(self):
         return len(self.ItemRef)
@@ -547,6 +807,18 @@ class CodeListRef(OE.ODMElement):
     CodeListOID = T.OIDRef("CodeListOID", required=True)
 
 
+class ValueListRef(OE.ODMElement):
+    """A reference from an ItemDef to a ValueListDef.
+
+    .. versionadded:: 0.2.1
+
+    Attributes:
+        ValueListOID (str, required): OID of the referenced ValueListDef.
+    """
+
+    ValueListOID = T.OIDRef(required=True)
+
+
 class ItemDef(OE.ODMElement):
     """ represents ODM v2.0 ItemDef and can serialize as JSON or XML - ordering of properties matters """
 
@@ -566,6 +838,7 @@ class ItemDef(OE.ODMElement):
     CDISCNotes = T.ODMObject(element_class=CDISCNotes)
     RangeCheck = T.ODMListObject(element_class=RangeCheck)
     CodeListRef = T.ODMObject(element_class=CodeListRef)
+    ValueListRef = T.ODMObject(element_class=ValueListRef)
     Coding = T.ODMListObject(element_class=Coding)
     Alias = T.ODMListObject(element_class=Alias)
 
@@ -588,6 +861,7 @@ class CodeListItem(OE.ODMElement):
     Rank = T.Float(required=False)
     Other = T.ValueSetString(required=False)
     OrderNumber = T.PositiveInteger(required=False)
+    ExtendedValue = T.ValueSetString(required=False)
     CommentOID = T.OIDRef(required=False)
     Description = T.ODMObject(element_class=Description)
     Decode = T.ODMObject(element_class=Decode)
@@ -632,10 +906,18 @@ class ConditionDef(OE.ODMElement):
     ConditionDef is referenced by CollectionExceptionConditionOID attributes
     on ItemRef, ItemGroupRef, StudyEventRef, and StudyEventGroupRef.
 
+    .. versionchanged:: 0.2.1
+       Aligned with the ODM 2.0 XSD: ``MethodSignature`` was added and
+       ``Description`` became required. Both are ``minOccurs="1"`` in the
+       XSD.
+
     Attributes:
         OID (str, required): Unique identifier.
         Name (str, required): Human-readable name.
-        Description: Optional description.
+        CommentOID (str): OID of an associated CommentDef.
+        Description (required): Description of the condition.
+        MethodSignature (required): The formal input/output signature of the
+            condition's expressions.
         FormalExpression (list): One or more formal expressions encoding the
             condition logic.
         Alias (list): Alternative identifiers in external contexts.
@@ -644,53 +926,10 @@ class ConditionDef(OE.ODMElement):
     OID = T.OID(required=True)
     Name = T.Name(required=True)
     CommentOID = T.OIDRef(required=False)
-    Description = T.ODMObject(element_class=Description)
+    Description = T.ODMObject(required=True, element_class=Description)
+    MethodSignature = T.ODMObject(required=True, element_class=MethodSignature)
     FormalExpression = T.ODMListObject(element_class=FormalExpression)
     Alias = T.ODMListObject(element_class=Alias)
-
-
-class Parameter(OE.ODMElement):
-    """Declares an input parameter for a MethodDef signature.
-
-    Attributes:
-        Name (str, required): Name of the parameter.
-        Definition (str): Human-readable definition of the parameter.
-        DataType (str, required): Data type of the parameter value.
-        OrderNumber (int): Position of this parameter in the signature.
-    """
-
-    Name = T.Name(required=True)
-    Definition = T.String()
-    DataType = T.ValueSetString(required=True)
-    OrderNumber = T.PositiveInteger()
-
-
-class ReturnValue(OE.ODMElement):
-    """Declares a return value for a MethodDef signature.
-
-    Attributes:
-        Name (str, required): Name of the return value.
-        Definition (str): Human-readable definition of the return value.
-        DataType (str, required): Data type of the return value.
-        OrderNumber (int): Position of this return value in the signature.
-    """
-
-    Name = T.Name(required=True)
-    Definition = T.String()
-    DataType = T.ValueSetString(required=True)
-    OrderNumber = T.PositiveInteger()
-
-
-class MethodSignature(OE.ODMElement):
-    """Describes the formal input/output signature of a MethodDef.
-
-    Attributes:
-        Parameter (list): Zero or more input parameters.
-        ReturnValue (list): Zero or more return values.
-    """
-
-    Parameter = T.ODMListObject(element_class=Parameter)
-    ReturnValue = T.ODMListObject(element_class=ReturnValue)
 
 
 class MethodDef(OE.ODMElement):
@@ -698,12 +937,13 @@ class MethodDef(OE.ODMElement):
 
     OID = T.OID(required=True)
     Name = T.Name(required=True)
-    Type = T.ValueSetString(required=True)
+    Type = T.ValueSetString()
     CommentOID = T.OIDRef(required=False)
     Description = T.ODMObject(required=True, element_class=Description)
-    MethodSignature = T.ODMObject(element_class=MethodSignature)
+    MethodSignature = T.ODMObject(required=True, element_class=MethodSignature)
     FormalExpression = T.ODMListObject(element_class=FormalExpression)
     Alias = T.ODMListObject(element_class=Alias)
+    DocumentRef = T.ODMListObject(element_class=DocumentRef)
 
 
 class StudyEventGroupRef(OE.ODMElement):
@@ -725,35 +965,6 @@ class StudyEventGroupRef(OE.ODMElement):
     Mandatory = T.ValueSetString(required=True)
     CollectionExceptionConditionOID = T.OIDRef()
     Description = T.ODMObject(element_class=Description)
-
-
-class ExceptionEvent(OE.ODMElement):
-    """Defines an exceptional study event that occurs outside the normal workflow.
-
-    An ExceptionEvent is triggered when a specified condition is met and
-    links to a workflow, study event groups, and study events that should
-    be collected in that circumstance.
-
-    Attributes:
-        OID (str, required): Unique identifier.
-        Name (str, required): Human-readable name.
-        ConditionOID (str, required): OID of the ConditionDef that triggers
-            this exception event.
-        Description: Optional description.
-        WorkflowRef: Reference to the workflow governing this exception.
-        StudyEventGroupRef (list): Study event groups associated with this
-            exception.
-        StudyEventRef (list): Individual study events associated with this
-            exception.
-    """
-
-    OID = T.OID(required=True)
-    Name = T.Name(required=True)
-    ConditionOID = T.OIDRef(required=True)
-    Description = T.ODMObject(element_class=Description)
-    WorkflowRef = T.ODMObject(element_class=WorkflowRef)
-    StudyEventGroupRef = T.ODMListObject(element_class=StudyEventGroupRef)
-    StudyEventRef = T.ODMListObject(element_class=StudyEventRef)
 
 
 class WorkflowStart(OE.ODMElement):
@@ -795,12 +1006,12 @@ class TargetTransition(OE.ODMElement):
     Attributes:
         TargetTransitionOID (str, required): OID reference to the Transition
             that should be taken.
-        ConditionOID (str, required): OID of the ConditionDef that must be
-            true to take this transition.
+        ConditionOID (str): OID of the ConditionDef that must be true to
+            take this transition.
     """
 
     TargetTransitionOID = T.OIDRef(required=True)
-    ConditionOID = T.OIDRef(required=True)
+    ConditionOID = T.OIDRef()
 
 
 class DefaultTransition(OE.ODMElement):
@@ -838,12 +1049,18 @@ class Branching(OE.ODMElement):
 class WorkflowEnd(OE.ODMElement):
     """Identifies an endpoint of a WorkflowDef.
 
+    .. versionchanged:: 0.2.1
+       Added ``_content``. The XSD types WorkflowEnd as ``xs:simpleContent``
+       over ``text``, and the model had no text member at all.
+
     Attributes:
         EndOID (str, required): OID reference to the last study event group
             or study event in this workflow path.
+        _content (str): Optional text describing the endpoint.
     """
 
     EndOID = T.OIDRef(required=True)
+    _content = T.String()
 
 
 class WorkflowDef(OE.ODMElement):
@@ -884,10 +1101,10 @@ class AbsoluteTimingConstraint(OE.ODMElement):
         StudyEventOID (str): OID of the constrained study event.
         TimepointTarget (str, required): Incomplete datetime target for when
             the event should occur.
-        TimepointPreWindow (str, required): ISO 8601 duration for the
-            allowable window before the target.
-        TimepointPostWindow (str, required): ISO 8601 duration for the
-            allowable window after the target.
+        TimepointPreWindow (str): ISO 8601 duration for the allowable
+            window before the target.
+        TimepointPostWindow (str): ISO 8601 duration for the allowable
+            window after the target.
         Description: Optional description.
     """
 
@@ -896,8 +1113,8 @@ class AbsoluteTimingConstraint(OE.ODMElement):
     StudyEventGroupOID = T.OIDRef()
     StudyEventOID = T.OIDRef()
     TimepointTarget = T.IncompleteDateTimeString(required=True)
-    TimepointPreWindow = T.DurationDateTimeString(required=True)
-    TimepointPostWindow = T.DurationDateTimeString(required=True)
+    TimepointPreWindow = T.DurationDateTimeString()
+    TimepointPostWindow = T.DurationDateTimeString()
     Description = T.ODMObject(element_class=Description)
 
 
@@ -907,35 +1124,35 @@ class RelativeTimingConstraint(OE.ODMElement):
     Specifies when a successor event should occur relative to a predecessor
     event, with allowed pre- and post-windows.
 
+    .. versionchanged:: 0.2.1
+       The four ``Predecessor*``/``Successor*`` OID attributes were replaced
+       by ``PredecessorOID`` and ``SuccessorOID``. The XSD names only those
+       two, and either may reference any structural element, so the split by
+       event-vs-group was both wrong and unnecessary.
+
     Attributes:
         OID (str, required): Unique identifier.
         Name (str, required): Human-readable name.
-        PredecessorStudyEventGroupOID (str): OID of the predecessor study
-            event group.
-        PredecessorStudyEventOID (str): OID of the predecessor study event.
-        SuccessorStudyEventGroupOID (str): OID of the successor study event
-            group.
-        SuccessorStudyEventOID (str): OID of the successor study event.
+        PredecessorOID (str): OID of the predecessor structural element.
+        SuccessorOID (str): OID of the successor structural element.
         Type (str): The type of relative timing relationship.
         TimepointRelativeTarget (str, required): ISO 8601 duration from the
             predecessor to the target timepoint.
-        TimepointPreWindow (str, required): ISO 8601 duration for the
-            allowable window before the target.
-        TimepointPostWindow (str, required): ISO 8601 duration for the
-            allowable window after the target.
+        TimepointPreWindow (str): ISO 8601 duration for the allowable
+            window before the target.
+        TimepointPostWindow (str): ISO 8601 duration for the allowable
+            window after the target.
         Description: Optional description.
     """
 
     OID = T.OID(required=True)
     Name = T.Name(required=True)
-    PredecessorStudyEventGroupOID = T.OIDRef()
-    PredecessorStudyEventOID = T.OIDRef()
-    SuccessorStudyEventGroupOID = T.OIDRef()
-    SuccessorStudyEventOID = T.OIDRef()
+    PredecessorOID = T.OIDRef()
+    SuccessorOID = T.OIDRef()
     Type = T.ValueSetString()
     TimepointRelativeTarget = T.DurationDateTimeString(required=True)
-    TimepointPreWindow = T.DurationDateTimeString(required=True)
-    TimepointPostWindow = T.DurationDateTimeString(required=True)
+    TimepointPreWindow = T.DurationDateTimeString()
+    TimepointPostWindow = T.DurationDateTimeString()
     Description = T.ODMObject(element_class=Description)
 
 
@@ -945,27 +1162,33 @@ class TransitionTimingConstraint(OE.ODMElement):
     Specifies how long after a predecessor event a given workflow
     transition should occur.
 
+    .. versionchanged:: 0.2.1
+       ``TimepointRelativeTarget`` was replaced by the XSD's
+       ``TimepointTarget``, and the missing ``Type`` attribute was added.
+
     Attributes:
         OID (str, required): Unique identifier.
         Name (str, required): Human-readable name.
         TransitionOID (str, required): OID of the Transition being constrained.
-        TimepointRelativeTarget (str, required): ISO 8601 duration for the
-            nominal timepoint relative to the predecessor.
         MethodOID (str): OID of a MethodDef used to compute the target time.
-        TimepointPreWindow (str, required): ISO 8601 duration for the
-            allowable window before the target.
-        TimepointPostWindow (str, required): ISO 8601 duration for the
-            allowable window after the target.
+        Type (str): The type of relative timing relationship.
+        TimepointTarget (str, required): ISO 8601 duration for the nominal
+            timepoint relative to the predecessor.
+        TimepointPreWindow (str): ISO 8601 duration for the allowable
+            window before the target.
+        TimepointPostWindow (str): ISO 8601 duration for the allowable
+            window after the target.
         Description: Optional description.
     """
 
     OID = T.OID(required=True)
     Name = T.Name(required=True)
     TransitionOID = T.OIDRef(required=True)
-    TimepointRelativeTarget = T.DurationDateTimeString(required=True)
     MethodOID = T.OIDRef()
-    TimepointPreWindow = T.DurationDateTimeString(required=True)
-    TimepointPostWindow = T.DurationDateTimeString(required=True)
+    Type = T.ValueSetString()
+    TimepointTarget = T.DurationDateTimeString(required=True)
+    TimepointPreWindow = T.DurationDateTimeString()
+    TimepointPostWindow = T.DurationDateTimeString()
     Description = T.ODMObject(element_class=Description)
 
 
@@ -982,10 +1205,10 @@ class DurationTimingConstraint(OE.ODMElement):
             (e.g. an Arm or Epoch) whose duration is constrained.
         DurationTarget (str, required): ISO 8601 duration for the expected
             length of the structural element.
-        DurationPreWindow (str, required): ISO 8601 duration for the
-            allowable window before the target duration.
-        DurationPostWindow (str, required): ISO 8601 duration for the
-            allowable window after the target duration.
+        DurationPreWindow (str): ISO 8601 duration for the allowable
+            window before the target duration.
+        DurationPostWindow (str): ISO 8601 duration for the allowable
+            window after the target duration.
         Description: Optional description.
     """
 
@@ -993,8 +1216,8 @@ class DurationTimingConstraint(OE.ODMElement):
     Name = T.Name(required=True)
     StructuralElementOID = T.OIDRef(required=True)
     DurationTarget = T.DurationDateTimeString(required=True)
-    DurationPreWindow = T.DurationDateTimeString(required=True)
-    DurationPostWindow = T.DurationDateTimeString(required=True)
+    DurationPreWindow = T.DurationDateTimeString()
+    DurationPostWindow = T.DurationDateTimeString()
     Description = T.ODMObject(element_class=Description)
 
 
@@ -1007,8 +1230,8 @@ class StudyTiming(OE.ODMElement):
         AbsoluteTimingConstraint (list): Absolute time-based constraints.
         RelativeTimingConstraint (list): Relative time-based constraints
             between events.
-        TransitionTimingConstraint: A timing constraint on a workflow
-            transition.
+        TransitionTimingConstraint (list): Timing constraints on workflow
+            transitions.
         DurationTimingConstraint (list): Duration constraints on structural
             elements.
     """
@@ -1017,8 +1240,450 @@ class StudyTiming(OE.ODMElement):
     Name = T.Name(required=True)
     AbsoluteTimingConstraint = T.ODMListObject(element_class=AbsoluteTimingConstraint)
     RelativeTimingConstraint = T.ODMListObject(element_class=RelativeTimingConstraint)
-    TransitionTimingConstraint = T.ODMObject(element_class=TransitionTimingConstraint)
+    TransitionTimingConstraint = T.ODMListObject(element_class=TransitionTimingConstraint)
     DurationTimingConstraint = T.ODMListObject(element_class=DurationTimingConstraint)
+
+
+class StudyTimings(OE.ODMElement):
+    """The set of StudyTiming containers belonging to a Protocol.
+
+    .. versionadded:: 0.2.1
+       Added to align with the ODM 2.0 XSD, where timing lives under
+       ``Protocol/StudyTimings`` rather than directly on MetaDataVersion.
+
+    Attributes:
+        StudyTiming (list, required): One or more StudyTiming containers.
+    """
+
+    StudyTiming = T.ODMListObject(required=True, element_class=StudyTiming)
+
+
+class ParameterValue(OE.ODMElement):
+    """The value of a StudyParameter.
+
+    .. versionadded:: 0.2.1
+
+    Attributes:
+        Value (str, required): The parameter value.
+        Coding (list): External terminology codings for the value.
+    """
+
+    Value = T.String(required=True)
+    Coding = T.ODMListObject(element_class=Coding)
+
+
+class StudyParameter(OE.ODMElement):
+    """A single named parameter in the StudySummary.
+
+    .. versionadded:: 0.2.1
+
+    Attributes:
+        OID (str, required): Unique identifier.
+        Term (str, required): The parameter's term, e.g. "Trial Blinding Schema".
+        ShortName (str): A short form of the term.
+        ParameterValue (required): The parameter's value.
+        Coding (list): External terminology codings for the parameter.
+    """
+
+    OID = T.OID(required=True)
+    Term = T.Name(required=True)
+    ShortName = T.Name()
+    ParameterValue = T.ODMObject(required=True, element_class=ParameterValue)
+    Coding = T.ODMListObject(element_class=Coding)
+
+
+class StudySummary(OE.ODMElement):
+    """The set of summary parameters describing a study.
+
+    .. versionadded:: 0.2.1
+
+    Attributes:
+        StudyParameter (list, required): One or more study parameters.
+    """
+
+    StudyParameter = T.ODMListObject(required=True, element_class=StudyParameter)
+
+
+class TrialPhase(OE.ODMElement):
+    """The phase of the trial.
+
+    .. versionadded:: 0.2.1
+
+    Attributes:
+        Value (str, required): The trial phase, e.g. "PHASE III TRIAL".
+        Description: Optional description.
+    """
+
+    Value = T.ValueSetString(required=True)
+    Description = T.ODMObject(element_class=Description)
+
+
+class StudyIndication(OE.ODMElement):
+    """A condition the study is intended to address.
+
+    .. versionadded:: 0.2.1
+
+    Attributes:
+        OID (str, required): Unique identifier.
+        Description (required): Description of the indication.
+        Coding (list): External terminology codings.
+    """
+
+    OID = T.OID(required=True)
+    Description = T.ODMObject(required=True, element_class=Description)
+    Coding = T.ODMListObject(element_class=Coding)
+
+
+class StudyIndications(OE.ODMElement):
+    """The set of indications for a study.
+
+    .. versionadded:: 0.2.1
+
+    Attributes:
+        StudyIndication (list, required): One or more indications.
+    """
+
+    StudyIndication = T.ODMListObject(required=True,
+                                      element_class=StudyIndication)
+
+
+class StudyIntervention(OE.ODMElement):
+    """A treatment or procedure administered during the study.
+
+    .. versionadded:: 0.2.1
+
+    Attributes:
+        OID (str, required): Unique identifier.
+        Description (required): Description of the intervention.
+        Coding (list): External terminology codings.
+    """
+
+    OID = T.OID(required=True)
+    Description = T.ODMObject(required=True, element_class=Description)
+    Coding = T.ODMListObject(element_class=Coding)
+
+
+class StudyInterventions(OE.ODMElement):
+    """The set of interventions for a study.
+
+    .. versionadded:: 0.2.1
+
+    Attributes:
+        StudyIntervention (list, required): One or more interventions.
+    """
+
+    StudyIntervention = T.ODMListObject(required=True,
+                                        element_class=StudyIntervention)
+
+
+class StudyInterventionRef(OE.ODMElement):
+    """A reference to a StudyIntervention.
+
+    .. versionadded:: 0.2.1
+
+    Attributes:
+        StudyInterventionOID (str, required): OID of the referenced
+            StudyIntervention.
+    """
+
+    StudyInterventionOID = T.OIDRef(required=True)
+
+
+class StudyEndPoint(OE.ODMElement):
+    """A measurable outcome used to assess a study objective.
+
+    .. versionadded:: 0.2.1
+
+    Attributes:
+        OID (str, required): Unique identifier.
+        Name (str, required): Human-readable name.
+        Type (str): Endpoint category, e.g. "Simple", "Composite".
+        Level (str): "Primary", "Secondary" or "Exploratory".
+        Description (required): Description of the endpoint.
+        FormalExpression (list): Expressions defining the endpoint.
+    """
+
+    OID = T.OID(required=True)
+    Name = T.Name(required=True)
+    Type = T.ValueSetString()
+    Level = T.ValueSetString()
+    Description = T.ODMObject(required=True, element_class=Description)
+    FormalExpression = T.ODMListObject(element_class=FormalExpression)
+
+
+class StudyEndPoints(OE.ODMElement):
+    """The set of endpoints for a study.
+
+    .. versionadded:: 0.2.1
+
+    Attributes:
+        StudyEndPoint (list, required): One or more endpoints.
+    """
+
+    StudyEndPoint = T.ODMListObject(required=True, element_class=StudyEndPoint)
+
+
+class StudyEndPointRef(OE.ODMElement):
+    """A reference to a StudyEndPoint.
+
+    .. versionadded:: 0.2.1
+
+    Attributes:
+        StudyEndPointOID (str, required): OID of the referenced StudyEndPoint.
+        OrderNumber (int): Position of this reference in the sequence.
+    """
+
+    StudyEndPointOID = T.OIDRef(required=True)
+    OrderNumber = T.PositiveInteger()
+
+
+class StudyObjective(OE.ODMElement):
+    """A stated aim of the study.
+
+    .. versionadded:: 0.2.1
+
+    Attributes:
+        OID (str, required): Unique identifier.
+        Name (str, required): Human-readable name.
+        Level (str): "Primary", "Secondary" or "Exploratory".
+        Description: Optional description.
+        StudyEndPointRef (list): Endpoints assessing this objective.
+    """
+
+    OID = T.OID(required=True)
+    Name = T.Name(required=True)
+    Level = T.ValueSetString()
+    Description = T.ODMObject(element_class=Description)
+    StudyEndPointRef = T.ODMListObject(element_class=StudyEndPointRef)
+
+
+class StudyObjectives(OE.ODMElement):
+    """The set of objectives for a study.
+
+    .. versionadded:: 0.2.1
+
+    Attributes:
+        StudyObjective (list, required): One or more objectives.
+    """
+
+    StudyObjective = T.ODMListObject(required=True,
+                                     element_class=StudyObjective)
+
+
+class StudyTargetPopulation(OE.ODMElement):
+    """The population the study is intended to enrol.
+
+    .. versionadded:: 0.2.1
+
+    Attributes:
+        OID (str, required): Unique identifier.
+        Name (str, required): Human-readable name.
+        Description (required): Description of the population.
+        Coding (list): External terminology codings.
+        FormalExpression (list): Expressions defining the population.
+    """
+
+    OID = T.OID(required=True)
+    Name = T.Name(required=True)
+    Description = T.ODMObject(required=True, element_class=Description)
+    Coding = T.ODMListObject(element_class=Coding)
+    FormalExpression = T.ODMListObject(element_class=FormalExpression)
+
+
+class StudyTargetPopulationRef(OE.ODMElement):
+    """A reference to the StudyTargetPopulation.
+
+    .. versionadded:: 0.2.1
+
+    Attributes:
+        StudyTargetPopulationOID (str, required): OID of the referenced
+            StudyTargetPopulation.
+    """
+
+    StudyTargetPopulationOID = T.OIDRef(required=True)
+
+
+class IntercurrentEvent(OE.ODMElement):
+    """An event occurring after treatment start that affects an estimand.
+
+    .. versionadded:: 0.2.1
+
+    Attributes:
+        Description (required): Description of the event and its handling.
+    """
+
+    Description = T.ODMObject(required=True, element_class=Description)
+
+
+class SummaryMeasure(OE.ODMElement):
+    """The population-level summary an estimand reports.
+
+    .. versionadded:: 0.2.1
+
+    Attributes:
+        Description (required): Description of the summary measure.
+    """
+
+    Description = T.ODMObject(required=True, element_class=Description)
+
+
+class StudyEstimand(OE.ODMElement):
+    """A precise description of the treatment effect the study estimates.
+
+    .. versionadded:: 0.2.1
+
+    Attributes:
+        OID (str, required): Unique identifier.
+        Name (str, required): Human-readable name.
+        Level (str): "Primary", "Secondary" or "Exploratory".
+        Description: Optional description.
+        StudyTargetPopulationRef: The population the estimand applies to.
+        StudyInterventionRef: The intervention under study.
+        StudyEndPointRef: The endpoint being estimated.
+        IntercurrentEvent (list): Events affecting the estimand and how they
+            are handled.
+        SummaryMeasure: The population-level summary reported.
+    """
+
+    OID = T.OID(required=True)
+    Name = T.Name(required=True)
+    Level = T.ValueSetString()
+    Description = T.ODMObject(element_class=Description)
+    StudyTargetPopulationRef = T.ODMObject(
+        element_class=StudyTargetPopulationRef)
+    StudyInterventionRef = T.ODMObject(element_class=StudyInterventionRef)
+    StudyEndPointRef = T.ODMObject(element_class=StudyEndPointRef)
+    IntercurrentEvent = T.ODMListObject(element_class=IntercurrentEvent)
+    SummaryMeasure = T.ODMObject(element_class=SummaryMeasure)
+
+
+class StudyEstimands(OE.ODMElement):
+    """The set of estimands for a study.
+
+    .. versionadded:: 0.2.1
+
+    Attributes:
+        StudyEstimand (list, required): One or more estimands.
+    """
+
+    StudyEstimand = T.ODMListObject(required=True, element_class=StudyEstimand)
+
+
+class Criterion(OE.ODMElement):
+    """A single inclusion or exclusion criterion.
+
+    .. versionadded:: 0.2.1
+
+    Attributes:
+        OID (str, required): Unique identifier.
+        Name (str, required): Human-readable name.
+        ConditionOID (str, required): OID of the ConditionDef encoding the
+            criterion.
+        Description: Optional description.
+        Coding (list): External terminology codings.
+    """
+
+    OID = T.OID(required=True)
+    Name = T.Name(required=True)
+    ConditionOID = T.OIDRef(required=True)
+    Description = T.ODMObject(element_class=Description)
+    Coding = T.ODMListObject(element_class=Coding)
+
+
+class InclusionCriteria(OE.ODMElement):
+    """The criteria a subject must meet to enter the study.
+
+    .. versionadded:: 0.2.1
+
+    Attributes:
+        Criterion (list, required): One or more criteria.
+    """
+
+    Criterion = T.ODMListObject(required=True, element_class=Criterion)
+
+
+class ExclusionCriteria(OE.ODMElement):
+    """The criteria that disqualify a subject from the study.
+
+    .. versionadded:: 0.2.1
+
+    Attributes:
+        Criterion (list, required): One or more criteria.
+    """
+
+    Criterion = T.ODMListObject(required=True, element_class=Criterion)
+
+
+class InclusionExclusionCriteria(OE.ODMElement):
+    """The study's eligibility criteria.
+
+    .. versionadded:: 0.2.1
+
+    Attributes:
+        InclusionCriteria: Criteria for entering the study.
+        ExclusionCriteria: Criteria that disqualify a subject.
+    """
+
+    InclusionCriteria = T.ODMObject(element_class=InclusionCriteria)
+    ExclusionCriteria = T.ODMObject(element_class=ExclusionCriteria)
+
+
+class Protocol(OE.ODMElement):
+    """Defines the overall structure of the study protocol in ODM 2.0.
+
+    Lists the study event groups that constitute the protocol, together with
+    the study structure, its timing constraints, its workflow and any
+    aliases.
+
+    .. versionchanged:: 0.2.1
+       Aligned with the ODM 2.0 XSD: ``StudyEventRef`` was removed -- the XSD
+       reaches study events through ``StudyEventGroupRef`` ->
+       ``StudyEventGroupDef`` -- and ``StudyTimings``, ``StudyEventGroupRef``
+       and ``WorkflowRef`` were added.
+
+    .. versionchanged:: 0.2.1
+       The nine optional study-design children the XSD defines --
+       ``StudySummary``, ``TrialPhase``, ``StudyIndications``,
+       ``StudyInterventions``, ``StudyObjectives``, ``StudyEndPoints``,
+       ``StudyTargetPopulation``, ``StudyEstimands`` and
+       ``InclusionExclusionCriteria`` -- were added. All are
+       ``minOccurs="0"``, so existing documents are unaffected.
+
+    Attributes:
+        Description: Optional human-readable description.
+        StudySummary: Named summary parameters describing the study.
+        StudyStructure: The arms and epochs that make up the study design.
+        TrialPhase: The phase of the trial.
+        StudyTimings: Container for the study's timing constraints.
+        StudyIndications: The conditions the study addresses.
+        StudyInterventions: The treatments administered during the study.
+        StudyObjectives: The study's stated aims.
+        StudyEndPoints: The outcomes used to assess the objectives.
+        StudyTargetPopulation: The population the study intends to enrol.
+        StudyEstimands: The treatment effects the study estimates.
+        InclusionExclusionCriteria: The study's eligibility criteria.
+        StudyEventGroupRef (list): Ordered references to the
+            StudyEventGroupDef elements that make up this protocol.
+        WorkflowRef: Reference to the workflow that governs the protocol.
+        Alias (list): Alternative names for this protocol in external contexts.
+    """
+
+    Description = T.ODMObject(element_class=Description)
+    StudySummary = T.ODMObject(element_class=StudySummary)
+    StudyStructure = T.ODMObject(element_class=StudyStructure)
+    TrialPhase = T.ODMObject(element_class=TrialPhase)
+    StudyTimings = T.ODMObject(element_class=StudyTimings)
+    StudyIndications = T.ODMObject(element_class=StudyIndications)
+    StudyInterventions = T.ODMObject(element_class=StudyInterventions)
+    StudyObjectives = T.ODMObject(element_class=StudyObjectives)
+    StudyEndPoints = T.ODMObject(element_class=StudyEndPoints)
+    StudyTargetPopulation = T.ODMObject(element_class=StudyTargetPopulation)
+    StudyEstimands = T.ODMObject(element_class=StudyEstimands)
+    InclusionExclusionCriteria = T.ODMObject(
+        element_class=InclusionExclusionCriteria)
+    StudyEventGroupRef = T.ODMListObject(element_class=StudyEventGroupRef)
+    WorkflowRef = T.ODMObject(element_class=WorkflowRef)
+    Alias = T.ODMListObject(element_class=Alias)
 
 
 class StudyEventGroupDef(OE.ODMElement):
@@ -1027,27 +1692,70 @@ class StudyEventGroupDef(OE.ODMElement):
     StudyEventGroupDef maps a set of study events to their position in the
     trial by linking them to a particular Arm and Epoch.
 
+    .. versionchanged:: 0.2.1
+       Aligned with the ODM 2.0 XSD. The required child group and the
+       optional WorkflowRef and Coding children were added -- before this
+       the element could not satisfy its own content model. On the attribute
+       side ``CommentOID`` was added, and ``ArmOID`` and ``EpochOID`` were
+       relaxed from required to optional to match ``use="optional"`` in the
+       XSD's StudyEventGroupDefAttributeDefinition group.
+
+    .. note::
+
+       **Known approximation.** The XSD models the children as a repeating
+       group, ``(StudyEventGroupRef?, StudyEventRef?)`` with
+       ``maxOccurs="unbounded"``, which permits the two to interleave.
+       odmlib has no repeating-group descriptor -- a descriptor maps to one
+       homogeneous list -- so this is approximated with two parallel lists.
+       Serialization emits every StudyEventGroupRef and then every
+       StudyEventRef, which is one valid instance of the XSD group but
+       cannot reproduce an interleaved ordering. Reading is affected too:
+       the loader collects children by tag name, so an interleaved source
+       document loads correctly but re-serializes grouped. Both forms are
+       schema-valid; only the original ordering is lost.
+
     Attributes:
         OID (str, required): Unique identifier.
         Name (str, required): Human-readable name.
-        ArmOID (str, required): OID of the Arm this event group belongs to.
-        EpochOID (str, required): OID of the Epoch this event group belongs to.
+        ArmOID (str): OID of the Arm this event group belongs to.
+        EpochOID (str): OID of the Epoch this event group belongs to.
+        CommentOID (str): OID of an associated CommentDef.
         Description: Optional description.
+        StudyEventGroupRef (list): References to nested study event groups.
+        StudyEventRef (list): References to the study events in this group.
+        WorkflowRef: Reference to the workflow governing this event group.
+        Coding (list): External terminology codings for this event group.
     """
 
     OID = T.OID(required=True)
     Name = T.Name(required=True)
-    ArmOID = T.OIDRef(required=True)
-    EpochOID = T.OIDRef(required=True)
+    ArmOID = T.OIDRef(required=False)
+    EpochOID = T.OIDRef(required=False)
+    CommentOID = T.OIDRef(required=False)
     Description = T.ODMObject(element_class=Description)
+    StudyEventGroupRef = T.ODMListObject(element_class=StudyEventGroupRef)
+    StudyEventRef = T.ODMListObject(element_class=StudyEventRef)
+    WorkflowRef = T.ODMObject(element_class=WorkflowRef)
+    Coding = T.ODMListObject(element_class=Coding)
 
 
 class MetaDataVersion(OE.ODMElement):
     """A versioned snapshot of all metadata for a study in ODM 2.0.
 
     MetaDataVersion holds the complete metadata definition including
-    the protocol, study structure, workflows, timing, event/item group/item
-    definitions, code lists, conditions, and methods.
+    the protocol, study structure, workflows, event/item group/item
+    definitions, code lists, conditions, and methods. Timing constraints
+    hang off Protocol/StudyTimings, not off MetaDataVersion.
+
+    .. versionchanged:: 0.2.1
+       ``StudyTiming`` was removed; the ODM 2.0 XSD has no such
+       MetaDataVersion child. Use ``Protocol.StudyTimings.StudyTiming``.
+       ``CommentDef`` was added at its XSD position, making it possible for
+       a ``CommentOID`` reference to resolve under ``verify_oids()``.
+       ``Leaf`` was added at its XSD position (last), so a ``DocumentRef``
+       can point at a Leaf that actually exists in the document -- the XSD
+       types ``DocumentRef/@LeafID`` as ``xs:IDREF``, so without a Leaf any
+       DocumentRef-bearing document failed schema validation.
 
     Attributes:
         OID (str, required): Unique identifier for this metadata version.
@@ -1057,7 +1765,6 @@ class MetaDataVersion(OE.ODMElement):
         Protocol: The protocol defining the ordered set of study events.
         StudyStructure: Arms and epochs that make up the study design.
         WorkflowDef (list): Workflow definitions.
-        StudyTiming: Container for all timing constraints.
         StudyEventGroupDef (list): Study event group definitions.
         StudyEventDef (list): Study event definitions.
         ItemGroupDef (list): Item group (dataset) definitions.
@@ -1066,6 +1773,9 @@ class MetaDataVersion(OE.ODMElement):
         ConditionDef (list): Condition definitions used for collection
             exception logic.
         MethodDef (list): Method (derivation/computation) definitions.
+        CommentDef (list): Comment definitions targeted by the CommentOID
+            attributes elsewhere in the metadata.
+        Leaf (list): Document locations targeted by DocumentRef/@LeafID.
     """
 
     OID = T.OID(required=True)
@@ -1073,10 +1783,13 @@ class MetaDataVersion(OE.ODMElement):
     CommentOID = T.OIDRef(required=False)
     Description = T.ODMObject(element_class=Description)
     Include = T.ODMObject(element_class=Include)
-    Standards = T.ODMListObject(element_class=Standards)
+    Standards = T.ODMObject(element_class=Standards)
+    AnnotatedCRF = T.ODMObject(element_class=AnnotatedCRF)
+    SupplementalDoc = T.ODMObject(element_class=SupplementalDoc)
+    ValueListDef = T.ODMListObject(element_class=ValueListDef)
+    WhereClauseDef = T.ODMListObject(element_class=WhereClauseDef)
     Protocol = T.ODMObject(element_class=Protocol)
     WorkflowDef = T.ODMListObject(element_class=WorkflowDef)
-    StudyTiming = T.ODMObject(element_class=StudyTiming)
     StudyEventGroupDef = T.ODMListObject(element_class=StudyEventGroupDef)
     StudyEventDef = T.ODMListObject(element_class=StudyEventDef)
     ItemGroupDef = T.ODMListObject(element_class=ItemGroupDef)
@@ -1084,6 +1797,8 @@ class MetaDataVersion(OE.ODMElement):
     CodeList = T.ODMListObject(element_class=CodeList)
     ConditionDef = T.ODMListObject(element_class=ConditionDef)
     MethodDef = T.ODMListObject(element_class=MethodDef)
+    CommentDef = T.ODMListObject(element_class=CommentDef)
+    Leaf = T.ODMListObject(element_class=Leaf)
 
 
 class UserName(OE.ODMElement):
@@ -1096,11 +1811,29 @@ class UserName(OE.ODMElement):
     _content = T.String(required=True)
 
 
-class DisplayName(OE.ODMElement):
-    """The display name shown in user interfaces for a User.
+class Prefix(OE.ODMElement):
+    """An honorific preceding a User's name, e.g. "Dr".
+
+    .. versionadded:: 0.2.1
+       The XSD models Prefix as a User child *element*; the model previously
+       carried it as a User attribute.
 
     Attributes:
-        _content (str, required): The display name string.
+        _content (str, required): The prefix string.
+    """
+
+    _content = T.String(required=True)
+
+
+class Suffix(OE.ODMElement):
+    """A qualifier following a User's name, e.g. "PhD".
+
+    .. versionadded:: 0.2.1
+       The XSD models Suffix as a User child *element*; the model previously
+       carried it as a User attribute.
+
+    Attributes:
+        _content (str, required): The suffix string.
     """
 
     _content = T.String(required=True)
@@ -1131,16 +1864,6 @@ class FamilyName(OE.ODMElement):
 
     Attributes:
         _content (str, required): The last name string.
-    """
-
-    _content = T.String(required=True)
-
-
-class Organization(OE.ODMElement):
-    """The organization or institution that a User belongs to.
-
-    Attributes:
-        _content (str, required): The organization name string.
     """
 
     _content = T.String(required=True)
@@ -1206,11 +1929,39 @@ class OtherText(OE.ODMElement):
     _content = T.String(required=True)
 
 
+class HouseNumber(OE.ODMElement):
+    """The house or building number part of an Address.
+
+    .. versionadded:: 0.2.1
+
+    Attributes:
+        _content (str, required): The house number.
+    """
+
+    _content = T.String(required=True)
+
+
+class GeoPosition(OE.ODMElement):
+    """The geographic coordinates of an Address.
+
+    .. versionadded:: 0.2.1
+
+    Attributes:
+        Longitude (float): Degrees east of the prime meridian.
+        Latitude (float): Degrees north of the equator.
+        Altitude (float): Height above sea level.
+    """
+
+    Longitude = T.Float()
+    Latitude = T.Float()
+    Altitude = T.Float()
+
+
 class Address(OE.ODMElement):
     """A postal address for a User.
 
     Attributes:
-        StreetName (list): One or more street address lines.
+        StreetName: The street address line.
         City: City name.
         StateProv: State or province.
         Country: Country code.
@@ -1218,65 +1969,14 @@ class Address(OE.ODMElement):
         OtherText: Any additional address information.
     """
 
-    StreetName = T.ODMListObject(element_class=StreetName)
+    StreetName = T.ODMObject(element_class=StreetName)
+    HouseNumber = T.ODMObject(element_class=HouseNumber)
     City = T.ODMObject(element_class=City)
     StateProv = T.ODMObject(element_class=StateProv)
     Country = T.ODMObject(element_class=Country)
     PostalCode = T.ODMObject(element_class=PostalCode)
+    GeoPosition = T.ODMObject(element_class=GeoPosition)
     OtherText = T.ODMObject(element_class=OtherText)
-
-
-class Email(OE.ODMElement):
-    """An email address for a User.
-
-    Attributes:
-        _content (str, required): The email address string; must be a valid
-            RFC 5321 email address.
-    """
-
-    _content = T.Email(required=True)
-
-
-class Picture(OE.ODMElement):
-    """A picture or photo associated with a User.
-
-    Attributes:
-        PictureFileName (str, required): Filename of the picture file.
-        ImageType (str): MIME type or format descriptor of the image.
-    """
-
-    PictureFileName = T.FileName(required=True)
-    ImageType = T.Name()
-
-
-class Pager(OE.ODMElement):
-    """A pager number for a User.
-
-    Attributes:
-        _content (str, required): The pager number string.
-    """
-
-    _content = T.String(required=True)
-
-
-class Fax(OE.ODMElement):
-    """A fax number for a User.
-
-    Attributes:
-        _content (str, required): The fax number string.
-    """
-
-    _content = T.String(required=True)
-
-
-class Phone(OE.ODMElement):
-    """A telephone number for a User.
-
-    Attributes:
-        _content (str, required): The phone number string.
-    """
-
-    _content = T.String(required=True)
 
 
 class LocationRef(OE.ODMElement):
@@ -1308,9 +2008,52 @@ class Image(OE.ODMElement):
 
 # TODO ensure the type information for TelecomType is there
 class Telecom(OE.ODMElement):
-    """Telecommunications contact information for a User."""
+    """Telecommunications contact information for a User or Organization.
+
+    .. versionchanged:: 0.2.1
+       ``value`` was corrected to ``Value`` to match
+       TelecomAttributeDefinition in the ODM 2.0 XSD. The lower-case spelling
+       made every document containing a Telecom schema-invalid.
+
+    Attributes:
+        TelecomType (str, required): Kind of contact, e.g. "Email", "Phone".
+        Value (str, required): The address or number itself.
+    """
+
     TelecomType = T.ValueSetString(required=True)
-    value = T.String(required=True)
+    Value = T.String(required=True)
+
+
+class Organization(OE.ODMElement):
+    """An organization taking part in the study, held in AdminData.
+
+    .. versionchanged:: 0.2.1
+       Replaced a text-only leaf carried over from ODM 1.3.2 -- orphaned in
+       the ODM 2.0 model, referenced by nothing -- with the element the ODM
+       2.0 XSD defines. Organization is now an AdminData child in its own
+       right; a User links to one through ``OrganizationOID``.
+
+    Attributes:
+        OID (str, required): Unique identifier.
+        Name (str, required): Name of the organization.
+        Role (str): The organization's role in the study.
+        Type (str, required): Category, e.g. "Sponsor", "Site", "CRO".
+        LocationOID (str): OID of the organization's Location.
+        PartOfOrganizationOID (str): OID of a parent Organization.
+        Description: Optional description.
+        Address (list): One or more postal addresses.
+        Telecom (list): One or more contact points.
+    """
+
+    OID = T.OID(required=True)
+    Name = T.Name(required=True)
+    Role = T.String()
+    Type = T.ValueSetString(required=True)
+    LocationOID = T.OIDRef()
+    PartOfOrganizationOID = T.OIDRef()
+    Description = T.ODMObject(element_class=Description)
+    Address = T.ODMListObject(element_class=Address)
+    Telecom = T.ODMListObject(element_class=Telecom)
 
 
 class User(OE.ODMElement):
@@ -1319,23 +2062,26 @@ class User(OE.ODMElement):
     User records appear in the AdminData section and are referenced by
     AuditRecord and Signature elements within clinical data.
 
+    .. versionchanged:: 0.2.1
+       ``Prefix`` and ``Suffix`` became child elements, matching the XSD;
+       they were modelled as attributes. ``DisplayName`` was removed -- it
+       is not part of the ODM 2.0 XSD.
+
     Attributes:
         OID (str, required): Unique identifier.
         UserType (str): Role category of the user, e.g. "Sponsor",
             "Investigator", "Lab", "Other".
+        OrganizationOID (str): OID of the Organization the user belongs to.
+        LocationOID (str): OID of the user's Location.
         UserName: The user's login name.
-        DisplayName: Name shown in user interfaces.
+        Prefix: Honorific preceding the name.
+        Suffix: Qualifier following the name.
         FullName: Full legal name.
         GivenName: Given (first) name.
         FamilyName: Family (last) name.
-        Organization: Affiliated organization.
+        Image: Picture of the user.
         Address (list): One or more postal addresses.
-        Email (list): One or more email addresses.
-        Pager: Pager number.
-        Fax (list): One or more fax numbers.
-        Phone (list): One or more phone numbers.
-        LocationRef (list): Locations associated with the user.
-        Certificate (list): Digital certificates for the user.
+        Telecom (list): One or more contact points.
     """
 
     OID = T.OID(required=True)
@@ -1343,9 +2089,8 @@ class User(OE.ODMElement):
     OrganizationOID = T.OIDRef()
     LocationOID = T.OIDRef()
     UserName = T.ODMObject(element_class=UserName)
-    Prefix = T.String()
-    Suffix = T.String()
-    DisplayName = T.ODMObject(element_class=DisplayName)
+    Prefix = T.ODMObject(element_class=Prefix)
+    Suffix = T.ODMObject(element_class=Suffix)
     FullName = T.ODMObject(element_class=FullName)
     GivenName = T.ODMObject(element_class=GivenName)
     FamilyName = T.ODMObject(element_class=FamilyName)
@@ -1386,7 +2131,11 @@ class Location(OE.ODMElement):
     OID = T.OID(required=True)
     Name = T.Name(required=True)
     Role = T.String(required=False)
+    OrganizationOID = T.OIDRef()
+    Description = T.ODMObject(element_class=Description)
     MetaDataVersionRef = T.ODMListObject(required=True, element_class=MetaDataVersionRef)
+    Address = T.ODMListObject(element_class=Address)
+    Telecom = T.ODMListObject(element_class=Telecom)
 
 
 class Meaning(OE.ODMElement):
@@ -1434,12 +2183,14 @@ class AdminData(OE.ODMElement):
     Attributes:
         StudyOID (str): OID reference to the Study this admin data belongs to.
         User (list): User (person) records.
+        Organization (list): Organization records.
         Location (list): Location (site) records.
         SignatureDef (list): Signature definition records.
     """
 
     StudyOID = T.OIDRef()
     User = T.ODMListObject(element_class=User)
+    Organization = T.ODMListObject(element_class=Organization)
     Location = T.ODMListObject(element_class=Location)
     SignatureDef = T.ODMListObject(element_class=SignatureDef)
 
@@ -1466,7 +2217,7 @@ class Study(OE.ODMElement):
     VersionName = T.Name(required=False)
     Status = T.Name(required=False)
     Description = T.ODMObject(required=False, element_class=Description)
-    MetaDataVersion = T.ODMListObject(required=False, element_class=MetaDataVersion)
+    MetaDataVersion = T.ODMListObject(required=True, element_class=MetaDataVersion)
 
 
 class ODM(OE.ODMElement):
@@ -1483,8 +2234,6 @@ class ODM(OE.ODMElement):
             "Transactional" for an incremental update.
         Granularity (str): Level of data included, e.g. "All", "Metadata",
             "AdminData", "ReferenceData", "AllClinicalData".
-        Archival (str): Whether this file is intended for archival ("Yes"
-            or "No").
         FileOID (str, required): A globally unique OID for this specific file.
         CreationDateTime (str, required): ISO 8601 datetime when the file
             was created.
@@ -1502,7 +2251,6 @@ class ODM(OE.ODMElement):
     """
     FileType = T.ValueSetString(required=True)
     Granularity = T.ValueSetString(required=False)
-    Archival = T.ValueSetString(required=False)
     Context = T.ValueSetString(required=False)
     FileOID = T.OID(required=True)
     CreationDateTime = T.DateTimeString(required=True)

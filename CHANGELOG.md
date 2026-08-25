@@ -341,6 +341,245 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `unreferenced_oids()` no longer re-runs the full verification walk;
   `dataframe.py` avoids `iterrows`.
 
+### Changed — ODM v2.0 model/XSD alignment (phase 1)
+
+Comparing `odmlib/odm_2_0/model.py` against the bundled ODM 2.0 XSD mechanically —
+rather than by hand, one document at a time — surfaced far more divergence than the
+structural gaps closed earlier in this release. `tests/test_odm_2_0_xsd_alignment.py`
+now pins the whole divergence set against an allowlist, so drift cannot be introduced
+or silently fixed without the test failing. `ODM_XSD_ALIGNMENT.md` plans the rest.
+
+This first pass corrects the members that made odmlib's own output schema-invalid.
+**These are breaking changes within draft ODM 2.0.** There is no alias layer in odmlib —
+a descriptor name *is* the XML attribute name — so a document using an old spelling now
+raises `OdmlibTypeError` on load in strict mode, and loses the value silently in
+permissive mode. That is the intended outcome: none of the old spellings were ever valid
+against the ODM 2.0 schema. ODM 1.3.2, Define-XML, ARM, CT and Dataset-XML/JSON are
+untouched.
+
+- **`Telecom.value` → `Telecom.Value`.** `TelecomAttributeDefinition` capitalises it; the
+  lower-case spelling made every document containing a `Telecom` schema-invalid. Same
+  class of bug as the `DocumentRef` `leafID` → `LeafID` fix.
+- **`ODM.Archival` removed.** It is not in `ODMAttributeDefinition`. The `ODM.Archival`
+  value-set key went with it.
+- **`User.Prefix` / `User.Suffix` are now child elements**, matching the XSD, and new
+  `Prefix` / `Suffix` classes back them. **`User.DisplayName` removed** — not part of the
+  ODM 2.0 XSD — along with the `DisplayName` class.
+- **`Organization` replaced.** The text-only leaf carried over from ODM 1.3.2 was
+  orphaned — referenced by nothing — and has been replaced by the element the XSD
+  defines: `OID`/`Name`/`Type` required, plus `Role`, `LocationOID`,
+  `PartOfOrganizationOID` and `Description`/`Address`/`Telecom` children. It is now an
+  `AdminData` child in its own right; a `User` links to one through `OrganizationOID`,
+  which consequently resolves under `verify_oids()` for the first time.
+- **`RelativeTimingConstraint`**: the four `Predecessor*`/`Successor*` OID attributes were
+  replaced by the XSD's `PredecessorOID` and `SuccessorOID`. Either may reference any
+  structural element, so splitting them by event-vs-group was both wrong and unnecessary.
+  `oid_generator_config.py` skips the two new names in their place.
+- **`TransitionTimingConstraint`**: `TimepointRelativeTarget` → `TimepointTarget`, and the
+  missing `Type` attribute was added.
+- **`Origin` children reordered** to the XSD sequence — `Description`, `SourceItems`,
+  `DocumentRef`. odmlib serializes in declaration order, so the old order emitted
+  `DocumentRef` first and the document failed validation. This changes serialized output
+  for any `Origin` that carries a `DocumentRef`.
+- **`WorkflowEnd` gained `_content`.** Its XSD type is `xs:simpleContent` over `text` and
+  the model had no text member at all.
+- **`DurationDateTimeString` accepts the whole `durationDatetime` union.** It enforced
+  `[+-]P{n}W` only, rejecting XSD-valid values such as `P3D`, `PT1H30M` and the empty tag.
+  The descriptor is used solely by the four ODM 2.0 timing-constraint classes, so no other
+  standard is affected.
+- **`DocumentRef/@LeafID` is ref-checked again.** ID-based reference detection is
+  hardcoded string sniffing, and neither the attribute name nor the lower-case `leaf`
+  target ever matched `odm_2_0`. `LeafID` now resolves to `Leaf`, so a dangling document
+  reference raises like any other unresolved OID.
+- **New value-set keys** for `Organization.Type` and `TransitionTimingConstraint.Type`.
+
+### Changed — ODM v2.0 model/XSD alignment (phase 2)
+
+Required flags and cardinalities brought into line with the ODM 2.0 XSD. Most of this
+is declarative — `required` on a child-element descriptor is not enforced at
+construction — but three groups do change behaviour.
+
+**Attributes the model demanded that the XSD marks optional** no longer raise when
+omitted: `FormalExpression.Context`, `MethodDef.Type`, `TargetTransition.ConditionOID`,
+and the pre/post window attributes on all four timing constraints
+(`AbsoluteTimingConstraint`, `RelativeTimingConstraint`, `TransitionTimingConstraint`,
+`DurationTimingConstraint`). This is a pure loosening; existing code that supplies them
+is unaffected.
+
+**`Standard.Status` is now required**, matching `use="required"` in the XSD. Unlike the
+element-level tightenings this *is* enforced at construction, so
+`Standard(OID=…, Name=…, Type=…, Version=…)` without a `Status` now raises
+`OdmlibRequiredAttributeError`. `Leaf.Title`, `MethodDef.MethodSignature` and
+`Study.MetaDataVersion` were also marked required, but as child elements those are
+declarative only.
+
+**Cardinality corrections change the shape of four attributes.** Code that indexed or
+appended to them needs updating:
+
+- Now single (`maxOccurs="1"` in the XSD): `MetaDataVersion.Standards`,
+  `Address.StreetName`, and `WorkflowRef` on `ItemGroupDef`, `StudyEventDef` and
+  `StudyStructure`. Note the several `Standard` entries live inside the one `Standards`
+  container, so nothing is lost.
+- Now lists (`maxOccurs="unbounded"`): `AnnotatedCRF.DocumentRef`,
+  `SupplementalDoc.DocumentRef` and `StudyTiming.TransitionTimingConstraint`. Each could
+  previously hold only one reference where the schema allows many.
+
+Assigning a list to a now-single child is still *tolerated* by `ODMObject.__set__` and
+serializes every item, so odmlib does not reject over-long content itself — XSD
+validation is what catches it.
+
+### Added — ODM v2.0 model/XSD alignment (phase 3)
+
+Members the ODM 2.0 XSD defines but the model never had. All additive — no existing
+attribute changed name, type or cardinality.
+
+**New classes**: `Class` and `SubClass` (ODM 2.0 models a dataset's general observation
+class as a child *element* with a `Name` attribute, not the Define-XML-style
+`ItemGroupDef/@Class` attribute), `ValueListRef`, `HouseNumber` and `GeoPosition`.
+
+**New attributes**: `ItemGroupDef.Structure` and `.ArchiveLocationID`,
+`ItemGroupRef.MethodOID`, `CodeListItem.ExtendedValue`, `Include.href`,
+`PDFPageRef.Title`, `RangeCheck.ItemOID`, `Location.OrganizationOID`.
+
+**New children**: `MetaDataVersion` gains `AnnotatedCRF`, `SupplementalDoc`,
+`ValueListDef` and `WhereClauseDef` — all four classes already existed but were
+unreachable from a document, the same gap `CommentDef` and `Leaf` had. `ItemDef` gains
+`ValueListRef`; `ItemGroupDef` gains `Class` and `Leaf`; `MethodDef` gains `DocumentRef`;
+`RangeCheck` gains `MethodSignature`; `Origin`, `SourceItems` and `StudyEventDef` gain
+`Coding`; `Location` gains `Description`, `Address` and `Telecom`; `Address` gains
+`HouseNumber` and `GeoPosition`.
+
+**Value sets**: `ItemGroupDef.Class` was replaced by `Class.Name`, and `SubClass.Name`
+and `SubClass.ParentClass` added. The dead `Location.LocationType` key was removed — the
+model attribute has been `Role` (free text) for some time, so that key matched nothing
+and left `Role` unvalidated. `CodeListItem.ExtendedValue` was already present and starts
+resolving now that the attribute exists.
+
+`Parameter`, `ReturnValue` and `MethodSignature` moved earlier in `model.py` so that
+`RangeCheck` can reference `MethodSignature`. Class order in the module carries no
+meaning beyond definition-before-use.
+
+**Note for anyone extending these classes.** Several additions insert a descriptor in the
+middle of a class body, which is how child order is expressed. `verify_order()` reads
+each class's own body, so a subclass of an `odm_2_0` model class that does not opt into
+`merge_fields=True` must redeclare inherited children in the new order. No shipped model
+uses `merge_fields`, so this affects third-party extensions only.
+
+### Added — ODM v2.0 model/XSD alignment (phase 4)
+
+The `Protocol` study-design subtree, deliberately left unmodelled when `Protocol` was
+first aligned earlier in this release. Twenty-four new classes fill the nine optional
+child slots the XSD defines, in XSD sequence order:
+
+- **`StudySummary`** → `StudyParameter` → `ParameterValue` — named summary parameters
+  such as trial blinding schema.
+- **`TrialPhase`** — the trial phase, value-set checked against the 13 XSD terms.
+- **`StudyIndications`** → `StudyIndication`, and **`StudyInterventions`** →
+  `StudyIntervention` (with `StudyInterventionRef`).
+- **`StudyObjectives`** → `StudyObjective`, and **`StudyEndPoints`** → `StudyEndPoint`
+  (with `StudyEndPointRef`), so an objective can point at the endpoints assessing it.
+- **`StudyTargetPopulation`** (with `StudyTargetPopulationRef`).
+- **`StudyEstimands`** → `StudyEstimand` → `IntercurrentEvent` / `SummaryMeasure` — the
+  ICH E9(R1) estimand framework, which ODM 2.0 models natively.
+- **`InclusionExclusionCriteria`** → `InclusionCriteria` / `ExclusionCriteria` →
+  `Criterion`, each criterion pointing at a `ConditionDef`.
+
+All nine `Protocol` children are `minOccurs="0"`, so existing documents are unaffected.
+
+**Value sets**: `TrialPhase.Value` and `StudyEndPoint.Level` added. `StudyObjective.Leve`
+— a truncated key that matched nothing, leaving `StudyObjective.Level` unvalidated — was
+corrected to `StudyObjective.Level`. `StudyEndPoint.Type` and `StudyEstimand.Level` were
+already present and start resolving now that their classes exist.
+
+With this phase every ODM 2.0 *metadata* element the XSD defines is modelled. The 24 XSD
+elements still without a class are the `ClinicalData`/`ReferenceData` data layer, which
+`ROADMAP.md` books for v0.3.0.
+
+### Changed — ODM v2.0 model/XSD alignment (phase 5)
+
+The final alignment phase: record what odmlib deliberately does not express, and remove
+what the ODM 2.0 XSD does not define. Every model class now corresponds to an ODM 2.0
+XSD element, and every metadata element the XSD defines is modelled.
+
+**Removed seven ODM 1.3.2 carry-over classes** that have no ODM 2.0 XSD element:
+`ArchiveLayout`, `Email`, `ExceptionEvent`, `Fax`, `Pager`, `Phone` and `Picture`
+(`DisplayName` went in phase 1). None was reachable from `ODM` — no descriptor anywhere
+in the model referenced them — so nothing can be lost from a document; they could only
+be constructed in isolation and never attached. ODM 2.0 folds `Email`/`Fax`/`Pager`/
+`Phone` into `Telecom` with a `TelecomType` of the same name, and replaces `Picture`
+with `Image`.
+
+**Three approximations are now documented** rather than latent, each with a
+`.. note:: Known approximation` in its class docstring, in *Known Limitations* in
+`README.md`, and in the ODM 2.0 section of the model reference guide. In each case
+odmlib's descriptor model cannot express what the XSD says, so
+`ODMSchemaValidator` — not object construction — is what catches a violation:
+
+- **`FormalExpression`** — the XSD requires exactly one of `Code` or `ExternalCodeLib`.
+  odmlib has no way to express an `xs:choice`, so both are optional; setting neither, or
+  both, builds an object odmlib accepts and the schema rejects. `odm_2_0` has no Cerberus
+  rules package to enforce it in either.
+- **`StudyEventGroupDef`** — the XSD's repeating `(StudyEventGroupRef?, StudyEventRef?)`
+  group permits the two to interleave. Two parallel lists emit all groups then all
+  events. Reading is affected too: the loader collects children by tag, so an interleaved
+  source document loads correctly and re-serializes grouped. Both forms are schema-valid;
+  only the ordering is lost.
+- **`TranslatedText`** — the XSD types it `mixed="true"` with an optional `xhtml:div`
+  child, so text may carry XHTML markup. odmlib models the text-only form and drops an
+  `xhtml:div` on load. Faithful support would need a model class for every element
+  `ODM-xhtml.xsd` allows, since the loader resolves children by tag name; and odmlib
+  never reads ElementTree's `tail`, so text following a child element is lost regardless.
+  Plain-text `TranslatedText` round-trips exactly.
+
+`model.pyi` was brought into line at the same time: the eight stub-only classes naming
+elements the model has never had were removed, and `CodeList`, `User`, `UserName`,
+`GivenName`, `FamilyName` and `Image` were regenerated or added so that no stub
+annotation refers to an undefined class.
+
+### Fixed — ODM v2.0 value sets
+
+The `odm_2_0` block of `odmlib/data/valuesets.json` was wrong in both directions. Checking
+it against what each attribute's XSD type actually permits — rather than only asking which
+keys resolve — turned up eight defects that no test caught.
+
+**odmlib rejected schema-valid values** in three places. `ItemGroupDef.Type` and
+`TrialPhase.Value` have XSD types that union an enumeration with bare `xs:string`, making
+them *extensible* vocabularies, but were enforced as closed lists, so a sponsor-specific
+value raised. `ODM.ODMVersion` is a pattern admitting `2.0.1` and `2.0-draft`, stored as
+the single literal `"2.0"`.
+
+**Two lists held the wrong values.** `MethodDef.Type` accepted `Other`, which ODM 2.0 does
+not define, and rejected `Preload`, which it does. `User.UserType` offered four values
+where ODM 2.0 has nine, rejecting `Subject`, `Monitor`, `Data analyst`, `Care provider`
+and `Assessor`. Both had been copied from the `odm_1_3_2` block — which is correct for ODM
+1.3.2; ODM 2.0 changed both enumerations and the copy never caught up.
+
+**`Standard` was not value-checked at all.** `Name`, `Type` and `PublishingSet` are closed
+enumerations in the XSD but were modelled as plain strings, so `Standard(Type="Nonsense")`
+built without complaint on a reachable, mostly-required element. They are now
+`ValueSetString`. `Standard.Status` is an extensible union and takes the open form instead.
+
+Nine keys matching no descriptor were removed, four of them misspellings of attribute names
+on ClinicalData classes that arrive in v0.3.0 (`AuditRecord.EditPoin`,
+`Comment.SponsorOrSit`, `Query.SourceSyste`, `Query.Status`). They were not corrected and
+kept: a key for a class that does not exist cannot be verified, which is how the
+misspellings survived in the first place. v0.3.0 adds them with their classes.
+
+**New in `odmlib/valueset.py`:** a third entry form for extensible vocabularies,
+`{"_values": [...], "_open": true}`, alongside the existing list and `_regex` forms. Any
+value is accepted; the listed terms remain the documented ones and drive `describe()`.
+
+**Guard.** `tests/test_odm_2_0_xsd_alignment.py` compared value-set *key names* in both
+directions and never looked at values, which is why this survived four alignment phases.
+It now classifies each attribute's XSD type as closed enumeration, extensible union,
+pattern or free, and reports a missing key, wrong values, a closed list where the schema is
+open, or an open entry where the schema is closed. All three value-set allowlists are empty.
+
+A note on the two directions, since several code comments had it backwards: a value-set key
+with no descriptor is **inert** — unused data. A `ValueSetString` descriptor with no key is
+the loud one: `validate()` maps the unknown sentinel to `False` and the descriptor then
+raises for every value, so the attribute cannot be set at all.
+
 ## [0.2.0]- 2026-06-23
 
 ### Added

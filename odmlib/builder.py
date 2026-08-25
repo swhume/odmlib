@@ -95,6 +95,22 @@ class ODMBuilder:
             kw["Type"] = "text/plain"
         return M.TranslatedText(**kw)
 
+    def _formal_expression(self, context: str, expression: str) -> Any:
+        """Construct a model ``FormalExpression`` carrying *expression*.
+
+        ODM 1.3.2 / Define-XML hold the expression as element text
+        (``_content``).  ODM 2.0 made FormalExpression element-based: the
+        XSD requires a choice of ``Code`` (inline source) or
+        ``ExternalCodeLib``, so the expression is wrapped in a ``Code``
+        child.  Callers pass plain text either way.
+
+        .. versionadded:: 0.2.1
+        """
+        M = self._model
+        if self._uses_global_variables():
+            return M.FormalExpression(Context=context, _content=expression)
+        return M.FormalExpression(Context=context, Code=M.Code(_content=expression))
+
     # ------------------------------------------------------------------
     # File-level
     # ------------------------------------------------------------------
@@ -347,23 +363,32 @@ class ODMBuilder:
         The Protocol element is created automatically if it does not exist
         yet.
 
-        .. warning::
+        **ODM 1.3.2 / Define-XML only.**  The ODM 2.0 XSD has no
+        ``Protocol/StudyEventRef``: a Protocol references
+        ``StudyEventGroupRef``, and ``StudyEventRef`` lives one level down on
+        ``StudyEventGroupDef``.  Calling this under ``odm_2_0`` therefore
+        raises rather than emitting schema-invalid markup — build the
+        StudyEventGroupDef yourself and graft it on with :meth:`attach`.
 
-           **Not valid for ``model_package="odm_2_0"``.** The ODM 2.0 XSD
-           removed ``Protocol/StudyEventRef`` (Protocol uses
-           ``StudyEventGroupRef`` instead); a document built with this helper
-           under odm_2_0 is schema-invalid. See ROADMAP "v0.2.1 — ODM 2.0
-           Model/XSD Alignment" and ``ODM20-MODEL-XSD-DIFFERENCES_PLAN.md``
-           §3.3. Safe for ODM 1.3.2.
+        .. versionchanged:: 0.2.1
+           Raises under ``odm_2_0`` instead of silently producing an invalid
+           ``Protocol/StudyEventRef``.
 
         :param kwargs: StudyEventRef attributes (StudyEventOID, Mandatory,
             OrderNumber, …).
         :returns: self, for chaining.
-        :raises RuntimeError: if no MetaDataVersion has been added yet.
+        :raises RuntimeError: if no MetaDataVersion has been added yet, or
+            if the active model is ODM 2.0.
         """
         if self._current_mdv is None:
             raise RuntimeError("Call add_metadata_version() before add_study_event_ref()")
         M = self._model
+        if not self._uses_global_variables():
+            raise RuntimeError(
+                "Protocol/StudyEventRef is not part of ODM 2.0. A Protocol "
+                "references StudyEventGroupRef, and StudyEventRef belongs to "
+                "StudyEventGroupDef — build the StudyEventGroupDef and its "
+                "refs directly and attach() them to the MetaDataVersion.")
         if self._current_mdv.Protocol is None:
             self._current_mdv.Protocol = M.Protocol()
         self._current_mdv.Protocol.StudyEventRef.append(M.StudyEventRef(**kwargs))
@@ -443,14 +468,19 @@ class ODMBuilder:
         An optional FormalExpression is added when ``formal_expression`` is
         given.
 
-        .. warning::
+        ``formal_expression`` is plain text for every model.  Under
+        ``odm_2_0`` it is wrapped in the ``Code`` child the XSD requires;
+        under ODM 1.3.2 / Define-XML it stays element text.
 
-           For ``model_package="odm_2_0"``, do **not** pass
-           ``formal_expression``: ODM 2.0 ``FormalExpression`` is
-           element-based (``Code | ExternalCodeLib``) while odmlib's model is
-           text-based, so a text FormalExpression is schema-invalid. The
-           Description-only form is valid. See ROADMAP "v0.2.1 — ODM 2.0
-           Model/XSD Alignment" / ``ODM20-MODEL-XSD-DIFFERENCES_PLAN.md`` §3.2.
+        Under ``odm_2_0`` the XSD also makes ``MethodSignature`` a required
+        child of MethodDef, so an empty one is emitted for you (both of its
+        children are optional, so ``<MethodSignature/>`` is valid); populate
+        it via :meth:`attach` if the method takes parameters.  ODM 1.3.2
+        adds no MethodSignature.
+
+        .. versionchanged:: 0.2.1
+           ``formal_expression`` is now valid under ``odm_2_0``, and a
+           MethodSignature is emitted there, so the output is schema-valid.
 
         :param OID: Method OID.
         :param Name: Method name.
@@ -471,9 +501,11 @@ class ODMBuilder:
             self._translated_text(_content=description, lang=lang)])
         md = M.MethodDef(OID=OID, Name=Name, Type=Type, Description=desc,
                          **kwargs)
+        if not self._uses_global_variables():
+            md.MethodSignature = M.MethodSignature()
         if formal_expression is not None:
-            md.FormalExpression.append(M.FormalExpression(
-                Context=expression_context, _content=formal_expression))
+            md.FormalExpression.append(
+                self._formal_expression(expression_context, formal_expression))
         self._current_mdv.MethodDef.append(md)
         return self
 
@@ -484,40 +516,51 @@ class ODMBuilder:
                           lang: str = "en", **kwargs: Any) -> ODMBuilder:
         """Add a ConditionDef to the current MetaDataVersion.
 
-        .. warning::
+        Under ``odm_2_0`` the XSD makes both ``Description`` and
+        ``MethodSignature`` required children, so ``description`` is
+        mandatory there and an empty ``MethodSignature`` is emitted for you
+        (both of its children are optional, so ``<MethodSignature/>`` is
+        valid).  Populate it further via :meth:`attach` if the condition's
+        expressions take parameters.  ODM 1.3.2 is unchanged: ``description``
+        stays optional and no MethodSignature is added.
 
-           **Not valid for ``model_package="odm_2_0"``.** The ODM 2.0 XSD
-           requires a ``MethodSignature`` child on ``ConditionDef`` (and a
-           required ``Description``), which odmlib's odm_2_0 model cannot yet
-           express, so any ConditionDef built here is schema-invalid — and
-           transitively any ``CollectionExceptionConditionOID`` pointing at
-           it. ``formal_expression`` is additionally invalid under odm_2_0
-           (text vs. element-based, see :meth:`add_method_def`). See ROADMAP
-           "v0.2.1 — ODM 2.0 Model/XSD Alignment" /
-           ``ODM20-MODEL-XSD-DIFFERENCES_PLAN.md`` §3.1–§3.2. Safe for ODM
-           1.3.2.
+        ``formal_expression`` is plain text for every model; under
+        ``odm_2_0`` it is wrapped in a ``Code`` child (see
+        :meth:`add_method_def`).
+
+        .. versionchanged:: 0.2.1
+           Produces schema-valid output under ``odm_2_0``.
 
         :param OID: Condition OID.
         :param Name: Condition name.
-        :param description: Optional description text.
+        :param description: Description text. Required under ``odm_2_0``,
+            optional for ODM 1.3.2.
         :param formal_expression: Optional expression source code.
         :param expression_context: FormalExpression Context; used only when
             ``formal_expression`` is given.
         :param lang: Language code for the Description (default ``"en"``).
         :param kwargs: Additional ConditionDef attributes.
         :returns: self, for chaining.
-        :raises RuntimeError: if no MetaDataVersion has been added yet.
+        :raises RuntimeError: if no MetaDataVersion has been added yet, or
+            if ``description`` is omitted under ``odm_2_0``.
         """
         if self._current_mdv is None:
             raise RuntimeError("Call add_metadata_version() before add_condition_def()")
         M = self._model
+        is_v2 = not self._uses_global_variables()
+        if is_v2 and description is None:
+            raise RuntimeError(
+                "ConditionDef requires a Description in ODM 2.0 — pass "
+                "description= to add_condition_def().")
         cd = M.ConditionDef(OID=OID, Name=Name, **kwargs)
         if description is not None:
             cd.Description = M.Description(TranslatedText=[
                 self._translated_text(_content=description, lang=lang)])
+        if is_v2:
+            cd.MethodSignature = M.MethodSignature()
         if formal_expression is not None:
-            cd.FormalExpression.append(M.FormalExpression(
-                Context=expression_context, _content=formal_expression))
+            cd.FormalExpression.append(
+                self._formal_expression(expression_context, formal_expression))
         self._current_mdv.ConditionDef.append(cd)
         return self
 

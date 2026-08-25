@@ -467,15 +467,31 @@ class IncompleteTimeString(DESC.Descriptor):
         super().__set__(instance, value)
 
 
-_DURATION_PAT = re.compile(r'^[+-]?P\d+W$')
+# The ODM 2.0 XSD types these attributes as ``durationDatetime``, a union of
+# ``emptyTag`` (empty or a single space), ``xs:duration`` (the full ISO 8601
+# form) and ``tDuration`` (the week-based form, which xs:duration disallows).
+_DURATION_PAT = re.compile(
+    r'^(?:'
+    r'[ ]?'                                                   # emptyTag
+    r'|[+-]?P\d+W'                                            # tDuration
+    r'|-?P(?=\d|T\d)(?:\d+Y)?(?:\d+M)?(?:\d+D)?'              # xs:duration
+    r'(?:T(?=\d)(?:\d+H)?(?:\d+M)?(?:\d+(?:\.\d+)?S)?)?'
+    r')$'
+)
 
 
 class DurationDateTimeString(DESC.Descriptor):
-    """Descriptor for ISO 8601 duration strings (week-based).
+    '''Descriptor for ISO 8601 duration strings.
 
-    Validates format: ``[+-]P{n}W`` (e.g., ``P1W`` for one week).
+    Accepts the whole ``durationDatetime`` union the ODM 2.0 XSD defines:
+    the week form (``P2W``, ``-P1W``), the general ISO 8601 form
+    (``P3D``, ``P1Y2M``, ``PT1H30M``, ``P1DT2H3M4.5S``), and the empty tag.
     Used for timing window attributes in ODM 2.0.
-    """
+
+    .. versionchanged:: 0.2.1
+       Previously only ``[+-]P{n}W`` was accepted, rejecting XSD-valid values
+       such as ``P3D`` and ``PT1H``.
+    '''
 
     def __set__(self, instance, value):
         if (value is not None) and (not _DURATION_PAT.match(value)):
@@ -484,7 +500,7 @@ class DurationDateTimeString(DESC.Descriptor):
                     f"Expected type DurationDateTime for {self.name}, found value {value}",
                     attribute=self.name,
                     actual_value=value,
-                    hint="Use ISO 8601 duration format, e.g., 'P1W' or 'P2W'",
+                    hint="Use an ISO 8601 duration, e.g. 'P2W', 'P3D' or 'PT1H30M'",
                 )
         super().__set__(instance, value)
 

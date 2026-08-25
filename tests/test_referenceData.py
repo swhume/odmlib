@@ -3,12 +3,19 @@ import odmlib.odm_1_3_2.model as ODM
 import odmlib.odm_parser as ODM_PARSER
 import xml.etree.ElementTree as ET
 import os
+import tempfile
 import datetime
 
 
 class TestReferenceData(TestCase):
     def setUp(self) -> None:
         self.odm_test_file = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'data','test_referece_data_01.xml')
+        # Generated documents go to a throw-away directory. Writing them back over
+        # the tracked fixture left a dirty working tree after every run, because
+        # CreationDateTime/AsOfDateTime change on each execution.
+        tmp_dir = tempfile.TemporaryDirectory()
+        self.addCleanup(tmp_dir.cleanup)
+        self.odm_out_file = os.path.join(tmp_dir.name, 'test_referece_data_01.xml')
 
     def test_reference_data_to_xml(self):
         rd = []
@@ -83,7 +90,7 @@ class TestReferenceData(TestCase):
         root = self.create_root()
         for ref_data in rd:
             root.ReferenceData.append(ref_data)
-        root.write_xml(self.odm_test_file)
+        root.write_xml(self.odm_out_file)
         return root
 
     def create_root(self):

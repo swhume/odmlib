@@ -42,9 +42,9 @@ class TestODMv2Structure(TestCase):
     def test_study_event_def_has_workflow_ref(self):
         """StudyEventDef may reference a WorkflowDef (new in v2.0)."""
         sed = ODM2.StudyEventDef(OID="SE.TEST", Name="Test Event", Repeating="No", Type="Common")
-        wfr = ODM2.WorkflowRef(WorkflowOID="WF.STANDARD")
-        sed.WorkflowRef.append(wfr)
-        self.assertEqual(sed.WorkflowRef[0].WorkflowOID, "WF.STANDARD")
+        # the XSD allows at most one WorkflowRef on a StudyEventDef
+        sed.WorkflowRef = ODM2.WorkflowRef(WorkflowOID="WF.STANDARD")
+        self.assertEqual(sed.WorkflowRef.WorkflowOID, "WF.STANDARD")
 
     def test_metadata_version_no_form_def(self):
         """ODM v2.0 MetaDataVersion should not expose FormDef."""

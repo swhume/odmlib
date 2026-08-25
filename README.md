@@ -606,16 +606,23 @@ python -m pytest tests/test_odm_loader.py -v
 - No `ItemData[Type]` support (typed item data elements, deprecated in ODM v2.0)
 - No `ds:Signature` support (digital signatures)
 - Single `MetaDataVersion` per load by default (use `idx` parameter for others)
-- ODM v2.0 implementation is still draft. The v0.2.0 model is aligned with the
-  ODM 2.0 XSD for the core CRF/dataset metadata subset, but five structural
-  features are **deferred to v0.2.1** and produce schema-invalid output if
-  used (see ROADMAP "v0.2.1 — ODM v2.0 Model/XSD Alignment" and
-  `ODM20-MODEL-XSD-DIFFERENCES_PLAN.md`):
-  - `ConditionDef` (missing required `MethodSignature`) — `ODMBuilder.add_condition_def()` unsafe for ODM 2.0
-  - text-based `FormalExpression` (XSD is element-based `Code | ExternalCodeLib`)
-  - `Protocol.StudyEventRef` (removed in the ODM 2.0 schema) — `add_study_event_ref()` unsafe for ODM 2.0
-  - `MetaDataVersion.StudyTiming` placement (XSD: `Protocol/StudyTimings`)
-  - `StudyEventGroupDef` (missing required `StudyEventGroupRef?/StudyEventRef?` group)
+- ODM v2.0 implementation is still draft, but every **metadata** element the ODM 2.0
+  XSD defines is now modelled, and the model's divergence from the schema is pinned by
+  `tests/test_odm_2_0_xsd_alignment.py`. Two areas remain:
+  - **ClinicalData / ReferenceData are not modelled.** `ODM` has no `ClinicalData`,
+    `ReferenceData` or `Association` child, and `Location` has no `Query`. The 24
+    elements of that data layer are scoped to v0.3.0 — see `ROADMAP.md`.
+  - **Three deliberate approximations**, each documented in the class docstring, where
+    the XSD says something odmlib's descriptor model cannot express. Each is caught by
+    `ODMSchemaValidator` rather than at build time:
+    - `FormalExpression` — the XSD requires exactly one of `Code` or `ExternalCodeLib`;
+      odmlib cannot express an `xs:choice`, so both are optional.
+    - `StudyEventGroupDef` — the XSD's repeating `(StudyEventGroupRef?, StudyEventRef?)`
+      group is approximated by two parallel lists, so an interleaved ordering cannot be
+      reproduced. Both forms are schema-valid; only the ordering is lost.
+    - `TranslatedText` — the XSD allows XHTML markup via a mixed-content `xhtml:div`
+      child. odmlib models the text-only form; an `xhtml:div` in a source document is
+      dropped on load.
 
 ## License
 

@@ -18,9 +18,45 @@ class Alias(ODMElement):
     Name: Optional[str]
 
 
+class Title(ODMElement):
+    _content: Optional[str]
+
+
+class Leaf(ODMElement):
+    ID: Optional[str]
+    href: Optional[str]
+    Title: Optional[Title]
+
+
+class Coding(ODMElement):
+    Code: Optional[str]
+    System: Optional[str]
+    SystemName: Optional[str]
+    SystemVersion: Optional[str]
+    Label: Optional[str]
+    href: Optional[str]
+    ref: Optional[str]
+    CommentOID: Optional[str]
+
+
 class Include(ODMElement):
     StudyOID: Optional[str]
     MetaDataVersionOID: Optional[str]
+    href: Optional[str]
+
+
+class Standard(ODMElement):
+    OID: Optional[str]
+    Name: Optional[str]
+    Type: Optional[str]
+    PublishingSet: Optional[str]
+    Version: Optional[str]
+    Status: Optional[str]
+    CommentOID: Optional[str]
+
+
+class Standards(ODMElement):
+    Standard: List[Standard]
 
 
 class StudyEventRef(ODMElement):
@@ -30,14 +66,160 @@ class StudyEventRef(ODMElement):
     CollectionExceptionConditionOID: Optional[str]
 
 
+class ParameterValue(ODMElement):
+    Value: Optional[str]
+    Coding: List[Coding]
+
+
+class StudyParameter(ODMElement):
+    OID: Optional[str]
+    Term: Optional[str]
+    ShortName: Optional[str]
+    ParameterValue: Optional[ParameterValue]
+    Coding: List[Coding]
+
+
+class StudySummary(ODMElement):
+    StudyParameter: List[StudyParameter]
+
+
+class TrialPhase(ODMElement):
+    Value: Optional[str]
+    Description: Optional[Description]
+
+
+class StudyIndication(ODMElement):
+    OID: Optional[str]
+    Description: Optional[Description]
+    Coding: List[Coding]
+
+
+class StudyIndications(ODMElement):
+    StudyIndication: List[StudyIndication]
+
+
+class StudyIntervention(ODMElement):
+    OID: Optional[str]
+    Description: Optional[Description]
+    Coding: List[Coding]
+
+
+class StudyInterventions(ODMElement):
+    StudyIntervention: List[StudyIntervention]
+
+
+class StudyInterventionRef(ODMElement):
+    StudyInterventionOID: Optional[str]
+
+
+class StudyEndPoint(ODMElement):
+    OID: Optional[str]
+    Name: Optional[str]
+    Type: Optional[str]
+    Level: Optional[str]
+    Description: Optional[Description]
+    FormalExpression: List[FormalExpression]
+
+
+class StudyEndPoints(ODMElement):
+    StudyEndPoint: List[StudyEndPoint]
+
+
+class StudyEndPointRef(ODMElement):
+    StudyEndPointOID: Optional[str]
+    OrderNumber: Optional[int]
+
+
+class StudyObjective(ODMElement):
+    OID: Optional[str]
+    Name: Optional[str]
+    Level: Optional[str]
+    Description: Optional[Description]
+    StudyEndPointRef: List[StudyEndPointRef]
+
+
+class StudyObjectives(ODMElement):
+    StudyObjective: List[StudyObjective]
+
+
+class StudyTargetPopulation(ODMElement):
+    OID: Optional[str]
+    Name: Optional[str]
+    Description: Optional[Description]
+    Coding: List[Coding]
+    FormalExpression: List[FormalExpression]
+
+
+class StudyTargetPopulationRef(ODMElement):
+    StudyTargetPopulationOID: Optional[str]
+
+
+class IntercurrentEvent(ODMElement):
+    Description: Optional[Description]
+
+
+class SummaryMeasure(ODMElement):
+    Description: Optional[Description]
+
+
+class StudyEstimand(ODMElement):
+    OID: Optional[str]
+    Name: Optional[str]
+    Level: Optional[str]
+    Description: Optional[Description]
+    StudyTargetPopulationRef: Optional[StudyTargetPopulationRef]
+    StudyInterventionRef: Optional[StudyInterventionRef]
+    StudyEndPointRef: Optional[StudyEndPointRef]
+    IntercurrentEvent: List[IntercurrentEvent]
+    SummaryMeasure: Optional[SummaryMeasure]
+
+
+class StudyEstimands(ODMElement):
+    StudyEstimand: List[StudyEstimand]
+
+
+class Criterion(ODMElement):
+    OID: Optional[str]
+    Name: Optional[str]
+    ConditionOID: Optional[str]
+    Description: Optional[Description]
+    Coding: List[Coding]
+
+
+class InclusionCriteria(ODMElement):
+    Criterion: List[Criterion]
+
+
+class ExclusionCriteria(ODMElement):
+    Criterion: List[Criterion]
+
+
+class InclusionExclusionCriteria(ODMElement):
+    InclusionCriteria: Optional[InclusionCriteria]
+    ExclusionCriteria: Optional[ExclusionCriteria]
+
+
 class Protocol(ODMElement):
     Description: Optional[Description]
-    StudyEventRef: List[StudyEventRef]
+    StudySummary: Optional[StudySummary]
+    StudyStructure: Optional[StudyStructure]
+    TrialPhase: Optional[TrialPhase]
+    StudyTimings: Optional[StudyTimings]
+    StudyIndications: Optional[StudyIndications]
+    StudyInterventions: Optional[StudyInterventions]
+    StudyObjectives: Optional[StudyObjectives]
+    StudyEndPoints: Optional[StudyEndPoints]
+    StudyTargetPopulation: Optional[StudyTargetPopulation]
+    StudyEstimands: Optional[StudyEstimands]
+    InclusionExclusionCriteria: Optional[InclusionExclusionCriteria]
+    StudyEventGroupRef: List[StudyEventGroupRef]
+    WorkflowRef: Optional[WorkflowRef]
     Alias: List[Alias]
 
 
 class ItemGroupRef(ODMElement):
     ItemGroupOID: Optional[str]
+    MethodOID: Optional[str]
     OrderNumber: Optional[int]
     Mandatory: Optional[str]
     CollectionExceptionConditionOID: Optional[str]
@@ -55,17 +237,12 @@ class StudyEventDef(ODMElement):
     Category: Optional[str]
     Description: Optional[Description]
     ItemGroupRef: List[ItemGroupRef]
-    WorkflowRef: List[WorkflowRef]
+    WorkflowRef: Optional[WorkflowRef]
+    Coding: List[Coding]
     Alias: List[Alias]
     def __len__(self) -> int: ...
     def __getitem__(self, position: int) -> ItemGroupRef: ...
     def __iter__(self): ...
-
-
-class ArchiveLayout(ODMElement):
-    OID: Optional[str]
-    PdfFileName: Optional[str]
-    PresentationOID: Optional[str]
 
 
 class PDFPageRef(ODMElement):
@@ -73,32 +250,63 @@ class PDFPageRef(ODMElement):
     PageRefs: Optional[str]
     FirstPage: Optional[int]
     LastPage: Optional[int]
+    Title: Optional[str]
 
 
 class DocumentRef(ODMElement):
-    leafID: Optional[str]
+    LeafID: Optional[str]
     PDFPageRef: List[PDFPageRef]
 
 
-class SourceItem(ODMElement):
-    leadID: Optional[str]
-    ItemGroupOID: Optional[str]
-    Resource: Optional[str]
-    Attribute: Optional[str]
+class AnnotatedCRF(ODMElement):
+    DocumentRef: List[DocumentRef]
+
+
+class SupplementalDoc(ODMElement):
+    DocumentRef: List[DocumentRef]
+
+
+class CommentDef(ODMElement):
+    OID: Optional[str]
+    Description: Optional[Description]
+    DocumentRef: List[DocumentRef]
+
+
+class Selection(ODMElement):
     Path: Optional[str]
+
+
+class Resource(ODMElement):
+    Type: Optional[str]
+    Name: Optional[str]
+    Attribute: Optional[str]
     Label: Optional[str]
+    Selection: List[Selection]
+
+
+class SourceItem(ODMElement):
+    ItemOID: Optional[str]
+    ItemGroupOID: Optional[str]
+    MetaDataVersionOID: Optional[str]
+    StudyOID: Optional[str]
+    leafID: Optional[str]
+    Name: Optional[str]
+    Resource: List[Resource]
+    Coding: List[Coding]
 
 
 class SourceItems(ODMElement):
     SourceItem: List[SourceItem]
+    Coding: List[Coding]
 
 
 class Origin(ODMElement):
     Type: Optional[str]
     Source: Optional[str]
-    DocumentRef: List[DocumentRef]
     Description: Optional[Description]
     SourceItems: Optional[SourceItems]
+    Coding: List[Coding]
+    DocumentRef: List[DocumentRef]
 
 
 class ItemRef(ODMElement):
@@ -114,6 +322,16 @@ class ItemRef(ODMElement):
     PreSpecifiedValue: Optional[str]
 
 
+class SubClass(ODMElement):
+    Name: Optional[str]
+    ParentClass: Optional[str]
+
+
+class Class(ODMElement):
+    Name: Optional[str]
+    SubClass: List[SubClass]
+
+
 class ItemGroupDef(ODMElement):
     OID: Optional[str]
     Name: Optional[str]
@@ -123,11 +341,14 @@ class ItemGroupDef(ODMElement):
     DatasetName: Optional[str]
     Domain: Optional[str]
     Purpose: Optional[str]
+    Structure: Optional[str]
+    ArchiveLocationID: Optional[str]
     CommentOID: Optional[str]
     Description: Optional[Description]
+    Class: Optional[Class]
     ItemGroupRef: List[ItemGroupRef]
     ItemRef: List[ItemRef]
-    WorkflowRef: List[WorkflowRef]
+    WorkflowRef: Optional[WorkflowRef]
     Origin: List[Origin]
     Alias: List[Alias]
     def __len__(self) -> int: ...
@@ -139,23 +360,26 @@ class Question(ODMElement):
     TranslatedText: List[TranslatedText]
 
 
-class ExternalQuestion(ODMElement):
-    Dictionary: Optional[str]
-    Version: Optional[str]
-    Code: Optional[str]
-
-
-class MeasurementUnitRef(ODMElement):
-    MeasurementUnitOID: Optional[str]
-
-
 class CheckValue(ODMElement):
     _content: Optional[str]
 
 
+class Code(ODMElement):
+    _content: Optional[str]
+
+
+class ExternalCodeLib(ODMElement):
+    Library: Optional[str]
+    Method: Optional[str]
+    Version: Optional[str]
+    ref: Optional[str]
+    href: Optional[str]
+
+
 class FormalExpression(ODMElement):
     Context: Optional[str]
-    _content: Optional[str]
+    Code: Optional[Code]
+    ExternalCodeLib: Optional[ExternalCodeLib]
 
 
 class ErrorMessage(ODMElement):
@@ -165,13 +389,31 @@ class ErrorMessage(ODMElement):
 class RangeCheck(ODMElement):
     Comparator: Optional[str]
     SoftHard: Optional[str]
+    ItemOID: Optional[str]
     CheckValue: List[CheckValue]
+    MethodSignature: Optional[MethodSignature]
     FormalExpression: List[FormalExpression]
     ErrorMessage: Optional[ErrorMessage]
 
 
+class ValueListDef(ODMElement):
+    OID: Optional[str]
+    Description: Optional[Description]
+    ItemRef: List[ItemRef]
+
+
+class WhereClauseDef(ODMElement):
+    OID: Optional[str]
+    CommentOID: Optional[str]
+    RangeCheck: List[RangeCheck]
+
+
 class CodeListRef(ODMElement):
     CodeListOID: Optional[str]
+
+
+class ValueListRef(ODMElement):
+    ValueListOID: Optional[str]
 
 
 class ItemDef(ODMElement):
@@ -194,6 +436,7 @@ class ItemDef(ODMElement):
     CDISCNotes: Optional[Any]
     RangeCheck: List[RangeCheck]
     CodeListRef: Optional[CodeListRef]
+    ValueListRef: Optional[ValueListRef]
     Coding: List[Any]
     Alias: List[Alias]
 
@@ -206,40 +449,30 @@ class CodeListItem(ODMElement):
     CodedValue: Optional[str]
     Rank: Optional[float]
     OrderNumber: Optional[int]
+    ExtendedValue: Optional[str]
     Decode: Optional[Decode]
     Alias: List[Alias]
-
-
-class EnumeratedItem(ODMElement):
-    CodedValue: Optional[str]
-    Rank: Optional[float]
-    OrderNumber: Optional[int]
-    Alias: List[Alias]
-
-
-class ExternalCodeList(ODMElement):
-    Dictionary: Optional[str]
-    Version: Optional[str]
-    ref: Optional[str]
-    href: Optional[str]
 
 
 class CodeList(ODMElement):
     OID: Optional[str]
     Name: Optional[str]
     DataType: Optional[str]
-    SASFormatName: Optional[str]
+    CommentOID: Optional[str]
+    StandardOID: Optional[str]
+    IsNonStandard: Optional[str]
     Description: Optional[Description]
     CodeListItem: List[CodeListItem]
-    EnumeratedItem: List[EnumeratedItem]
-    ExternalCodeList: Optional[ExternalCodeList]
+    Coding: List[Coding]
     Alias: List[Alias]
 
 
 class ConditionDef(ODMElement):
     OID: Optional[str]
     Name: Optional[str]
+    CommentOID: Optional[str]
     Description: Optional[Description]
+    MethodSignature: Optional[MethodSignature]
     FormalExpression: List[FormalExpression]
     Alias: List[Alias]
 
@@ -271,6 +504,7 @@ class MethodDef(ODMElement):
     MethodSignature: Optional[MethodSignature]
     FormalExpression: List[FormalExpression]
     Alias: List[Alias]
+    DocumentRef: List[DocumentRef]
 
 
 class StudyEventGroupRef(ODMElement):
@@ -279,16 +513,6 @@ class StudyEventGroupRef(ODMElement):
     Mandatory: Optional[str]
     CollectionExceptionConditionOID: Optional[str]
     Description: Optional[Description]
-
-
-class ExceptionEvent(ODMElement):
-    OID: Optional[str]
-    Name: Optional[str]
-    ConditionOID: Optional[str]
-    Description: Optional[Description]
-    WorkflowRef: Optional[WorkflowRef]
-    StudyEventGroupRef: List[StudyEventGroupRef]
-    StudyEventRef: List[StudyEventRef]
 
 
 class Arm(ODMElement):
@@ -309,7 +533,7 @@ class StudyStructure(ODMElement):
     Description: Optional[Description]
     Arm: List[Arm]
     Epoch: List[Epoch]
-    WorkflowRef: List[WorkflowRef]
+    WorkflowRef: Optional[WorkflowRef]
 
 
 class WorkflowStart(ODMElement):
@@ -344,6 +568,7 @@ class Branching(ODMElement):
 
 class WorkflowEnd(ODMElement):
     EndOID: Optional[str]
+    _content: Optional[str]
 
 
 class WorkflowDef(ODMElement):
@@ -370,10 +595,8 @@ class AbsoluteTimingConstraint(ODMElement):
 class RelativeTimingConstraint(ODMElement):
     OID: Optional[str]
     Name: Optional[str]
-    PredecessorStudyEventGroupOID: Optional[str]
-    PredecessorStudyEventOID: Optional[str]
-    SuccessorStudyEventGroupOID: Optional[str]
-    SuccessorStudyEventOID: Optional[str]
+    PredecessorOID: Optional[str]
+    SuccessorOID: Optional[str]
     Type: Optional[str]
     TimepointRelativeTarget: Optional[str]
     TimepointPreWindow: Optional[str]
@@ -385,8 +608,9 @@ class TransitionTimingConstraint(ODMElement):
     OID: Optional[str]
     Name: Optional[str]
     TransitionOID: Optional[str]
-    TimepointRelativeTarget: Optional[str]
     MethodOID: Optional[str]
+    Type: Optional[str]
+    TimepointTarget: Optional[str]
     TimepointPreWindow: Optional[str]
     TimepointPostWindow: Optional[str]
     Description: Optional[Description]
@@ -407,8 +631,12 @@ class StudyTiming(ODMElement):
     Name: Optional[str]
     AbsoluteTimingConstraint: List[AbsoluteTimingConstraint]
     RelativeTimingConstraint: List[RelativeTimingConstraint]
-    TransitionTimingConstraint: Optional[TransitionTimingConstraint]
+    TransitionTimingConstraint: List[TransitionTimingConstraint]
     DurationTimingConstraint: List[DurationTimingConstraint]
+
+
+class StudyTimings(ODMElement):
+    StudyTiming: List[StudyTiming]
 
 
 class StudyEventGroupDef(ODMElement):
@@ -416,18 +644,27 @@ class StudyEventGroupDef(ODMElement):
     Name: Optional[str]
     ArmOID: Optional[str]
     EpochOID: Optional[str]
+    CommentOID: Optional[str]
     Description: Optional[Description]
+    StudyEventGroupRef: List[StudyEventGroupRef]
+    StudyEventRef: List[StudyEventRef]
+    WorkflowRef: Optional[WorkflowRef]
+    Coding: List[Coding]
 
 
 class MetaDataVersion(ODMElement):
     OID: Optional[str]
     Name: Optional[str]
+    CommentOID: Optional[str]
     Description: Optional[Description]
     Include: Optional[Include]
+    Standards: Optional[Standards]
+    AnnotatedCRF: Optional[AnnotatedCRF]
+    SupplementalDoc: Optional[SupplementalDoc]
+    ValueListDef: List[ValueListDef]
+    WhereClauseDef: List[WhereClauseDef]
     Protocol: Optional[Protocol]
-    StudyStructure: Optional[StudyStructure]
     WorkflowDef: List[WorkflowDef]
-    StudyTiming: Optional[StudyTiming]
     StudyEventGroupDef: List[StudyEventGroupDef]
     StudyEventDef: List[StudyEventDef]
     ItemGroupDef: List[ItemGroupDef]
@@ -435,29 +672,19 @@ class MetaDataVersion(ODMElement):
     CodeList: List[CodeList]
     ConditionDef: List[ConditionDef]
     MethodDef: List[MethodDef]
+    CommentDef: List[CommentDef]
+    Leaf: List[Leaf]
 
 
-class LoginName(ODMElement):
+class Prefix(ODMElement):
     _content: Optional[str]
 
 
-class DisplayName(ODMElement):
+class Suffix(ODMElement):
     _content: Optional[str]
 
 
 class FullName(ODMElement):
-    _content: Optional[str]
-
-
-class FirstName(ODMElement):
-    _content: Optional[str]
-
-
-class LastName(ODMElement):
-    _content: Optional[str]
-
-
-class Organization(ODMElement):
     _content: Optional[str]
 
 
@@ -485,60 +712,80 @@ class OtherText(ODMElement):
     _content: Optional[str]
 
 
+class HouseNumber(ODMElement):
+    _content: Optional[str]
+
+
+class GeoPosition(ODMElement):
+    Longitude: Optional[float]
+    Latitude: Optional[float]
+    Altitude: Optional[float]
+
+
 class Address(ODMElement):
-    StreetName: List[StreetName]
+    StreetName: Optional[StreetName]
+    HouseNumber: Optional[HouseNumber]
     City: Optional[City]
     StateProv: Optional[StateProv]
     Country: Optional[Country]
     PostalCode: Optional[PostalCode]
+    GeoPosition: Optional[GeoPosition]
     OtherText: Optional[OtherText]
-
-
-class Email(ODMElement):
-    _content: Optional[str]
-
-
-class Picture(ODMElement):
-    PictureFileName: Optional[str]
-    ImageType: Optional[str]
-
-
-class Pager(ODMElement):
-    _content: Optional[str]
-
-
-class Fax(ODMElement):
-    _content: Optional[str]
-
-
-class Phone(ODMElement):
-    _content: Optional[str]
 
 
 class LocationRef(ODMElement):
     LocationOID: Optional[str]
 
 
-class Certificate(ODMElement):
+class Telecom(ODMElement):
+    TelecomType: Optional[str]
+    Value: Optional[str]
+
+
+class Organization(ODMElement):
+    OID: Optional[str]
+    Name: Optional[str]
+    Role: Optional[str]
+    Type: Optional[str]
+    LocationOID: Optional[str]
+    PartOfOrganizationOID: Optional[str]
+    Description: Optional[Description]
+    Address: List[Address]
+    Telecom: List[Telecom]
+
+
+class UserName(ODMElement):
     _content: Optional[str]
+
+
+class GivenName(ODMElement):
+    _content: Optional[str]
+
+
+class FamilyName(ODMElement):
+    _content: Optional[str]
+
+
+class Image(ODMElement):
+    ImageFileName: Optional[str]
+    href: Optional[str]
+    MimeType: Optional[str]
 
 
 class User(ODMElement):
     OID: Optional[str]
     UserType: Optional[str]
-    LoginName: Optional[LoginName]
-    DisplayName: Optional[DisplayName]
+    OrganizationOID: Optional[str]
+    LocationOID: Optional[str]
+    UserName: Optional[UserName]
+    Prefix: Optional[Prefix]
+    Suffix: Optional[Suffix]
     FullName: Optional[FullName]
-    FirstName: Optional[FirstName]
-    LastName: Optional[LastName]
-    Organization: Optional[Organization]
+    GivenName: Optional[GivenName]
+    FamilyName: Optional[FamilyName]
+    Image: Optional[Image]
     Address: List[Address]
-    Email: List[Email]
-    Pager: Optional[Pager]
-    Fax: List[Fax]
-    Phone: List[Phone]
-    LocationRef: List[LocationRef]
-    Certificate: List[Certificate]
+    Telecom: List[Telecom]
 
 
 class MetaDataVersionRef(ODMElement):
@@ -550,8 +797,12 @@ class MetaDataVersionRef(ODMElement):
 class Location(ODMElement):
     OID: Optional[str]
     Name: Optional[str]
-    LocationType: Optional[str]
+    Role: Optional[str]
+    OrganizationOID: Optional[str]
+    Description: Optional[Description]
     MetaDataVersionRef: List[MetaDataVersionRef]
+    Address: List[Address]
+    Telecom: List[Telecom]
 
 
 class Meaning(ODMElement):
@@ -572,6 +823,7 @@ class SignatureDef(ODMElement):
 class AdminData(ODMElement):
     StudyOID: Optional[str]
     User: List[User]
+    Organization: List[Organization]
     Location: List[Location]
     SignatureDef: List[SignatureDef]
 
@@ -588,7 +840,6 @@ class ODM(ODMElement):
     Description: Optional[str]
     FileType: Optional[str]
     Granularity: Optional[str]
-    Archival: Optional[str]
     FileOID: Optional[str]
     CreationDateTime: Optional[str]
     PriorFileOID: Optional[str]

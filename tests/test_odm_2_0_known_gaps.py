@@ -1,19 +1,14 @@
-"""Pinned ODM 2.0 structural model/XSD gaps deferred to v0.2.1.
+"""Regression guards for the ODM 2.0 structural model/XSD alignment.
 
-Each test asserts the *desired*, XSD-aligned post-fix state and is marked
-``xfail(strict=True)``. While the gap exists the test xfails (documenting
-the known state in CI). When the v0.2.1 structural fix lands the test
-xpasses -- and ``strict=True`` turns an unexpected pass into a CI failure,
-forcing whoever fixes the gap to remove the marker (and keep this file in
-sync with ROADMAP "v0.2.1 -- ODM v2.0 Model/XSD Alignment").
+Each test asserts the XSD-aligned shape of an odm_2_0 model class. Every
+one of these started life as an ``xfail(strict=True)`` pinning a gap the
+v0.2.1 ODM 2.0 alignment work closed; the markers came off as each gap was
+fixed, and the assertions stay behind so the alignment cannot regress.
 
-See ``ODM20-MODEL-XSD-DIFFERENCES_PLAN.md`` §3.1-§3.5 and §6. (§3.7,
-the ItemDef attribute set, was resolved in v0.2.1 — its test below
-remains as a passing regression guard, not an xfail.)
+See ``ODM20-MODEL-XSD-DIFFERENCES_PLAN.md`` §3.1-§3.5 and §6 for the gaps,
+and §3.7 for the ItemDef attribute set (closed earlier in v0.2.1).
 """
 from unittest import TestCase
-
-import pytest
 
 import odmlib.odm_2_0.model as ODM2
 import odmlib.ns_registry as NS
@@ -26,53 +21,43 @@ def _setup_odm2_namespaces():
     )
 
 
-class TestDeferredODM2StructuralGaps(TestCase):
+class TestODM2StructuralAlignment(TestCase):
     def setUp(self):
         _setup_odm2_namespaces()
 
-    @pytest.mark.xfail(strict=True,
-                       reason="v0.2.1 (plan §3.1): ConditionDef lacks the "
-                              "XSD-required MethodSignature child")
     def test_conditiondef_has_methodsignature(self):
+        # Closed in v0.2.1, alignment plan §3.1: the XSD requires a MethodSignature
+        # child on ConditionDef.
         self.assertIn("MethodSignature", ODM2.ConditionDef._elems)
 
-    @pytest.mark.xfail(strict=True,
-                       reason="v0.2.1 (plan §3.2): FormalExpression is "
-                              "text-based; XSD is element-based "
-                              "(Code | ExternalCodeLib)")
     def test_formalexpression_is_element_based(self):
+        # Closed in v0.2.1, alignment plan §3.2: the XSD models the expression as a
+        # choice of Code | ExternalCodeLib, not as element text.
         self.assertNotIn("_content", ODM2.FormalExpression._fields)
         self.assertTrue(hasattr(ODM2, "Code"))
         self.assertTrue(hasattr(ODM2, "ExternalCodeLib"))
 
-    @pytest.mark.xfail(strict=True,
-                       reason="v0.2.1 (plan §3.3): Protocol.StudyEventRef was "
-                              "removed in the ODM 2.0 XSD (StudyEventGroupRef)")
     def test_protocol_matches_xsd(self):
+        # Closed in v0.2.1, alignment plan §3.3: Protocol reaches study events through
+        # StudyEventGroupRef; the XSD has no Protocol/StudyEventRef.
         self.assertNotIn("StudyEventRef", ODM2.Protocol._elems)
         self.assertIn("StudyEventGroupRef", ODM2.Protocol._elems)
 
-    @pytest.mark.xfail(strict=True,
-                       reason="v0.2.1 (plan §3.4): MetaDataVersion.StudyTiming "
-                              "is not an allowed MDV child (XSD: "
-                              "Protocol/StudyTimings)")
     def test_mdv_has_no_studytiming(self):
+        # Closed in v0.2.1, alignment plan §3.4: timing lives under
+        # Protocol/StudyTimings, not on MetaDataVersion.
         self.assertNotIn("StudyTiming", ODM2.MetaDataVersion._elems)
 
-    @pytest.mark.xfail(strict=True,
-                       reason="v0.2.1 (plan §3.5): StudyEventGroupDef cannot "
-                              "satisfy its required "
-                              "(StudyEventGroupRef?, StudyEventRef?) group")
     def test_studyeventgroupdef_has_required_group(self):
+        # Closed in v0.2.1, alignment plan §3.5: the XSD's required
+        # (StudyEventGroupRef?, StudyEventRef?) group had no model equivalent.
         elems = ODM2.StudyEventGroupDef._elems
         self.assertTrue(
             "StudyEventGroupRef" in elems or "StudyEventRef" in elems)
 
     def test_itemdef_attribute_set_matches_xsd(self):
-        # Resolved in v0.2.1 (plan §3.7): the xfail marker was removed when
-        # the ItemDef attribute set was aligned with the ODM 2.0 XSD. This
-        # now stands as a passing regression guard. See CHANGELOG and
-        # UPDATE_ODM20_ITEMDEF.md.
+        # Closed in v0.2.1, alignment plan §3.7: the ItemDef attribute set was aligned
+        # with the ODM 2.0 XSD. See CHANGELOG and UPDATE_ODM20_ITEMDEF.md.
         fields = set(ODM2.ItemDef._fields)
         self.assertNotIn("FractionDigits", fields)
         self.assertNotIn("DatasetVarName", fields)

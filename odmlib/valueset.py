@@ -104,10 +104,20 @@ class ValueSetLoader:
 class ValueSet:
     """Backward-compatible interface to valueset data.
 
-    Supports two entry types in valuesets.json:
-    - **list**: A list of allowed string values (e.g., ``["Yes", "No"]``)
+    Supports three entry types in valuesets.json:
+    - **list**: A closed set of allowed string values (e.g., ``["Yes", "No"]``)
     - **regex dict**: A dict with ``_regex`` key and optional ``_description``
       (e.g., ``{"_regex": "^2\\\\.[01](\\\\.\\\\d+)?$", "_description": "..."}``).
+    - **open dict**: A dict with ``_values`` and ``_open: true`` for an
+      *extensible* vocabulary — the XSD models these as a union of an
+      enumeration with bare ``xs:string``, so any value is permitted while the
+      listed terms remain the documented ones
+      (e.g., ``{"_values": ["Form", "Dataset"], "_open": true}``).
+
+    .. versionadded:: 0.2.1
+       The open-dict form. ODM 2.0 uses extensible unions for
+       ``ItemGroupDef/@Type``, ``TrialPhase/@Value`` and ``Standard/@Status``;
+       enforcing them as closed lists rejected schema-valid documents.
     """
 
     #: Sentinel returned by :meth:`value_set` for an unknown attribute key
@@ -219,6 +229,11 @@ class ValueSet:
         if isinstance(entry, list):
             return value in entry
 
+        # Open (extensible) vocabulary: the listed values are documentation,
+        # any string is permitted.
+        if isinstance(entry, dict) and entry.get("_open"):
+            return isinstance(value, str)
+
         # Regex dict entry
         if isinstance(entry, dict) and "_regex" in entry:
             cache_key = (version, attribute)
@@ -250,6 +265,13 @@ class ValueSet:
 
         if isinstance(entry, list):
             return f"Value must be one of: {', '.join(entry)}"
+
+        if isinstance(entry, dict) and entry.get("_open"):
+            if "_description" in entry:
+                return entry["_description"]
+            listed = ", ".join(entry.get("_values", []))
+            return (f"Extensible value set — the defined terms are: {listed}. "
+                    f"Other values are permitted.")
 
         if isinstance(entry, dict) and "_regex" in entry:
             if "_description" in entry:

@@ -87,36 +87,40 @@ ODM 2.0 uses a flatter structure and adds workflow support:
 ODM 2.0 Known Limitations
 -------------------------
 
-The ODM 2.0 model is a draft. v0.2.0 aligned it with the ODM 2.0 XSD for the
-core CRF/dataset metadata subset (``TranslatedText/@Type`` is now required
-with a builder default, duplicate ``Arm``/``CheckValue`` removed, 12 missing
-value-set keys added, permissive mode can bypass an unregistered value set).
-Five **structural** features remain deferred to v0.2.1 and produce
-schema-invalid output if used under ``model_package="odm_2_0"``:
+The ODM 2.0 model is a draft, but every **metadata** element the ODM 2.0 XSD
+defines is now modelled. ``tests/test_odm_2_0_xsd_alignment.py`` compares the
+model against the bundled schema and asserts the divergence set equals a
+declared allowlist, so drift cannot be introduced silently. Two areas remain.
 
-- :class:`~odmlib.odm_2_0.model.ConditionDef` lacks the XSD-required
-  ``MethodSignature`` child (and required ``Description``) --
-  :meth:`~odmlib.builder.ODMBuilder.add_condition_def` is unsafe for ODM 2.0.
-- :class:`~odmlib.odm_2_0.model.FormalExpression` is text-based; the XSD is
-  element-based (``Code | ExternalCodeLib``) -- do not pass
-  ``formal_expression`` to :meth:`~odmlib.builder.ODMBuilder.add_method_def`
-  for ODM 2.0.
-- :class:`~odmlib.odm_2_0.model.Protocol` carries ``StudyEventRef``, removed
-  in the ODM 2.0 schema -- :meth:`~odmlib.builder.ODMBuilder.add_study_event_ref`
-  is unsafe for ODM 2.0.
-- ``MetaDataVersion.StudyTiming`` placement (the XSD puts timing under
-  ``Protocol/StudyTimings``).
-- :class:`~odmlib.odm_2_0.model.StudyEventGroupDef` cannot satisfy its
-  required ``(StudyEventGroupRef?, StudyEventRef?)`` child group.
+**ClinicalData and ReferenceData are not modelled.**
+:class:`~odmlib.odm_2_0.model.ODM` has no ``ClinicalData``, ``ReferenceData``
+or ``Association`` child, and :class:`~odmlib.odm_2_0.model.Location` has no
+``Query``. The 24 elements of that data layer are scoped to v0.3.0; see
+``ROADMAP.md``.
 
-The :class:`~odmlib.odm_2_0.model.ItemDef` attribute-set alignment (drop
-``FractionDigits`` / ``DatasetVarName`` / ``SDSVarName``, add
-``DisplayFormat`` / ``VariableSet``) landed in v0.2.1; its XSD
-``ItemDef/ValueListRef`` child element remains deferred.
+**Three deliberate approximations** remain, where the XSD says something
+odmlib's descriptor model cannot express. Each is documented in the class
+docstring, and each is caught by
+:class:`~odmlib.odm_parser.ODMSchemaValidator` rather than at build time:
 
-See the ROADMAP "v0.2.1 -- ODM v2.0 Model/XSD Alignment" section and
-``ODM20-MODEL-XSD-DIFFERENCES_PLAN.md`` for full detail and the schema-valid
-safe-subset workaround.
+- :class:`~odmlib.odm_2_0.model.FormalExpression` -- the XSD requires exactly
+  one of ``Code`` or ``ExternalCodeLib``. odmlib has no way to express an
+  ``xs:choice``, so both children are declared optional; setting neither, or
+  both, builds an object odmlib accepts and the schema rejects.
+- :class:`~odmlib.odm_2_0.model.StudyEventGroupDef` -- the XSD's repeating
+  ``(StudyEventGroupRef?, StudyEventRef?)`` group is approximated by two
+  parallel lists, which emit all groups then all events. Both forms are
+  schema-valid; only an interleaved ordering is lost.
+- :class:`~odmlib.odm_2_0.model.TranslatedText` -- the XSD types it
+  ``mixed="true"`` with an optional ``xhtml:div`` child, allowing XHTML
+  markup. odmlib models the text-only form; an ``xhtml:div`` present in a
+  source document is dropped on load. Plain-text TranslatedText round-trips
+  exactly. An opaque text-only ``div`` was tried in v0.2.1 and withdrawn: it
+  could not carry markup either, since element text is XML-escaped on write.
+  See ``ODM_XSD_ALIGNMENT.md`` for what real XHTML support would take.
+
+See ``ODM_XSD_ALIGNMENT.md`` for the full model/XSD comparison and the
+remaining work.
 
 Define-XML Extensions
 ---------------------

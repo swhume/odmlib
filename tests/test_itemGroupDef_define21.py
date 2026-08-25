@@ -6,6 +6,7 @@ import odmlib.ns_registry as NS
 import odmlib.define_loader as OL
 import odmlib.loader as LD
 import os
+import tempfile
 import datetime
 
 
@@ -13,8 +14,15 @@ class TestItemGroupDef(TestCase):
     def setUp(self) -> None:
         attrs = self.set_itemgroupdef_attributes()
         self.igd = DEFINE.ItemGroupDef(**attrs)
-        self.test_file = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'data', 'defineV21-SDTM-test.xml')
-        self.test_file_json = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'data', 'defineV21-SDTM-test.json')
+        # Generated documents go to a throw-away directory. Writing them into the
+        # tracked tests/data/ fixtures left a dirty working tree after every run,
+        # because CreationDateTime/AsOfDateTime change on each execution. The
+        # committed fixtures of the same name are read by other test modules and
+        # are no longer regenerated here.
+        tmp_dir = tempfile.TemporaryDirectory()
+        self.addCleanup(tmp_dir.cleanup)
+        self.test_file = os.path.join(tmp_dir.name, 'defineV21-SDTM-test.xml')
+        self.test_file_json = os.path.join(tmp_dir.name, 'defineV21-SDTM-test.json')
         self.input_file = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'data', 'defineV21-SDTM.xml')
         self.nsr = NS.NamespaceRegistry(prefix="odm", uri="http://www.cdisc.org/ns/odm/v1.3", is_default=True)
         self.nsr = NS.NamespaceRegistry(prefix="def", uri="http://www.cdisc.org/ns/def/v2.1")

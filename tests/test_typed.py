@@ -372,9 +372,20 @@ class TestDurationDateTimeString(unittest.TestCase):
         with self.assertRaises(ValueError):
             DurationModel(Name="test", Dur=" -P1W")
 
+    def test_duration_valid_iso8601(self):
+        """The general ISO 8601 form is accepted (ODM 2.0 durationDatetime).
+
+        The XSD union is emptyTag | xs:duration | tDuration, so the
+        week-only pattern this descriptor used to enforce rejected values the
+        schema allows.
+        """
+        for val in ("P3D", "P1Y2M", "PT1H30M", "P1DT2H3M4.5S", "-P1Y", "", " "):
+            obj = DurationModel(Name="test", Dur=val)
+            self.assertEqual(obj.Dur, val)
+
     def test_duration_invalid_format(self):
         """Various invalid formats rejected"""
-        for val in ("1W", "PW", "P1D", "not-a-duration", ""):
+        for val in ("1W", "PW", "P", "PT", "P1Y2W", "not-a-duration"):
             with self.assertRaises(ValueError, msg=f"Should reject: {val!r}"):
                 DurationModel(Name="test", Dur=val)
 

@@ -839,6 +839,19 @@ class TestODM20ResolvedAndUnresolvedRefs(unittest.TestCase):
             self.assertIn(attr, self.checker.ref_def,
                           f"{attr} should be resolved in ODM 2.0")
 
+    def test_odm2_resolved_admindata_and_document_refs(self):
+        """Refs that began resolving with the v0.2.1 ODM 2.0 XSD alignment.
+
+        ``OrganizationOID`` resolves now that ``Organization`` is the XSD's
+        AdminData element (with an ``OID``) rather than a text leaf, and
+        ``LeafID`` now that ``Leaf`` is a ``MetaDataVersion`` child. Both were
+        listed as intentionally unresolved before.
+        """
+        for attr, target in (("OrganizationOID", "Organization"),
+                             ("LeafID", "Leaf")):
+            self.assertEqual(self.checker.ref_def.get(attr), target,
+                             f"{attr} should resolve to {target} in ODM 2.0")
+
     def test_odm2_unresolved_refs(self):
         """Refs that intentionally do NOT resolve (no matching Def class).
 
@@ -847,7 +860,7 @@ class TestODM20ResolvedAndUnresolvedRefs(unittest.TestCase):
         from unresolved to resolved.
         """
         expected_unresolved = [
-            "OrganizationOID", "PresentationOID", "UnitsItemOID",
+            "PresentationOID", "UnitsItemOID",
         ]
         for attr in expected_unresolved:
             self.assertNotIn(attr, self.checker.ref_def,

@@ -503,10 +503,7 @@ class TestPermissiveDefineLoading(unittest.TestCase):
 class TestPermissiveContextManagers(unittest.TestCase):
     """Tests for open_odm()/open_define() integration with permissive param."""
 
-    SIMPLE_XML = os.path.join(
-        os.path.dirname(os.path.dirname(os.path.realpath(__file__))),
-        "data", "simple_create.xml"
-    )
+    SIMPLE_XML = os.path.join(TEST_DATA_DIR, "simple_create.xml")
 
     def test_open_odm_permissive_true(self):
         from odmlib.context import open_odm

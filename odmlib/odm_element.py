@@ -672,13 +672,14 @@ class ODMElement(metaclass=ODMMeta):
                     o._init_oid_check(oid_checker)                  # list of ELEMENTS
             else:
                 # assumes consistency in OID naming. Exceptions: FileOID and PriorFileOID in ODM.
-                # Define-XML document references are ID-based rather than OID-named:
-                # leaf/@ID is the definition, referenced by leafID and def:ArchiveLocationID.
+                # Document references are ID-based rather than OID-named:
+                # leaf/@ID (Define-XML) and Leaf/@ID (ODM 2.0) are the definitions,
+                # referenced by leafID, LeafID and def:ArchiveLocationID.
                 if attr == "OID":
                     oid_checker.add_oid(obj, self.__class__.__name__)
-                elif attr == "ID" and self.__class__.__name__ == "leaf":
+                elif attr == "ID" and self.__class__.__name__ in ("leaf", "Leaf"):
                     oid_checker.add_oid(obj, self.__class__.__name__)
-                elif "OID" in attr or attr in ("leafID", "ArchiveLocationID"):
+                elif "OID" in attr or attr in ("leafID", "LeafID", "ArchiveLocationID"):
                     oid_checker.add_oid_ref(obj, attr)
         return
 

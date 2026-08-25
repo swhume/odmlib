@@ -563,6 +563,122 @@ class TestODMBuilderPhase2(TestCase):
         self.assertEqual(sed.ItemGroupRef[0].ItemGroupOID, "IG.DM")
 
 
+class TestODMBuilderODM2Alignment(TestCase):
+    """Builder output for odm_2_0 must satisfy the ODM 2.0 XSD (v0.2.1)."""
+
+    def _v2_namespaces(self):
+        import odmlib.ns_registry as NS
+        NS.NamespaceRegistry(
+            prefix="odm", uri="http://www.cdisc.org/ns/odm/v2.0",
+            is_default=True, is_reset=True,
+        )
+        NS.NamespaceRegistry(prefix="xs",    uri="http://www.w3.org/2001/XMLSchema-instance")
+        NS.NamespaceRegistry(prefix="xml",   uri="http://www.w3.org/XML/1998/namespace")
+        NS.NamespaceRegistry(prefix="xlink", uri="http://www.w3.org/1999/xlink")
+
+    def _v2(self):
+        return (ODMBuilder("odm_2_0")
+                .set_file(FileOID="F.V2", FileType="Snapshot",
+                          CreationDateTime="2024-01-01T00:00:00",
+                          ODMVersion="2.0", Granularity="Metadata")
+                .add_study(OID="S.V2", study_name="S",
+                           study_description="D", protocol_name="P")
+                .add_metadata_version(OID="MDV.V2", Name="V1")
+                .add_item_group_def(OID="IG.DM", Name="DM", Repeating="No",
+                                    Type="Dataset")
+                .add_item_ref(ItemOID="IT.AGE", Mandatory="Yes", OrderNumber=1)
+                .add_item_def(OID="IT.AGE", Name="Age", DataType="integer"))
+
+    def test_v2_formal_expression_wrapped_in_code(self):
+        """ODM 2.0 FormalExpression is element-based; text goes in Code."""
+        self._v2_namespaces()
+        odm = (self._v2()
+               .add_method_def(OID="MT.1", Name="M", Type="Computation",
+                               description="d",
+                               formal_expression="today - birthdate")
+               .build())
+        md = odm.Study[0].MetaDataVersion[0].MethodDef[0]
+        self.assertIsNone(getattr(md.FormalExpression[0], "_content", None))
+        self.assertEqual(md.FormalExpression[0].Code._content,
+                         "today - birthdate")
+
+    def test_v1_formal_expression_stays_text(self):
+        """ODM 1.3.2 keeps the text form — no behaviour change."""
+        odm = (ODMBuilder()
+               .set_file(FileOID="F.V1", FileType="Snapshot",
+                         CreationDateTime="2024-01-01T00:00:00")
+               .add_study(OID="S.V1", study_name="S",
+                          study_description="D", protocol_name="P")
+               .add_metadata_version(OID="MDV.V1", Name="V1")
+               .add_method_def(OID="MT.1", Name="M", Type="Computation",
+                               description="d", formal_expression="a + b")
+               .build())
+        md = odm.Study[0].MetaDataVersion[0].MethodDef[0]
+        self.assertEqual(md.FormalExpression[0]._content, "a + b")
+
+    def test_v2_method_def_emits_method_signature(self):
+        """MethodSignature is minOccurs=1 on MethodDef in the ODM 2.0 XSD."""
+        self._v2_namespaces()
+        odm = (self._v2()
+               .add_method_def(OID="MT.1", Name="M", Type="Computation",
+                               description="d")
+               .build())
+        md = odm.Study[0].MetaDataVersion[0].MethodDef[0]
+        self.assertIsNotNone(md.MethodSignature)
+
+    def test_v2_condition_def_emits_description_and_signature(self):
+        self._v2_namespaces()
+        odm = (self._v2()
+               .add_condition_def(OID="CND.1", Name="Adult",
+                                  description="Subject is an adult",
+                                  formal_expression="age >= 18")
+               .build())
+        cd = odm.Study[0].MetaDataVersion[0].ConditionDef[0]
+        self.assertIsNotNone(cd.MethodSignature)
+        self.assertEqual(cd.Description.TranslatedText[0]._content,
+                         "Subject is an adult")
+        self.assertEqual(cd.FormalExpression[0].Code._content, "age >= 18")
+
+    def test_v2_condition_def_requires_description(self):
+        self._v2_namespaces()
+        with self.assertRaises(RuntimeError):
+            self._v2().add_condition_def(OID="CND.1", Name="Adult")
+
+    def test_v1_condition_def_description_still_optional(self):
+        odm = (ODMBuilder()
+               .set_file(FileOID="F.V1", FileType="Snapshot",
+                         CreationDateTime="2024-01-01T00:00:00")
+               .add_study(OID="S.V1", study_name="S",
+                          study_description="D", protocol_name="P")
+               .add_metadata_version(OID="MDV.V1", Name="V1")
+               .add_condition_def(OID="CND.1", Name="Adult")
+               .build())
+        cd = odm.Study[0].MetaDataVersion[0].ConditionDef[0]
+        self.assertEqual(cd.OID, "CND.1")
+
+    def test_v2_study_event_ref_raises(self):
+        """Protocol/StudyEventRef does not exist in the ODM 2.0 XSD."""
+        self._v2_namespaces()
+        with self.assertRaises(RuntimeError):
+            self._v2().add_study_event_ref(StudyEventOID="SE.1",
+                                           Mandatory="Yes")
+
+    def test_v2_builder_output_validates_against_xsd(self):
+        self._v2_namespaces()
+        from odmlib.odm_parser import ODMSchemaValidator
+        odm = (self._v2()
+               .add_method_def(OID="MT.1", Name="M", Type="Computation",
+                               description="d", formal_expression="a + b")
+               .add_condition_def(OID="CND.1", Name="Adult",
+                                  description="Adult",
+                                  formal_expression="age >= 18")
+               .build())
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            out = os.path.join(tmp_dir, "builder_v2.xml")
+            odm.write_xml(out)
+            ODMSchemaValidator(standard="odm", version="2.0").validate_file(out)
+
+
 class TestODMBuilderEscapeHatch(TestCase):
     """attach()/attach_to_current() for elements without a dedicated method."""
 

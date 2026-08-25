@@ -1,3 +1,5 @@
+import os
+import tempfile
 import unittest
 import odmlib.dataset_1_0_1.model as ODM
 import datetime
@@ -5,11 +7,15 @@ import odmlib.ns_registry as NS
 import odmlib.odm_loader as OL
 
 
-ODM_XML_FILE = "./data/ae_test.xml"
-ODM_JSON_FILE = "./data/ae_test.json"
-
 class TestCreateDataset(unittest.TestCase):
     def setUp(self) -> None:
+        # Write generated documents to a throw-away directory. Writing them into
+        # the tracked data/ fixtures left a dirty working tree after every run,
+        # because CreationDateTime/AsOfDateTime change on each execution.
+        tmp_dir = tempfile.TemporaryDirectory()
+        self.addCleanup(tmp_dir.cleanup)
+        self.odm_xml_file = os.path.join(tmp_dir.name, "ae_test.xml")
+        self.odm_json_file = os.path.join(tmp_dir.name, "ae_test.json")
         # Register the Dataset-XML 1.0.1 namespace set required for write_xml().
         # The autouse conftest fixture resets to only the base odm namespace, so
         # we explicitly add xs, xml, and data here.
@@ -30,11 +36,11 @@ class TestCreateDataset(unittest.TestCase):
 
 
     def test_write_dataset_xml(self):
-        self.root.write_xml(ODM_XML_FILE)
+        self.root.write_xml(self.odm_xml_file)
         loader = OL.XMLODMLoader(model_package="dataset_1_0_1", ns_uri="http://www.cdisc.org/ns/Dataset-XML/v1.0")
         NS.NamespaceRegistry(prefix="odm", uri="http://www.cdisc.org/ns/odm/v1.3", is_default=True)
         ns = NS.NamespaceRegistry(prefix="data", uri="http://www.cdisc.org/ns/Dataset-XML/v1.0")
-        loader.create_document(ODM_XML_FILE, ns)
+        loader.create_document(self.odm_xml_file, ns)
         odm = loader.load_odm()
         self.assertEqual(odm.FileOID, "ODM.DATASET.001")
         self.assertEqual(odm.ClinicalData.ItemGroupData[0].ItemGroupOID, "IG.AE")
@@ -42,9 +48,9 @@ class TestCreateDataset(unittest.TestCase):
         self.assertEqual(odm.ClinicalData.ItemGroupData[1].ItemData[4].Value, "ANXIETY")
 
     def test_write_dataset_json(self):
-        self.root.write_json(ODM_JSON_FILE)
+        self.root.write_json(self.odm_json_file)
         loader = OL.JSONODMLoader(model_package="dataset_1_0_1")
-        loader.create_document(ODM_JSON_FILE)
+        loader.create_document(self.odm_json_file)
         odm = loader.load_odm()
         self.assertEqual(odm.FileOID, "ODM.DATASET.001")
         self.assertEqual(odm.ClinicalData.ItemGroupData[0].ItemGroupOID, "IG.AE")

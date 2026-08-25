@@ -118,9 +118,21 @@ Creating a Define-XML 2.1 Document
         is_default=True, is_reset=True)
     NS.NamespaceRegistry(prefix="def",
         uri="http://www.cdisc.org/ns/def/v2.1")
+    # xlink is required: def:leaf carries xlink:href, and without this the
+    # xmlns:xlink declaration is omitted and the output cannot be re-parsed
+    NS.NamespaceRegistry(prefix="xlink",
+        uri="http://www.w3.org/1999/xlink")
 
     # Define-XML uses a single Study (ODMObject, not list)
     # See the Define-XML 2.1 model for additional attributes
+
+.. warning::
+
+   ``is_reset=True`` clears **every** registered prefix, including the ones each
+   model package registers when it is imported. Register every prefix the
+   document uses, not only the ones you set yourself: a prefix that appears in
+   the tree but not in the registry is dropped from the ``xmlns`` declarations
+   without warning, and the result cannot be re-parsed.
 
 Serialization Options
 ---------------------

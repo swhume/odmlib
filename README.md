@@ -556,20 +556,14 @@ NS.NamespaceRegistry(prefix="odm",
 # For Define-XML, add additional namespaces
 NS.NamespaceRegistry(prefix="def", uri="http://www.cdisc.org/ns/def/v2.1")
 NS.NamespaceRegistry(prefix="xs", uri="http://www.w3.org/2001/XMLSchema-instance")
+# xlink is required: def:leaf carries xlink:href, and without this the
+# xmlns:xlink declaration is omitted and the output cannot be re-parsed
+NS.NamespaceRegistry(prefix="xlink", uri="http://www.w3.org/1999/xlink")
 ```
 
-## Running Tests
-
-```bash
-# Run all tests
-python -m pytest tests/ -v
-
-# Run with coverage report
-python -m pytest tests/ --cov=odmlib --cov-report=term-missing
-
-# Run a specific test file
-python -m pytest tests/test_odm_loader.py -v
-```
+`is_reset=True` clears every prefix, including the ones each model package registers when
+it is imported — so register every prefix the document uses, not only the ones you set
+yourself.
 
 ## Running Tests
 

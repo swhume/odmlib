@@ -1,14 +1,20 @@
 """Load, modify, and save an ODM file with the context-manager facade.
 
+Writing is OPT-IN: since 0.2.1 a bare open_odm(path) loads read-only and writes
+nothing on exit. There are two ways to ask for a write.
+
 Demonstrates:
-  * open_odm(...) load -> modify -> auto-save on clean exit
-  * write_on_exit=False for read-only inspection (never touches the file)
-  * output_file=... to write somewhere other than the input
+  * open_odm(...) with no write argument -> read-only, the file is never touched
+  * write_on_exit=False -> the same, stated explicitly
+  * output_file=... -> write the modified document somewhere other than the input
+  * write_on_exit=True -> update the input file IN PLACE
 
 Run:  python read_modify_write.py   (creates its own input first)
-Writes: ./odmlib_skill_output/rmw_input.xml, ./odmlib_skill_output/rmw_output.xml
+Writes: ./odmlib_skill_output/rmw_input.xml, ./odmlib_skill_output/rmw_output.xml,
+        ./odmlib_skill_output/rmw_inplace.xml
 """
 import os
+import shutil
 import warnings
 
 import odmlib
@@ -21,6 +27,7 @@ OUTDIR = os.path.join(os.getcwd(), "odmlib_skill_output")
 os.makedirs(OUTDIR, exist_ok=True)
 INPUT = os.path.join(OUTDIR, "rmw_input.xml")
 OUTPUT = os.path.join(OUTDIR, "rmw_output.xml")
+INPLACE = os.path.join(OUTDIR, "rmw_inplace.xml")
 
 
 def make_input():
@@ -42,13 +49,20 @@ if __name__ == "__main__":
     print("odmlib", odmlib.__version__)
     make_input()
 
-    # Read-only: write_on_exit=False guarantees the input is never modified.
-    with open_odm(INPUT, write_on_exit=False) as odm:
+    # 1. Read-only by DEFAULT: no write argument at all, so nothing is written.
+    #    The edit below is deliberately discarded on exit to prove the point.
+    before_mtime = os.path.getmtime(INPUT)
+    with open_odm(INPUT) as odm:
         mdv = odm.Study[0].MetaDataVersion[0]
         print("Before:", len(mdv.ItemGroupDef), "ItemGroupDef;",
               "FileOID =", odm.FileOID)
+        odm.FileOID = "ODM.RMW.DISCARDED"      # goes nowhere: default is read-only
+    assert os.path.getmtime(INPUT) == before_mtime, "default must not write"
 
-    # Modify and save to a NEW file via output_file (input stays untouched).
+    with open_odm(INPUT, write_on_exit=False) as odm:   # same thing, said explicitly
+        assert odm.FileOID == "ODM.RMW", "step 1 must not have been persisted"
+
+    # 2. Modify and save to a NEW file via output_file (input stays untouched).
     import odmlib.odm_1_3_2.model as ODM
     with open_odm(INPUT, output_file=OUTPUT) as odm:
         mdv = odm.Study[0].MetaDataVersion[0]
@@ -57,10 +71,20 @@ if __name__ == "__main__":
         )
         odm.FileOID = "ODM.RMW.UPDATED"
 
-    # Confirm the change landed in the output file.
+    # 3. Confirm the change landed in the output file.
     with open_odm(OUTPUT, write_on_exit=False) as odm:
         mdv = odm.Study[0].MetaDataVersion[0]
         names = [igd.Name for igd in mdv.ItemGroupDef]
         print("After: ", len(mdv.ItemGroupDef), "ItemGroupDef", names,
               "; FileOID =", odm.FileOID)
     print(f"Wrote {OUTPUT} ({os.path.getsize(OUTPUT)} bytes); input unchanged")
+
+    # 4. In-place update: write_on_exit=True writes back to the file it opened.
+    #    Copy first so the pristine input survives for re-runs.
+    shutil.copyfile(INPUT, INPLACE)
+    with open_odm(INPLACE, write_on_exit=True) as odm:
+        odm.FileOID = "ODM.RMW.INPLACE"
+
+    with open_odm(INPLACE) as odm:                     # read-only re-read to confirm
+        print("In place:", INPLACE, "-> FileOID =", odm.FileOID)
+    assert odm.FileOID == "ODM.RMW.INPLACE"

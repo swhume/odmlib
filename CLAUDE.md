@@ -32,6 +32,40 @@ pip install -e .
 
 **Dev dependencies (installed via `.[dev]`):** pytest, pytest-cov, sphinx, sphinx-rtd-theme, mypy
 
+## Claude Code Skill
+
+This repository contains a Claude Code skill for odmlib at `.claude/skills/odmlib/`
+(SKILL.md, four `references/*.md`, eight runnable `examples/*.py`). Because it lives under
+`.claude/skills/` in this repo, it is active automatically when working *in* this repository.
+
+It is **not** shipped in the PyPI package. To use it elsewhere, copy the directory into the
+target project's `.claude/skills/`, or into `~/.claude/skills/` for all projects:
+
+```bash
+cp -r .claude/skills/odmlib ~/.claude/skills/
+```
+
+`.claude/skills/odmlib.skill` is a packed zip of that same directory, for distribution.
+
+**When editing the library, keep the skill true.** The skill asserts library behavior in
+prose, and three test files guard the machine-checkable half:
+
+```bash
+python -m pytest tests/test_skill_contract.py    # signatures, front matter, import surface
+python -m pytest tests/test_skill_examples.py    # all 8 examples must exit 0
+python -m pytest tests/test_skill_bundle.py      # packed bundle matches source
+```
+
+After editing SKILL.md, a reference, or an example, repack the bundle or
+`test_skill_bundle.py` will fail:
+
+```bash
+python scripts/build_skill_bundle.py             # --check reports drift without writing
+```
+
+The skill documents odmlib 0.2.1 and later. If you change a documented signature or default,
+update the skill and the expected table in `tests/test_skill_contract.py` together.
+
 ## Conduction Code Reviews
 
 Read REVIEW.md and execute a codebase analysis following all listed constraints.

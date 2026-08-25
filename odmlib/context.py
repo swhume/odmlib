@@ -34,7 +34,8 @@ Example — read a Define-XML 2.1 file::
     from odmlib.context import open_define
 
     with open_define("define.xml") as define:
-        mdv = define.Study[0].MetaDataVersion[0]
+        # Define-XML: Study and MetaDataVersion are single objects, not lists
+        mdv = define.Study.MetaDataVersion
         print(len(mdv.ItemDef))
 """
 from __future__ import annotations
@@ -255,7 +256,8 @@ def open_define(input_file: str,
 
         # Read-only inspection — input file is never modified
         with open_define("define.xml") as define:
-            mdv = define.Study[0].MetaDataVersion[0]
+            # Define-XML: Study/MetaDataVersion are single objects, not lists
+            mdv = define.Study.MetaDataVersion
 
         with open_define("broken.xml", permissive=True) as define:
             ...  # permissive mode active during load

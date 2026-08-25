@@ -9,6 +9,37 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.2.1] - 2026-08-16
 
+### Added — Claude Code skill
+
+- **A Claude Code skill for odmlib ships in the repository at `.claude/skills/odmlib/`.**
+  It teaches Claude the loader-per-standard mapping, namespace registration, element
+  ordering, the three validation layers, and the serialization pitfalls that are easy to
+  get wrong by hand. Contents: `SKILL.md`, four `references/*.md` (API reference, models,
+  validation, Dataset-JSON), and eight runnable `examples/*.py`.
+  `.claude/skills/odmlib.skill` is the same tree packed as a zip for distribution.
+
+- **Repo-only — it is not part of the PyPI package.** `pip install odmlib` does not install
+  the skill; `[tool.setuptools.packages.find]` includes `odmlib*` only. Install it by copying
+  `.claude/skills/odmlib/` into a project's `.claude/skills/`, or into `~/.claude/skills/`
+  to make it available everywhere. See the *Claude Code Skill* sections of `README.md` and
+  `CLAUDE.md`.
+
+- **It describes odmlib 0.2.1 and later.** Several behaviors it documents do not hold on
+  0.2.0 — namespace-aware `to_xml_string()`, opt-in context-manager writing, and full error
+  enumeration under `collect_errors=True`. The skill advises detecting capabilities rather
+  than comparing version strings, since a pre-release sorts below its release under PEP 440.
+
+- **Guarded by tests, not just prose.** `tests/test_skill_contract.py` pins the skill's
+  documented signatures, front-matter limits, import surface, schema pairs, and the
+  list-vs-object shape rule against live introspection; `tests/test_skill_examples.py` runs
+  all eight examples; `tests/test_skill_bundle.py` checks the packed `.skill` bundle matches
+  the source tree by SHA-256. Repack with `python scripts/build_skill_bundle.py` after
+  editing any skill file. These run in a single CI cell.
+
+- **Feedback welcome** via the `skill-feedback.yml` issue template ("Claude generated
+  incorrect odmlib code"), which captures the prompt, the generated code, and the versions
+  involved.
+
 ### Added — `to_element()`
 
 - **`ODMElement.to_element()` returns a standard, namespace-resolved ElementTree Element.**
@@ -55,7 +86,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   ```
 
   **The default stays `False`** — this string is the documented input to
-  `ODMLoader.load_odm_string()` and 0.2.1 shipped it declaration-free, so
+  `ODMLoader.load_odm_string()` and 0.2.0 shipped it declaration-free, so
   flipping it would silently change output for every existing caller. The
   parameter is keyword-only. `dataset_json_1_1.model.DatasetJSON.to_xml_string()`
   accepts the same keyword so it still raises the intended `NotImplementedError`

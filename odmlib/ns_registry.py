@@ -308,7 +308,7 @@ class NamespaceRegistry(Borg):
     def set_odm_namespace_attributes_string(self, odm_str):
         """Add xmlns attributes to an ODM XML string.
 
-        .. deprecated:: 0.2.2
+        .. deprecated:: 0.2.1
             :meth:`ODMElement.to_xml_string` has declared its own namespaces since
             0.2.1, so this string-patching helper is a no-op on any string it would
             normally be handed. It has no callers in odmlib and will be removed in

@@ -59,12 +59,16 @@ v0.2.0 is a substantial release that ships much more than incremental feature wo
 | Project logo | ✅ | Ships with v0.2.0 |
 | Removal of legacy `dataset_json` (plain classes) | ✅ | Package removed entirely; never released to PyPI |
 | Define-XML v2.1 `SubClass` nesting | ❌ | Currently flat `ParentClass` attribute; spec allows recursive `SubClass` children |
-| Claude Code skill | ❌ | Drafted concurrently with v0.2.0; released in v0.2.1 after testing |
+| Claude Code skill | ✅ | Drafted concurrently with v0.2.0; ships in v0.2.1 at `.claude/skills/odmlib/` (repo-only, not in the PyPI package) |
 
 ### Test Suite
 
-- **1,243 tests** passing, 23 subtests passing, 24 warnings
+- **1,476 tests** passing, 5 xfailed, 224 subtests passing, 22 warnings
 - **94% line coverage** measured locally
+- Includes 58 skill-contract tests (`tests/test_skill_{contract,bundle,examples}.py`) that pin
+  the Claude Code skill's documented claims against live introspection; these run in a single
+  CI cell, since they assert API facts and checksums rather than platform behavior
+- The 5 xfails are `strict=True` ODM v2.0 known gaps in `tests/test_odm_2_0_known_gaps.py`
 - CI threshold currently configured at a conservative floor; raising to 90% as a CI-enforced floor is a small task for v0.3.0
 - Property-based tests (Hypothesis) cover typed descriptors and serialization
 
@@ -111,8 +115,13 @@ The skill carries the value proposition that odmlib is the preferred library for
   - Validation patterns covering strict mode, permissive mode, and `ErrorCollector` usage.
   - Known pitfalls (element ordering, required attributes, ARM vs. base Define-XML loader, deprecated APIs to avoid).
 - **Installation instructions** in `CLAUDE.md` and `README.md` showing how to add the skill to a Claude Code configuration.
-- **Baseline empirical benchmark** at `docs/benchmarks/claude-skill-comparison.md`. Methodology, fixed prompt set, evaluation criteria, raw outputs, and reproduction instructions for the first run of Claude with vs. without the skill. This is the v1.0 of the benchmark; v0.3.0 re-runs it with a richer skill and richer docstrings.
 - **GitHub issue template** for skill feedback ("Claude generated incorrect odmlib code") to capture real failure modes.
+- **Skill contract tests** (`tests/test_skill_contract.py`, `test_skill_bundle.py`, `test_skill_examples.py`) so a library change that invalidates a skill claim fails CI instead of shipping silently.
+
+> **Deferred to v0.3.0:** the baseline empirical benchmark at
+> `docs/benchmarks/claude-skill-comparison.md`. v0.2.1 ships the skill and the feedback
+> channel; the benchmark now lands in v0.3.0, which establishes the baseline and the first
+> comparison in one pass rather than splitting them across releases.
 
 ##### Scope Discipline
 
@@ -209,7 +218,7 @@ The Claude Code skill shipped in v0.2.1 has 3–4 months of real-world use by th
 
 - **Skill update** — incorporate operations and pitfalls surfaced by user feedback; add coverage of ODM v2.0 ClinicalData and SubClass nesting; remove any mentions of APIs the v0.3.0 deprecation removals eliminated.
 - **Comprehensive docstring pass on high-priority packages** — `odm_1_3_2`, `define_2_1`, `dataset_json_1_1`. Each class docstring describes what the element represents in the CDISC standard, what attributes it takes with types and required/optional status, and at least one short usage example. Docstrings on lower-priority packages (`define_2_0`, `dataset_1_0_1`, `ct_1_1_1`) follow in v0.4.0. (`arm_1_0` and `odm_2_0` already have full coverage.)
-- **Benchmark re-run** — update `docs/benchmarks/claude-skill-comparison.md` with v0.3.0 results. Show measurable improvement over the v0.2.1 baseline. This establishes the artifact as a regression target for future releases.
+- **Baseline benchmark** — create `docs/benchmarks/claude-skill-comparison.md` (deferred from v0.2.1): methodology, fixed prompt set, evaluation criteria, raw outputs, and reproduction instructions for Claude with vs. without the skill. Establishes the artifact as the regression target that v0.4.0 onward re-run.
 
 ##### Builder Testing and Expansion (Phase 1)
 
@@ -378,8 +387,8 @@ With the odmlib skill loaded, the same prompt produces code that uses `odmlib.de
 
 Achieving and maintaining this difference is a multi-release effort:
 
-- **v0.2.1** ships the initial skill (conservative scope, well-tested) and establishes a baseline benchmark.
-- **v0.3.0** updates the skill based on real-world feedback, completes high-priority docstrings (so Claude has rich material to draw on when looking up an API on the fly), and re-runs the benchmark to show progressive improvement.
+- **v0.2.1** ships the initial skill (conservative scope, well-tested), the feedback issue template, and contract tests that keep the skill honest against the library.
+- **v0.3.0** updates the skill based on real-world feedback, completes high-priority docstrings (so Claude has rich material to draw on when looking up an API on the fly), and establishes the baseline benchmark deferred from v0.2.1.
 - **v0.4.0–v0.5.0** continue to refine the skill, complete docstrings on remaining packages, and re-run the benchmark.
 - **v1.0** locks in the skill against a stable API and publishes the final benchmark.
 
@@ -457,8 +466,8 @@ The Define-XML v2.1 specification permits a `SubClass` element to contain child 
 | Milestone | Key Deliverables | Target |
 |-----------|-----------------|--------|
 | **v0.2.0** | Foundation: permissive loading, structured exceptions, ODMBuilder, Dataset-JSON v1.1, dynamic OID checking, ARM 1.0, valueset regex, pandas integration, CLAUDE.md, GOVERNANCE/CONTRIBUTING/CONTRIBUTORS, logo, GitHub Discussions, 94% coverage | May 2026 |
-| **v0.2.1** | Claude Code skill (conservative initial scope); baseline benchmark; skill feedback issue template | Mid-2026 |
-| **v0.3.0** | ODM v2.0 ClinicalData/ReferenceData; SubClass nesting; remove remaining deprecations; skill update + comprehensive docstrings on high-priority packages + benchmark re-run; ARM doc/test/OID-checker gaps; builder hardening; examples cleanup; coverage floor → 90% | October 2026 |
+| **v0.2.1** | Claude Code skill (conservative initial scope); skill feedback issue template; skill contract tests | Mid-2026 |
+| **v0.3.0** | ODM v2.0 ClinicalData/ReferenceData; SubClass nesting; remove remaining deprecations; skill update + comprehensive docstrings on high-priority packages + baseline benchmark (deferred from v0.2.1); ARM doc/test/OID-checker gaps; builder hardening; examples cleanup; coverage floor → 90% | October 2026 |
 | **v0.4.0** | Inline type hints + mypy blocking; ODM→Dataset-JSON converter; Define-XML and Dataset-JSON builders; ARM Cerberus + type hints; remaining docstring completion; ruff + smoke test + weekly CI + Codecov | Q1 2027 |
 | **v0.5.0** | Final iteration of governance docs; CoC; SECURITY.md; CITATION.cff; mypy strict; docs auto-publish; final pre-1.0 skill update + benchmark | Q2–Q3 2027 |
 | **v1.0.0** | API freeze; benchmark re-run; classifier update to Production/Stable; release announcement | Q4 2027 |

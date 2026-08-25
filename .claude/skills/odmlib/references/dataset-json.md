@@ -8,6 +8,7 @@ the top-level `odmlib` namespace).
 ## The `DatasetJSON` object
 
 ```python
+import odmlib
 from odmlib import DatasetJSON, Column, SourceSystem
 
 ds = DatasetJSON(
@@ -24,7 +25,7 @@ ds = DatasetJSON(
     metaDataVersionOID="MDV.1",    # FK to MetaDataVersion
     metaDataRef="define.xml",      # URI to the metadata file
     originator="Hume Data Labs",
-    sourceSystem=SourceSystem(name="odmlib", version="0.2.1"),
+    sourceSystem=SourceSystem(name="odmlib", version=odmlib.__version__),
     # column definitions (order defines the row value order):
     columns=[
         Column(itemOID="IT.USUBJID", name="USUBJID", label="Unique Subject ID", dataType="string"),

@@ -632,7 +632,7 @@ class ODMElement(metaclass=ODMMeta):
         self._init_oid_check(oid_checker)
         return oid_checker.check_oid_refs()
 
-    def unreferenced_oids(self, oid_checker: Any) -> list:
+    def unreferenced_oids(self, oid_checker: Any) -> dict:
         """Find OID definitions that are not referenced anywhere.
 
         Calls :meth:`verify_oids` first if OIDs have not yet been verified.
@@ -642,7 +642,17 @@ class ODMElement(metaclass=ODMMeta):
                 or a ``DynamicOIDRef`` instance.
 
         Returns:
-            list: OID definition values that have no corresponding references.
+            dict: Mapping of ``oid_value -> ref_attr_name`` for each OID that
+            is defined but never referenced. An empty dict means every
+            definition is used.
+
+        Note:
+            Pass a checker that has been through a *collect-mode*
+            :meth:`validate` (or an otherwise complete
+            :meth:`verify_oids`). After a fail-fast ``verify_oids()`` that
+            raised, the checker is only half-populated and this method can
+            report a misleading duplicate naming an OID that is not in fact
+            duplicated.
         """
         if not oid_checker.is_oids_verified():
             self.verify_oids(oid_checker)

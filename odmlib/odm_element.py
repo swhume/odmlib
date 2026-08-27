@@ -222,7 +222,13 @@ class ODMWriter:
                 root, namespaces=ns_snapshot["namespaces"], default=ns_snapshot["default"])
         else:
             nsr.set_odm_namespace_attributes(root)
-        tree.write(odm_file, xml_declaration=True, encoding='UTF-8', method='xml', short_empty_elements=True)
+        # Write through a binary handle. Handed a *filename*, ElementTree opens it in
+        # text mode, so Windows translates every \n to \r\n and the file no longer
+        # matches to_xml_string() byte for byte. Handed a binary file object it uses
+        # TextIOWrapper(newline="\n"), which is identical on every platform.
+        with open(odm_file, "wb") as fh:
+            tree.write(fh, xml_declaration=True, encoding='UTF-8', method='xml',
+                       short_empty_elements=True)
 
 
 class ODMElement(metaclass=ODMMeta):

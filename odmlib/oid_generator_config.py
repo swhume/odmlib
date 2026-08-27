@@ -89,11 +89,9 @@ ODM_20_SKIP_ATTRS: list[str] = [
     "EndOID",
     # Duration timing: StructuralElementOID can reference multiple types
     "StructuralElementOID",
-    # Relative timing: predecessor/successor OIDs span multiple event types
-    "PredecessorStudyEventGroupOID",
-    "PredecessorStudyEventOID",
-    "SuccessorStudyEventGroupOID",
-    "SuccessorStudyEventOID",
+    # Relative timing: predecessor/successor OIDs span multiple element types
+    "PredecessorOID",
+    "SuccessorOID",
     # Target transition: references Transition (which itself has transitions)
     "TargetTransitionOID",
 ]

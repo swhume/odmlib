@@ -219,7 +219,7 @@ inspection and repair:
         odm = loader.root()
 
     # Fix issues in strict mode, then validate
-    errors = odm.validate(collect_errors=True)
+    errors = odm.validate(collect_errors=True, max_errors=100)
 
 See :doc:`permissive_loading` for the full guide including graduated
 control, the ``ValidationMode`` flags, and the load-fix-validate

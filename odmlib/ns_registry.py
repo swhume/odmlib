@@ -18,7 +18,82 @@ Example::
         uri="http://www.cdisc.org/ns/def/v2.1")
 """
 import validators
-from odmlib.exceptions import OdmlibNamespaceError
+import warnings
+import weakref
+from odmlib.exceptions import OdmlibDeprecationWarning, OdmlibNamespaceError
+
+
+# Side table associating loaded document roots with the namespace state in
+# effect when they were loaded.  Because NamespaceRegistry state is shared
+# process-wide (Borg), loading a second document can change the registry;
+# serialization consults this table first so a document is always written
+# with the namespaces it was loaded under.
+_DOCUMENT_NAMESPACES: "weakref.WeakKeyDictionary" = weakref.WeakKeyDictionary()
+
+
+def _is_odm_element(obj):
+    """True for odmlib model objects, without importing them.
+
+    ``odm_element`` imports this module, so a real isinstance check would be circular.
+    Every model class gets ``_elems`` from ``ODMMeta``, which makes it a reliable marker.
+    """
+    return hasattr(obj, "_elems") and hasattr(obj, "__dict__")
+
+
+def _bind_one(odm_obj, snapshot):
+    try:
+        _DOCUMENT_NAMESPACES[odm_obj] = snapshot
+    except TypeError:
+        pass  # objects that do not support weak references fall back to global state
+
+
+def bind_document_namespaces(odm_obj, snapshot=None, recursive=False):
+    """Associate *odm_obj* with a namespace snapshot for serialization.
+
+    Args:
+        odm_obj: A loaded odmlib element (typically the document root).
+        snapshot: A dict as returned by :meth:`NamespaceRegistry.snapshot`.
+            When ``None``, the registry's current state is captured.
+        recursive: When True, also bind every descendant element, so that
+            serializing a child reached by walking the tree
+            (``define.Study.MetaDataVersion``) uses the same namespaces as its
+            root instead of falling back to current global registry state.
+    """
+    # Resolve the snapshot exactly once so the whole walk shares one dict. Resolving
+    # per node would mint a fresh dict each time and defeat any identity-based guard.
+    if snapshot is None:
+        snapshot = NamespaceRegistry().snapshot()
+    if not recursive:
+        _bind_one(odm_obj, snapshot)
+        return
+
+    # Guard on id(), not on "already mapped to this snapshot" - the latter cannot
+    # distinguish a revisit from a legitimate rebind and degenerates on cycles.
+    # Every object here stays reachable from odm_obj for the duration, so ids are stable.
+    visited = set()
+    stack = [odm_obj]
+    while stack:
+        obj = stack.pop()
+        if obj is None or id(obj) in visited:
+            continue
+        visited.add(id(obj))
+        _bind_one(obj, snapshot)
+        children = getattr(obj, "__dict__", None)
+        if not children:
+            continue
+        for value in children.values():
+            if isinstance(value, list):
+                stack.extend(item for item in value if _is_odm_element(item))
+            elif _is_odm_element(value):
+                stack.append(value)
+
+
+def get_document_namespaces(odm_obj):
+    """Return the namespace snapshot bound to *odm_obj*, or ``None``."""
+    try:
+        return _DOCUMENT_NAMESPACES.get(odm_obj)
+    except TypeError:
+        return None
 
 
 class Borg:
@@ -83,6 +158,29 @@ class NamespaceRegistry(Borg):
                     hint="Provide a valid URI, e.g., 'http://www.cdisc.org/ns/odm/v1.3'",
                 )
 
+    def snapshot(self):
+        """Return a copy of the current registry state.
+
+        Returns:
+            dict: ``{"namespaces": {prefix: uri, ...}, "default": {prefix: uri}}``.
+        """
+        return {
+            "namespaces": dict(self.namespaces),
+            "default": dict(self.default_namespace),
+        }
+
+    def _require_default(self, default_map=None):
+        """Return the default (prefix, uri) pair or raise a clear error."""
+        default_map = self.default_namespace if default_map is None else default_map
+        if not default_map:
+            raise OdmlibNamespaceError(
+                "No default namespace has been registered",
+                hint="Register one first, e.g. NamespaceRegistry(prefix='odm', "
+                     "uri='http://www.cdisc.org/ns/odm/v1.3', is_default=True)",
+            )
+        prefix = next(iter(default_map))
+        return prefix, default_map[prefix]
+
     def get_odm_namespace_entries(self):
         """Return namespace entries as xmlns= strings for XML serialization.
 
@@ -90,9 +188,10 @@ class NamespaceRegistry(Borg):
             list[str]: A list of strings like ``["xmlns=http://...", "xmlns:def=http://..."]``.
                 The first entry is always the default namespace.
         """
-        entries = ["xmlns=" + list(self.default_namespace.values())[0]]
+        default_prefix, default_uri = self._require_default()
+        entries = ["xmlns=" + default_uri]
         for prefix, uri in self.namespaces.items():
-            if prefix != list(self.default_namespace.keys())[0]:
+            if prefix != default_prefix:
                 entries.append("xmlns:" + prefix + "=" + uri)
         return entries
 
@@ -161,22 +260,59 @@ class NamespaceRegistry(Borg):
             hint="Register the namespace URI first via NamespaceRegistry(prefix=..., uri=...)",
         )
 
-    def set_odm_namespace_attributes(self, odm_elem):
+    @staticmethod
+    def _used_prefixes(odm_elem):
+        """Collect the namespace prefixes actually used in a serialized tree.
+
+        odmlib emits prefixed tags and attribute names as literal
+        ``prefix:name`` strings, so a simple scan finds every prefix the
+        document actually needs a declaration for.
+        """
+        used = set()
+        for elem in odm_elem.iter():
+            if ":" in elem.tag:
+                used.add(elem.tag.split(":", 1)[0])
+            for attr_name in elem.attrib:
+                if ":" in attr_name and not attr_name.startswith("xmlns"):
+                    used.add(attr_name.split(":", 1)[0])
+        return used
+
+    def set_odm_namespace_attributes(self, odm_elem, namespaces=None, default=None):
         """Set xmlns attributes on an ElementTree root element.
 
-        Adds ``xmlns`` for the default namespace and ``xmlns:prefix``
-        for each additional namespace to the element's ``attrib`` dict.
+        Adds ``xmlns`` for the default namespace and ``xmlns:prefix`` for
+        each additional namespace that is actually used in the tree.  The
+        reserved ``xml`` prefix is never declared (it is implicitly bound
+        per the XML specification).
 
         Args:
             odm_elem (ET.Element): The root XML element to annotate.
+            namespaces (dict): Optional ``{prefix: uri}`` map to use instead
+                of the registry's shared state (e.g. a per-document snapshot).
+            default (dict): Optional ``{prefix: uri}`` default-namespace map
+                to use instead of the registry's shared state.
+
+        Raises:
+            OdmlibNamespaceError: If no default namespace is registered.
         """
-        odm_elem.attrib["xmlns"] = list(self.default_namespace.values())[0]
-        for prefix, uri in self.namespaces.items():
-            if prefix != list(self.default_namespace.keys())[0]:
+        ns_map = self.namespaces if namespaces is None else namespaces
+        default_prefix, default_uri = self._require_default(default)
+        odm_elem.attrib["xmlns"] = default_uri
+        used = self._used_prefixes(odm_elem)
+        for prefix, uri in ns_map.items():
+            if prefix in (default_prefix, "xml"):
+                continue
+            if prefix in used:
                 odm_elem.attrib["xmlns:" + prefix] = uri
 
     def set_odm_namespace_attributes_string(self, odm_str):
         """Add xmlns attributes to an ODM XML string.
+
+        .. deprecated:: 0.2.1
+            :meth:`ODMElement.to_xml_string` has declared its own namespaces since
+            0.2.1, so this string-patching helper is a no-op on any string it would
+            normally be handed. It has no callers in odmlib and will be removed in
+            0.3.0. Remove the call; no replacement is needed.
 
         Replaces the opening ``<ODM`` tag in ``odm_str`` with a version
         that includes all registered namespace declarations.
@@ -187,9 +323,22 @@ class NamespaceRegistry(Borg):
         Returns:
             str: The modified XML string with xmlns attributes injected.
         """
-        ns_str = "<ODM xmlns=\"" + list(self.default_namespace.values())[0] + "\""
+        warnings.warn(
+            "NamespaceRegistry.set_odm_namespace_attributes_string() is deprecated and "
+            "will be removed in 0.3.0. to_xml_string() already emits its own xmlns "
+            "declarations, so this call is a no-op for strings it produces.",
+            OdmlibDeprecationWarning,
+            stacklevel=2,
+        )
+        # no-op when the root element already declares a namespace (e.g. a
+        # string produced by to_xml_string(), which is now self-contained)
+        root_tag_end = odm_str.find(">", odm_str.find("<ODM"))
+        if root_tag_end != -1 and "xmlns" in odm_str[:root_tag_end]:
+            return odm_str
+        default_prefix, default_uri = self._require_default()
+        ns_str = "<ODM xmlns=\"" + default_uri + "\""
         for prefix, uri in self.namespaces.items():
-            if prefix != list(self.default_namespace.keys())[0]:
+            if prefix != default_prefix:
                 ns_str += " xmlns:" + prefix + "=\"" + uri + "\""
         odm_ns_str = odm_str.replace("<ODM", ns_str)
         return odm_ns_str
@@ -197,13 +346,18 @@ class NamespaceRegistry(Borg):
     def _update_registry(self, prefix, uri, is_default):
         """Add or update an entry in the shared namespace registry.
 
+        Only a single default namespace is kept: registering a new default
+        replaces any previous one rather than accumulating alongside it
+        (which made the effective default depend on registration order).
+
         Args:
             prefix (str): Namespace prefix.
             uri (str): Namespace URI.
-            is_default (bool): If True, also records this as the default namespace.
+            is_default (bool): If True, this becomes THE default namespace.
         """
         self.namespaces[prefix] = uri
         if is_default:
+            self.default_namespace.clear()
             self.default_namespace[prefix] = uri
 
     def remove_registry_entry(self, prefix):

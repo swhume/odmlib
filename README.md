@@ -10,16 +10,16 @@ documents and extensions including Define-XML, Dataset-XML, and CT-XML.
 
 ## Supported Standards
 
-| Standard | Package | Status |
-|----------|---------|--------|
-| ODM 1.3.2 | `odmlib.odm_1_3_2` | Stable |
-| ODM 2.0 | `odmlib.odm_2_0` | Draft |
-| Define-XML 2.0 | `odmlib.define_2_0` | Stable |
-| Define-XML 2.1 | `odmlib.define_2_1` | Stable |
-| Dataset-XML 1.0.1 | `odmlib.dataset_1_0_1` | Stable |
-| CT-XML 1.1.1 | `odmlib.ct_1_1_1` | Stable |
-| ARM 1.0 | `odmlib.arm_1_0` | Stable |
-| Dataset-JSON v1.1 | `odmlib.dataset_json_1_1` | Stable |
+| Standard | Package | Status | Bundled XSD |
+|----------|---------|--------|-------------|
+| ODM 1.3.2 | `odmlib.odm_1_3_2` | Stable | ✅ |
+| ODM 2.0 | `odmlib.odm_2_0` | Draft | ✅ |
+| Define-XML 2.0 | `odmlib.define_2_0` | Stable | ✅ |
+| Define-XML 2.1 | `odmlib.define_2_1` | Stable | ✅ |
+| Dataset-XML 1.0.1 | `odmlib.dataset_1_0_1` | Stable | — |
+| CT-XML 1.1.1 | `odmlib.ct_1_1_1` | Stable | — |
+| ARM 1.0 | `odmlib.arm_1_0` | Stable | ✅ |
+| Dataset-JSON v1.1 | `odmlib.dataset_json_1_1` | Stable | — |
 
 ## Features
 
@@ -27,6 +27,7 @@ documents and extensions including Define-XML, Dataset-XML, and CT-XML.
 - **Type-validated attributes**: all assignments validated at assignment time
 - **Bidirectional serialization**: convert between XML, JSON, and Python dicts
 - **Validation**: OID uniqueness, ref/def integrity, Cerberus conformance, element ordering
+- **Bundled CDISC schemas**: XSD validation for ODM, Define-XML, and ARM with no downloads
 - **Dynamic OID checking**: automatic ref/def mapping via model introspection
 - **Extensible**: create custom extensions by subclassing model classes
 - **Builder API**: fluent `ODMBuilder` for programmatic document construction
@@ -57,6 +58,39 @@ With optional Pandas support:
 ```bash
 pip install odmlib[dataframe]
 ```
+
+## Claude Code Skill
+
+odmlib ships a [Claude Code](https://claude.com/claude-code) skill that teaches Claude how to
+use this library correctly — the right loader per standard, namespace registration, element
+ordering, validation layers, and the serialization pitfalls that are easy to get wrong by hand.
+
+The skill lives in this repository at `.claude/skills/odmlib/`. It is **not** part of the PyPI
+package, so `pip install odmlib` does not install it — copy the directory into whichever
+`.claude/skills/` directory you want it available from:
+
+```bash
+git clone https://github.com/swhume/odmlib.git
+
+# For one project:
+mkdir -p /path/to/your-project/.claude/skills
+cp -r odmlib/.claude/skills/odmlib /path/to/your-project/.claude/skills/
+
+# Or for every project on this machine:
+mkdir -p ~/.claude/skills
+cp -r odmlib/.claude/skills/odmlib ~/.claude/skills/
+```
+
+Claude picks the skill up automatically when a task involves ODM, Define-XML, Dataset-JSON,
+or ARM content — you do not need to name it.
+
+**The skill describes odmlib 0.2.1 and later.** Several behaviors it documents (namespace-aware
+`to_xml_string()`, opt-in context-manager writing, full error enumeration under
+`collect_errors=True`) do not hold on 0.2.0, so upgrade before relying on it.
+
+If Claude generates incorrect odmlib code while using the skill, please
+[open a skill feedback issue](https://github.com/swhume/odmlib/issues/new?template=skill-feedback.yml) —
+those reports are what the skill is refined against.
 
 ## Loading Documents
 
@@ -133,6 +167,12 @@ for rd in mdv.AnalysisResultDisplays:
     print(f"{rd.OID}: {rd.Name}")
     for ar in rd.AnalysisResult:
         print(f"  Result: {ar.OID} ({ar.AnalysisPurpose})")
+
+# Schema-validate it against the bundled ARM XSD
+from odmlib.odm_parser import ODMSchemaValidator
+
+validator = ODMSchemaValidator(standard="arm", version="1.0-define2.1")
+validator.validate_file("define-adam.xml")
 ```
 
 ## Creating Documents
@@ -216,18 +256,24 @@ odm.write_xml("study.xml")
 
 ### Context Managers
 
-Context managers load a document on entry and write it back on clean exit,
-making read-modify-write workflows concise.
+Context managers load a document on entry, making read-modify-write workflows
+concise. **Writing is opt-in** (since 0.2.1): a bare `open_odm(path)` loads
+read-only and writes nothing on exit. Ask for a write by passing `output_file=`
+to write elsewhere, or `write_on_exit=True` to update the input file in place.
 
 ```python
 from odmlib.context import open_odm, open_define
 
-# Modify an ODM file in-place
-with open_odm("study.xml") as odm:
+# Update an ODM file in place (explicit opt-in via write_on_exit=True)
+with open_odm("study.xml", write_on_exit=True) as odm:
     odm.FileOID = "F.002"
     mdv = odm.Study[0].MetaDataVersion[0]
     mdv.ItemGroupDef.append(new_igd)
-# study.xml is overwritten automatically
+# study.xml is overwritten on clean exit
+
+# Without write_on_exit= or output_file=, the load is READ-ONLY
+with open_odm("study.xml") as odm:
+    odm.FileOID = "F.002"       # discarded on exit; study.xml is untouched
 
 # Write to a different output file
 with open_odm("study.xml", output_file="study_updated.xml") as odm:
@@ -239,12 +285,13 @@ with open_odm("study.xml", write_on_exit=False) as odm:
     print(len(odm.Study[0].MetaDataVersion[0].ItemDef))
 
 # Define-XML (defaults to define_2_1 model)
+# NOTE: in Define-XML, Study and MetaDataVersion are single objects, not lists
 with open_define("define.xml") as define:
-    mdv = define.Study[0].MetaDataVersion[0]
+    mdv = define.Study.MetaDataVersion
     print(len(mdv.ItemDef))
 
 # JSON format is auto-detected from the file extension
-with open_odm("study.json") as odm:
+with open_odm("study.json", write_on_exit=True) as odm:
     odm.FileOID = "F.002"
 ```
 
@@ -261,8 +308,8 @@ with permissive():
     loader.open_odm_document("broken_define.xml")
     odm = loader.root()
 
-# Fix issues, then validate
-errors = odm.validate(collect_errors=True)
+# Fix issues, then validate (max_errors caps a badly broken document)
+errors = odm.validate(collect_errors=True, max_errors=100)
 ```
 
 ## Serialization
@@ -271,8 +318,8 @@ All odmlib elements support bidirectional conversion:
 
 ```python
 # To/from XML
-xml_string = item_def.to_xml_string()
-xml_elem = item_def.to_xml()           # xml.etree.ElementTree.Element
+xml_string = item_def.to_xml_string()   # self-contained: declares its own xmlns
+xml_elem = item_def.to_element()        # namespace-resolved ElementTree Element
 
 # To/from JSON
 json_string = mdv.to_json()
@@ -282,6 +329,26 @@ python_dict = mdv.to_dict()
 odm.write_xml("output.xml")
 odm.write_json("output.json")
 ```
+
+`to_xml_string()` adds the xmlns declarations the tree actually uses, so the result
+re-parses and schema-validates on its own. The string and file paths line up exactly:
+
+```python
+odm.to_xml_string()                       # the bytes write_xml() writes AFTER <?xml ...?>
+odm.to_xml_string(xml_declaration=True)   # exactly what write_xml() writes
+```
+
+`to_element()` gives you a real tree — Clark-notation tags
+(`{http://www.cdisc.org/ns/def/v2.1}leaf`), so namespace-aware `find()`,
+`ET.canonicalize()`, `ET.indent()` pretty-printing, and grafting into a host document all
+work. It costs one serialize + reparse (~8 ms for a 166 KB Define-XML document).
+
+`to_xml()` is different: it is odmlib's internal *serialization buffer*, with literal
+prefixed tags (`def:leaf`) and **no** `xmlns` at all — the shared tree builder behind
+`to_xml_string()` and `write_xml()`. `ET.tostring(obj.to_xml())` is therefore not a
+substitute — on Define-XML it fails to parse (`unbound prefix`), and on ODM it parses into
+no namespace, which odmlib will re-load with the `FileOID` intact and every `Study`
+silently dropped. Use `to_xml_string()` for text and `to_element()` when you want a tree.
 
 ## Validation
 
@@ -310,19 +377,43 @@ odm.verify_conformance(validator)      # raises on failure
 
 ### XML schema (XSD) validation
 
+odmlib bundles the official CDISC schemas, so there is nothing to download.
+Select one by `(standard, version)`:
+
 ```python
 from odmlib.odm_parser import ODMSchemaValidator
 
-validator = ODMSchemaValidator()                   # uses packaged ODM 1.3.2 XSD
+validator = ODMSchemaValidator(standard="odm", version="1.3.2")
 validator.validate_file("study.xml")               # raises OdmlibSchemaValidationError on failure
+```
 
-# Custom schema or different standard/version
-validator = ODMSchemaValidator(standard="define", version="2.1")
+| `standard` | `version` | Validates |
+|------------|-----------|-----------|
+| `"odm"`    | `"1.3.2"` | ODM 1.3.2 |
+| `"odm"`    | `"2.0"`   | ODM 2.0 |
+| `"define"` | `"2.0"`   | Define-XML 2.0 |
+| `"define"` | `"2.1"`   | Define-XML 2.1 |
+| `"arm"`    | `"1.0"`   | ARM 1.0 in a Define-XML 2.0 document |
+| `"arm"`    | `"1.0-define2.1"` | ARM 1.0 in a Define-XML 2.1 document |
+
+ARM has two entries because it layers onto Define-XML, and the two Define-XML
+versions use different `def:` namespace URIs. Pick the one matching your
+document — `"1.0-define2.1"` is the pairing `odmlib.arm_1_0` models. The ARM
+schemas are supersets of the corresponding Define-XML schema, so they also
+validate ARM-free Define-XML documents.
+
+Both `standard` and `version` are required; there is no default. For a custom
+or local schema, pass a path instead:
+
+```python
+validator = ODMSchemaValidator(xsd_file="/path/to/schema.xsd")
 ```
 
 ### Combined validation with error collection
 
-Collect all errors in a single pass instead of stopping at the first failure:
+Collect every error in a single pass instead of stopping at the first failure.
+Each layer — element order, OID integrity, and conformance — reports *all* the
+problems it finds, so one run gives you the complete picture:
 
 ```python
 from odmlib.oid_generator import create_oid_checker
@@ -332,6 +423,17 @@ errors = odm.validate(collect_errors=True, oid_checker=checker)
 for err in errors:
     print(err)
 ```
+
+Use `max_errors` to cap the list on a badly broken document — the final entry is
+then an `OdmlibErrorLimitError` marking that more problems may exist:
+
+```python
+errors = odm.validate(collect_errors=True, oid_checker=checker, max_errors=100)
+```
+
+An OID checker accumulates every OID it sees, so use one per document or call
+`checker.reset()` between runs. The deprecated `rules/oid_ref.py` `OIDRef`
+classes do not support error collection and contribute at most one error.
 
 ### Element ordering
 
@@ -454,20 +556,14 @@ NS.NamespaceRegistry(prefix="odm",
 # For Define-XML, add additional namespaces
 NS.NamespaceRegistry(prefix="def", uri="http://www.cdisc.org/ns/def/v2.1")
 NS.NamespaceRegistry(prefix="xs", uri="http://www.w3.org/2001/XMLSchema-instance")
+# xlink is required: def:leaf carries xlink:href, and without this the
+# xmlns:xlink declaration is omitted and the output cannot be re-parsed
+NS.NamespaceRegistry(prefix="xlink", uri="http://www.w3.org/1999/xlink")
 ```
 
-## Running Tests
-
-```bash
-# Run all tests
-python -m pytest tests/ -v
-
-# Run with coverage report
-python -m pytest tests/ --cov=odmlib --cov-report=term-missing
-
-# Run a specific test file
-python -m pytest tests/test_odm_loader.py -v
-```
+`is_reset=True` clears every prefix, including the ones each model package registers when
+it is imported — so register every prefix the document uses, not only the ones you set
+yourself.
 
 ## Running Tests
 
@@ -504,16 +600,23 @@ python -m pytest tests/test_odm_loader.py -v
 - No `ItemData[Type]` support (typed item data elements, deprecated in ODM v2.0)
 - No `ds:Signature` support (digital signatures)
 - Single `MetaDataVersion` per load by default (use `idx` parameter for others)
-- ODM v2.0 implementation is still draft. The v0.2.0 model is aligned with the
-  ODM 2.0 XSD for the core CRF/dataset metadata subset, but five structural
-  features are **deferred to v0.2.1** and produce schema-invalid output if
-  used (see ROADMAP "v0.2.1 — ODM v2.0 Model/XSD Alignment" and
-  `ODM20-MODEL-XSD-DIFFERENCES_PLAN.md`):
-  - `ConditionDef` (missing required `MethodSignature`) — `ODMBuilder.add_condition_def()` unsafe for ODM 2.0
-  - text-based `FormalExpression` (XSD is element-based `Code | ExternalCodeLib`)
-  - `Protocol.StudyEventRef` (removed in the ODM 2.0 schema) — `add_study_event_ref()` unsafe for ODM 2.0
-  - `MetaDataVersion.StudyTiming` placement (XSD: `Protocol/StudyTimings`)
-  - `StudyEventGroupDef` (missing required `StudyEventGroupRef?/StudyEventRef?` group)
+- ODM v2.0 implementation is still draft, but every **metadata** element the ODM 2.0
+  XSD defines is now modelled, and the model's divergence from the schema is pinned by
+  `tests/test_odm_2_0_xsd_alignment.py`. Two areas remain:
+  - **ClinicalData / ReferenceData are not modelled.** `ODM` has no `ClinicalData`,
+    `ReferenceData` or `Association` child, and `Location` has no `Query`. The 24
+    elements of that data layer are scoped to v0.3.0 — see `ROADMAP.md`.
+  - **Three deliberate approximations**, each documented in the class docstring, where
+    the XSD says something odmlib's descriptor model cannot express. Each is caught by
+    `ODMSchemaValidator` rather than at build time:
+    - `FormalExpression` — the XSD requires exactly one of `Code` or `ExternalCodeLib`;
+      odmlib cannot express an `xs:choice`, so both are optional.
+    - `StudyEventGroupDef` — the XSD's repeating `(StudyEventGroupRef?, StudyEventRef?)`
+      group is approximated by two parallel lists, so an interleaved ordering cannot be
+      reproduced. Both forms are schema-valid; only the ordering is lost.
+    - `TranslatedText` — the XSD allows XHTML markup via a mixed-content `xhtml:div`
+      child. odmlib models the text-only form; an `xhtml:div` in a source document is
+      dropped on load.
 
 ## License
 

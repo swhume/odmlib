@@ -35,18 +35,29 @@ jobs:
           python -m pip install --upgrade pip
           pip install -e ".[dev]"
 
+      # Skill tests are excluded here and run once, in the single cell below.
       - name: Run tests
-        run: python -m pytest tests/ -v --tb=short
+        run: python -m pytest tests/ -v --tb=short --ignore-glob='*test_skill_*.py'
 
+      # The skill tests assert Python-level API facts, file checksums, and that
+      # the bundled examples execute -- none of which is platform-specific, so
+      # one cell is enough. Running the 8 examples on all 12 adds cost, not signal.
+      - name: Skill checks
+        if: matrix.python-version == '3.12' && matrix.os == 'ubuntu-latest'
+        run: python -m pytest tests/test_skill_contract.py tests/test_skill_bundle.py tests/test_skill_examples.py -v --tb=short
+
+      # Same exclusion as "Run tests": the skill tests have their own step above,
+      # so without this a single skill failure reddens three steps on this cell.
+      # Excluding them costs one statement of coverage (94% either way).
       - name: Run tests with coverage
         if: matrix.python-version == '3.12' && matrix.os == 'ubuntu-latest'
         run: |
-          python -m pytest tests/ --cov=odmlib --cov-report=xml --cov-report=term-missing
+          python -m pytest tests/ --ignore-glob='*test_skill_*.py' --cov=odmlib --cov-report=xml --cov-report=term-missing
 
       - name: Check coverage threshold
         if: matrix.python-version == '3.12' && matrix.os == 'ubuntu-latest'
         run: |
-          python -m pytest tests/ --cov=odmlib --cov-fail-under=70
+          python -m pytest tests/ --ignore-glob='*test_skill_*.py' --cov=odmlib --cov-fail-under=70
 
       - name: Upload coverage
         if: matrix.python-version == '3.12' && matrix.os == 'ubuntu-latest'

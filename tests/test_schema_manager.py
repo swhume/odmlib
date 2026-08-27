@@ -1,8 +1,8 @@
 """Tests for odmlib.schema_manager.
 
 schema_manager provides path resolution for XSD schema files used during
-XML schema validation.  Standard names are lowercase ("odm", "define")
-matching the _MAIN_SCHEMA dictionary keys.
+XML schema validation.  Standard names are lowercase ("odm", "define",
+"arm") matching the _MAIN_SCHEMA dictionary keys.
 """
 import os
 from unittest import TestCase
@@ -91,6 +91,26 @@ class TestGetSchemaPath(TestCase):
         path = SM.get_schema_path("odm", "2.0")
         self.assertTrue(path.endswith("ODM.xsd"), f"Expected ODM.xsd, got: {path}")
 
+    def test_arm_10_returns_string(self):
+        path = SM.get_schema_path("arm", "1.0")
+        self.assertIsInstance(path, str)
+        self.assertTrue(path.endswith("arm1-0-0.xsd"), f"Expected arm1-0-0.xsd, got: {path}")
+
+    def test_arm_10_define21_returns_string(self):
+        path = SM.get_schema_path("arm", "1.0-define2.1")
+        self.assertIsInstance(path, str)
+        self.assertTrue(path.endswith("arm1-0-0.xsd"), f"Expected arm1-0-0.xsd, got: {path}")
+
+    def test_arm_pairings_resolve_to_different_directories(self):
+        # Both pairings share a root filename and differ only by directory,
+        # so a _MAIN_SCHEMA typo would otherwise collapse them silently.
+        self.assertNotEqual(SM.get_schema_path("arm", "1.0"),
+                            SM.get_schema_path("arm", "1.0-define2.1"))
+
+    def test_unknown_arm_version_raises(self):
+        with self.assertRaises((OdmlibValidationError, ValueError)):
+            SM.get_schema_path("arm", "9.9")
+
     def test_explicit_filename(self):
         path = SM.get_schema_path("odm", "1.3.2", filename="ODM1-3-2.xsd")
         self.assertIsInstance(path, str)
@@ -159,3 +179,14 @@ class TestSchemaManagerIntegration(TestCase):
         path = SM.get_schema_path("odm", "2.0")
         if not self._file_exists_at_path(path):
             self.skipTest(f"Schema file not found at {path} (may be packaged differently)")
+
+    # The ARM checks below assert rather than skip. A missing ARM schema is a
+    # packaging regression, and skipping is what let a broken _MAIN_SCHEMA go
+    # unnoticed previously.
+    def test_arm_10_xsd_exists(self):
+        path = SM.get_schema_path("arm", "1.0")
+        self.assertTrue(self._file_exists_at_path(path), f"ARM 1.0 schema missing at {path}")
+
+    def test_arm_10_define21_xsd_exists(self):
+        path = SM.get_schema_path("arm", "1.0-define2.1")
+        self.assertTrue(self._file_exists_at_path(path), f"ARM 2.1 schema missing at {path}")

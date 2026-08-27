@@ -7,10 +7,11 @@ venv/
 docs/build/
 odmlib/build/
 dist/
+build/
 .idea/
 
 # Claude Code (local)
-.claude/
+.claude/*.json
 
 # Test / coverage artifacts
 .hypothesis/

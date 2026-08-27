@@ -109,8 +109,13 @@ class TestValueSet(TestCase):
         timing_values = VS.ValueSet.value_set("RelativeTimingConstraint.Type", version='odm_2_0')
         self.assertEqual(timing_values, ["StartToStart", "StartToFinish", "FinishToStart", "FinishToFinish"])
 
-        ig_type_values = VS.ValueSet.value_set("ItemGroupDef.Type", version='odm_2_0')
-        self.assertEqual(ig_type_values, ["Form", "Dataset", "Concept", "Section"])
+        # ItemGroupTypeType is a union of an enumeration with xs:string, so the
+        # entry is the extensible form: the terms are documentation, not a limit.
+        ig_type = VS.ValueSet.value_set("ItemGroupDef.Type", version='odm_2_0')
+        self.assertEqual(ig_type["_values"], ["Form", "Dataset", "Concept", "Section"])
+        self.assertTrue(ig_type["_open"])
+        self.assertTrue(VS.ValueSet.validate("ItemGroupDef.Type", "SponsorCustom",
+                                             version='odm_2_0'))
 
         seg_ref_values = VS.ValueSet.value_set("StudyEventGroupRef.Mandatory", version='odm_2_0')
         self.assertEqual(seg_ref_values, ["Yes", "No"])

@@ -15,7 +15,9 @@ import odmlib.odm_element as OE
 import odmlib.typed as T
 import odmlib.ns_registry as NS
 
-NS.NamespaceRegistry(prefix="arm", uri="http://www.cdisc.org/ns/arm/v1.0", is_default=True)
+# arm is an extension namespace embedded in Define-XML documents whose default
+# namespace must remain ODM — it must never be registered as the default
+NS.NamespaceRegistry(prefix="arm", uri="http://www.cdisc.org/ns/arm/v1.0")
 
 
 # ---------------------------------------------------------------------------
@@ -456,9 +458,9 @@ class AnalysisResult(OE.ODMElement):
         AnalysisPurpose (str, required): Purpose of the analysis
             (e.g., "PRIMARY OUTCOME MEASURE").
         Description: Textual description of the analysis.
+        AnalysisDatasets: Datasets used in this analysis.
         Documentation: Supporting documentation and references.
         ProgrammingCode: Code used to produce this result.
-        AnalysisDatasets: Datasets used in this analysis.
     """
     namespace = "arm"
     OID = T.OID(required=True)
@@ -467,10 +469,14 @@ class AnalysisResult(OE.ODMElement):
                                                                         "DATA DRIVEN", "REQUESTED BY REGULATORY AGENCY"])
     AnalysisPurpose = T.ExtendedValidValues(required=True, valid_values=["PRIMARY OUTCOME MEASURE", "SECONDARY OUTCOME MEASURE",
                                                                          "EXPLORATORY OUTCOME MEASURE"])
+    # Declaration order is serialization order, and the ARM XSD requires the
+    # sequence Description, AnalysisDatasets, Documentation, ProgrammingCode.
+    # AnalysisDatasets must stay ahead of Documentation/ProgrammingCode or the
+    # written document fails schema validation.
     Description = T.ODMObject(element_class=Description)
+    AnalysisDatasets = T.ODMObject(element_class=AnalysisDatasets, namespace="arm")
     Documentation = T.ODMObject(element_class=Documentation, namespace="arm")
     ProgrammingCode = T.ODMObject(element_class=ProgrammingCode, namespace="arm")
-    AnalysisDatasets = T.ODMObject(element_class=AnalysisDatasets, namespace="arm")
 
 
 class ResultDisplay(OE.ODMElement):

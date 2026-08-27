@@ -15,7 +15,7 @@ odmlib is ready for 1.0 when **all** of the following are true:
 
 1. **API stability contract.** The public API (model classes, loaders, builders, converters, validators) has been stable across at least two minor releases following v0.3.0, with no breaking changes beyond those announced in deprecation notices.
 
-2. **Core standards completeness.** ODM 1.3.2, Define-XML 2.0/2.1 (including ARM 1.0), Dataset-XML 1.0.1, Dataset-JSON 1.1, and CT-XML 1.1.1 models are fully implemented and round-trip tested. The ODM v2.0 model covers Study metadata, AdminData, ClinicalData, and ReferenceData.
+2. **Core standards completeness.** ODM 1.3.2, Define-XML 2.0/2.1 (including ARM 1.0), Dataset-XML 1.0.1, Dataset-JSON 1.1, and CT-XML 1.1.1 models are fully implemented and round-trip tested. The ODM v2.0 model will cover Study metadata, AdminData, ClinicalData, and ReferenceData (as of v0.2.1 the metadata and AdminData layers are complete; ClinicalData and ReferenceData are scoped for v0.3.0).
 
 3. **Test coverage ≥ 90%** as a CI-enforced floor, with no critical code paths untested. Property-based tests cover serialization round-trips for every model.
 
@@ -51,7 +51,7 @@ v0.2.0 is a substantial release that ships much more than incremental feature wo
 | Modern packaging (`pyproject.toml`) | ✅ | Semantic versioning, optional dependency groups |
 | GitHub Actions CI/CD | ✅ | Testing (Py 3.10–3.13), docs build, PyPI publish on tag |
 | Type stubs (.pyi) | 🟡 | Exist for `odm_1_3_2`, `define_2_0`, `define_2_1`, `odm_2_0`; inline type hints still pending |
-| ODM v2.0 model | 🟡 | Study metadata + AdminData; ClinicalData/ReferenceData pending. Model/XSD safe subset landed (TranslatedText `Type` required + builder default, `Arm`/`CheckValue` de-dup, 12 valueset keys, permissive valueset bypass); five structural model/XSD gaps deferred to v0.2.1 — see `ODM20-MODEL-XSD-DIFFERENCES_PLAN.md` |
+| ODM v2.0 model | 🟡 | Study metadata + AdminData; ClinicalData/ReferenceData pending. Model/XSD safe subset landed (TranslatedText `Type` required + builder default, `Arm`/`CheckValue` de-dup, 12 valueset keys, permissive valueset bypass); five structural model/XSD gaps closed in v0.2.1, along with a full model/XSD alignment — see `ODM_XSD_ALIGNMENT.md` |
 | Example programs | ✅ | All `odmlib_examples` run against v0.2.0; new examples highlight v0.2.0 features; cleanup planned for v0.3.0 |
 | `CLAUDE.md` (AI reference docs) | ✅ | Ships with v0.2.0 |
 | `GOVERNANCE.md`, `CONTRIBUTING.md`, `CONTRIBUTORS.md` | ✅ | Ship with v0.2.0; 8 contributors recognized; refined in subsequent releases, final versions targeted for v0.5.0 |
@@ -59,12 +59,21 @@ v0.2.0 is a substantial release that ships much more than incremental feature wo
 | Project logo | ✅ | Ships with v0.2.0 |
 | Removal of legacy `dataset_json` (plain classes) | ✅ | Package removed entirely; never released to PyPI |
 | Define-XML v2.1 `SubClass` nesting | ❌ | Currently flat `ParentClass` attribute; spec allows recursive `SubClass` children |
-| Claude Code skill | ❌ | Drafted concurrently with v0.2.0; released in v0.2.1 after testing |
+| Claude Code skill | ✅ | Drafted concurrently with v0.2.0; ships in v0.2.1 at `.claude/skills/odmlib/` (repo-only, not in the PyPI package) |
 
 ### Test Suite
 
-- **1,243 tests** passing, 23 subtests passing, 24 warnings
+- **1,573 tests** passing, 0 failed, 0 xfailed, 224 subtests passing, 22 warnings
 - **94% line coverage** measured locally
+- Includes 58 skill-contract tests (`tests/test_skill_{contract,bundle,examples}.py`) that pin
+  the Claude Code skill's documented claims against live introspection; these run in a single
+  CI cell, since they assert API facts and checksums rather than platform behavior
+- No xfails remain. The five `strict=True` ODM v2.0 known gaps in
+  `tests/test_odm_2_0_known_gaps.py` were closed in v0.2.1; that file keeps its assertions
+  as regression guards
+- `tests/test_odm_2_0_xsd_alignment.py` compares the ODM v2.0 model against the bundled XSD
+  and asserts the divergence set equals a declared allowlist, so schema drift cannot be
+  introduced silently
 - CI threshold currently configured at a conservative floor; raising to 90% as a CI-enforced floor is a small task for v0.3.0
 - Property-based tests (Hypothesis) cover typed descriptors and serialization
 
@@ -111,52 +120,60 @@ The skill carries the value proposition that odmlib is the preferred library for
   - Validation patterns covering strict mode, permissive mode, and `ErrorCollector` usage.
   - Known pitfalls (element ordering, required attributes, ARM vs. base Define-XML loader, deprecated APIs to avoid).
 - **Installation instructions** in `CLAUDE.md` and `README.md` showing how to add the skill to a Claude Code configuration.
-- **Baseline empirical benchmark** at `docs/benchmarks/claude-skill-comparison.md`. Methodology, fixed prompt set, evaluation criteria, raw outputs, and reproduction instructions for the first run of Claude with vs. without the skill. This is the v1.0 of the benchmark; v0.3.0 re-runs it with a richer skill and richer docstrings.
 - **GitHub issue template** for skill feedback ("Claude generated incorrect odmlib code") to capture real failure modes.
+- **Skill contract tests** (`tests/test_skill_contract.py`, `test_skill_bundle.py`, `test_skill_examples.py`) so a library change that invalidates a skill claim fails CI instead of shipping silently.
+
+> **Deferred to v0.3.0:** the baseline empirical benchmark at
+> `docs/benchmarks/claude-skill-comparison.md`. v0.2.1 ships the skill and the feedback
+> channel; the benchmark now lands in v0.3.0, which establishes the baseline and the first
+> comparison in one pass rather than splitting them across releases.
 
 ##### Scope Discipline
 
 Initial skill scope is intentionally conservative. It is better to ship a 5-operation skill that always works than a 15-operation skill that fails on 3 of them. Coverage expands with each subsequent release as failure modes are observed and addressed.
 
-##### ODM v2.0 Model/XSD Alignment
+##### ODM v2.0 Model/XSD Alignment — delivered
 
-Building the ODM 2.0 `ODMBuilder` example surfaced ten differences between
-the odmlib ODM v2.0 model and the bundled ODM 2.0 XSD (recorded in
-`ODM20-MODEL-XSD-DIFFERENCES_PLAN.md`). v0.2.0 shipped the safe,
-non-structural subset (TranslatedText `Type` now required with a builder
-default; duplicate `Arm`/`CheckValue` de-duplicated; 12 missing odm_2_0
-valueset keys added; permissive mode can now bypass an unregistered
-valueset). The remaining five are **content-model / class-shape changes**
-deferred here because each has a high regression surface and no safe
-additive form. They are pinned by strict-`xfail` markers in
-`tests/test_odm_2_0_known_gaps.py` (CI fails loudly if a gap is silently
-fixed or regressed, forcing the marker's removal when the fix lands):
+Building the ODM 2.0 `ODMBuilder` example surfaced ten differences between the odmlib
+ODM v2.0 model and the bundled ODM 2.0 XSD. v0.2.0 shipped the safe, non-structural
+subset; v0.2.1 closed the remaining five content-model / class-shape gaps, then went
+considerably further.
 
-- **ConditionDef** — add the XSD-required `MethodSignature` child and make
-  `Description` required (plan §3.1). Today every odmlib `ConditionDef` (and
-  any `CollectionExceptionConditionOID` targeting it) is schema-invalid.
-- **FormalExpression** — redesign from text-based to the XSD's
-  `choice(Code | ExternalCodeLib)` element form; add the `Code` and
-  `ExternalCodeLib` classes (plan §3.2). Text formal expressions are
-  schema-invalid in ODM 2.0.
-- **Protocol** — remove/redirect `StudyEventRef` (removed from the ODM 2.0
-  schema) to `StudyEventGroupRef*` plus the study-design children (plan §3.3).
-- **MetaDataVersion / Protocol timing** — remove `MetaDataVersion.StudyTiming`
-  and add the XSD `Protocol/StudyTimings` plural container (plan §3.4).
-- **StudyEventGroupDef** — add the XSD-required `StudyEventDefGroup`
-  `(StudyEventGroupRef?, StudyEventRef?)` child group (plan §3.5).
+The five structural gaps — `ConditionDef`'s required `MethodSignature`, element-based
+`FormalExpression`, `Protocol/StudyEventRef`, `MetaDataVersion.StudyTiming` placement, and
+`StudyEventGroupDef`'s required child group — are all fixed. The strict-`xfail` markers
+that pinned them are gone; `tests/test_odm_2_0_known_gaps.py` keeps the assertions as
+regression guards.
 
-The **ItemDef** attribute-set alignment (former plan §3.7 — drop
-`FractionDigits` / `DatasetVarName` / `SDSVarName`, add `DisplayFormat` /
-`VariableSet`) has since landed in v0.2.1; see CHANGELOG and
-`ODM20-MODEL-XSD-DIFFERENCES_PLAN.md` §3.7. Its XSD `ItemDef/ValueListRef`
-child element remains deferred (no `ValueListRef` class in `odm_2_0` yet) —
-see `ODM20-MODEL-XSD-DIFFERENCES_PLAN.md` §10.
+Closing them exposed how much more had drifted, so v0.2.1 also added
+`tests/test_odm_2_0_xsd_alignment.py`: it parses the bundled XSD, introspects the model,
+and asserts the divergence set **equals** a declared allowlist. New drift fails as an
+unexpected entry; a fixed gap fails as a stale one. Five further phases then emptied that
+allowlist for the metadata layer:
 
-Workaround until then: the `v0-2-snippets/odm20-odm-builder.py` example
-documents the schema-valid safe subset (route around the five above). See
-`ODM20-MODEL-XSD-DIFFERENCES_PLAN.md` §6 for full detail. ODM v2.0
-ClinicalData/ReferenceData breadth remains separately scoped under v0.3.0.
+- corrected the members that made odmlib's own output schema-invalid — spellings,
+  child order, non-XSD attributes;
+- aligned every required flag and cardinality with the schema;
+- added the missing attributes and children, plus `Class`, `SubClass`, `ValueListRef`,
+  `HouseNumber` and `GeoPosition`;
+- modelled the whole `Protocol` study-design subtree (24 classes, including the ICH E9(R1)
+  estimand framework);
+- recorded the two remaining approximations as deliberate waivers, and removed seven
+  ODM 1.3.2 carry-over classes that no ODM 2.0 element corresponds to.
+
+`odmlib/data/valuesets.json` was corrected in the same pass — two value lists were wrong in
+both directions, and three attributes were enforced as closed vocabularies where the schema
+is extensible.
+
+**Every metadata element the ODM 2.0 XSD defines is now modelled**, and a document
+exercising all of them validates against the bundled XSD, round-trips through
+`XMLODMLoader` and passes `verify_oids`. See `ODM_XSD_ALIGNMENT.md` for the full
+comparison, the deliberate approximations, and the core defects it surfaced but did not
+address.
+
+Still outstanding, and why the supported-standards table stays **Draft**: ODM v2.0
+`ClinicalData`/`ReferenceData` — 24 elements — remain unmodelled and are scoped under
+v0.3.0.
 
 ---
 
@@ -181,7 +198,7 @@ The CDISC ODM v2.0 specification is stable. v0.3.0 commits to a complete data-la
 - Loader support and round-trip tests for ODM v2.0 documents containing clinical data.
 - All new elements ship with docstrings and round-trip tests.
 
-The ODM v2.0 implementation transitions from "Draft" to "Stable" in the supported-standards table once round-trip tests pass.
+The ODM v2.0 implementation transitions from "Draft" to "Stable" in the supported-standards table once ClinicalData and ReferenceData are modelled and round-trip tested. The metadata layer already meets that bar as of v0.2.1 — every element the XSD defines is modelled, validates against the bundled schema and round-trips — but the table stays "Draft" until the data layer lands.
 
 ##### Define-XML v2.1 SubClass Nesting
 
@@ -209,7 +226,7 @@ The Claude Code skill shipped in v0.2.1 has 3–4 months of real-world use by th
 
 - **Skill update** — incorporate operations and pitfalls surfaced by user feedback; add coverage of ODM v2.0 ClinicalData and SubClass nesting; remove any mentions of APIs the v0.3.0 deprecation removals eliminated.
 - **Comprehensive docstring pass on high-priority packages** — `odm_1_3_2`, `define_2_1`, `dataset_json_1_1`. Each class docstring describes what the element represents in the CDISC standard, what attributes it takes with types and required/optional status, and at least one short usage example. Docstrings on lower-priority packages (`define_2_0`, `dataset_1_0_1`, `ct_1_1_1`) follow in v0.4.0. (`arm_1_0` and `odm_2_0` already have full coverage.)
-- **Benchmark re-run** — update `docs/benchmarks/claude-skill-comparison.md` with v0.3.0 results. Show measurable improvement over the v0.2.1 baseline. This establishes the artifact as a regression target for future releases.
+- **Baseline benchmark** — create `docs/benchmarks/claude-skill-comparison.md` (deferred from v0.2.1): methodology, fixed prompt set, evaluation criteria, raw outputs, and reproduction instructions for Claude with vs. without the skill. Establishes the artifact as the regression target that v0.4.0 onward re-run.
 
 ##### Builder Testing and Expansion (Phase 1)
 
@@ -233,9 +250,11 @@ All `odmlib_examples` programs run against v0.2.0. v0.3.0 work is cleanup and po
 
 ARM 1.0 has the model (48 classes, full docstrings) and 30 tests but lags other major model packages in supporting infrastructure. v0.3.0 closes the highest-priority gaps:
 
-- Add Sphinx API reference page (`docs/source/odmlib.arm_1_0.rst`); list it in `index.rst`.
+- ~~Add Sphinx API reference page (`docs/source/odmlib.arm_1_0.rst`); list it in `index.rst`.~~ Done.
 - Add an ARM how-to guide in `docs/source/guides/`.
-- Register ARM in `oid_generator_config.py` so `create_oid_checker("arm_1_0")` works.
+- ~~Register ARM in `oid_generator_config.py` so `create_oid_checker("arm_1_0")` works.~~ Done.
+- ~~Bundle the ARM 1.0 XSD and register it in `schema_manager._MAIN_SCHEMA` so ARM documents
+  can be schema-validated through `ODMSchemaValidator`.~~ Done (not originally on the roadmap).
 - Expand ARM test coverage to better match other major models.
 
 Remaining ARM items (Cerberus rules, type stubs) target v0.4.0 alongside the broader type-hint work.
@@ -376,8 +395,8 @@ With the odmlib skill loaded, the same prompt produces code that uses `odmlib.de
 
 Achieving and maintaining this difference is a multi-release effort:
 
-- **v0.2.1** ships the initial skill (conservative scope, well-tested) and establishes a baseline benchmark.
-- **v0.3.0** updates the skill based on real-world feedback, completes high-priority docstrings (so Claude has rich material to draw on when looking up an API on the fly), and re-runs the benchmark to show progressive improvement.
+- **v0.2.1** ships the initial skill (conservative scope, well-tested), the feedback issue template, and contract tests that keep the skill honest against the library.
+- **v0.3.0** updates the skill based on real-world feedback, completes high-priority docstrings (so Claude has rich material to draw on when looking up an API on the fly), and establishes the baseline benchmark deferred from v0.2.1.
 - **v0.4.0–v0.5.0** continue to refine the skill, complete docstrings on remaining packages, and re-run the benchmark.
 - **v1.0** locks in the skill against a stable API and publishes the final benchmark.
 
@@ -410,10 +429,11 @@ ARM 1.0 has a complete model with full docstring coverage but lags other major p
 |------|--------|--------|
 | Model classes (48) | ✅ Complete | — |
 | Docstrings on all classes | ✅ Complete | — |
-| Tests (30 currently) | 🟡 Light coverage | Expand in v0.3.0 |
-| Sphinx API reference page | ❌ Missing | v0.3.0 |
+| Tests (47 currently) | 🟡 Light coverage | Expand in v0.3.0 |
+| Bundled XSD + schema validation | ✅ Complete | — |
+| Sphinx API reference page | ✅ Complete | — |
 | How-to guide | ❌ Missing | v0.3.0 |
-| OID checker registration | ❌ Missing | v0.3.0 |
+| OID checker registration | ✅ Complete | — |
 | Cerberus conformance rules | ❌ Missing | v0.4.0 |
 | Type stubs / inline type hints | ❌ Missing | v0.4.0 |
 
@@ -454,8 +474,8 @@ The Define-XML v2.1 specification permits a `SubClass` element to contain child 
 | Milestone | Key Deliverables | Target |
 |-----------|-----------------|--------|
 | **v0.2.0** | Foundation: permissive loading, structured exceptions, ODMBuilder, Dataset-JSON v1.1, dynamic OID checking, ARM 1.0, valueset regex, pandas integration, CLAUDE.md, GOVERNANCE/CONTRIBUTING/CONTRIBUTORS, logo, GitHub Discussions, 94% coverage | May 2026 |
-| **v0.2.1** | Claude Code skill (conservative initial scope); baseline benchmark; skill feedback issue template | Mid-2026 |
-| **v0.3.0** | ODM v2.0 ClinicalData/ReferenceData; SubClass nesting; remove remaining deprecations; skill update + comprehensive docstrings on high-priority packages + benchmark re-run; ARM doc/test/OID-checker gaps; builder hardening; examples cleanup; coverage floor → 90% | October 2026 |
+| **v0.2.1** | Claude Code skill (conservative initial scope); skill feedback issue template; skill contract tests | Mid-2026 |
+| **v0.3.0** | ODM v2.0 ClinicalData/ReferenceData; SubClass nesting; remove remaining deprecations; skill update + comprehensive docstrings on high-priority packages + baseline benchmark (deferred from v0.2.1); ARM doc/test/OID-checker gaps; builder hardening; examples cleanup; coverage floor → 90% | October 2026 |
 | **v0.4.0** | Inline type hints + mypy blocking; ODM→Dataset-JSON converter; Define-XML and Dataset-JSON builders; ARM Cerberus + type hints; remaining docstring completion; ruff + smoke test + weekly CI + Codecov | Q1 2027 |
 | **v0.5.0** | Final iteration of governance docs; CoC; SECURITY.md; CITATION.cff; mypy strict; docs auto-publish; final pre-1.0 skill update + benchmark | Q2–Q3 2027 |
 | **v1.0.0** | API freeze; benchmark re-run; classifier update to Production/Stable; release announcement | Q4 2027 |

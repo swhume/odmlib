@@ -18,7 +18,12 @@ from odmlib.exceptions import (
     OdmlibWarning,
     OdmlibDeprecationWarning,
     OdmlibInteroperabilityWarning,
+    OdmlibErrorLimitError,
     ErrorCollector,
+    ErrorReporting,
+    is_collecting_checker,
+    flatten_cerberus_errors,
+    _ErrorLimitReached,
 )
 
 
@@ -324,3 +329,211 @@ class TestExceptionRaisedByModel(TestCase):
             checker.add_oid("IT.AGE", "ItemDef")
         self.assertIsNotNone(ctx.exception.hint)
         self.assertIn("IT.AGE", str(ctx.exception))
+
+
+class TestErrorCollectorMaxErrors(TestCase):
+    """ErrorCollector enforces max_errors by raising the internal sentinel."""
+
+    def test_uncapped_collector_never_raises(self):
+        collector = ErrorCollector()
+        for i in range(50):
+            collector.add_error(OdmlibValidationError(f"e{i}"))
+        self.assertEqual(len(collector.errors), 50)
+        self.assertFalse(collector.truncated)
+        self.assertFalse(collector.is_full)
+
+    def test_collector_raises_sentinel_when_full(self):
+        collector = ErrorCollector(max_errors=2)
+        collector.add_error(OdmlibValidationError("a"))
+        collector.add_error(OdmlibValidationError("b"))
+        self.assertTrue(collector.is_full)
+        with self.assertRaises(_ErrorLimitReached):
+            collector.add_error(OdmlibValidationError("c"))
+        self.assertTrue(collector.truncated)
+        self.assertEqual(len(collector.errors), 2)
+
+    def test_exactly_full_is_not_truncated(self):
+        """truncated only flips when a further error was actually available."""
+        collector = ErrorCollector(max_errors=2)
+        collector.add_error(OdmlibValidationError("a"))
+        collector.add_error(OdmlibValidationError("b"))
+        self.assertTrue(collector.is_full)
+        self.assertFalse(collector.truncated)
+
+    def test_sentinel_is_not_an_odmlib_error(self):
+        """So `except OdmlibError` cannot swallow the cap signal."""
+        self.assertFalse(issubclass(_ErrorLimitReached, OdmlibError))
+
+    def test_error_limit_error_is_a_validation_error(self):
+        self.assertTrue(issubclass(OdmlibErrorLimitError, OdmlibValidationError))
+
+
+class TestFlattenCerberusErrors(TestCase):
+    """flatten_cerberus_errors turns nested cerberus output into dotted paths."""
+
+    def test_flat_field(self):
+        self.assertEqual(
+            flatten_cerberus_errors({"Name": ["required field"]}),
+            [("Name", "required field")],
+        )
+
+    def test_list_index_becomes_path_segment(self):
+        errors = {"ItemGroupDef": [{0: [{"Name": ["required field"]}]}]}
+        self.assertEqual(
+            flatten_cerberus_errors(errors),
+            [("ItemGroupDef.0.Name", "required field")],
+        )
+
+    def test_multiple_leaves_across_indices(self):
+        errors = {"ItemGroupDef": [{
+            0: [{"Name": ["required field"]}],
+            1: [{"Repeating": ["unallowed value Maybe"]}],
+        }]}
+        self.assertEqual(
+            flatten_cerberus_errors(errors),
+            [("ItemGroupDef.0.Name", "required field"),
+             ("ItemGroupDef.1.Repeating", "unallowed value Maybe")],
+        )
+
+    def test_several_messages_on_one_field(self):
+        errors = {"DataType": ["unallowed value txt", "must be of string type"]}
+        self.assertEqual(len(flatten_cerberus_errors(errors)), 2)
+
+    def test_non_dict_yields_empty_list(self):
+        self.assertEqual(flatten_cerberus_errors(None), [])
+        self.assertEqual(flatten_cerberus_errors([]), [])
+
+    def test_empty_dict_yields_empty_list(self):
+        self.assertEqual(flatten_cerberus_errors({}), [])
+
+    def test_non_list_value_is_tolerated(self):
+        self.assertEqual(flatten_cerberus_errors({"Name": "required field"}),
+                         [("Name", "required field")])
+
+
+class TestConformanceErrorExpand(TestCase):
+    """OdmlibConformanceError.expand() splits a bundle into per-field errors."""
+
+    def test_expand_produces_one_error_per_leaf(self):
+        bundled = OdmlibConformanceError(
+            "Conformance validation failed",
+            cerberus_errors={"ItemGroupDef": [{
+                0: [{"Name": ["required field"]}],
+                1: [{"Repeating": ["unallowed value Maybe"]}],
+            }]},
+            element_type="MetaDataVersion",
+            hint="check the schema",
+        )
+        expanded = bundled.expand()
+        self.assertEqual(len(expanded), 2)
+        self.assertEqual([e.field_path for e in expanded],
+                         ["ItemGroupDef.0.Name", "ItemGroupDef.1.Repeating"])
+        self.assertEqual(expanded[0].attribute, "Name")
+        self.assertEqual(expanded[0].element_path, "ItemGroupDef.0")
+        self.assertEqual(expanded[0].element_type, "MetaDataVersion")
+        self.assertEqual(expanded[0].hint, "check the schema")
+        self.assertIn("ItemGroupDef.0.Name: required field", str(expanded[0]))
+
+    def test_expanded_errors_share_the_raw_dict(self):
+        raw = {"Name": ["required field"]}
+        expanded = OdmlibConformanceError("failed", cerberus_errors=raw).expand()
+        self.assertIs(expanded[0].cerberus_errors, raw)
+
+    def test_expand_without_payload_returns_self(self):
+        """Nothing is ever lost — e.g. the 'no schema registered' error."""
+        bundled = OdmlibConformanceError("No conformance schema registered for 'Foo'")
+        expanded = bundled.expand()
+        self.assertEqual(len(expanded), 1)
+        self.assertIs(expanded[0], bundled)
+
+    def test_bundled_error_has_no_field_path(self):
+        self.assertIsNone(OdmlibConformanceError("failed").field_path)
+
+    def test_field_path_is_optional_for_backward_compat(self):
+        err = OdmlibConformanceError("failed", cerberus_errors={"a": ["b"]})
+        self.assertEqual(err.cerberus_errors, {"a": ["b"]})
+
+
+class TestErrorReportingMixin(TestCase):
+    """The collecting-checker protocol: raise by default, collect inside a block."""
+
+    class _Checker(ErrorReporting):
+        def fail(self, msg):
+            self.report(OdmlibValidationError(msg))
+
+    def test_report_raises_without_sink(self):
+        with self.assertRaises(OdmlibValidationError):
+            self._Checker().fail("boom")
+
+    def test_report_collects_inside_block(self):
+        checker, collector = self._Checker(), ErrorCollector()
+        with checker.collecting(collector):
+            checker.fail("a")
+            checker.fail("b")
+        self.assertEqual(len(collector.errors), 2)
+
+    def test_sink_restored_after_block(self):
+        checker = self._Checker()
+        with checker.collecting(ErrorCollector()):
+            pass
+        self.assertIsNone(checker._error_sink)
+        with self.assertRaises(OdmlibValidationError):
+            checker.fail("boom")
+
+    def test_sink_restored_after_exception(self):
+        checker = self._Checker()
+        with self.assertRaises(RuntimeError):
+            with checker.collecting(ErrorCollector()):
+                raise RuntimeError("boom")
+        self.assertIsNone(checker._error_sink)
+
+    def test_nested_blocks_restore_outer_sink(self):
+        checker = self._Checker()
+        outer, inner = ErrorCollector(), ErrorCollector()
+        with checker.collecting(outer):
+            with checker.collecting(inner):
+                checker.fail("inner")
+            checker.fail("outer")
+        self.assertEqual(len(inner.errors), 1)
+        self.assertEqual(len(outer.errors), 1)
+        self.assertIsNone(checker._error_sink)
+
+    def test_two_instances_do_not_share_a_sink(self):
+        a, b = self._Checker(), self._Checker()
+        with a.collecting(ErrorCollector()):
+            with self.assertRaises(OdmlibValidationError):
+                b.fail("boom")
+
+    def test_is_collecting_checker_accepts_mixin(self):
+        self.assertTrue(is_collecting_checker(self._Checker()))
+
+    def test_is_collecting_checker_accepts_duck_type(self):
+        class DuckChecker:
+            supports_error_collection = True
+
+            def report(self, error):
+                pass
+
+            def collecting(self, sink):
+                pass
+
+        self.assertTrue(is_collecting_checker(DuckChecker()))
+
+    def test_is_collecting_checker_rejects_plain_object(self):
+        self.assertFalse(is_collecting_checker(object()))
+
+    def test_is_collecting_checker_rejects_partial_implementation(self):
+        class Partial:
+            supports_error_collection = True
+
+            def report(self, error):
+                pass
+            # no collecting()
+
+        self.assertFalse(is_collecting_checker(Partial()))
+
+    def test_is_collecting_checker_rejects_flag_only(self):
+        class FlagOnly:
+            supports_error_collection = True
+
+        self.assertFalse(is_collecting_checker(FlagOnly()))

@@ -100,8 +100,14 @@ class TestSchemaOrderedSerialization(unittest.TestCase):
             f"Children must follow schema order; got {children}",
         )
 
-    def test_to_xml_string_round_trip_unchanged(self):
-        """Serialize → parse → re-serialize gives the same element order."""
+    def test_to_xml_element_order_survives_reparse(self):
+        """Serialize → parse → re-serialize gives the same element order.
+
+        Note this exercises to_xml()/ET.tostring(), NOT to_xml_string() - it was
+        misleadingly named test_to_xml_string_round_trip_unchanged until 0.2.1, which
+        is part of why the string path went untested. The real to_xml_string()
+        round-trip lives in the next test and in tests/test_xml_string_serialization.py.
+        """
         itd = ODM.ItemDef(OID="ODM.IT.DM.BRTHYR", Name="Birth Year", DataType="integer")
         itd.Alias.append(ODM.Alias(Context="CDASH", Name="BRTHYR"))
         itd.Description = ODM.Description()
@@ -116,6 +122,19 @@ class TestSchemaOrderedSerialization(unittest.TestCase):
         reparsed_children = [_local(c.tag) for c in reparsed]
         self.assertEqual(first_children, reparsed_children)
         self.assertEqual(first_children, ["Description", "Alias"])
+
+    def test_to_xml_string_round_trip_preserves_order(self):
+        """The real to_xml_string() round-trip: it re-parses standalone, in order."""
+        itd = ODM.ItemDef(OID="ODM.IT.DM.BRTHYR", Name="Birth Year", DataType="integer")
+        itd.Alias.append(ODM.Alias(Context="CDASH", Name="BRTHYR"))
+        itd.Description = ODM.Description()
+        itd.Description.TranslatedText.append(ODM.TranslatedText(_content="DOB", lang="en"))
+
+        # to_xml_string() declares its own namespaces, so this parses with no fixup
+        xml_str = itd.to_xml_string()
+        self.assertIn('xmlns="http://www.cdisc.org/ns/odm/v1.3"', xml_str)
+        reparsed = ET.fromstring(xml_str)
+        self.assertEqual([_local(c.tag) for c in reparsed], ["Description", "Alias"])
 
     def test_unset_optional_children_skipped(self):
         """When an optional child is not assigned, it must be silently skipped."""

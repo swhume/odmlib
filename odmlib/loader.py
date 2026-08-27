@@ -12,6 +12,7 @@ document loading operations to it.
 from __future__ import annotations
 from typing import Any, Optional
 import odmlib.document_loader as DL
+import odmlib.ns_registry as NS
 from odmlib.exceptions import OdmlibTypeError
 
 
@@ -52,6 +53,24 @@ class ODMLoader:
                 hint="Pass an instance of XMLODMLoader, JSONODMLoader, XMLDefineLoader, JSONDefineLoader, XMLArmLoader, or JSONArmLoader",
             )
         self.loader = odm_loader
+        self._ns_snapshot: Optional[dict] = None
+
+    def _bind_namespaces(self, odm_obj: Any) -> Any:
+        """Attach the document-open-time namespace snapshot to *odm_obj*.
+
+        The NamespaceRegistry is shared process-wide, so opening another
+        document later can change it; binding a snapshot lets write_xml /
+        to_xml_string serialize this document with the namespaces it was
+        actually loaded under.
+
+        Bound recursively so that serializing a nested element reached by walking
+        the tree behaves like serializing its root. Elements constructed *after*
+        the load and grafted in are not covered - bind those explicitly with
+        ``NS.bind_document_namespaces(new_elem, NS.get_document_namespaces(root))``.
+        """
+        if odm_obj is not None:
+            NS.bind_document_namespaces(odm_obj, snapshot=self._ns_snapshot, recursive=True)
+        return odm_obj
 
     def create_odmlib(self, odm_doc: Any, odm_key: Optional[str] = None) -> Any:
         """Load an odmlib object from an existing document dict or element.
@@ -68,7 +87,7 @@ class ODMLoader:
             An odmlib element object populated from ``odm_doc``.
         """
         odm_obj = self.loader.load_document(odm_doc, odm_key)
-        return odm_obj
+        return self._bind_namespaces(odm_obj)
 
     def open_odm_document(self, filename: str) -> Any:
         """Parse an ODM document file and prepare for loading.
@@ -80,6 +99,7 @@ class ODMLoader:
             The parsed root element or dict, depending on the loader type.
         """
         root = self.loader.create_document(filename)
+        self._ns_snapshot = NS.NamespaceRegistry().snapshot()
         return root
 
     def load_odm_string(self, odm_string: str) -> Any:
@@ -92,6 +112,7 @@ class ODMLoader:
             The parsed root element or dict, depending on the loader type.
         """
         root = self.loader.create_document_from_string(odm_string)
+        self._ns_snapshot = NS.NamespaceRegistry().snapshot()
         return root
 
     def root(self) -> Any:
@@ -104,7 +125,7 @@ class ODMLoader:
             The root odmlib ODM object (e.g., an ``ODM`` instance).
         """
         odm = self.loader.load_odm()
-        return odm
+        return self._bind_namespaces(odm)
 
     def MetaDataVersion(self, idx: int = 0) -> Any:
         """Return the MetaDataVersion at the specified index.
@@ -120,7 +141,7 @@ class ODMLoader:
             A ``MetaDataVersion`` odmlib object.
         """
         mdv = self.loader.load_metadataversion(idx)
-        return mdv
+        return self._bind_namespaces(mdv)
 
     def Study(self, idx: int = 0) -> Any:
         """Return the Study at the specified index.
@@ -136,7 +157,7 @@ class ODMLoader:
             A ``Study`` odmlib object.
         """
         study = self.loader.load_study(idx)
-        return study
+        return self._bind_namespaces(study)
 
     def __getattr__(self, attr: str) -> Any:
         """Delegate unknown method calls to the wrapped loader.

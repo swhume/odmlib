@@ -4,6 +4,7 @@ import odmlib.odm_parser as ODM_PARSER
 import odmlib.odm_loader as OL
 import odmlib.loader as LD
 import os
+import tempfile
 import datetime
 from odmlib.odm_1_3_2.rules import metadata_schema as METADATA
 from odmlib.odm_1_3_2.rules import oid_ref as OID
@@ -14,6 +15,12 @@ class TestClinicalData(TestCase):
     def setUp(self) -> None:
         self.odm_test_file = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'data','test_clinical_data_01.xml')
         self.odm_test_file2 = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'data','odm-data-snapshot.xml')
+        # Generated documents go to a throw-away directory. Writing them back over
+        # the tracked fixture left a dirty working tree after every run, because
+        # CreationDateTime/AsOfDateTime change on each execution.
+        tmp_dir = tempfile.TemporaryDirectory()
+        self.addCleanup(tmp_dir.cleanup)
+        self.odm_out_file = os.path.join(tmp_dir.name, 'test_clinical_data_01.xml')
 
     def test_clinical_data_to_xml(self):
         cd = []
@@ -208,7 +215,7 @@ class TestClinicalData(TestCase):
         root = self.create_root()
         for clin_data in cd:
             root.ClinicalData.append(clin_data)
-        root.write_xml(self.odm_test_file)
+        root.write_xml(self.odm_out_file)
         return root
 
     def create_root(self):

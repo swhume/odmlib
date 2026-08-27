@@ -105,6 +105,11 @@ class TestColumn(unittest.TestCase):
         with self.assertRaises(NotImplementedError):
             col.to_xml_string()
 
+    def test_to_element_raises(self):
+        col = Column(itemOID="IT.X", name="X", label="X", dataType="string")
+        with self.assertRaises(NotImplementedError):
+            col.to_element()
+
     def test_length_positive_integer(self):
         col = Column(itemOID="IT.X", name="X", label="X",
                      dataType="string", length=20)
@@ -484,6 +489,11 @@ class TestDatasetJSON(unittest.TestCase):
         dsj = self._make_minimal()
         with self.assertRaises(NotImplementedError):
             dsj.to_xml_string()
+
+    def test_to_element_raises(self):
+        dsj = self._make_minimal()
+        with self.assertRaises(NotImplementedError):
+            dsj.to_element()
 
     def test_write_xml_raises(self):
         dsj = self._make_minimal()

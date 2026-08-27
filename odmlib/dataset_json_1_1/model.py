@@ -40,8 +40,23 @@ class DatasetJSONElement(OE.ODMElement):
         """
         raise NotImplementedError("Dataset-JSON does not support XML serialization")
 
-    def to_xml_string(self):
+    def to_xml_string(self, *, xml_declaration=False):
         """Dataset-JSON does not support XML serialization.
+
+        Accepts the same keyword as :meth:`ODMElement.to_xml_string` so that
+        ``to_xml_string(xml_declaration=True)`` raises the intended
+        NotImplementedError rather than a TypeError.
+
+        Raises:
+            NotImplementedError: Always.
+        """
+        raise NotImplementedError("Dataset-JSON does not support XML serialization")
+
+    def to_element(self):
+        """Dataset-JSON does not support XML serialization.
+
+        Overridden explicitly so the failure comes from here rather than from
+        inside :meth:`to_xml_string`, which would give a confusing traceback.
 
         Raises:
             NotImplementedError: Always.
@@ -302,7 +317,7 @@ class DatasetJSON(DatasetJSONElement):
             filename (str): Output file path.
             indent (int): JSON indentation level (default: 2).
         """
-        with open(filename, "w") as f:
+        with open(filename, "w", encoding="utf-8") as f:
             json.dump(self.to_dict(), f, indent=indent)
 
     def write_ndjson(self, filename: str) -> None:
@@ -316,7 +331,7 @@ class DatasetJSON(DatasetJSONElement):
         """
         d = self.to_dict()
         rows = d.pop("rows", [])
-        with open(filename, "w") as f:
+        with open(filename, "w", encoding="utf-8") as f:
             f.write(json.dumps(d) + "\n")
             for row in rows:
                 f.write(json.dumps(row) + "\n")
@@ -369,7 +384,7 @@ class DatasetJSON(DatasetJSONElement):
         Returns:
             DatasetJSON: Constructed instance.
         """
-        with open(filename, "r") as f:
+        with open(filename, "r", encoding="utf-8") as f:
             return cls.from_dict(json.load(f))
 
     @classmethod
@@ -385,7 +400,7 @@ class DatasetJSON(DatasetJSONElement):
         Returns:
             DatasetJSON: Constructed instance.
         """
-        with open(filename, "r") as f:
+        with open(filename, "r", encoding="utf-8") as f:
             lines = f.readlines()
         if not lines:
             raise ValueError("Empty NDJSON file")

@@ -16,6 +16,7 @@ XML and JSON serialization support.
 - Dataset-XML 1.0.1 (`odmlib.dataset_1_0_1`)
 - CT-XML 1.1.1 (`odmlib.ct_1_1_1`)
 - ARM 1.0 (`odmlib.arm_1_0`)
+- Dataset-JSON 1.1 (`odmlib.dataset_json_1_1`)
 
 ## Development Setup
 
@@ -30,6 +31,48 @@ pip install -e .
 **Dependencies:** xmlschema, validators, Cerberus, pathvalidate
 
 **Dev dependencies (installed via `.[dev]`):** pytest, pytest-cov, sphinx, sphinx-rtd-theme, mypy
+
+## Claude Code Skill
+
+This repository contains a Claude Code skill for odmlib at `.claude/skills/odmlib/`
+(SKILL.md, four `references/*.md`, eight runnable `examples/*.py`). Because it lives under
+`.claude/skills/` in this repo, it is active automatically when working *in* this repository.
+
+It is **not** shipped in the PyPI package. To use it elsewhere, copy the directory into the
+target project's `.claude/skills/`, or into `~/.claude/skills/` for all projects:
+
+```bash
+cp -r .claude/skills/odmlib ~/.claude/skills/
+```
+
+`.claude/skills/odmlib.skill` is a packed zip of that same directory, for distribution.
+
+**When editing the library, keep the skill true.** The skill asserts library behavior in
+prose, and three test files guard the machine-checkable half:
+
+```bash
+python -m pytest tests/test_skill_contract.py    # signatures, front matter, import surface
+python -m pytest tests/test_skill_examples.py    # all 8 examples must exit 0
+python -m pytest tests/test_skill_bundle.py      # packed bundle matches source
+```
+
+After editing SKILL.md, a reference, or an example, repack the bundle or
+`test_skill_bundle.py` will fail:
+
+```bash
+python scripts/build_skill_bundle.py             # --check reports drift without writing
+```
+
+The skill documents odmlib 0.2.1 and later. If you change a documented signature or default,
+update the skill and the expected table in `tests/test_skill_contract.py` together.
+
+## Conduction Code Reviews
+
+Read REVIEW.md and execute a codebase analysis following all listed constraints.
+
+## For Planning and Research
+
+For research and codebase exploration, use parallel Explore subagents by default.
 
 ## Running Tests
 
@@ -109,11 +152,27 @@ mdv = loader.MetaDataVersion()  # Get first MetaDataVersion
 
 All `ODMElement` objects support bidirectional conversion:
 
-- **to_xml()** → ElementTree, then write with `write_xml(filename)`
+- **to_xml_string()** → self-contained XML string; `xml_declaration=True` (keyword-only)
+  prepends `<?xml version='1.0' encoding='UTF-8'?>`
+- **to_element()** → namespace-resolved ElementTree Element (Clark notation). Use this when
+  you want a tree — it parses, embeds, canonicalizes and pretty-prints correctly
+- **to_xml()** → the internal tree builder shared by `to_xml_string()` and `ODMWriter`;
+  carries **no** xmlns declarations and uses prefix-literal tags (see below)
 - **to_json()** → JSON string, or `write_json(filename)`
 - **to_dict()** → Python dict (namespace info stripped)
 
 The `ODMWriter` class handles writing XML with proper namespace registration.
+
+String and file output line up exactly: `to_xml_string()` returns the bytes `write_xml()`
+writes *after* its declaration, and `to_xml_string(xml_declaration=True)` returns exactly
+what `write_xml()` writes.
+
+**Never `ET.tostring(obj.to_xml())`.** `to_xml()` emits prefix-literal tags (`def:leaf`,
+not Clark notation) and no `xmlns`; declarations are attached by `to_xml_string()` and
+`ODMWriter.write_odm()`. On Define-XML that markup raises `ParseError: unbound prefix`; on
+ODM it parses into no namespace and re-loads with `FileOID` correct and every `Study` gone,
+with no exception. **Use `to_element()`** when you want an Element — it returns a
+namespace-resolved tree that does not have any of these problems.
 
 ### Namespace Management
 
@@ -122,6 +181,16 @@ The `ODMWriter` class handles writing XML with proper namespace registration.
 - Handles default namespace designation
 - Injects xmlns attributes into XML serialization
 - Each model package registers its namespaces at import time
+
+Because that state is process-wide, loading a document captures a **per-document snapshot**
+(`bind_document_namespaces` / `get_document_namespaces`), which serialization consults
+first — so opening a second document cannot change how the first one is written. The
+loader binds the snapshot **recursively**, so nested elements reached by walking the tree
+(`define.Study.MetaDataVersion`) serialize like their root.
+
+**Residual limitation:** an element constructed *after* the load and grafted in carries no
+snapshot and falls back to global state. Bind it explicitly:
+`NS.bind_document_namespaces(new_elem, NS.get_document_namespaces(root))`.
 
 **Important:** Use `NS.NamespaceRegistry.reset()` to clear state between tests.
 
@@ -145,6 +214,38 @@ Two-phase OID checking system (see `odm_element.py` methods):
 Uses Cerberus schemas (see `rules/metadata_schema.py` in each model package):
 - `verify_conformance(validator)` checks structure against schema
 - Schemas are manually maintained per model (not auto-generated yet)
+
+### XSD Schema Validation
+
+odmlib bundles the official CDISC XSDs under `odmlib/schemas/<standard>/<version>/`
+and validates against them via `ODMSchemaValidator` (odm_parser.py):
+
+```python
+from odmlib.odm_parser import ODMSchemaValidator
+validator = ODMSchemaValidator(standard="define", version="2.1")
+validator.validate_file("define.xml")   # raises OdmlibSchemaValidationError
+validator.validate_tree(tree)           # returns bool
+```
+
+`schema_manager.py::_MAIN_SCHEMA` maps `(standard, version)` → root XSD filename.
+Registered pairs: `("odm","1.3.2")`, `("odm","2.0")`, `("define","2.0")`,
+`("define","2.1")`, `("arm","1.0")`, `("arm","1.0-define2.1")`.
+
+**Key rule:** a `_MAIN_SCHEMA` key must exactly match its on-disk directory name —
+`get_schema_path` builds `odmlib/schemas/<standard>/<version>/<filename>`. A key that
+doesn't match resolves to a non-existent path and fails only at validation time.
+
+**ARM has two entries** because ARM 1.0 layers onto Define-XML and the two Define-XML
+versions use different `def:` namespace URIs:
+- `("arm","1.0")` — the CDISC original, redefines `define/2.0`
+- `("arm","1.0-define2.1")` — odmlib-derived, redefines `define/2.1`; this is the
+  pairing `odmlib.arm_1_0.model` targets, since that model extends `define_2_1.model`
+
+Both are supersets of their base Define-XML schema, so they also validate ARM-free
+Define-XML documents. Compiled schemas are cached by path in `odm_parser._SCHEMA_CACHE`.
+
+Both `standard` and `version` are required — there is no default. Pass
+`xsd_file=<path>` for a custom or local schema.
 
 ### Element Ordering
 
@@ -231,6 +332,8 @@ To create proprietary extensions:
 3. Register any new namespaces
 4. Use `local_model=True` in loader with module path
 5. Update OID checkers and Cerberus schemas if needed
+6. If the extension ships its own XSD, add it under `odmlib/schemas/<standard>/<version>/`
+   and register the pair in `schema_manager._MAIN_SCHEMA` (directory name must match the key)
 
 ## Known Limitations
 

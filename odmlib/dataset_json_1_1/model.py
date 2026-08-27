@@ -317,7 +317,7 @@ class DatasetJSON(DatasetJSONElement):
             filename (str): Output file path.
             indent (int): JSON indentation level (default: 2).
         """
-        with open(filename, "w") as f:
+        with open(filename, "w", encoding="utf-8") as f:
             json.dump(self.to_dict(), f, indent=indent)
 
     def write_ndjson(self, filename: str) -> None:
@@ -331,7 +331,7 @@ class DatasetJSON(DatasetJSONElement):
         """
         d = self.to_dict()
         rows = d.pop("rows", [])
-        with open(filename, "w") as f:
+        with open(filename, "w", encoding="utf-8") as f:
             f.write(json.dumps(d) + "\n")
             for row in rows:
                 f.write(json.dumps(row) + "\n")
@@ -384,7 +384,7 @@ class DatasetJSON(DatasetJSONElement):
         Returns:
             DatasetJSON: Constructed instance.
         """
-        with open(filename, "r") as f:
+        with open(filename, "r", encoding="utf-8") as f:
             return cls.from_dict(json.load(f))
 
     @classmethod
@@ -400,7 +400,7 @@ class DatasetJSON(DatasetJSONElement):
         Returns:
             DatasetJSON: Constructed instance.
         """
-        with open(filename, "r") as f:
+        with open(filename, "r", encoding="utf-8") as f:
             lines = f.readlines()
         if not lines:
             raise ValueError("Empty NDJSON file")

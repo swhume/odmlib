@@ -1,6 +1,6 @@
 """Tests for the XML string serialization path (to_xml_string).
 
-Two things are covered here, both added in 0.2.2:
+Two things are covered here, both added in 0.2.1:
 
 * ``to_xml_string(xml_declaration=...)`` and its exact byte relationship to
   ``write_xml()``.

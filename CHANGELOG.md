@@ -93,6 +93,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   rather than a `TypeError`. Pinned by
   `tests/test_xml_string_serialization.py::TestXmlDeclarationOption`.
 
+### Fixed — `write_xml()` emitted CRLF line endings on Windows
+
+- **`write_xml()` now writes LF line endings on every platform.** It passed a *filename* to
+  `ElementTree.write()`, which opens the file in text mode; on Windows that translated every
+  `\n` to `\r\n`, so the file no longer matched `to_xml_string()` byte for byte and the
+  documented equivalence between the two was false there. The writer now opens a binary
+  handle itself. XML written on Windows changes from CRLF to LF, which makes checksums and
+  diffs portable across platforms.
+
+### Fixed — Dataset-JSON file I/O used the platform's default encoding
+
+- **`DatasetJSON.write_json()`, `write_ndjson()`, `read_json()` and `read_ndjson()` now pin
+  `encoding="utf-8"`.** They relied on the locale default, which is UTF-8 on Linux and macOS
+  but cp1252 on most Windows installs — so a Dataset-JSON file containing non-ASCII text and
+  produced by another tool could decode incorrectly or raise. Files odmlib itself writes were
+  already ASCII-safe (`json.dumps` escapes non-ASCII by default), so existing output is
+  unaffected.
+
 ### Fixed — nested elements serialized with the wrong namespace
 
 - **A nested element reached by walking a loaded tree now serializes with the

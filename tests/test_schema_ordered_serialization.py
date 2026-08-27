@@ -104,7 +104,7 @@ class TestSchemaOrderedSerialization(unittest.TestCase):
         """Serialize → parse → re-serialize gives the same element order.
 
         Note this exercises to_xml()/ET.tostring(), NOT to_xml_string() - it was
-        misleadingly named test_to_xml_string_round_trip_unchanged until 0.2.2, which
+        misleadingly named test_to_xml_string_round_trip_unchanged until 0.2.1, which
         is part of why the string path went untested. The real to_xml_string()
         round-trip lives in the next test and in tests/test_xml_string_serialization.py.
         """

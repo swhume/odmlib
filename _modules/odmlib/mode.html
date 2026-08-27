@@ -5,14 +5,14 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>odmlib.mode &mdash; odmlib 0.2.0 documentation</title>
+  <title>odmlib.mode &mdash; odmlib 0.2.1 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=938c9ccc"></script>
+      <script src="../../_static/documentation_options.js?v=37f418d5"></script>
       <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -93,7 +93,7 @@
            <div itemprop="articleBody">
              
   <h1>Source code for odmlib.mode</h1><div class="highlight"><pre>
-<span></span><span class="sd">&quot;&quot;&quot;Validation mode control for odmlib.</span>
+<span></span><span class="sd">"""Validation mode control for odmlib.</span>
 
 <span class="sd">This module provides a context-managed permissive loading mode that allows</span>
 <span class="sd">non-conformant ODM/Define-XML files to be loaded into the object model for</span>
@@ -105,12 +105,12 @@
 <span class="sd">    from odmlib import permissive</span>
 
 <span class="sd">    with permissive():</span>
-<span class="sd">        loader.open_odm_document(&quot;broken.xml&quot;)</span>
+<span class="sd">        loader.open_odm_document("broken.xml")</span>
 <span class="sd">        odm = loader.root()</span>
 
 <span class="sd">    # Mode is back to strict — fix issues, then validate</span>
 <span class="sd">    errors = odm.validate(collect_errors=True)</span>
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">"""</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">contextvars</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">contextlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">contextmanager</span>
@@ -120,42 +120,42 @@
 <div class="viewcode-block" id="ValidationMode">
 <a class="viewcode-back" href="../../modules.html#odmlib.mode.ValidationMode">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">ValidationMode</span><span class="p">(</span><span class="n">Flag</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Flag enum controlling which validation categories are enforced.</span>
+<span class="w">    </span><span class="sd">"""Flag enum controlling which validation categories are enforced.</span>
 
 <span class="sd">    Members can be combined with ``|`` to create targeted relaxation::</span>
 
 <span class="sd">        ValidationMode.SKIP_REQUIRED | ValidationMode.SKIP_VALUESET</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="n">STRICT</span> <span class="o">=</span> <span class="mi">0</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;All validation enforced (default, preserves existing behavior).&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""All validation enforced (default, preserves existing behavior)."""</span>
 
     <span class="n">SKIP_REQUIRED</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Omit required-attribute checks during construction and access.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Omit required-attribute checks during construction and access."""</span>
 
     <span class="n">SKIP_VALUESET</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Omit ``ValidValues`` and ``ExtendedValidValues`` enforcement.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Omit ``ValidValues`` and ``ExtendedValidValues`` enforcement."""</span>
 
     <span class="n">SKIP_TYPE</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Omit type checks and unknown-attribute rejection.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Omit type checks and unknown-attribute rejection."""</span>
 
     <span class="n">SKIP_FORMAT</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Omit format validators (datetime, SAS name, email, URL, etc.).&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Omit format validators (datetime, SAS name, email, URL, etc.)."""</span>
 
     <span class="n">PERMISSIVE</span> <span class="o">=</span> <span class="n">SKIP_REQUIRED</span> <span class="o">|</span> <span class="n">SKIP_VALUESET</span> <span class="o">|</span> <span class="n">SKIP_TYPE</span> <span class="o">|</span> <span class="n">SKIP_FORMAT</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Composite flag that skips all validation categories.&quot;&quot;&quot;</span></div>
+<span class="w">    </span><span class="sd">"""Composite flag that skips all validation categories."""</span></div>
 
 
 
 <span class="n">_validation_mode</span><span class="p">:</span> <span class="n">contextvars</span><span class="o">.</span><span class="n">ContextVar</span><span class="p">[</span><span class="n">ValidationMode</span><span class="p">]</span> <span class="o">=</span> <span class="n">contextvars</span><span class="o">.</span><span class="n">ContextVar</span><span class="p">(</span>
-    <span class="s2">&quot;odmlib_validation_mode&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="n">ValidationMode</span><span class="o">.</span><span class="n">STRICT</span>
+    <span class="s2">"odmlib_validation_mode"</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="n">ValidationMode</span><span class="o">.</span><span class="n">STRICT</span>
 <span class="p">)</span>
 
 
 <div class="viewcode-block" id="get_mode">
 <a class="viewcode-back" href="../../modules.html#odmlib.mode.get_mode">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">get_mode</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">ValidationMode</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return the current validation mode from the ContextVar.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Return the current validation mode from the ContextVar."""</span>
     <span class="k">return</span> <span class="n">_validation_mode</span><span class="o">.</span><span class="n">get</span><span class="p">()</span></div>
 
 
@@ -163,7 +163,7 @@
 <div class="viewcode-block" id="set_mode">
 <a class="viewcode-back" href="../../modules.html#odmlib.mode.set_mode">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">set_mode</span><span class="p">(</span><span class="n">mode</span><span class="p">:</span> <span class="n">ValidationMode</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">contextvars</span><span class="o">.</span><span class="n">Token</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Set the validation mode and return a reset token.</span>
+<span class="w">    </span><span class="sd">"""Set the validation mode and return a reset token.</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        mode: The validation mode to activate.</span>
@@ -171,7 +171,7 @@
 <span class="sd">    Returns:</span>
 <span class="sd">        A ``contextvars.Token`` that can be passed to</span>
 <span class="sd">        ``_validation_mode.reset()`` to restore the previous mode.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="k">return</span> <span class="n">_validation_mode</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">mode</span><span class="p">)</span></div>
 
 
@@ -179,7 +179,7 @@
 <div class="viewcode-block" id="is_permissive">
 <a class="viewcode-back" href="../../modules.html#odmlib.mode.is_permissive">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">is_permissive</span><span class="p">(</span><span class="n">flag</span><span class="p">:</span> <span class="n">ValidationMode</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Check whether a specific validation flag is active.</span>
+<span class="w">    </span><span class="sd">"""Check whether a specific validation flag is active.</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        flag: The validation category to check (e.g.,</span>
@@ -187,7 +187,7 @@
 
 <span class="sd">    Returns:</span>
 <span class="sd">        ``True`` if the flag is active in the current mode.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="k">return</span> <span class="nb">bool</span><span class="p">(</span><span class="n">get_mode</span><span class="p">()</span> <span class="o">&amp;</span> <span class="n">flag</span><span class="p">)</span></div>
 
 
@@ -196,7 +196,7 @@
 <a class="viewcode-back" href="../../modules.html#odmlib.mode.permissive">[docs]</a>
 <span class="nd">@contextmanager</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">permissive</span><span class="p">(</span><span class="n">mode</span><span class="p">:</span> <span class="n">ValidationMode</span> <span class="o">=</span> <span class="n">ValidationMode</span><span class="o">.</span><span class="n">PERMISSIVE</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Context manager that activates a permissive validation mode.</span>
+<span class="w">    </span><span class="sd">"""Context manager that activates a permissive validation mode.</span>
 
 <span class="sd">    On entry, sets the validation mode to *mode*. On exit (including on</span>
 <span class="sd">    exception), restores the previous mode via token reset.</span>
@@ -216,7 +216,7 @@
 <span class="sd">        # Skip only required checks</span>
 <span class="sd">        with permissive(ValidationMode.SKIP_REQUIRED):</span>
 <span class="sd">            ...</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">token</span> <span class="o">=</span> <span class="n">_validation_mode</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">mode</span><span class="p">)</span>
     <span class="k">try</span><span class="p">:</span>
         <span class="k">yield</span>

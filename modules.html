@@ -6,14 +6,14 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>odmlib &mdash; odmlib 0.2.0 documentation</title>
+  <title>odmlib &mdash; odmlib 0.2.1 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=9edc463e" />
 
   
       <script src="_static/jquery.js?v=5d32c60e"></script>
       <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="_static/documentation_options.js?v=938c9ccc"></script>
+      <script src="_static/documentation_options.js?v=37f418d5"></script>
       <script src="_static/doctools.js?v=fd6eb6e6"></script>
       <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="_static/js/theme.js"></script>
@@ -96,10 +96,12 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#module-descriptor">descriptor module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#descriptor.is_pristine_auto_created"><code class="docutils literal notranslate"><span class="pre">is_pristine_auto_created()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#descriptor.Descriptor"><code class="docutils literal notranslate"><span class="pre">Descriptor</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#module-document_loader">document_loader module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#document_loader.resolve_model_class"><code class="docutils literal notranslate"><span class="pre">resolve_model_class()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#document_loader.DocumentLoader"><code class="docutils literal notranslate"><span class="pre">DocumentLoader</span></code></a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#document_loader.DocumentLoader.load_document"><code class="docutils literal notranslate"><span class="pre">DocumentLoader.load_document()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#document_loader.DocumentLoader.create_document"><code class="docutils literal notranslate"><span class="pre">DocumentLoader.create_document()</span></code></a></li>
@@ -122,11 +124,15 @@
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#exceptions.OdmlibRequiredAttributeError"><code class="docutils literal notranslate"><span class="pre">OdmlibRequiredAttributeError</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#exceptions.OdmlibOIDError"><code class="docutils literal notranslate"><span class="pre">OdmlibOIDError</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#exceptions.flatten_cerberus_errors"><code class="docutils literal notranslate"><span class="pre">flatten_cerberus_errors()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#exceptions.OdmlibConformanceError"><code class="docutils literal notranslate"><span class="pre">OdmlibConformanceError</span></code></a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#exceptions.OdmlibConformanceError.cerberus_errors"><code class="docutils literal notranslate"><span class="pre">OdmlibConformanceError.cerberus_errors</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#exceptions.OdmlibConformanceError.field_path"><code class="docutils literal notranslate"><span class="pre">OdmlibConformanceError.field_path</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#exceptions.OdmlibConformanceError.expand"><code class="docutils literal notranslate"><span class="pre">OdmlibConformanceError.expand()</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#exceptions.OdmlibElementOrderError"><code class="docutils literal notranslate"><span class="pre">OdmlibElementOrderError</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#exceptions.OdmlibErrorLimitError"><code class="docutils literal notranslate"><span class="pre">OdmlibErrorLimitError</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#exceptions.OdmlibSchemaValidationError"><code class="docutils literal notranslate"><span class="pre">OdmlibSchemaValidationError</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#exceptions.OdmlibTypeError"><code class="docutils literal notranslate"><span class="pre">OdmlibTypeError</span></code></a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#exceptions.OdmlibTypeError.attribute"><code class="docutils literal notranslate"><span class="pre">OdmlibTypeError.attribute</span></code></a></li>
@@ -146,12 +152,22 @@
 <li class="toctree-l3"><a class="reference internal" href="#exceptions.ErrorCollector"><code class="docutils literal notranslate"><span class="pre">ErrorCollector</span></code></a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#exceptions.ErrorCollector.errors"><code class="docutils literal notranslate"><span class="pre">ErrorCollector.errors</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#exceptions.ErrorCollector.warnings"><code class="docutils literal notranslate"><span class="pre">ErrorCollector.warnings</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#exceptions.ErrorCollector.max_errors"><code class="docutils literal notranslate"><span class="pre">ErrorCollector.max_errors</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#exceptions.ErrorCollector.truncated"><code class="docutils literal notranslate"><span class="pre">ErrorCollector.truncated</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#exceptions.ErrorCollector.has_errors"><code class="docutils literal notranslate"><span class="pre">ErrorCollector.has_errors</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#exceptions.ErrorCollector.is_full"><code class="docutils literal notranslate"><span class="pre">ErrorCollector.is_full</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#exceptions.ErrorCollector.add_error"><code class="docutils literal notranslate"><span class="pre">ErrorCollector.add_error()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#exceptions.ErrorCollector.add_warning"><code class="docutils literal notranslate"><span class="pre">ErrorCollector.add_warning()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#exceptions.ErrorCollector.raise_if_errors"><code class="docutils literal notranslate"><span class="pre">ErrorCollector.raise_if_errors()</span></code></a></li>
 </ul>
 </li>
+<li class="toctree-l3"><a class="reference internal" href="#exceptions.ErrorReporting"><code class="docutils literal notranslate"><span class="pre">ErrorReporting</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#exceptions.ErrorReporting.supports_error_collection"><code class="docutils literal notranslate"><span class="pre">ErrorReporting.supports_error_collection</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#exceptions.ErrorReporting.report"><code class="docutils literal notranslate"><span class="pre">ErrorReporting.report()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#exceptions.ErrorReporting.collecting"><code class="docutils literal notranslate"><span class="pre">ErrorReporting.collecting()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#exceptions.is_collecting_checker"><code class="docutils literal notranslate"><span class="pre">is_collecting_checker()</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#module-loader">loader module</a><ul>
@@ -167,6 +183,8 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#module-ns_registry">ns_registry module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#ns_registry.bind_document_namespaces"><code class="docutils literal notranslate"><span class="pre">bind_document_namespaces()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#ns_registry.get_document_namespaces"><code class="docutils literal notranslate"><span class="pre">get_document_namespaces()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#ns_registry.Borg"><code class="docutils literal notranslate"><span class="pre">Borg</span></code></a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#ns_registry.Borg.namespaces"><code class="docutils literal notranslate"><span class="pre">Borg.namespaces</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#ns_registry.Borg.default_namespace"><code class="docutils literal notranslate"><span class="pre">Borg.default_namespace</span></code></a></li>
@@ -174,6 +192,7 @@
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#ns_registry.NamespaceRegistry"><code class="docutils literal notranslate"><span class="pre">NamespaceRegistry</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#ns_registry.NamespaceRegistry.snapshot"><code class="docutils literal notranslate"><span class="pre">NamespaceRegistry.snapshot()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#ns_registry.NamespaceRegistry.get_odm_namespace_entries"><code class="docutils literal notranslate"><span class="pre">NamespaceRegistry.get_odm_namespace_entries()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#ns_registry.NamespaceRegistry.get_ns_entry_dict"><code class="docutils literal notranslate"><span class="pre">NamespaceRegistry.get_ns_entry_dict()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#ns_registry.NamespaceRegistry.get_ns_attribute_name"><code class="docutils literal notranslate"><span class="pre">NamespaceRegistry.get_ns_attribute_name()</span></code></a></li>
@@ -196,6 +215,7 @@
 <li class="toctree-l4"><a class="reference internal" href="#odm_element.ODMElement.to_json"><code class="docutils literal notranslate"><span class="pre">ODMElement.to_json()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#odm_element.ODMElement.to_xml"><code class="docutils literal notranslate"><span class="pre">ODMElement.to_xml()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#odm_element.ODMElement.to_xml_string"><code class="docutils literal notranslate"><span class="pre">ODMElement.to_xml_string()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#odm_element.ODMElement.to_element"><code class="docutils literal notranslate"><span class="pre">ODMElement.to_element()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#odm_element.ODMElement.to_dict"><code class="docutils literal notranslate"><span class="pre">ODMElement.to_dict()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#odm_element.ODMElement.find"><code class="docutils literal notranslate"><span class="pre">ODMElement.find()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#odm_element.ODMElement.find_all"><code class="docutils literal notranslate"><span class="pre">ODMElement.find_all()</span></code></a></li>
@@ -290,6 +310,7 @@
 <li class="toctree-l4"><a class="reference internal" href="#oid_generator.DynamicOIDRef.add_oid_ref"><code class="docutils literal notranslate"><span class="pre">DynamicOIDRef.add_oid_ref()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#oid_generator.DynamicOIDRef.is_oids_verified"><code class="docutils literal notranslate"><span class="pre">DynamicOIDRef.is_oids_verified()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#oid_generator.DynamicOIDRef.check_oid_refs"><code class="docutils literal notranslate"><span class="pre">DynamicOIDRef.check_oid_refs()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#oid_generator.DynamicOIDRef.reset"><code class="docutils literal notranslate"><span class="pre">DynamicOIDRef.reset()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#oid_generator.DynamicOIDRef.check_unreferenced_oids"><code class="docutils literal notranslate"><span class="pre">DynamicOIDRef.check_unreferenced_oids()</span></code></a></li>
 </ul>
 </li>
@@ -473,17 +494,17 @@ unchanged.</p>
 <p>Example:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">odmlib.builder</span><span class="w"> </span><span class="kn">import</span> <span class="n">ODMBuilder</span>
 
-<span class="n">odm</span> <span class="o">=</span> <span class="p">(</span><span class="n">ODMBuilder</span><span class="p">(</span><span class="s2">&quot;odm_1_3_2&quot;</span><span class="p">)</span>
-    <span class="o">.</span><span class="n">set_file</span><span class="p">(</span><span class="n">FileOID</span><span class="o">=</span><span class="s2">&quot;F.001&quot;</span><span class="p">,</span> <span class="n">FileType</span><span class="o">=</span><span class="s2">&quot;Snapshot&quot;</span><span class="p">,</span>
-              <span class="n">CreationDateTime</span><span class="o">=</span><span class="s2">&quot;2024-01-01T00:00:00&quot;</span><span class="p">)</span>
-    <span class="o">.</span><span class="n">add_study</span><span class="p">(</span><span class="n">OID</span><span class="o">=</span><span class="s2">&quot;S.001&quot;</span><span class="p">,</span>
-               <span class="n">study_name</span><span class="o">=</span><span class="s2">&quot;My Study&quot;</span><span class="p">,</span>
-               <span class="n">study_description</span><span class="o">=</span><span class="s2">&quot;A study&quot;</span><span class="p">,</span>
-               <span class="n">protocol_name</span><span class="o">=</span><span class="s2">&quot;PROT-001&quot;</span><span class="p">)</span>
-    <span class="o">.</span><span class="n">add_metadata_version</span><span class="p">(</span><span class="n">OID</span><span class="o">=</span><span class="s2">&quot;MDV.001&quot;</span><span class="p">,</span> <span class="n">Name</span><span class="o">=</span><span class="s2">&quot;Version 1&quot;</span><span class="p">)</span>
-    <span class="o">.</span><span class="n">add_item_group_def</span><span class="p">(</span><span class="n">OID</span><span class="o">=</span><span class="s2">&quot;IG.DM&quot;</span><span class="p">,</span> <span class="n">Name</span><span class="o">=</span><span class="s2">&quot;Demographics&quot;</span><span class="p">,</span> <span class="n">Repeating</span><span class="o">=</span><span class="s2">&quot;No&quot;</span><span class="p">)</span>
-    <span class="o">.</span><span class="n">add_item_ref</span><span class="p">(</span><span class="n">ItemOID</span><span class="o">=</span><span class="s2">&quot;IT.SUBJID&quot;</span><span class="p">,</span> <span class="n">Mandatory</span><span class="o">=</span><span class="s2">&quot;Yes&quot;</span><span class="p">,</span> <span class="n">OrderNumber</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-    <span class="o">.</span><span class="n">add_item_ref</span><span class="p">(</span><span class="n">ItemOID</span><span class="o">=</span><span class="s2">&quot;IT.AGE&quot;</span><span class="p">,</span> <span class="n">Mandatory</span><span class="o">=</span><span class="s2">&quot;No&quot;</span><span class="p">,</span> <span class="n">OrderNumber</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">odm</span> <span class="o">=</span> <span class="p">(</span><span class="n">ODMBuilder</span><span class="p">(</span><span class="s2">"odm_1_3_2"</span><span class="p">)</span>
+    <span class="o">.</span><span class="n">set_file</span><span class="p">(</span><span class="n">FileOID</span><span class="o">=</span><span class="s2">"F.001"</span><span class="p">,</span> <span class="n">FileType</span><span class="o">=</span><span class="s2">"Snapshot"</span><span class="p">,</span>
+              <span class="n">CreationDateTime</span><span class="o">=</span><span class="s2">"2024-01-01T00:00:00"</span><span class="p">)</span>
+    <span class="o">.</span><span class="n">add_study</span><span class="p">(</span><span class="n">OID</span><span class="o">=</span><span class="s2">"S.001"</span><span class="p">,</span>
+               <span class="n">study_name</span><span class="o">=</span><span class="s2">"My Study"</span><span class="p">,</span>
+               <span class="n">study_description</span><span class="o">=</span><span class="s2">"A study"</span><span class="p">,</span>
+               <span class="n">protocol_name</span><span class="o">=</span><span class="s2">"PROT-001"</span><span class="p">)</span>
+    <span class="o">.</span><span class="n">add_metadata_version</span><span class="p">(</span><span class="n">OID</span><span class="o">=</span><span class="s2">"MDV.001"</span><span class="p">,</span> <span class="n">Name</span><span class="o">=</span><span class="s2">"Version 1"</span><span class="p">)</span>
+    <span class="o">.</span><span class="n">add_item_group_def</span><span class="p">(</span><span class="n">OID</span><span class="o">=</span><span class="s2">"IG.DM"</span><span class="p">,</span> <span class="n">Name</span><span class="o">=</span><span class="s2">"Demographics"</span><span class="p">,</span> <span class="n">Repeating</span><span class="o">=</span><span class="s2">"No"</span><span class="p">)</span>
+    <span class="o">.</span><span class="n">add_item_ref</span><span class="p">(</span><span class="n">ItemOID</span><span class="o">=</span><span class="s2">"IT.SUBJID"</span><span class="p">,</span> <span class="n">Mandatory</span><span class="o">=</span><span class="s2">"Yes"</span><span class="p">,</span> <span class="n">OrderNumber</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="o">.</span><span class="n">add_item_ref</span><span class="p">(</span><span class="n">ItemOID</span><span class="o">=</span><span class="s2">"IT.AGE"</span><span class="p">,</span> <span class="n">Mandatory</span><span class="o">=</span><span class="s2">"No"</span><span class="p">,</span> <span class="n">OrderNumber</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
     <span class="o">.</span><span class="n">build</span><span class="p">())</span>
 </pre></div>
 </div>
@@ -720,14 +741,15 @@ reference — use <a class="reference internal" href="#builder.ODMBuilder.add_st
 <dd><p>Add a StudyEventRef to the current MetaDataVersion’s Protocol.</p>
 <p>The Protocol element is created automatically if it does not exist
 yet.</p>
-<div class="admonition warning">
-<p class="admonition-title">Warning</p>
-<p><strong>Not valid for ``model_package=”odm_2_0”``.</strong> The ODM 2.0 XSD
-removed <code class="docutils literal notranslate"><span class="pre">Protocol/StudyEventRef</span></code> (Protocol uses
-<code class="docutils literal notranslate"><span class="pre">StudyEventGroupRef</span></code> instead); a document built with this helper
-under odm_2_0 is schema-invalid. See ROADMAP “v0.2.1 — ODM 2.0
-Model/XSD Alignment” and <code class="docutils literal notranslate"><span class="pre">ODM20-MODEL-XSD-DIFFERENCES_PLAN.md</span></code>
-§3.3. Safe for ODM 1.3.2.</p>
+<p><strong>ODM 1.3.2 / Define-XML only.</strong>  The ODM 2.0 XSD has no
+<code class="docutils literal notranslate"><span class="pre">Protocol/StudyEventRef</span></code>: a Protocol references
+<code class="docutils literal notranslate"><span class="pre">StudyEventGroupRef</span></code>, and <code class="docutils literal notranslate"><span class="pre">StudyEventRef</span></code> lives one level down on
+<code class="docutils literal notranslate"><span class="pre">StudyEventGroupDef</span></code>.  Calling this under <code class="docutils literal notranslate"><span class="pre">odm_2_0</span></code> therefore
+raises rather than emitting schema-invalid markup — build the
+StudyEventGroupDef yourself and graft it on with <a class="reference internal" href="#builder.ODMBuilder.attach" title="builder.ODMBuilder.attach"><code class="xref py py-meth docutils literal notranslate"><span class="pre">attach()</span></code></a>.</p>
+<div class="versionchanged">
+<p><span class="versionmodified changed">Changed in version 0.2.1: </span>Raises under <code class="docutils literal notranslate"><span class="pre">odm_2_0</span></code> instead of silently producing an invalid
+<code class="docutils literal notranslate"><span class="pre">Protocol/StudyEventRef</span></code>.</p>
 </div>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -738,7 +760,8 @@ OrderNumber, …).</p>
 <dd class="field-even"><p>self, for chaining.</p>
 </dd>
 <dt class="field-odd">Raises<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#RuntimeError" title="(in Python v3.14)"><strong>RuntimeError</strong></a> – if no MetaDataVersion has been added yet.</p>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#RuntimeError" title="(in Python v3.14)"><strong>RuntimeError</strong></a> – if no MetaDataVersion has been added yet, or
+if the active model is ODM 2.0.</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p><a class="reference internal" href="#builder.ODMBuilder" title="builder.ODMBuilder"><em>ODMBuilder</em></a></p>
@@ -819,14 +842,17 @@ no FormDef — it is added to the current StudyEventDef (call
 <p>MethodDef requires a Description; it is built from <code class="docutils literal notranslate"><span class="pre">description</span></code>.
 An optional FormalExpression is added when <code class="docutils literal notranslate"><span class="pre">formal_expression</span></code> is
 given.</p>
-<div class="admonition warning">
-<p class="admonition-title">Warning</p>
-<p>For <code class="docutils literal notranslate"><span class="pre">model_package=&quot;odm_2_0&quot;</span></code>, do <strong>not</strong> pass
-<code class="docutils literal notranslate"><span class="pre">formal_expression</span></code>: ODM 2.0 <code class="docutils literal notranslate"><span class="pre">FormalExpression</span></code> is
-element-based (<code class="docutils literal notranslate"><span class="pre">Code</span> <span class="pre">|</span> <span class="pre">ExternalCodeLib</span></code>) while odmlib’s model is
-text-based, so a text FormalExpression is schema-invalid. The
-Description-only form is valid. See ROADMAP “v0.2.1 — ODM 2.0
-Model/XSD Alignment” / <code class="docutils literal notranslate"><span class="pre">ODM20-MODEL-XSD-DIFFERENCES_PLAN.md</span></code> §3.2.</p>
+<p><code class="docutils literal notranslate"><span class="pre">formal_expression</span></code> is plain text for every model.  Under
+<code class="docutils literal notranslate"><span class="pre">odm_2_0</span></code> it is wrapped in the <code class="docutils literal notranslate"><span class="pre">Code</span></code> child the XSD requires;
+under ODM 1.3.2 / Define-XML it stays element text.</p>
+<p>Under <code class="docutils literal notranslate"><span class="pre">odm_2_0</span></code> the XSD also makes <code class="docutils literal notranslate"><span class="pre">MethodSignature</span></code> a required
+child of MethodDef, so an empty one is emitted for you (both of its
+children are optional, so <code class="docutils literal notranslate"><span class="pre">&lt;MethodSignature/&gt;</span></code> is valid); populate
+it via <a class="reference internal" href="#builder.ODMBuilder.attach" title="builder.ODMBuilder.attach"><code class="xref py py-meth docutils literal notranslate"><span class="pre">attach()</span></code></a> if the method takes parameters.  ODM 1.3.2
+adds no MethodSignature.</p>
+<div class="versionchanged">
+<p><span class="versionmodified changed">Changed in version 0.2.1: </span><code class="docutils literal notranslate"><span class="pre">formal_expression</span></code> is now valid under <code class="docutils literal notranslate"><span class="pre">odm_2_0</span></code>, and a
+MethodSignature is emitted there, so the output is schema-valid.</p>
 </div>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -858,25 +884,26 @@ Model/XSD Alignment” / <code class="docutils literal notranslate"><span class=
 <dt class="sig sig-object py" id="builder.ODMBuilder.add_condition_def">
 <span class="sig-name descname"><span class="pre">add_condition_def</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">OID</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">formal_expression</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">expression_context</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Python'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lang</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'en'</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/builder.html#ODMBuilder.add_condition_def"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#builder.ODMBuilder.add_condition_def" title="Link to this definition"></a></dt>
 <dd><p>Add a ConditionDef to the current MetaDataVersion.</p>
-<div class="admonition warning">
-<p class="admonition-title">Warning</p>
-<p><strong>Not valid for ``model_package=”odm_2_0”``.</strong> The ODM 2.0 XSD
-requires a <code class="docutils literal notranslate"><span class="pre">MethodSignature</span></code> child on <code class="docutils literal notranslate"><span class="pre">ConditionDef</span></code> (and a
-required <code class="docutils literal notranslate"><span class="pre">Description</span></code>), which odmlib’s odm_2_0 model cannot yet
-express, so any ConditionDef built here is schema-invalid — and
-transitively any <code class="docutils literal notranslate"><span class="pre">CollectionExceptionConditionOID</span></code> pointing at
-it. <code class="docutils literal notranslate"><span class="pre">formal_expression</span></code> is additionally invalid under odm_2_0
-(text vs. element-based, see <a class="reference internal" href="#builder.ODMBuilder.add_method_def" title="builder.ODMBuilder.add_method_def"><code class="xref py py-meth docutils literal notranslate"><span class="pre">add_method_def()</span></code></a>). See ROADMAP
-“v0.2.1 — ODM 2.0 Model/XSD Alignment” /
-<code class="docutils literal notranslate"><span class="pre">ODM20-MODEL-XSD-DIFFERENCES_PLAN.md</span></code> §3.1–§3.2. Safe for ODM
-1.3.2.</p>
+<p>Under <code class="docutils literal notranslate"><span class="pre">odm_2_0</span></code> the XSD makes both <code class="docutils literal notranslate"><span class="pre">Description</span></code> and
+<code class="docutils literal notranslate"><span class="pre">MethodSignature</span></code> required children, so <code class="docutils literal notranslate"><span class="pre">description</span></code> is
+mandatory there and an empty <code class="docutils literal notranslate"><span class="pre">MethodSignature</span></code> is emitted for you
+(both of its children are optional, so <code class="docutils literal notranslate"><span class="pre">&lt;MethodSignature/&gt;</span></code> is
+valid).  Populate it further via <a class="reference internal" href="#builder.ODMBuilder.attach" title="builder.ODMBuilder.attach"><code class="xref py py-meth docutils literal notranslate"><span class="pre">attach()</span></code></a> if the condition’s
+expressions take parameters.  ODM 1.3.2 is unchanged: <code class="docutils literal notranslate"><span class="pre">description</span></code>
+stays optional and no MethodSignature is added.</p>
+<p><code class="docutils literal notranslate"><span class="pre">formal_expression</span></code> is plain text for every model; under
+<code class="docutils literal notranslate"><span class="pre">odm_2_0</span></code> it is wrapped in a <code class="docutils literal notranslate"><span class="pre">Code</span></code> child (see
+<a class="reference internal" href="#builder.ODMBuilder.add_method_def" title="builder.ODMBuilder.add_method_def"><code class="xref py py-meth docutils literal notranslate"><span class="pre">add_method_def()</span></code></a>).</p>
+<div class="versionchanged">
+<p><span class="versionmodified changed">Changed in version 0.2.1: </span>Produces schema-valid output under <code class="docutils literal notranslate"><span class="pre">odm_2_0</span></code>.</p>
 </div>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>OID</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – Condition OID.</p></li>
 <li><p><strong>Name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – Condition name.</p></li>
-<li><p><strong>description</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em> | </em><em>None</em>) – Optional description text.</p></li>
+<li><p><strong>description</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em> | </em><em>None</em>) – Description text. Required under <code class="docutils literal notranslate"><span class="pre">odm_2_0</span></code>,
+optional for ODM 1.3.2.</p></li>
 <li><p><strong>formal_expression</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em> | </em><em>None</em>) – Optional expression source code.</p></li>
 <li><p><strong>expression_context</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – FormalExpression Context; used only when
 <code class="docutils literal notranslate"><span class="pre">formal_expression</span></code> is given.</p></li>
@@ -888,7 +915,8 @@ it. <code class="docutils literal notranslate"><span class="pre">formal_expressi
 <dd class="field-even"><p>self, for chaining.</p>
 </dd>
 <dt class="field-odd">Raises<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#RuntimeError" title="(in Python v3.14)"><strong>RuntimeError</strong></a> – if no MetaDataVersion has been added yet.</p>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#RuntimeError" title="(in Python v3.14)"><strong>RuntimeError</strong></a> – if no MetaDataVersion has been added yet, or
+if <code class="docutils literal notranslate"><span class="pre">description</span></code> is omitted under <code class="docutils literal notranslate"><span class="pre">odm_2_0</span></code>.</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p><a class="reference internal" href="#builder.ODMBuilder" title="builder.ODMBuilder"><em>ODMBuilder</em></a></p>
@@ -1118,33 +1146,44 @@ accepts <em>element</em>’s type.</p>
 <span id="context-module"></span><h2>context module<a class="headerlink" href="#module-context" title="Link to this heading"></a></h2>
 <p>Context managers for common odmlib load-modify-save workflows.</p>
 <p>Provides <a class="reference internal" href="#context.open_odm" title="context.open_odm"><code class="xref py py-func docutils literal notranslate"><span class="pre">open_odm()</span></code></a> and <a class="reference internal" href="#context.open_define" title="context.open_define"><code class="xref py py-func docutils literal notranslate"><span class="pre">open_define()</span></code></a> context managers that
-automatically load an ODM or Define-XML document on entry and write it
-back on clean exit.</p>
-<p>Example — read and modify an ODM file:</p>
+automatically load an ODM or Define-XML document on entry and, when a
+write target is configured, write it back on clean exit.</p>
+<p>Opening a document with only an <code class="docutils literal notranslate"><span class="pre">input_file</span></code> is read-only: nothing is
+written when the <code class="docutils literal notranslate"><span class="pre">with</span></code> block exits.  Provide <code class="docutils literal notranslate"><span class="pre">output_file</span></code> to write
+the (possibly modified) document to a different path, or pass
+<code class="docutils literal notranslate"><span class="pre">write_on_exit=True</span></code> to explicitly opt in to updating <code class="docutils literal notranslate"><span class="pre">input_file</span></code>
+in place.</p>
+<p>Example — read an ODM file (read-only, nothing written):</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">odmlib.context</span><span class="w"> </span><span class="kn">import</span> <span class="n">open_odm</span>
 
-<span class="k">with</span> <span class="n">open_odm</span><span class="p">(</span><span class="s2">&quot;study.xml&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">odm</span><span class="p">:</span>
-    <span class="n">mdv</span> <span class="o">=</span> <span class="n">odm</span><span class="o">.</span><span class="n">Study</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">MetaDataVersion</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-    <span class="n">mdv</span><span class="o">.</span><span class="n">ItemGroupDef</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">new_igd</span><span class="p">)</span>
-<span class="c1"># study.xml is automatically overwritten with the modified content</span>
+<span class="k">with</span> <span class="n">open_odm</span><span class="p">(</span><span class="s2">"study.xml"</span><span class="p">)</span> <span class="k">as</span> <span class="n">odm</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">odm</span><span class="o">.</span><span class="n">FileOID</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>Example — read an ODM file, write to a different path:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">with</span> <span class="n">open_odm</span><span class="p">(</span><span class="s2">&quot;study.xml&quot;</span><span class="p">,</span> <span class="n">output_file</span><span class="o">=</span><span class="s2">&quot;study_updated.xml&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">odm</span><span class="p">:</span>
-    <span class="n">odm</span><span class="o">.</span><span class="n">FileOID</span> <span class="o">=</span> <span class="s2">&quot;F.002&quot;</span>
+<p>Example — modify an ODM file, write to a different path:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">with</span> <span class="n">open_odm</span><span class="p">(</span><span class="s2">"study.xml"</span><span class="p">,</span> <span class="n">output_file</span><span class="o">=</span><span class="s2">"study_updated.xml"</span><span class="p">)</span> <span class="k">as</span> <span class="n">odm</span><span class="p">:</span>
+    <span class="n">odm</span><span class="o">.</span><span class="n">FileOID</span> <span class="o">=</span> <span class="s2">"F.002"</span>
+</pre></div>
+</div>
+<p>Example — update an ODM file in place (explicit opt-in):</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">with</span> <span class="n">open_odm</span><span class="p">(</span><span class="s2">"study.xml"</span><span class="p">,</span> <span class="n">write_on_exit</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="k">as</span> <span class="n">odm</span><span class="p">:</span>
+    <span class="n">mdv</span> <span class="o">=</span> <span class="n">odm</span><span class="o">.</span><span class="n">Study</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">MetaDataVersion</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">mdv</span><span class="o">.</span><span class="n">ItemGroupDef</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">new_igd</span><span class="p">)</span>
+<span class="c1"># study.xml is overwritten with the modified content</span>
 </pre></div>
 </div>
 <p>Example — read a Define-XML 2.1 file:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">odmlib.context</span><span class="w"> </span><span class="kn">import</span> <span class="n">open_define</span>
 
-<span class="k">with</span> <span class="n">open_define</span><span class="p">(</span><span class="s2">&quot;define.xml&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">define</span><span class="p">:</span>
-    <span class="n">mdv</span> <span class="o">=</span> <span class="n">define</span><span class="o">.</span><span class="n">Study</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">MetaDataVersion</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+<span class="k">with</span> <span class="n">open_define</span><span class="p">(</span><span class="s2">"define.xml"</span><span class="p">)</span> <span class="k">as</span> <span class="n">define</span><span class="p">:</span>
+    <span class="c1"># Define-XML: Study and MetaDataVersion are single objects, not lists</span>
+    <span class="n">mdv</span> <span class="o">=</span> <span class="n">define</span><span class="o">.</span><span class="n">Study</span><span class="o">.</span><span class="n">MetaDataVersion</span>
     <span class="nb">print</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">mdv</span><span class="o">.</span><span class="n">ItemDef</span><span class="p">))</span>
 </pre></div>
 </div>
 <dl class="py class">
 <dt class="sig sig-object py" id="context.ODMContext">
-<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">context.</span></span><span class="sig-name descname"><span class="pre">ODMContext</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_file</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_file</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_package</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'odm_1_3_2'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">format</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">permissive</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">write_on_exit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/context.html#ODMContext"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#context.ODMContext" title="Link to this definition"></a></dt>
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">context.</span></span><span class="sig-name descname"><span class="pre">ODMContext</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_file</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_file</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_package</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'odm_1_3_2'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">format</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">permissive</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">write_on_exit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/context.html#ODMContext"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#context.ODMContext" title="Link to this definition"></a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
 <p>Context manager for load-modify-save ODM workflows.</p>
 <p>The document is loaded when the <code class="docutils literal notranslate"><span class="pre">with</span></code> block is entered and
@@ -1155,16 +1194,19 @@ If an exception propagates out of the <code class="docutils literal notranslate"
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>input_file</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – Path to the ODM file to load.</p></li>
-<li><p><strong>output_file</strong> (<em>Optional</em><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em>]</em>) – Path to write on exit.  Defaults to
-<code class="docutils literal notranslate"><span class="pre">input_file</span></code> (in-place update).</p></li>
+<li><p><strong>output_file</strong> (<em>Optional</em><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em>]</em>) – Path to write on clean exit.  When omitted, the
+document is opened read-only and nothing is written (unless
+<code class="docutils literal notranslate"><span class="pre">write_on_exit=True</span></code> explicitly opts in to updating
+<code class="docutils literal notranslate"><span class="pre">input_file</span></code> in place).</p></li>
 <li><p><strong>model_package</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – odmlib model package name.
 Defaults to <code class="docutils literal notranslate"><span class="pre">&quot;odm_1_3_2&quot;</span></code>.</p></li>
 <li><p><strong>format</strong> (<em>Optional</em><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em>]</em>) – <code class="docutils literal notranslate"><span class="pre">&quot;xml&quot;</span></code> or <code class="docutils literal notranslate"><span class="pre">&quot;json&quot;</span></code>.  Auto-detected from the
 file extension when not specified.</p></li>
-<li><p><strong>write_on_exit</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code> (default), the document is written
-to <code class="docutils literal notranslate"><span class="pre">output_file</span></code> on clean exit.  Pass <code class="docutils literal notranslate"><span class="pre">False</span></code> for read-only
-inspection without writing back — no file is created or
-modified when the <code class="docutils literal notranslate"><span class="pre">with</span></code> block exits.</p></li>
+<li><p><strong>write_on_exit</strong> (<em>Optional</em><em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a><em>]</em>) – When omitted, the document is written on clean
+exit only if <code class="docutils literal notranslate"><span class="pre">output_file</span></code> was provided.  Pass <code class="docutils literal notranslate"><span class="pre">True</span></code> to
+force writing (to <code class="docutils literal notranslate"><span class="pre">output_file</span></code>, or in place to <code class="docutils literal notranslate"><span class="pre">input_file</span></code>
+when no <code class="docutils literal notranslate"><span class="pre">output_file</span></code> is given).  Pass <code class="docutils literal notranslate"><span class="pre">False</span></code> to suppress
+writing entirely.</p></li>
 <li><p><strong>permissive</strong> (<em>Union</em><em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a><em>, </em><em>_mode.ValidationMode</em><em>]</em>)</p></li>
 </ul>
 </dd>
@@ -1173,7 +1215,7 @@ modified when the <code class="docutils literal notranslate"><span class="pre">w
 
 <dl class="py class">
 <dt class="sig sig-object py" id="context.DefineContext">
-<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">context.</span></span><span class="sig-name descname"><span class="pre">DefineContext</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_file</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_file</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_package</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'define_2_1'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">format</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">permissive</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">write_on_exit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/context.html#DefineContext"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#context.DefineContext" title="Link to this definition"></a></dt>
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">context.</span></span><span class="sig-name descname"><span class="pre">DefineContext</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_file</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_file</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_package</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'define_2_1'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">format</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">permissive</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">write_on_exit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/context.html#DefineContext"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#context.DefineContext" title="Link to this definition"></a></dt>
 <dd><p>Bases: <a class="reference internal" href="#context.ODMContext" title="context.ODMContext"><code class="xref py py-class docutils literal notranslate"><span class="pre">ODMContext</span></code></a></p>
 <p>Context manager for load-modify-save Define-XML workflows.</p>
 <p>Identical to <a class="reference internal" href="#context.ODMContext" title="context.ODMContext"><code class="xref py py-class docutils literal notranslate"><span class="pre">ODMContext</span></code></a> but uses Define-XML loaders by
@@ -1182,14 +1224,17 @@ default.</p>
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>input_file</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – Path to the Define-XML file to load.</p></li>
-<li><p><strong>output_file</strong> (<em>Optional</em><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em>]</em>) – Path to write on exit.  Defaults to
-<code class="docutils literal notranslate"><span class="pre">input_file</span></code>.</p></li>
+<li><p><strong>output_file</strong> (<em>Optional</em><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em>]</em>) – Path to write on clean exit.  When omitted, the
+document is opened read-only and nothing is written (unless
+<code class="docutils literal notranslate"><span class="pre">write_on_exit=True</span></code> explicitly opts in to updating
+<code class="docutils literal notranslate"><span class="pre">input_file</span></code> in place).</p></li>
 <li><p><strong>model_package</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – odmlib model package name.
 Defaults to <code class="docutils literal notranslate"><span class="pre">&quot;define_2_1&quot;</span></code>.</p></li>
 <li><p><strong>format</strong> (<em>Optional</em><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em>]</em>) – <code class="docutils literal notranslate"><span class="pre">&quot;xml&quot;</span></code> or <code class="docutils literal notranslate"><span class="pre">&quot;json&quot;</span></code>.</p></li>
-<li><p><strong>write_on_exit</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code> (default), the document is written
-to <code class="docutils literal notranslate"><span class="pre">output_file</span></code> on clean exit.  Pass <code class="docutils literal notranslate"><span class="pre">False</span></code> for read-only
-inspection without writing back.</p></li>
+<li><p><strong>write_on_exit</strong> (<em>Optional</em><em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a><em>]</em>) – When omitted, the document is written on clean
+exit only if <code class="docutils literal notranslate"><span class="pre">output_file</span></code> was provided.  <code class="docutils literal notranslate"><span class="pre">True</span></code> forces
+writing (in place when no <code class="docutils literal notranslate"><span class="pre">output_file</span></code>); <code class="docutils literal notranslate"><span class="pre">False</span></code> suppresses
+writing entirely.</p></li>
 <li><p><strong>permissive</strong> (<em>Union</em><em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a><em>, </em><em>_mode.ValidationMode</em><em>]</em>)</p></li>
 </ul>
 </dd>
@@ -1198,22 +1243,24 @@ inspection without writing back.</p></li>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="context.open_odm">
-<span class="sig-prename descclassname"><span class="pre">context.</span></span><span class="sig-name descname"><span class="pre">open_odm</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_file</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_file</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_package</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'odm_1_3_2'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">format</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">permissive</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">write_on_exit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/context.html#open_odm"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#context.open_odm" title="Link to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">context.</span></span><span class="sig-name descname"><span class="pre">open_odm</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_file</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_file</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_package</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'odm_1_3_2'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">format</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">permissive</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">write_on_exit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/context.html#open_odm"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#context.open_odm" title="Link to this definition"></a></dt>
 <dd><p>Open an ODM document as a context manager.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>input_file</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – Path to the ODM file.</p></li>
-<li><p><strong>output_file</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em> | </em><em>None</em>) – Write path on exit (defaults to <code class="docutils literal notranslate"><span class="pre">input_file</span></code>).</p></li>
+<li><p><strong>output_file</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em> | </em><em>None</em>) – Write path on clean exit.  When omitted, the
+document is opened read-only (nothing is written unless
+<code class="docutils literal notranslate"><span class="pre">write_on_exit=True</span></code> opts in to an in-place update).</p></li>
 <li><p><strong>model_package</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – odmlib model package (default <code class="docutils literal notranslate"><span class="pre">&quot;odm_1_3_2&quot;</span></code>).</p></li>
 <li><p><strong>format</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em> | </em><em>None</em>) – <code class="docutils literal notranslate"><span class="pre">&quot;xml&quot;</span></code> or <code class="docutils literal notranslate"><span class="pre">&quot;json&quot;</span></code> (auto-detected if omitted).</p></li>
 <li><p><strong>permissive</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a><em> | </em><a class="reference internal" href="#odmlib.mode.ValidationMode" title="odmlib.mode.ValidationMode"><em>ValidationMode</em></a>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code>, load in fully permissive mode.
 Pass a <a class="reference internal" href="#odmlib.mode.ValidationMode" title="odmlib.mode.ValidationMode"><code class="xref py py-class docutils literal notranslate"><span class="pre">ValidationMode</span></code></a> flag combination for
 targeted relaxation.  Defaults to <code class="docutils literal notranslate"><span class="pre">False</span></code> (strict).</p></li>
-<li><p><strong>write_on_exit</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code> (default), the document is written
-to <code class="docutils literal notranslate"><span class="pre">output_file</span></code> on clean exit.  Pass <code class="docutils literal notranslate"><span class="pre">False</span></code> for read-only
-inspection without writing back — no file is created or
-modified when the <code class="docutils literal notranslate"><span class="pre">with</span></code> block exits.</p></li>
+<li><p><strong>write_on_exit</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a><em> | </em><em>None</em>) – When omitted, the document is written on clean
+exit only if <code class="docutils literal notranslate"><span class="pre">output_file</span></code> was provided.  <code class="docutils literal notranslate"><span class="pre">True</span></code> forces
+writing (in place when no <code class="docutils literal notranslate"><span class="pre">output_file</span></code>); <code class="docutils literal notranslate"><span class="pre">False</span></code> suppresses
+writing entirely.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -1224,36 +1271,44 @@ modified when the <code class="docutils literal notranslate"><span class="pre">w
 </dd>
 </dl>
 <p>Example:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">with</span> <span class="n">open_odm</span><span class="p">(</span><span class="s2">&quot;study.xml&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">odm</span><span class="p">:</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Read-only inspection — input file is never modified</span>
+<span class="k">with</span> <span class="n">open_odm</span><span class="p">(</span><span class="s2">"study.xml"</span><span class="p">)</span> <span class="k">as</span> <span class="n">odm</span><span class="p">:</span>
     <span class="nb">print</span><span class="p">(</span><span class="n">odm</span><span class="o">.</span><span class="n">FileOID</span><span class="p">)</span>
 
-<span class="k">with</span> <span class="n">open_odm</span><span class="p">(</span><span class="s2">&quot;broken.xml&quot;</span><span class="p">,</span> <span class="n">permissive</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="k">as</span> <span class="n">odm</span><span class="p">:</span>
+<span class="k">with</span> <span class="n">open_odm</span><span class="p">(</span><span class="s2">"broken.xml"</span><span class="p">,</span> <span class="n">permissive</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="k">as</span> <span class="n">odm</span><span class="p">:</span>
     <span class="o">...</span>  <span class="c1"># permissive mode active during load</span>
 
-<span class="c1"># Read-only inspection — input file is never modified</span>
-<span class="k">with</span> <span class="n">open_odm</span><span class="p">(</span><span class="s2">&quot;study.xml&quot;</span><span class="p">,</span> <span class="n">write_on_exit</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span> <span class="k">as</span> <span class="n">odm</span><span class="p">:</span>
-    <span class="nb">print</span><span class="p">(</span><span class="n">odm</span><span class="o">.</span><span class="n">FileOID</span><span class="p">)</span>
+<span class="c1"># Modify and write to a new file</span>
+<span class="k">with</span> <span class="n">open_odm</span><span class="p">(</span><span class="s2">"study.xml"</span><span class="p">,</span> <span class="n">output_file</span><span class="o">=</span><span class="s2">"study_v2.xml"</span><span class="p">)</span> <span class="k">as</span> <span class="n">odm</span><span class="p">:</span>
+    <span class="n">odm</span><span class="o">.</span><span class="n">FileOID</span> <span class="o">=</span> <span class="s2">"F.002"</span>
+
+<span class="c1"># Update the input file in place (explicit opt-in)</span>
+<span class="k">with</span> <span class="n">open_odm</span><span class="p">(</span><span class="s2">"study.xml"</span><span class="p">,</span> <span class="n">write_on_exit</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="k">as</span> <span class="n">odm</span><span class="p">:</span>
+    <span class="n">odm</span><span class="o">.</span><span class="n">FileOID</span> <span class="o">=</span> <span class="s2">"F.002"</span>
 </pre></div>
 </div>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="context.open_define">
-<span class="sig-prename descclassname"><span class="pre">context.</span></span><span class="sig-name descname"><span class="pre">open_define</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_file</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_file</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_package</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'define_2_1'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">format</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">permissive</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">write_on_exit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/context.html#open_define"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#context.open_define" title="Link to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">context.</span></span><span class="sig-name descname"><span class="pre">open_define</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_file</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_file</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_package</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'define_2_1'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">format</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">permissive</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">write_on_exit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/context.html#open_define"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#context.open_define" title="Link to this definition"></a></dt>
 <dd><p>Open a Define-XML document as a context manager.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>input_file</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – Path to the Define-XML file.</p></li>
-<li><p><strong>output_file</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em> | </em><em>None</em>) – Write path on exit (defaults to <code class="docutils literal notranslate"><span class="pre">input_file</span></code>).</p></li>
+<li><p><strong>output_file</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em> | </em><em>None</em>) – Write path on clean exit.  When omitted, the
+document is opened read-only (nothing is written unless
+<code class="docutils literal notranslate"><span class="pre">write_on_exit=True</span></code> opts in to an in-place update).</p></li>
 <li><p><strong>model_package</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – odmlib model package (default <code class="docutils literal notranslate"><span class="pre">&quot;define_2_1&quot;</span></code>).</p></li>
 <li><p><strong>format</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em> | </em><em>None</em>) – <code class="docutils literal notranslate"><span class="pre">&quot;xml&quot;</span></code> or <code class="docutils literal notranslate"><span class="pre">&quot;json&quot;</span></code> (auto-detected if omitted).</p></li>
 <li><p><strong>permissive</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a><em> | </em><a class="reference internal" href="#odmlib.mode.ValidationMode" title="odmlib.mode.ValidationMode"><em>ValidationMode</em></a>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code>, load in fully permissive mode.
 Pass a <a class="reference internal" href="#odmlib.mode.ValidationMode" title="odmlib.mode.ValidationMode"><code class="xref py py-class docutils literal notranslate"><span class="pre">ValidationMode</span></code></a> flag combination for
 targeted relaxation.  Defaults to <code class="docutils literal notranslate"><span class="pre">False</span></code> (strict).</p></li>
-<li><p><strong>write_on_exit</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code> (default), the document is written
-to <code class="docutils literal notranslate"><span class="pre">output_file</span></code> on clean exit.  Pass <code class="docutils literal notranslate"><span class="pre">False</span></code> for read-only
-inspection without writing back.</p></li>
+<li><p><strong>write_on_exit</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a><em> | </em><em>None</em>) – When omitted, the document is written on clean
+exit only if <code class="docutils literal notranslate"><span class="pre">output_file</span></code> was provided.  <code class="docutils literal notranslate"><span class="pre">True</span></code> forces
+writing (in place when no <code class="docutils literal notranslate"><span class="pre">output_file</span></code>); <code class="docutils literal notranslate"><span class="pre">False</span></code> suppresses
+writing entirely.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -1264,15 +1319,13 @@ inspection without writing back.</p></li>
 </dd>
 </dl>
 <p>Example:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">with</span> <span class="n">open_define</span><span class="p">(</span><span class="s2">&quot;define.xml&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">define</span><span class="p">:</span>
-    <span class="n">mdv</span> <span class="o">=</span> <span class="n">define</span><span class="o">.</span><span class="n">Study</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">MetaDataVersion</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Read-only inspection — input file is never modified</span>
+<span class="k">with</span> <span class="n">open_define</span><span class="p">(</span><span class="s2">"define.xml"</span><span class="p">)</span> <span class="k">as</span> <span class="n">define</span><span class="p">:</span>
+    <span class="c1"># Define-XML: Study/MetaDataVersion are single objects, not lists</span>
+    <span class="n">mdv</span> <span class="o">=</span> <span class="n">define</span><span class="o">.</span><span class="n">Study</span><span class="o">.</span><span class="n">MetaDataVersion</span>
 
-<span class="k">with</span> <span class="n">open_define</span><span class="p">(</span><span class="s2">&quot;broken.xml&quot;</span><span class="p">,</span> <span class="n">permissive</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="k">as</span> <span class="n">define</span><span class="p">:</span>
+<span class="k">with</span> <span class="n">open_define</span><span class="p">(</span><span class="s2">"broken.xml"</span><span class="p">,</span> <span class="n">permissive</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="k">as</span> <span class="n">define</span><span class="p">:</span>
     <span class="o">...</span>  <span class="c1"># permissive mode active during load</span>
-
-<span class="c1"># Read-only inspection — input file is never modified</span>
-<span class="k">with</span> <span class="n">open_define</span><span class="p">(</span><span class="s2">&quot;define.xml&quot;</span><span class="p">,</span> <span class="n">write_on_exit</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span> <span class="k">as</span> <span class="n">define</span><span class="p">:</span>
-    <span class="nb">print</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">define</span><span class="o">.</span><span class="n">Study</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">MetaDataVersion</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">ItemDef</span><span class="p">))</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -1284,6 +1337,22 @@ inspection without writing back.</p></li>
 <p>This module provides the <a class="reference internal" href="#descriptor.Descriptor" title="descriptor.Descriptor"><code class="xref py py-class docutils literal notranslate"><span class="pre">Descriptor</span></code></a> base class that implements
 the Python descriptor protocol for ODM element attributes. All odmlib
 attribute types inherit from this class.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="descriptor.is_pristine_auto_created">
+<span class="sig-prename descclassname"><span class="pre">descriptor.</span></span><span class="sig-name descname"><span class="pre">is_pristine_auto_created</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">elem</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/descriptor.html#is_pristine_auto_created"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#descriptor.is_pristine_auto_created" title="Link to this definition"></a></dt>
+<dd><p>True if <em>elem</em> was auto-created by attribute access and never populated.</p>
+<p>Used by serialization to skip empty elements that exist only because an
+unset optional child attribute was read.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>elem</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><em>Any</em></a>)</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)">bool</a></p>
+</dd>
+</dl>
+</dd></dl>
+
 <dl class="py class">
 <dt class="sig sig-object py" id="descriptor.Descriptor">
 <span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">descriptor.</span></span><span class="sig-name descname"><span class="pre">Descriptor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">required</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">element_class</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">valid_values</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">namespace</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'odm'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/descriptor.html#Descriptor"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#descriptor.Descriptor" title="Link to this definition"></a></dt>
@@ -1295,9 +1364,12 @@ itself. When accessed on an instance, returns the value from the
 instance’s <code class="docutils literal notranslate"><span class="pre">__dict__</span></code>.</p>
 <p>For required attributes without a set value, raises
 <code class="xref py py-exc docutils literal notranslate"><span class="pre">OdmlibRequiredAttributeError</span></code>.
-For optional list attributes without a value, auto-initializes to [].
-For optional element attributes without a value, auto-instantiates
-the element class.</p>
+For optional list attributes without a value, auto-initializes to []
+(stored on the instance so the append idiom works).
+For unset optional scalar attributes, returns <code class="docutils literal notranslate"><span class="pre">None</span></code>.
+For unset single child elements, auto-instantiates the element class
+when it can be constructed empty (returns <code class="docutils literal notranslate"><span class="pre">None</span></code> otherwise); the
+auto-created child is skipped by serialization unless populated.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -1324,6 +1396,25 @@ the element class.</p>
 <code class="xref py py-class docutils literal notranslate"><span class="pre">JSONArmLoader</span></code>).</p>
 <p>Loaders are not typically used directly; pass an instance to
 <code class="xref py py-class docutils literal notranslate"><span class="pre">ODMLoader</span></code> for a unified facade.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="document_loader.resolve_model_class">
+<span class="sig-prename descclassname"><span class="pre">document_loader.</span></span><span class="sig-name descname"><span class="pre">resolve_model_class</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model_module</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">elem_name</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/document_loader.html#resolve_model_class"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#document_loader.resolve_model_class" title="Link to this definition"></a></dt>
+<dd><p>Return the model class for an element tag, or raise a clear error.</p>
+<p>Previously an unknown element in a document surfaced as a bare
+<code class="docutils literal notranslate"><span class="pre">AttributeError</span></code> from <code class="docutils literal notranslate"><span class="pre">getattr</span></code> deep inside the recursive load.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>model_module</strong> – The imported model module (e.g. odmlib.odm_1_3_2.model).</p></li>
+<li><p><strong>elem_name</strong> – The element tag / dict key naming the class.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="#exceptions.OdmlibParsingError" title="exceptions.OdmlibParsingError"><strong>OdmlibParsingError</strong></a> – If the model has no class for <code class="docutils literal notranslate"><span class="pre">elem_name</span></code>.</p>
+</dd>
+</dl>
+</dd></dl>
+
 <dl class="py class">
 <dt class="sig sig-object py" id="document_loader.DocumentLoader">
 <span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">document_loader.</span></span><span class="sig-name descname"><span class="pre">DocumentLoader</span></span><a class="reference internal" href="_modules/document_loader.html#DocumentLoader"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#document_loader.DocumentLoader" title="Link to this definition"></a></dt>
@@ -1486,15 +1577,76 @@ e.g. “ODM &gt; Study &gt; MetaDataVersion &gt; ItemGroupDef(OID=’IG.VS’)�
 <p>Raised for OID uniqueness or ref/def integrity failures.</p>
 </dd></dl>
 
+<dl class="py function">
+<dt class="sig sig-object py" id="exceptions.flatten_cerberus_errors">
+<span class="sig-prename descclassname"><span class="pre">exceptions.</span></span><span class="sig-name descname"><span class="pre">flatten_cerberus_errors</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">errors</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prefix</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/exceptions.html#flatten_cerberus_errors"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#exceptions.flatten_cerberus_errors" title="Link to this definition"></a></dt>
+<dd><p>Flatten a nested Cerberus error dict into <code class="docutils literal notranslate"><span class="pre">(dotted_path,</span> <span class="pre">message)</span></code> pairs.</p>
+<p>Cerberus reports <code class="docutils literal notranslate"><span class="pre">{field:</span> <span class="pre">[msg</span> <span class="pre">|</span> <span class="pre">{subkey:</span> <span class="pre">[...]},</span> <span class="pre">...]}</span></code> where <em>subkey</em>
+is a nested field name or, for sequences, the integer index of the
+offending list item:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="s1">'ItemGroupDef'</span><span class="p">:</span> <span class="p">[{</span><span class="mi">0</span><span class="p">:</span> <span class="p">[{</span><span class="s1">'Name'</span><span class="p">:</span> <span class="p">[</span><span class="s1">'required field'</span><span class="p">]}]}]}</span>
+<span class="o">-&gt;</span> <span class="p">[(</span><span class="s1">'ItemGroupDef.0.Name'</span><span class="p">,</span> <span class="s1">'required field'</span><span class="p">)]</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>errors</strong> – A Cerberus error dict (typically
+<code class="docutils literal notranslate"><span class="pre">OdmlibConformanceError.cerberus_errors</span></code>). Anything that is not
+a dict yields an empty list.</p></li>
+<li><p><strong>prefix</strong> – Dotted path accumulated so far; used by the recursion.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">(path,</span> <span class="pre">message)</span></code> tuples in Cerberus’ own document order,
+which is deterministic — no sets are involved.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)">list</a></p>
+</dd>
+</dl>
+</dd></dl>
+
 <dl class="py exception">
 <dt class="sig sig-object py" id="exceptions.OdmlibConformanceError">
-<span class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">exceptions.</span></span><span class="sig-name descname"><span class="pre">OdmlibConformanceError</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">message</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">cerberus_errors</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/exceptions.html#OdmlibConformanceError"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#exceptions.OdmlibConformanceError" title="Link to this definition"></a></dt>
+<span class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">exceptions.</span></span><span class="sig-name descname"><span class="pre">OdmlibConformanceError</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">message</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">cerberus_errors</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">field_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/exceptions.html#OdmlibConformanceError"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#exceptions.OdmlibConformanceError" title="Link to this definition"></a></dt>
 <dd><p>Bases: <a class="reference internal" href="#exceptions.OdmlibValidationError" title="exceptions.OdmlibValidationError"><code class="xref py py-class docutils literal notranslate"><span class="pre">OdmlibValidationError</span></code></a></p>
 <p>Raised when Cerberus conformance validation fails.</p>
+<p>A single instance normally bundles <em>every</em> violation Cerberus found, so
+<code class="xref py py-meth docutils literal notranslate"><span class="pre">validate()</span></code> calls <a class="reference internal" href="#exceptions.OdmlibConformanceError.expand" title="exceptions.OdmlibConformanceError.expand"><code class="xref py py-meth docutils literal notranslate"><span class="pre">expand()</span></code></a> in
+collect mode to turn it into one error per failing field.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="exceptions.OdmlibConformanceError.cerberus_errors">
 <span class="sig-name descname"><span class="pre">cerberus_errors</span></span><a class="headerlink" href="#exceptions.OdmlibConformanceError.cerberus_errors" title="Link to this definition"></a></dt>
-<dd><p>The raw Cerberus error dict for programmatic access.</p>
+<dd><p>The raw Cerberus error dict for programmatic access.
+On errors produced by <a class="reference internal" href="#exceptions.OdmlibConformanceError.expand" title="exceptions.OdmlibConformanceError.expand"><code class="xref py py-meth docutils literal notranslate"><span class="pre">expand()</span></code></a> this remains the <strong>complete</strong>
+dict for the document, shared by reference with its siblings.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="exceptions.OdmlibConformanceError.field_path">
+<span class="sig-name descname"><span class="pre">field_path</span></span><a class="headerlink" href="#exceptions.OdmlibConformanceError.field_path" title="Link to this definition"></a></dt>
+<dd><p>Dotted path to the single failing field
+(e.g. <code class="docutils literal notranslate"><span class="pre">&quot;ItemGroupDef.0.Name&quot;</span></code>). Set only on errors produced by
+<a class="reference internal" href="#exceptions.OdmlibConformanceError.expand" title="exceptions.OdmlibConformanceError.expand"><code class="xref py py-meth docutils literal notranslate"><span class="pre">expand()</span></code></a>; <code class="docutils literal notranslate"><span class="pre">None</span></code> on the bundled error.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="exceptions.OdmlibConformanceError.expand">
+<span class="sig-name descname"><span class="pre">expand</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/exceptions.html#OdmlibConformanceError.expand"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#exceptions.OdmlibConformanceError.expand" title="Link to this definition"></a></dt>
+<dd><p>Split this bundled error into one error per failing leaf field.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>One <a class="reference internal" href="#exceptions.OdmlibConformanceError" title="exceptions.OdmlibConformanceError"><code class="xref py py-class docutils literal notranslate"><span class="pre">OdmlibConformanceError</span></code></a> per Cerberus leaf
+message, each carrying <code class="docutils literal notranslate"><span class="pre">field_path</span></code>, <code class="docutils literal notranslate"><span class="pre">attribute</span></code> (the leaf
+name) and <code class="docutils literal notranslate"><span class="pre">element_path</span></code> (the containing path). Returns
+<code class="docutils literal notranslate"><span class="pre">[self]</span></code> when there is no Cerberus payload to split — e.g. the
+“No conformance schema registered” error — so nothing is lost.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)">list</a></p>
+</dd>
+</dl>
 </dd></dl>
 
 </dd></dl>
@@ -1504,6 +1656,15 @@ e.g. “ODM &gt; Study &gt; MetaDataVersion &gt; ItemGroupDef(OID=’IG.VS’)�
 <span class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">exceptions.</span></span><span class="sig-name descname"><span class="pre">OdmlibElementOrderError</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">message</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">element_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hint</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">attribute</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">element_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">actual_value</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/exceptions.html#OdmlibElementOrderError"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#exceptions.OdmlibElementOrderError" title="Link to this definition"></a></dt>
 <dd><p>Bases: <a class="reference internal" href="#exceptions.OdmlibValidationError" title="exceptions.OdmlibValidationError"><code class="xref py py-class docutils literal notranslate"><span class="pre">OdmlibValidationError</span></code></a></p>
 <p>Raised when child elements are not in the order required by the ODM spec.</p>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="exceptions.OdmlibErrorLimitError">
+<span class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">exceptions.</span></span><span class="sig-name descname"><span class="pre">OdmlibErrorLimitError</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">message</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">element_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hint</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">attribute</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">element_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">actual_value</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/exceptions.html#OdmlibErrorLimitError"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#exceptions.OdmlibErrorLimitError" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#exceptions.OdmlibValidationError" title="exceptions.OdmlibValidationError"><code class="xref py py-class docutils literal notranslate"><span class="pre">OdmlibValidationError</span></code></a></p>
+<p>Appended as the final entry when <code class="docutils literal notranslate"><span class="pre">validate(max_errors=N)</span></code> stops early.</p>
+<p>Its presence means validation was truncated and additional problems may
+exist. It is never raised — only collected.</p>
 </dd></dl>
 
 <dl class="py exception">
@@ -1608,20 +1769,28 @@ catches ValueError from loader calls.</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="exceptions.ErrorCollector">
-<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">exceptions.</span></span><span class="sig-name descname"><span class="pre">ErrorCollector</span></span><a class="reference internal" href="_modules/exceptions.html#ErrorCollector"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#exceptions.ErrorCollector" title="Link to this definition"></a></dt>
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">exceptions.</span></span><span class="sig-name descname"><span class="pre">ErrorCollector</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">max_errors</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/exceptions.html#ErrorCollector"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#exceptions.ErrorCollector" title="Link to this definition"></a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
 <p>Accumulates validation errors instead of raising immediately.</p>
-<p>Pass to <code class="xref py py-meth docutils literal notranslate"><span class="pre">validate()</span></code> with
-<code class="docutils literal notranslate"><span class="pre">collect_errors=True</span></code> to gather all errors in a single pass rather
-than stopping at the first failure.</p>
+<p>Also serves as the <em>sink</em> for the collecting-checker protocol: a checker
+that mixes in <a class="reference internal" href="#exceptions.ErrorReporting" title="exceptions.ErrorReporting"><code class="xref py py-class docutils literal notranslate"><span class="pre">ErrorReporting</span></code></a> hands its errors here instead of
+raising, so one pass surfaces every problem it can find.</p>
 <p>Example:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">collector</span> <span class="o">=</span> <span class="n">ErrorCollector</span><span class="p">()</span>
-<span class="n">errors</span> <span class="o">=</span> <span class="n">odm</span><span class="o">.</span><span class="n">validate</span><span class="p">(</span><span class="n">collect_errors</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">oid_checker</span><span class="o">=</span><span class="n">checker</span><span class="p">)</span>
-<span class="k">if</span> <span class="n">errors</span><span class="p">:</span>
-    <span class="k">for</span> <span class="n">err</span> <span class="ow">in</span> <span class="n">errors</span><span class="p">:</span>
-        <span class="nb">print</span><span class="p">(</span><span class="n">err</span><span class="p">)</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">errors</span> <span class="o">=</span> <span class="n">odm</span><span class="o">.</span><span class="n">validate</span><span class="p">(</span><span class="n">collect_errors</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">oid_checker</span><span class="o">=</span><span class="n">checker</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">err</span> <span class="ow">in</span> <span class="n">errors</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">err</span><span class="p">)</span>
 </pre></div>
 </div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>max_errors</strong> – Optional cap. Once this many errors are collected, the
+next <a class="reference internal" href="#exceptions.ErrorCollector.add_error" title="exceptions.ErrorCollector.add_error"><code class="xref py py-meth docutils literal notranslate"><span class="pre">add_error()</span></code></a> sets <a class="reference internal" href="#exceptions.ErrorCollector.truncated" title="exceptions.ErrorCollector.truncated"><code class="xref py py-attr docutils literal notranslate"><span class="pre">truncated</span></code></a> and raises the
+internal <code class="docutils literal notranslate"><span class="pre">_ErrorLimitReached</span></code> sentinel to unwind the in-progress
+validation walk. <code class="docutils literal notranslate"><span class="pre">None</span></code> (the default) collects everything and
+never raises, so hand-built <code class="docutils literal notranslate"><span class="pre">ErrorCollector()</span></code> instances behave
+exactly as before.</p>
+</dd>
+</dl>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="exceptions.ErrorCollector.errors">
 <span class="sig-name descname"><span class="pre">errors</span></span><a class="headerlink" href="#exceptions.ErrorCollector.errors" title="Link to this definition"></a></dt>
@@ -1634,16 +1803,40 @@ than stopping at the first failure.</p>
 <dd><p>List of <a class="reference internal" href="#exceptions.OdmlibWarning" title="exceptions.OdmlibWarning"><code class="xref py py-class docutils literal notranslate"><span class="pre">OdmlibWarning</span></code></a> instances collected so far.</p>
 </dd></dl>
 
+<dl class="py attribute">
+<dt class="sig sig-object py" id="exceptions.ErrorCollector.max_errors">
+<span class="sig-name descname"><span class="pre">max_errors</span></span><a class="headerlink" href="#exceptions.ErrorCollector.max_errors" title="Link to this definition"></a></dt>
+<dd><p>The cap, or <code class="docutils literal notranslate"><span class="pre">None</span></code> for uncapped.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="exceptions.ErrorCollector.truncated">
+<span class="sig-name descname"><span class="pre">truncated</span></span><a class="headerlink" href="#exceptions.ErrorCollector.truncated" title="Link to this definition"></a></dt>
+<dd><p>True once the cap stopped collection short.</p>
+</dd></dl>
+
 <dl class="py property">
 <dt class="sig sig-object py" id="exceptions.ErrorCollector.has_errors">
 <span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">has_errors</span></span><a class="headerlink" href="#exceptions.ErrorCollector.has_errors" title="Link to this definition"></a></dt>
 <dd><p>True if any errors have been collected.</p>
 </dd></dl>
 
+<dl class="py property">
+<dt class="sig sig-object py" id="exceptions.ErrorCollector.is_full">
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">is_full</span></span><a class="headerlink" href="#exceptions.ErrorCollector.is_full" title="Link to this definition"></a></dt>
+<dd><p>True when <code class="docutils literal notranslate"><span class="pre">max_errors</span></code> is set and that many errors are collected.</p>
+</dd></dl>
+
 <dl class="py method">
 <dt class="sig sig-object py" id="exceptions.ErrorCollector.add_error">
 <span class="sig-name descname"><span class="pre">add_error</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">error</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/exceptions.html#ErrorCollector.add_error"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#exceptions.ErrorCollector.add_error" title="Link to this definition"></a></dt>
 <dd><p>Add an <a class="reference internal" href="#exceptions.OdmlibError" title="exceptions.OdmlibError"><code class="xref py py-class docutils literal notranslate"><span class="pre">OdmlibError</span></code></a> to the collection.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>_ErrorLimitReached</strong> – If the collector is already at <code class="docutils literal notranslate"><span class="pre">max_errors</span></code>.
+    Never raised when <code class="docutils literal notranslate"><span class="pre">max_errors</span></code> is <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
@@ -1660,6 +1853,83 @@ than stopping at the first failure.</p>
 new <a class="reference internal" href="#exceptions.OdmlibValidationError" title="exceptions.OdmlibValidationError"><code class="xref py py-class docutils literal notranslate"><span class="pre">OdmlibValidationError</span></code></a> summarising all errors otherwise.</p>
 </dd></dl>
 
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="exceptions.ErrorReporting">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">exceptions.</span></span><span class="sig-name descname"><span class="pre">ErrorReporting</span></span><a class="reference internal" href="_modules/exceptions.html#ErrorReporting"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#exceptions.ErrorReporting" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>Mixin giving a validation checker an optional error sink.</p>
+<p>A checker that mixes this in replaces <code class="docutils literal notranslate"><span class="pre">raise</span> <span class="pre">SomeOdmlibError(...)</span></code> with
+<code class="docutils literal notranslate"><span class="pre">self.report(SomeOdmlibError(...))</span></code>. With no sink installed (the
+default) <a class="reference internal" href="#exceptions.ErrorReporting.report" title="exceptions.ErrorReporting.report"><code class="xref py py-meth docutils literal notranslate"><span class="pre">report()</span></code></a> re-raises, so fail-fast behaviour is identical to
+raising directly. Inside a <a class="reference internal" href="#exceptions.ErrorReporting.collecting" title="exceptions.ErrorReporting.collecting"><code class="xref py py-meth docutils literal notranslate"><span class="pre">collecting()</span></code></a> block the error is handed to
+the sink and the checker keeps going, so a single pass surfaces every
+problem rather than only the first.</p>
+<p>Third-party checkers may opt in by inheriting this mixin, or by
+duck-typing <code class="docutils literal notranslate"><span class="pre">supports_error_collection</span> <span class="pre">=</span> <span class="pre">True</span></code> plus <a class="reference internal" href="#exceptions.ErrorReporting.report" title="exceptions.ErrorReporting.report"><code class="xref py py-meth docutils literal notranslate"><span class="pre">report()</span></code></a> and
+<a class="reference internal" href="#exceptions.ErrorReporting.collecting" title="exceptions.ErrorReporting.collecting"><code class="xref py py-meth docutils literal notranslate"><span class="pre">collecting()</span></code></a>. Checkers that do neither still work — they simply
+contribute at most one error, exactly as before (see
+<a class="reference internal" href="#exceptions.is_collecting_checker" title="exceptions.is_collecting_checker"><code class="xref py py-func docutils literal notranslate"><span class="pre">is_collecting_checker()</span></code></a>).</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Not thread-safe: the sink lives on the instance. Checkers are already
+stateful (they accumulate OIDs), so use one checker per document per
+thread.</p>
+</div>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="exceptions.ErrorReporting.supports_error_collection">
+<span class="sig-name descname"><span class="pre">supports_error_collection</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">True</span></span><a class="headerlink" href="#exceptions.ErrorReporting.supports_error_collection" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="exceptions.ErrorReporting.report">
+<span class="sig-name descname"><span class="pre">report</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">error</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/exceptions.html#ErrorReporting.report"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#exceptions.ErrorReporting.report" title="Link to this definition"></a></dt>
+<dd><p>Raise <em>error</em> (fail-fast) or hand it to the installed sink.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>error</strong> – The <a class="reference internal" href="#exceptions.OdmlibError" title="exceptions.OdmlibError"><code class="xref py py-class docutils literal notranslate"><span class="pre">OdmlibError</span></code></a> describing the problem.</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><a class="reference internal" href="#exceptions.OdmlibError" title="exceptions.OdmlibError"><strong>OdmlibError</strong></a> – The error itself, when no sink is installed.</p></li>
+<li><p><strong>_ErrorLimitReached</strong> – When the sink is full (see
+    <a class="reference internal" href="#exceptions.ErrorCollector" title="exceptions.ErrorCollector"><code class="xref py py-class docutils literal notranslate"><span class="pre">ErrorCollector</span></code></a>).</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="exceptions.ErrorReporting.collecting">
+<span class="sig-name descname"><span class="pre">collecting</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sink</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/exceptions.html#ErrorReporting.collecting"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#exceptions.ErrorReporting.collecting" title="Link to this definition"></a></dt>
+<dd><p>Install <em>sink</em> for the duration of the block, then restore.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>sink</strong> – Any object with an <code class="docutils literal notranslate"><span class="pre">add_error(error)</span></code> method — normally an
+<a class="reference internal" href="#exceptions.ErrorCollector" title="exceptions.ErrorCollector"><code class="xref py py-class docutils literal notranslate"><span class="pre">ErrorCollector</span></code></a>.</p>
+</dd>
+</dl>
+<p>Example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">collector</span> <span class="o">=</span> <span class="n">ErrorCollector</span><span class="p">()</span>
+<span class="k">with</span> <span class="n">checker</span><span class="o">.</span><span class="n">collecting</span><span class="p">(</span><span class="n">collector</span><span class="p">):</span>
+    <span class="n">odm</span><span class="o">.</span><span class="n">verify_oids</span><span class="p">(</span><span class="n">checker</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">err</span> <span class="ow">in</span> <span class="n">collector</span><span class="o">.</span><span class="n">errors</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">err</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="exceptions.is_collecting_checker">
+<span class="sig-prename descclassname"><span class="pre">exceptions.</span></span><span class="sig-name descname"><span class="pre">is_collecting_checker</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">checker</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/exceptions.html#is_collecting_checker"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#exceptions.is_collecting_checker" title="Link to this definition"></a></dt>
+<dd><p>Return True if <em>checker</em> implements the collecting-checker protocol.</p>
+<p>Used by <code class="xref py py-meth docutils literal notranslate"><span class="pre">validate()</span></code> to decide whether
+a checker can enumerate every problem or should fall back to fail-fast
+(one error for the whole layer). Duck-typed checkers qualify without
+inheriting <a class="reference internal" href="#exceptions.ErrorReporting" title="exceptions.ErrorReporting"><code class="xref py py-class docutils literal notranslate"><span class="pre">ErrorReporting</span></code></a>.</p>
 </dd></dl>
 
 </section>
@@ -1698,8 +1968,8 @@ all operations to it.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">odmlib.odm_loader</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">OL</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">odmlib.loader</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">LD</span>
 
-<span class="n">loader</span> <span class="o">=</span> <span class="n">LD</span><span class="o">.</span><span class="n">ODMLoader</span><span class="p">(</span><span class="n">OL</span><span class="o">.</span><span class="n">XMLODMLoader</span><span class="p">(</span><span class="n">model_package</span><span class="o">=</span><span class="s2">&quot;odm_1_3_2&quot;</span><span class="p">))</span>
-<span class="n">loader</span><span class="o">.</span><span class="n">open_odm_document</span><span class="p">(</span><span class="s2">&quot;study.xml&quot;</span><span class="p">)</span>
+<span class="n">loader</span> <span class="o">=</span> <span class="n">LD</span><span class="o">.</span><span class="n">ODMLoader</span><span class="p">(</span><span class="n">OL</span><span class="o">.</span><span class="n">XMLODMLoader</span><span class="p">(</span><span class="n">model_package</span><span class="o">=</span><span class="s2">"odm_1_3_2"</span><span class="p">))</span>
+<span class="n">loader</span><span class="o">.</span><span class="n">open_odm_document</span><span class="p">(</span><span class="s2">"study.xml"</span><span class="p">)</span>
 <span class="n">odm</span> <span class="o">=</span> <span class="n">loader</span><span class="o">.</span><span class="n">root</span><span class="p">()</span>
 <span class="n">mdv</span> <span class="o">=</span> <span class="n">loader</span><span class="o">.</span><span class="n">MetaDataVersion</span><span class="p">()</span>
 </pre></div>
@@ -1831,13 +2101,38 @@ requiring a strict singleton or global variable.</p>
 <p>Example:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">odmlib.ns_registry</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">NS</span>
 
-<span class="n">NS</span><span class="o">.</span><span class="n">NamespaceRegistry</span><span class="p">(</span><span class="n">prefix</span><span class="o">=</span><span class="s2">&quot;odm&quot;</span><span class="p">,</span>
-    <span class="n">uri</span><span class="o">=</span><span class="s2">&quot;http://www.cdisc.org/ns/odm/v1.3&quot;</span><span class="p">,</span>
+<span class="n">NS</span><span class="o">.</span><span class="n">NamespaceRegistry</span><span class="p">(</span><span class="n">prefix</span><span class="o">=</span><span class="s2">"odm"</span><span class="p">,</span>
+    <span class="n">uri</span><span class="o">=</span><span class="s2">"http://www.cdisc.org/ns/odm/v1.3"</span><span class="p">,</span>
     <span class="n">is_default</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">is_reset</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-<span class="n">NS</span><span class="o">.</span><span class="n">NamespaceRegistry</span><span class="p">(</span><span class="n">prefix</span><span class="o">=</span><span class="s2">&quot;def&quot;</span><span class="p">,</span>
-    <span class="n">uri</span><span class="o">=</span><span class="s2">&quot;http://www.cdisc.org/ns/def/v2.1&quot;</span><span class="p">)</span>
+<span class="n">NS</span><span class="o">.</span><span class="n">NamespaceRegistry</span><span class="p">(</span><span class="n">prefix</span><span class="o">=</span><span class="s2">"def"</span><span class="p">,</span>
+    <span class="n">uri</span><span class="o">=</span><span class="s2">"http://www.cdisc.org/ns/def/v2.1"</span><span class="p">)</span>
 </pre></div>
 </div>
+<dl class="py function">
+<dt class="sig sig-object py" id="ns_registry.bind_document_namespaces">
+<span class="sig-prename descclassname"><span class="pre">ns_registry.</span></span><span class="sig-name descname"><span class="pre">bind_document_namespaces</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">odm_obj</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">snapshot</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">recursive</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ns_registry.html#bind_document_namespaces"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ns_registry.bind_document_namespaces" title="Link to this definition"></a></dt>
+<dd><p>Associate <em>odm_obj</em> with a namespace snapshot for serialization.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>odm_obj</strong> – A loaded odmlib element (typically the document root).</p></li>
+<li><p><strong>snapshot</strong> – A dict as returned by <a class="reference internal" href="#ns_registry.NamespaceRegistry.snapshot" title="ns_registry.NamespaceRegistry.snapshot"><code class="xref py py-meth docutils literal notranslate"><span class="pre">NamespaceRegistry.snapshot()</span></code></a>.
+When <code class="docutils literal notranslate"><span class="pre">None</span></code>, the registry’s current state is captured.</p></li>
+<li><p><strong>recursive</strong> – When True, also bind every descendant element, so that
+serializing a child reached by walking the tree
+(<code class="docutils literal notranslate"><span class="pre">define.Study.MetaDataVersion</span></code>) uses the same namespaces as its
+root instead of falling back to current global registry state.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="ns_registry.get_document_namespaces">
+<span class="sig-prename descclassname"><span class="pre">ns_registry.</span></span><span class="sig-name descname"><span class="pre">get_document_namespaces</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">odm_obj</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ns_registry.html#get_document_namespaces"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ns_registry.get_document_namespaces" title="Link to this definition"></a></dt>
+<dd><p>Return the namespace snapshot bound to <em>odm_obj</em>, or <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
+</dd></dl>
+
 <dl class="py class">
 <dt class="sig sig-object py" id="ns_registry.Borg">
 <span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">ns_registry.</span></span><span class="sig-name descname"><span class="pre">Borg</span></span><a class="reference internal" href="_modules/ns_registry.html#Borg"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ns_registry.Borg" title="Link to this definition"></a></dt>
@@ -1894,11 +2189,25 @@ prefix registration and provides methods for XML serialization.</p>
 </dl>
 <p>Example:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">odmlib.ns_registry</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">NS</span>
-<span class="n">NS</span><span class="o">.</span><span class="n">NamespaceRegistry</span><span class="p">(</span><span class="n">prefix</span><span class="o">=</span><span class="s2">&quot;odm&quot;</span><span class="p">,</span>
-    <span class="n">uri</span><span class="o">=</span><span class="s2">&quot;http://www.cdisc.org/ns/odm/v1.3&quot;</span><span class="p">,</span>
+<span class="n">NS</span><span class="o">.</span><span class="n">NamespaceRegistry</span><span class="p">(</span><span class="n">prefix</span><span class="o">=</span><span class="s2">"odm"</span><span class="p">,</span>
+    <span class="n">uri</span><span class="o">=</span><span class="s2">"http://www.cdisc.org/ns/odm/v1.3"</span><span class="p">,</span>
     <span class="n">is_default</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">is_reset</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </pre></div>
 </div>
+<dl class="py method">
+<dt class="sig sig-object py" id="ns_registry.NamespaceRegistry.snapshot">
+<span class="sig-name descname"><span class="pre">snapshot</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/ns_registry.html#NamespaceRegistry.snapshot"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ns_registry.NamespaceRegistry.snapshot" title="Link to this definition"></a></dt>
+<dd><p>Return a copy of the current registry state.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">{&quot;namespaces&quot;:</span> <span class="pre">{prefix:</span> <span class="pre">uri,</span> <span class="pre">...},</span> <span class="pre">&quot;default&quot;:</span> <span class="pre">{prefix:</span> <span class="pre">uri}}</span></code>.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)">dict</a></p>
+</dd>
+</dl>
+</dd></dl>
+
 <dl class="py method">
 <dt class="sig sig-object py" id="ns_registry.NamespaceRegistry.get_odm_namespace_entries">
 <span class="sig-name descname"><span class="pre">get_odm_namespace_entries</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/ns_registry.html#NamespaceRegistry.get_odm_namespace_entries"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ns_registry.NamespaceRegistry.get_odm_namespace_entries" title="Link to this definition"></a></dt>
@@ -1987,13 +2296,24 @@ non-default namespaces, returns <code class="docutils literal notranslate"><span
 
 <dl class="py method">
 <dt class="sig sig-object py" id="ns_registry.NamespaceRegistry.set_odm_namespace_attributes">
-<span class="sig-name descname"><span class="pre">set_odm_namespace_attributes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">odm_elem</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ns_registry.html#NamespaceRegistry.set_odm_namespace_attributes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ns_registry.NamespaceRegistry.set_odm_namespace_attributes" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">set_odm_namespace_attributes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">odm_elem</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">namespaces</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">default</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ns_registry.html#NamespaceRegistry.set_odm_namespace_attributes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ns_registry.NamespaceRegistry.set_odm_namespace_attributes" title="Link to this definition"></a></dt>
 <dd><p>Set xmlns attributes on an ElementTree root element.</p>
-<p>Adds <code class="docutils literal notranslate"><span class="pre">xmlns</span></code> for the default namespace and <code class="docutils literal notranslate"><span class="pre">xmlns:prefix</span></code>
-for each additional namespace to the element’s <code class="docutils literal notranslate"><span class="pre">attrib</span></code> dict.</p>
+<p>Adds <code class="docutils literal notranslate"><span class="pre">xmlns</span></code> for the default namespace and <code class="docutils literal notranslate"><span class="pre">xmlns:prefix</span></code> for
+each additional namespace that is actually used in the tree.  The
+reserved <code class="docutils literal notranslate"><span class="pre">xml</span></code> prefix is never declared (it is implicitly bound
+per the XML specification).</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>odm_elem</strong> (<em>ET.Element</em>) – The root XML element to annotate.</p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>odm_elem</strong> (<em>ET.Element</em>) – The root XML element to annotate.</p></li>
+<li><p><strong>namespaces</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><em>dict</em></a>) – Optional <code class="docutils literal notranslate"><span class="pre">{prefix:</span> <span class="pre">uri}</span></code> map to use instead
+of the registry’s shared state (e.g. a per-document snapshot).</p></li>
+<li><p><strong>default</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><em>dict</em></a>) – Optional <code class="docutils literal notranslate"><span class="pre">{prefix:</span> <span class="pre">uri}</span></code> default-namespace map
+to use instead of the registry’s shared state.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="#exceptions.OdmlibNamespaceError" title="exceptions.OdmlibNamespaceError"><strong>OdmlibNamespaceError</strong></a> – If no default namespace is registered.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -2002,6 +2322,12 @@ for each additional namespace to the element’s <code class="docutils literal n
 <dt class="sig sig-object py" id="ns_registry.NamespaceRegistry.set_odm_namespace_attributes_string">
 <span class="sig-name descname"><span class="pre">set_odm_namespace_attributes_string</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">odm_str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ns_registry.html#NamespaceRegistry.set_odm_namespace_attributes_string"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ns_registry.NamespaceRegistry.set_odm_namespace_attributes_string" title="Link to this definition"></a></dt>
 <dd><p>Add xmlns attributes to an ODM XML string.</p>
+<div class="deprecated">
+<p><span class="versionmodified deprecated">Deprecated since version 0.2.1: </span><code class="xref py py-meth docutils literal notranslate"><span class="pre">ODMElement.to_xml_string()</span></code> has declared its own namespaces since
+0.2.1, so this string-patching helper is a no-op on any string it would
+normally be handed. It has no callers in odmlib and will be removed in
+0.3.0. Remove the call; no replacement is needed.</p>
+</div>
 <p>Replaces the opening <code class="docutils literal notranslate"><span class="pre">&lt;ODM</span></code> tag in <code class="docutils literal notranslate"><span class="pre">odm_str</span></code> with a version
 that includes all registered namespace declarations.</p>
 <dl class="field-list simple">
@@ -2047,7 +2373,7 @@ from <a class="reference internal" href="#odm_element.ODMElement" title="odm_ele
 their attributes and child elements.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="odm_element.ODMMeta">
-<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">odm_element.</span></span><span class="sig-name descname"><span class="pre">ODMMeta</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">clsname</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bases</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">clsdict</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/odm_element.html#ODMMeta"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#odm_element.ODMMeta" title="Link to this definition"></a></dt>
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">odm_element.</span></span><span class="sig-name descname"><span class="pre">ODMMeta</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">clsname</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bases</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">clsdict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">merge_fields</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/odm_element.html#ODMMeta"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#odm_element.ODMMeta" title="Link to this definition"></a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#type" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">type</span></code></a></p>
 <p>Metaclass for all ODM element classes.</p>
 <p>Processes class definitions to:</p>
@@ -2068,10 +2394,15 @@ their attributes and child elements.</p>
 <p>Handles namespace registration and XML declaration.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="odm_element.ODMWriter.write_odm">
-<span class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">write_odm</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">odm_file</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">odm_elem</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/odm_element.html#ODMWriter.write_odm"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#odm_element.ODMWriter.write_odm" title="Link to this definition"></a></dt>
+<span class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">write_odm</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">odm_file</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">odm_elem</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ns_snapshot</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/odm_element.html#ODMWriter.write_odm"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#odm_element.ODMWriter.write_odm" title="Link to this definition"></a></dt>
 <dd><p>after converting ODMLIB to ElementTree, write the ElementTree to an ODM file
 :param odm_file: path and file to write the ODM XML
-:param odm_elem: Element object to write to ODM (presumably an ODM root)</p>
+:param odm_elem: Element object to write to ODM (presumably an ODM root)
+:param ns_snapshot: optional per-document namespace snapshot (as returned</p>
+<blockquote>
+<div><p>by NamespaceRegistry.snapshot()); when omitted, the shared registry
+state is used</p>
+</div></blockquote>
 </dd></dl>
 
 </dd></dl>
@@ -2086,12 +2417,13 @@ checking, and element ordering verification. All model classes
 (e.g., Study, ItemDef, MetaDataVersion) inherit from this class.</p>
 <dl class="simple">
 <dt>Serialization:</dt><dd><ul class="simple">
-<li><p><a class="reference internal" href="#odm_element.ODMElement.to_xml" title="odm_element.ODMElement.to_xml"><code class="xref py py-meth docutils literal notranslate"><span class="pre">to_xml()</span></code></a> – generate ElementTree XML</p></li>
-<li><p><a class="reference internal" href="#odm_element.ODMElement.to_xml_string" title="odm_element.ODMElement.to_xml_string"><code class="xref py py-meth docutils literal notranslate"><span class="pre">to_xml_string()</span></code></a> – XML as a string</p></li>
+<li><p><a class="reference internal" href="#odm_element.ODMElement.to_xml_string" title="odm_element.ODMElement.to_xml_string"><code class="xref py py-meth docutils literal notranslate"><span class="pre">to_xml_string()</span></code></a> – XML as a string (self-contained; declares its own xmlns)</p></li>
+<li><p><a class="reference internal" href="#odm_element.ODMElement.to_element" title="odm_element.ODMElement.to_element"><code class="xref py py-meth docutils literal notranslate"><span class="pre">to_element()</span></code></a> – namespace-resolved ElementTree Element</p></li>
 <li><p><a class="reference internal" href="#odm_element.ODMElement.to_dict" title="odm_element.ODMElement.to_dict"><code class="xref py py-meth docutils literal notranslate"><span class="pre">to_dict()</span></code></a> – Python dict (namespace info stripped)</p></li>
 <li><p><a class="reference internal" href="#odm_element.ODMElement.to_json" title="odm_element.ODMElement.to_json"><code class="xref py py-meth docutils literal notranslate"><span class="pre">to_json()</span></code></a> – JSON string</p></li>
 <li><p><a class="reference internal" href="#odm_element.ODMElement.write_xml" title="odm_element.ODMElement.write_xml"><code class="xref py py-meth docutils literal notranslate"><span class="pre">write_xml()</span></code></a> – write XML to file</p></li>
 <li><p><a class="reference internal" href="#odm_element.ODMElement.write_json" title="odm_element.ODMElement.write_json"><code class="xref py py-meth docutils literal notranslate"><span class="pre">write_json()</span></code></a> – write JSON to file</p></li>
+<li><p><a class="reference internal" href="#odm_element.ODMElement.to_xml" title="odm_element.ODMElement.to_xml"><code class="xref py py-meth docutils literal notranslate"><span class="pre">to_xml()</span></code></a> – internal tree builder; no xmlns (prefer <a class="reference internal" href="#odm_element.ODMElement.to_element" title="odm_element.ODMElement.to_element"><code class="xref py py-meth docutils literal notranslate"><span class="pre">to_element()</span></code></a>)</p></li>
 </ul>
 </dd>
 <dt>Validation:</dt><dd><ul class="simple">
@@ -2154,7 +2486,14 @@ Names must match declared descriptors on the class.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="odm_element.ODMElement.to_xml">
 <span class="sig-name descname"><span class="pre">to_xml</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">parent_elem</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">top_elem</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/odm_element.html#ODMElement.to_xml"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#odm_element.ODMElement.to_xml" title="Link to this definition"></a></dt>
-<dd><p>Generate ElementTree XML from the odmlib object hierarchy.</p>
+<dd><p>Build odmlib’s internal ElementTree serialization buffer.</p>
+<p><strong>Prefer :meth:`to_element` if you want a tree to work with.</strong> The Element
+returned here carries <strong>no</strong> xmlns declarations and uses prefix-literal tags
+(<code class="docutils literal notranslate"><span class="pre">def:leaf</span></code>) rather than Clark notation, so on its own it cannot be re-parsed
+for Define-XML (<code class="docutils literal notranslate"><span class="pre">ParseError:</span> <span class="pre">unbound</span> <span class="pre">prefix</span></code>), lands in no namespace for ODM,
+fails <code class="docutils literal notranslate"><span class="pre">ET.canonicalize()</span></code>, and does not support namespace-aware <code class="docutils literal notranslate"><span class="pre">find()</span></code>.
+Declarations are attached downstream by <a class="reference internal" href="#odm_element.ODMElement.to_xml_string" title="odm_element.ODMElement.to_xml_string"><code class="xref py py-meth docutils literal notranslate"><span class="pre">to_xml_string()</span></code></a> and
+<a class="reference internal" href="#odm_element.ODMWriter" title="odm_element.ODMWriter"><code class="xref py py-class docutils literal notranslate"><span class="pre">ODMWriter</span></code></a>. This method exists as the shared tree builder for those two.</p>
 <p>Children are emitted in the model declaration order recorded in
 <code class="docutils literal notranslate"><span class="pre">_elems</span></code> by <a class="reference internal" href="#odm_element.ODMMeta" title="odm_element.ODMMeta"><code class="xref py py-class docutils literal notranslate"><span class="pre">ODMMeta</span></code></a> (i.e. the order in which descriptors
 appear in the class body of the relevant model module). Attribute
@@ -2179,14 +2518,63 @@ do not need to call <a class="reference internal" href="#odm_element.ODMElement.
 
 <dl class="py method">
 <dt class="sig sig-object py" id="odm_element.ODMElement.to_xml_string">
-<span class="sig-name descname"><span class="pre">to_xml_string</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/odm_element.html#ODMElement.to_xml_string"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#odm_element.ODMElement.to_xml_string" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">to_xml_string</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">xml_declaration</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/odm_element.html#ODMElement.to_xml_string"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#odm_element.ODMElement.to_xml_string" title="Link to this definition"></a></dt>
 <dd><p>Convert this element to an XML string.</p>
+<p>The string includes xmlns declarations for the default namespace and
+any prefixes used in the serialized tree, so the result is
+namespace-well-formed and can be re-parsed on its own.</p>
+<p>The two serialization paths line up exactly, which makes a string and a
+file interchangeable for comparison purposes:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">xml_declaration=False</span></code> (the default) returns precisely the bytes
+<a class="reference internal" href="#odm_element.ODMElement.write_xml" title="odm_element.ODMElement.write_xml"><code class="xref py py-meth docutils literal notranslate"><span class="pre">write_xml()</span></code></a> produces <em>after</em> its <code class="docutils literal notranslate"><span class="pre">&lt;?xml</span> <span class="pre">...?&gt;</span></code> line.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">xml_declaration=True</span></code> returns precisely what <a class="reference internal" href="#odm_element.ODMElement.write_xml" title="odm_element.ODMElement.write_xml"><code class="xref py py-meth docutils literal notranslate"><span class="pre">write_xml()</span></code></a>
+writes, declaration included.</p></li>
+</ul>
+<p>The default stays <code class="docutils literal notranslate"><span class="pre">False</span></code>: this string is the documented input to
+<code class="docutils literal notranslate"><span class="pre">ODMLoader.load_odm_string()</span></code>, and 0.2.1 shipped it declaration-free.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>xml_declaration</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a>) – When True, prepend
+<code class="docutils literal notranslate"><span class="pre">&lt;?xml</span> <span class="pre">version='1.0'</span> <span class="pre">encoding='UTF-8'?&gt;</span></code> and a newline.
+Keyword-only.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>UTF-8 XML representation of this element.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)">str</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="odm_element.ODMElement.to_element">
+<span class="sig-name descname"><span class="pre">to_element</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/odm_element.html#ODMElement.to_element"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#odm_element.ODMElement.to_element" title="Link to this definition"></a></dt>
+<dd><p>Return this element as a standard, namespace-resolved ElementTree Element.</p>
+<p>Unlike <a class="reference internal" href="#odm_element.ODMElement.to_xml" title="odm_element.ODMElement.to_xml"><code class="xref py py-meth docutils literal notranslate"><span class="pre">to_xml()</span></code></a>, which builds odmlib’s internal serialization buffer with
+prefix-literal tags (<code class="docutils literal notranslate"><span class="pre">def:leaf</span></code>) and no declarations, this returns a tree parsed
+from <a class="reference internal" href="#odm_element.ODMElement.to_xml_string" title="odm_element.ODMElement.to_xml_string"><code class="xref py py-meth docutils literal notranslate"><span class="pre">to_xml_string()</span></code></a>. Tags and attributes use Clark notation
+(<code class="docutils literal notranslate"><span class="pre">{http://www.cdisc.org/ns/def/v2.1}leaf</span></code>), so namespace-aware <code class="docutils literal notranslate"><span class="pre">find()</span></code>,
+<code class="docutils literal notranslate"><span class="pre">ET.canonicalize()</span></code>, <code class="docutils literal notranslate"><span class="pre">ET.indent()</span></code> pretty-printing, and grafting the result
+into a host document you are assembling yourself all behave correctly.</p>
+<p>This is the method to reach for when you want an <code class="docutils literal notranslate"><span class="pre">Element</span></code>; <code class="docutils literal notranslate"><span class="pre">to_xml()</span></code> is the
+internal tree builder and its output is not a self-contained document.</p>
+<p>Costs one serialize + reparse (~8 ms for a 166 KB Define-XML document).</p>
+<p>Note that re-serializing the result with <code class="docutils literal notranslate"><span class="pre">ET.tostring()</span></code> picks prefixes from
+ElementTree’s process-global <code class="docutils literal notranslate"><span class="pre">register_namespace()</span></code> map, so the prefix spelling
+may differ from the source document (<code class="docutils literal notranslate"><span class="pre">odm:ODM</span></code> rather than a default <code class="docutils literal notranslate"><span class="pre">xmlns</span></code>).
+The namespaces themselves are identical. Use <a class="reference internal" href="#odm_element.ODMElement.to_xml_string" title="odm_element.ODMElement.to_xml_string"><code class="xref py py-meth docutils literal notranslate"><span class="pre">to_xml_string()</span></code></a> or
+<a class="reference internal" href="#odm_element.ODMElement.write_xml" title="odm_element.ODMElement.write_xml"><code class="xref py py-meth docutils literal notranslate"><span class="pre">write_xml()</span></code></a> when you need odmlib’s exact output.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>UTF-8 XML representation of this element.</p>
+<dd class="field-odd"><p>a namespace-resolved <code class="docutils literal notranslate"><span class="pre">ET.Element</span></code></p>
 </dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)">str</a></p>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="#exceptions.OdmlibNamespaceError" title="exceptions.OdmlibNamespaceError"><strong>OdmlibNamespaceError</strong></a> – if no default namespace is registered</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/xml.etree.elementtree.html#xml.etree.ElementTree.Element" title="(in Python v3.14)"><em>Element</em></a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -2344,12 +2732,23 @@ OID attribute values to their containing odmlib objects.</p>
 or a <code class="docutils literal notranslate"><span class="pre">DynamicOIDRef</span></code> instance.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>OID definition values that have no corresponding references.</p>
+<dd class="field-even"><p>Mapping of <code class="docutils literal notranslate"><span class="pre">oid_value</span> <span class="pre">-&gt;</span> <span class="pre">ref_attr_name</span></code> for each OID that
+is defined but never referenced. An empty dict means every
+definition is used.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)">list</a></p>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)">dict</a></p>
 </dd>
 </dl>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Pass a checker that has been through a <em>collect-mode</em>
+<a class="reference internal" href="#odm_element.ODMElement.validate" title="odm_element.ODMElement.validate"><code class="xref py py-meth docutils literal notranslate"><span class="pre">validate()</span></code></a> (or an otherwise complete
+<a class="reference internal" href="#odm_element.ODMElement.verify_oids" title="odm_element.ODMElement.verify_oids"><code class="xref py py-meth docutils literal notranslate"><span class="pre">verify_oids()</span></code></a>). After a fail-fast <code class="docutils literal notranslate"><span class="pre">verify_oids()</span></code> that
+raised, the checker is only half-populated and this method can
+report a misleading duplicate naming an OID that is not in fact
+duplicated.</p>
+</div>
 </dd></dl>
 
 <dl class="py method">
@@ -2411,6 +2810,11 @@ and therefore reflect instance assignment order.</p>
     order. Use <a class="reference internal" href="#odm_element.ODMElement.reorder_object" title="odm_element.ODMElement.reorder_object"><code class="xref py py-meth docutils literal notranslate"><span class="pre">reorder_object()</span></code></a> to fix automatically.</p>
 </dd>
 </dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#odm_element.ODMElement.validate" title="odm_element.ODMElement.validate"><code class="xref py py-meth docutils literal notranslate"><span class="pre">validate()</span></code></a> with <code class="docutils literal notranslate"><span class="pre">collect_errors=True</span></code> reports <em>every</em>
+misordered element in one pass instead of just the first.</p>
+</div>
 </dd></dl>
 
 <dl class="py method">
@@ -2434,28 +2838,74 @@ which elements need reordering.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="odm_element.ODMElement.validate">
-<span class="sig-name descname"><span class="pre">validate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">collect_errors</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">oid_checker</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">conformance_checker</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/odm_element.html#ODMElement.validate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#odm_element.ODMElement.validate" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">validate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">collect_errors</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">oid_checker</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">conformance_checker</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_errors</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/odm_element.html#ODMElement.validate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#odm_element.ODMElement.validate" title="Link to this definition"></a></dt>
 <dd><p>Validate this element and all children.</p>
+<p>Runs up to three layers: element order, OID uniqueness and ref/def
+integrity, and Cerberus conformance. In collect mode each layer
+enumerates <em>every</em> problem it can find rather than stopping at its
+first.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>collect_errors</strong> – If True, accumulate all errors and return them as a
-list instead of raising on the first failure. Defaults to False
-(fail-fast, existing behaviour).</p></li>
-<li><p><strong>oid_checker</strong> – Optional OIDRef instance for OID validation.</p></li>
-<li><p><strong>conformance_checker</strong> – Optional MetadataSchema instance for
-conformance validation.</p></li>
+<li><p><strong>collect_errors</strong> – If True, accumulate every error each layer can
+find and return them as a list instead of raising on the first
+failure. Defaults to False (fail-fast, existing behaviour).</p></li>
+<li><p><strong>oid_checker</strong> – Optional OID checker — a
+<code class="xref py py-class docutils literal notranslate"><span class="pre">DynamicOIDRef</span></code> from
+<code class="xref py py-func docutils literal notranslate"><span class="pre">create_oid_checker()</span></code>, or a
+deprecated <code class="docutils literal notranslate"><span class="pre">rules.oid_ref.OIDRef</span></code>. Checkers that do not
+implement the collecting protocol (see
+<code class="xref py py-func docutils literal notranslate"><span class="pre">is_collecting_checker()</span></code>) still work,
+but contribute at most one error to the list.</p></li>
+<li><p><strong>conformance_checker</strong> – Optional <code class="docutils literal notranslate"><span class="pre">MetadataSchema</span></code> instance. In
+collect mode the bundled Cerberus result is expanded into one
+error per failing field; in fail-fast mode the single bundled
+<code class="xref py py-class docutils literal notranslate"><span class="pre">OdmlibConformanceError</span></code> is raised
+unchanged.</p></li>
+<li><p><strong>max_errors</strong> – Optional cap on collected errors. Collection stops the
+moment the cap is reached and a final
+<code class="xref py py-class docutils literal notranslate"><span class="pre">OdmlibErrorLimitError</span></code> is appended,
+so the list holds at most <code class="docutils literal notranslate"><span class="pre">max_errors</span> <span class="pre">+</span> <span class="pre">1</span></code> entries. <code class="docutils literal notranslate"><span class="pre">None</span></code>
+(the default) collects everything. Ignored when
+<code class="docutils literal notranslate"><span class="pre">collect_errors</span></code> is False. <code class="docutils literal notranslate"><span class="pre">max_errors=0</span></code> checks nothing
+and returns just the limit marker.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">True</span></code> (or raises on first error).
-If <code class="docutils literal notranslate"><span class="pre">collect_errors=True</span></code>: list of <code class="xref py py-class docutils literal notranslate"><span class="pre">OdmlibError</span></code>
-instances (empty list means valid).</p>
+If <code class="docutils literal notranslate"><span class="pre">collect_errors=True</span></code>: list of
+<code class="xref py py-class docutils literal notranslate"><span class="pre">OdmlibError</span></code> instances (an empty list
+means valid).</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>If <code class="docutils literal notranslate"><span class="pre">collect_errors=False</span></code></p>
 </dd>
 </dl>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>OID checkers are stateful. Use one checker instance per document,
+or call <code class="docutils literal notranslate"><span class="pre">reset()</span></code> on a <code class="docutils literal notranslate"><span class="pre">DynamicOIDRef</span></code> between runs —
+otherwise the second pass reports every OID as a duplicate.</p>
+<p>Only <code class="xref py py-class docutils literal notranslate"><span class="pre">OdmlibError</span></code> subclasses are
+collected. Any other exception (a bug in a custom checker, an
+<code class="docutils literal notranslate"><span class="pre">AttributeError</span></code> from a malformed permissively-loaded tree)
+propagates in both modes. Note that
+<code class="xref py py-class docutils literal notranslate"><span class="pre">OdmlibTypeError</span></code> <em>is</em> an
+<code class="docutils literal notranslate"><span class="pre">OdmlibError</span></code> and is therefore collected.</p>
+</div>
+<p>Example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">errors</span> <span class="o">=</span> <span class="n">odm</span><span class="o">.</span><span class="n">validate</span><span class="p">(</span><span class="n">collect_errors</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">oid_checker</span><span class="o">=</span><span class="n">checker</span><span class="p">,</span>
+                      <span class="n">max_errors</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">err</span> <span class="ow">in</span> <span class="n">errors</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">err</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="versionchanged">
+<p><span class="versionmodified changed">Changed in version 0.2.1: </span>Each layer now reports every problem it finds. Previously
+<code class="docutils literal notranslate"><span class="pre">collect_errors=True</span></code> returned at most one error per layer
+(three in total), so <code class="docutils literal notranslate"><span class="pre">len(errors)</span></code> may be larger than before.
+Added <code class="docutils literal notranslate"><span class="pre">max_errors</span></code>.</p>
+</div>
 </dd></dl>
 
 <dl class="py attribute">
@@ -3088,7 +3538,7 @@ ARM-specific elements and are typically used via the
 <span class="kn">import</span><span class="w"> </span><span class="nn">odmlib.loader</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">LD</span>
 
 <span class="n">loader</span> <span class="o">=</span> <span class="n">LD</span><span class="o">.</span><span class="n">ODMLoader</span><span class="p">(</span><span class="n">AL</span><span class="o">.</span><span class="n">XMLArmLoader</span><span class="p">())</span>
-<span class="n">loader</span><span class="o">.</span><span class="n">open_odm_document</span><span class="p">(</span><span class="s2">&quot;define-adam.xml&quot;</span><span class="p">)</span>
+<span class="n">loader</span><span class="o">.</span><span class="n">open_odm_document</span><span class="p">(</span><span class="s2">"define-adam.xml"</span><span class="p">)</span>
 <span class="n">odm</span> <span class="o">=</span> <span class="n">loader</span><span class="o">.</span><span class="n">root</span><span class="p">()</span>
 </pre></div>
 </div>
@@ -3097,7 +3547,7 @@ ARM-specific elements and are typically used via the
 <span class="kn">import</span><span class="w"> </span><span class="nn">odmlib.loader</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">LD</span>
 
 <span class="n">loader</span> <span class="o">=</span> <span class="n">LD</span><span class="o">.</span><span class="n">ODMLoader</span><span class="p">(</span><span class="n">AL</span><span class="o">.</span><span class="n">JSONArmLoader</span><span class="p">())</span>
-<span class="n">loader</span><span class="o">.</span><span class="n">open_odm_document</span><span class="p">(</span><span class="s2">&quot;define-adam.json&quot;</span><span class="p">)</span>
+<span class="n">loader</span><span class="o">.</span><span class="n">open_odm_document</span><span class="p">(</span><span class="s2">"define-adam.json"</span><span class="p">)</span>
 <span class="n">odm</span> <span class="o">=</span> <span class="n">loader</span><span class="o">.</span><span class="n">root</span><span class="p">()</span>
 </pre></div>
 </div>
@@ -3405,7 +3855,7 @@ the model classes, so it stays in sync automatically when the models evolve.</p>
 <p>Usage:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">odmlib.oid_generator</span><span class="w"> </span><span class="kn">import</span> <span class="n">create_oid_checker</span>
 
-<span class="n">checker</span> <span class="o">=</span> <span class="n">create_oid_checker</span><span class="p">(</span><span class="s2">&quot;odm_1_3_2&quot;</span><span class="p">)</span>
+<span class="n">checker</span> <span class="o">=</span> <span class="n">create_oid_checker</span><span class="p">(</span><span class="s2">"odm_1_3_2"</span><span class="p">)</span>
 <span class="n">odm</span><span class="o">.</span><span class="n">verify_oids</span><span class="p">(</span><span class="n">checker</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -3530,7 +3980,7 @@ which reference attributes (if any) point to each definition class.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="oid_generator.DynamicOIDRef">
 <span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">oid_generator.</span></span><span class="sig-name descname"><span class="pre">DynamicOIDRef</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model_package</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">skip_attrs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">skip_elems</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/oid_generator.html#DynamicOIDRef"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#oid_generator.DynamicOIDRef" title="Link to this definition"></a></dt>
-<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">ErrorReporting</span></code></p>
 <p>Dynamically-generated OID ref/def checker.</p>
 <p>Drop-in replacement for the manually-coded <code class="docutils literal notranslate"><span class="pre">OIDRef</span></code> classes in the
 <code class="docutils literal notranslate"><span class="pre">rules/oid_ref.py</span></code> files.  Introspects the model module at
@@ -3538,6 +3988,19 @@ instantiation time to build the ref/def mappings automatically.</p>
 <p>Implements the same interface as the manual <code class="docutils literal notranslate"><span class="pre">OIDRef</span></code> classes so it can
 be passed directly to
 <code class="xref py py-meth docutils literal notranslate"><span class="pre">verify_oids()</span></code>.</p>
+<p>Via the <code class="xref py py-class docutils literal notranslate"><span class="pre">ErrorReporting</span></code> mixin it also supports
+the collecting-checker protocol, so
+<code class="xref py py-meth docutils literal notranslate"><span class="pre">validate()</span></code> with
+<code class="docutils literal notranslate"><span class="pre">collect_errors=True</span></code> reports <em>every</em> duplicate and every bad reference
+rather than only the first. The deprecated manual <code class="docutils literal notranslate"><span class="pre">OIDRef</span></code> classes do
+not, and contribute at most one error.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>A checker accumulates every OID it sees, so it is single-use per
+document. Call <a class="reference internal" href="#oid_generator.DynamicOIDRef.reset" title="oid_generator.DynamicOIDRef.reset"><code class="xref py py-meth docutils literal notranslate"><span class="pre">reset()</span></code></a> before validating a second document (or
+re-validating the same one), otherwise every OID is reported as a
+duplicate.</p>
+</div>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -3553,7 +4016,7 @@ definitions (e.g. <code class="docutils literal notranslate"><span class="pre">[
 <p>Example:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">odmlib.oid_generator</span><span class="w"> </span><span class="kn">import</span> <span class="n">create_oid_checker</span>
 
-<span class="n">checker</span> <span class="o">=</span> <span class="n">create_oid_checker</span><span class="p">(</span><span class="s2">&quot;odm_1_3_2&quot;</span><span class="p">)</span>
+<span class="n">checker</span> <span class="o">=</span> <span class="n">create_oid_checker</span><span class="p">(</span><span class="s2">"odm_1_3_2"</span><span class="p">)</span>
 <span class="n">odm</span><span class="o">.</span><span class="n">verify_oids</span><span class="p">(</span><span class="n">checker</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -3574,12 +4037,24 @@ definitions (e.g. <code class="docutils literal notranslate"><span class="pre">[
 </ul>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
-<dd class="field-even"><p><a class="reference internal" href="#exceptions.OdmlibOIDError" title="exceptions.OdmlibOIDError"><strong>OdmlibOIDError</strong></a> – If <em>oid</em> is already registered (duplicate OID).</p>
+<dd class="field-even"><p><a class="reference internal" href="#exceptions.OdmlibOIDError" title="exceptions.OdmlibOIDError"><strong>OdmlibOIDError</strong></a> – If <em>oid</em> is already registered (duplicate OID).
+    Inside a <code class="xref py py-meth docutils literal notranslate"><span class="pre">collecting()</span></code>
+    block the error goes to the sink instead and the traversal
+    continues, so the reference checks that follow still run.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>None</p>
 </dd>
 </dl>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>On a duplicate, the <strong>first</strong> definition is kept — that is what
+the error message asserts, and it keeps <code class="xref py py-attr docutils literal notranslate"><span class="pre">oid</span></code> stable so the
+reference pass gives a deterministic verdict. A corner case worth
+knowing: if the first definition is a <code class="docutils literal notranslate"><span class="pre">skip_elem</span></code> type it lands
+only in <code class="xref py py-attr docutils literal notranslate"><span class="pre">unique_oids</span></code>, so the reference pass then reports
+“not found” for everything pointing at it.</p>
+</div>
 </dd></dl>
 
 <dl class="py method">
@@ -3627,10 +4102,28 @@ expects (per <code class="xref py py-attr docutils literal notranslate"><span cl
 <dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">True</span></code> if all references are valid.</p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
-<dd class="field-even"><p><a class="reference internal" href="#exceptions.OdmlibOIDError" title="exceptions.OdmlibOIDError"><strong>OdmlibOIDError</strong></a> – On the first invalid or mismatched reference.</p>
+<dd class="field-even"><p><a class="reference internal" href="#exceptions.OdmlibOIDError" title="exceptions.OdmlibOIDError"><strong>OdmlibOIDError</strong></a> – On the first invalid or mismatched reference.
+    Inside a <code class="xref py py-meth docutils literal notranslate"><span class="pre">collecting()</span></code>
+    block every bad reference is reported to the sink instead.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)">bool</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="oid_generator.DynamicOIDRef.reset">
+<span class="sig-name descname"><span class="pre">reset</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/oid_generator.html#DynamicOIDRef.reset"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#oid_generator.DynamicOIDRef.reset" title="Link to this definition"></a></dt>
+<dd><p>Clear all state collected by a previous verification pass.</p>
+<p>A checker accumulates every OID it sees, so reusing one instance for a
+second document — or a second <code class="docutils literal notranslate"><span class="pre">validate()</span></code> call on the same document
+— reports every OID as a duplicate. Call <code class="docutils literal notranslate"><span class="pre">reset()</span></code> between runs, or
+build a fresh checker with
+<code class="xref py py-func docutils literal notranslate"><span class="pre">create_oid_checker()</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
 </dd>
 </dl>
 </dd></dl>
@@ -3687,7 +4180,7 @@ validation (merged with model-level defaults).</p></li>
 <span class="c1">#   from odmlib.odm_1_3_2.rules.oid_ref import OIDRef</span>
 <span class="c1">#   checker = OIDRef()</span>
 <span class="c1"># With:</span>
-<span class="n">checker</span> <span class="o">=</span> <span class="n">create_oid_checker</span><span class="p">(</span><span class="s2">&quot;odm_1_3_2&quot;</span><span class="p">)</span>
+<span class="n">checker</span> <span class="o">=</span> <span class="n">create_oid_checker</span><span class="p">(</span><span class="s2">"odm_1_3_2"</span><span class="p">)</span>
 <span class="n">odm</span><span class="o">.</span><span class="n">verify_oids</span><span class="p">(</span><span class="n">checker</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -3712,7 +4205,7 @@ be registered as definitions (e.g. <code class="docutils literal notranslate"><s
 file-level identifier rather than a metadata OID).</p></li>
 </ul>
 <p>Usage (via <code class="xref py py-func docutils literal notranslate"><span class="pre">odmlib.oid_generator.create_oid_checker()</span></code>):</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">checker</span> <span class="o">=</span> <span class="n">create_oid_checker</span><span class="p">(</span><span class="s2">&quot;define_2_1&quot;</span><span class="p">)</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">checker</span> <span class="o">=</span> <span class="n">create_oid_checker</span><span class="p">(</span><span class="s2">"define_2_1"</span><span class="p">)</span>
 <span class="n">odm</span><span class="o">.</span><span class="n">verify_oids</span><span class="p">(</span><span class="n">checker</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -4392,9 +4885,15 @@ Used for SignificantDigits and similar attributes.</p>
 <dt class="sig sig-object py" id="typed.DurationDateTimeString">
 <span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">typed.</span></span><span class="sig-name descname"><span class="pre">DurationDateTimeString</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">required</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">element_class</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">valid_values</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">namespace</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'odm'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typed.html#DurationDateTimeString"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#typed.DurationDateTimeString" title="Link to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Descriptor</span></code></p>
-<p>Descriptor for ISO 8601 duration strings (week-based).</p>
-<p>Validates format: <code class="docutils literal notranslate"><span class="pre">[+-]P{n}W</span></code> (e.g., <code class="docutils literal notranslate"><span class="pre">P1W</span></code> for one week).
+<p>Descriptor for ISO 8601 duration strings.</p>
+<p>Accepts the whole <code class="docutils literal notranslate"><span class="pre">durationDatetime</span></code> union the ODM 2.0 XSD defines:
+the week form (<code class="docutils literal notranslate"><span class="pre">P2W</span></code>, <code class="docutils literal notranslate"><span class="pre">-P1W</span></code>), the general ISO 8601 form
+(<code class="docutils literal notranslate"><span class="pre">P3D</span></code>, <code class="docutils literal notranslate"><span class="pre">P1Y2M</span></code>, <code class="docutils literal notranslate"><span class="pre">PT1H30M</span></code>, <code class="docutils literal notranslate"><span class="pre">P1DT2H3M4.5S</span></code>), and the empty tag.
 Used for timing window attributes in ODM 2.0.</p>
+<div class="versionchanged">
+<p><span class="versionmodified changed">Changed in version 0.2.1: </span>Previously only <code class="docutils literal notranslate"><span class="pre">[+-]P{n}W</span></code> was accepted, rejecting XSD-valid values
+such as <code class="docutils literal notranslate"><span class="pre">P3D</span></code> and <code class="docutils literal notranslate"><span class="pre">PT1H</span></code>.</p>
+</div>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -4660,12 +5159,24 @@ odmlib model inherit the correct version.</p>
 <span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">valueset.</span></span><span class="sig-name descname"><span class="pre">ValueSet</span></span><a class="reference internal" href="_modules/valueset.html#ValueSet"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#valueset.ValueSet" title="Link to this definition"></a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
 <p>Backward-compatible interface to valueset data.</p>
-<p>Supports two entry types in valuesets.json:
-- <strong>list</strong>: A list of allowed string values (e.g., <code class="docutils literal notranslate"><span class="pre">[&quot;Yes&quot;,</span> <span class="pre">&quot;No&quot;]</span></code>)
+<p>Supports three entry types in valuesets.json:
+- <strong>list</strong>: A closed set of allowed string values (e.g., <code class="docutils literal notranslate"><span class="pre">[&quot;Yes&quot;,</span> <span class="pre">&quot;No&quot;]</span></code>)
 - <strong>regex dict</strong>: A dict with <code class="docutils literal notranslate"><span class="pre">_regex</span></code> key and optional <code class="docutils literal notranslate"><span class="pre">_description</span></code></p>
 <blockquote>
 <div><p>(e.g., <code class="docutils literal notranslate"><span class="pre">{&quot;_regex&quot;:</span> <span class="pre">&quot;^2\\.[01](\\.\\d+)?$&quot;,</span> <span class="pre">&quot;_description&quot;:</span> <span class="pre">&quot;...&quot;}</span></code>).</p>
 </div></blockquote>
+<ul class="simple">
+<li><p><strong>open dict</strong>: A dict with <code class="docutils literal notranslate"><span class="pre">_values</span></code> and <code class="docutils literal notranslate"><span class="pre">_open:</span> <span class="pre">true</span></code> for an
+<em>extensible</em> vocabulary — the XSD models these as a union of an
+enumeration with bare <code class="docutils literal notranslate"><span class="pre">xs:string</span></code>, so any value is permitted while the
+listed terms remain the documented ones
+(e.g., <code class="docutils literal notranslate"><span class="pre">{&quot;_values&quot;:</span> <span class="pre">[&quot;Form&quot;,</span> <span class="pre">&quot;Dataset&quot;],</span> <span class="pre">&quot;_open&quot;:</span> <span class="pre">true}</span></code>).</p></li>
+</ul>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 0.2.1: </span>The open-dict form. ODM 2.0 uses extensible unions for
+<code class="docutils literal notranslate"><span class="pre">ItemGroupDef/&#64;Type</span></code>, <code class="docutils literal notranslate"><span class="pre">TrialPhase/&#64;Value</span></code> and <code class="docutils literal notranslate"><span class="pre">Standard/&#64;Status</span></code>;
+enforcing them as closed lists rejected schema-valid documents.</p>
+</div>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="valueset.ValueSet.UNKNOWN_ATTRIBUTE">
 <span class="sig-name descname"><span class="pre">UNKNOWN_ATTRIBUTE</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;ValueSet.UNKNOWN_ATTRIBUTE&gt;</span></span><a class="headerlink" href="#valueset.ValueSet.UNKNOWN_ATTRIBUTE" title="Link to this definition"></a></dt>
@@ -4761,7 +5272,7 @@ enum for graduated control over which validations to bypass.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">odmlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">permissive</span>
 
 <span class="k">with</span> <span class="n">permissive</span><span class="p">():</span>
-    <span class="n">loader</span><span class="o">.</span><span class="n">open_odm_document</span><span class="p">(</span><span class="s2">&quot;broken.xml&quot;</span><span class="p">)</span>
+    <span class="n">loader</span><span class="o">.</span><span class="n">open_odm_document</span><span class="p">(</span><span class="s2">"broken.xml"</span><span class="p">)</span>
     <span class="n">odm</span> <span class="o">=</span> <span class="n">loader</span><span class="o">.</span><span class="n">root</span><span class="p">()</span>
 
 <span class="c1"># Mode is back to strict — fix issues, then validate</span>

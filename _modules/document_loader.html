@@ -5,14 +5,14 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>document_loader &mdash; odmlib 0.2.0 documentation</title>
+  <title>document_loader &mdash; odmlib 0.2.1 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
 
   
       <script src="../_static/jquery.js?v=5d32c60e"></script>
       <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../_static/documentation_options.js?v=938c9ccc"></script>
+      <script src="../_static/documentation_options.js?v=37f418d5"></script>
       <script src="../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../_static/js/theme.js"></script>
@@ -93,7 +93,7 @@
            <div itemprop="articleBody">
              
   <h1>Source code for document_loader</h1><div class="highlight"><pre>
-<span></span><span class="sd">&quot;&quot;&quot;Abstract base class for all odmlib document loaders.</span>
+<span></span><span class="sd">"""Abstract base class for all odmlib document loaders.</span>
 
 <span class="sd">Defines the interface that all concrete loaders</span>
 <span class="sd">(:class:`~odmlib.odm_loader.XMLODMLoader`,</span>
@@ -105,103 +105,133 @@
 
 <span class="sd">Loaders are not typically used directly; pass an instance to</span>
 <span class="sd">:class:`~odmlib.loader.ODMLoader` for a unified facade.</span>
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">"""</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">ABC</span><span class="p">,</span> <span class="n">abstractmethod</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">odmlib.exceptions</span><span class="w"> </span><span class="kn">import</span> <span class="n">OdmlibParsingError</span>
+
+
+<div class="viewcode-block" id="resolve_model_class">
+<a class="viewcode-back" href="../modules.html#document_loader.resolve_model_class">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">resolve_model_class</span><span class="p">(</span><span class="n">model_module</span><span class="p">,</span> <span class="n">elem_name</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""Return the model class for an element tag, or raise a clear error.</span>
+
+<span class="sd">    Previously an unknown element in a document surfaced as a bare</span>
+<span class="sd">    ``AttributeError`` from ``getattr`` deep inside the recursive load.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        model_module: The imported model module (e.g. odmlib.odm_1_3_2.model).</span>
+<span class="sd">        elem_name: The element tag / dict key naming the class.</span>
+
+<span class="sd">    Raises:</span>
+<span class="sd">        OdmlibParsingError: If the model has no class for ``elem_name``.</span>
+<span class="sd">    """</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">return</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">model_module</span><span class="p">,</span> <span class="n">elem_name</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">OdmlibParsingError</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">"Unknown element '</span><span class="si">{</span><span class="n">elem_name</span><span class="si">}</span><span class="s2">' — the "</span>
+            <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">model_module</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2"> model has no matching class"</span><span class="p">,</span>
+            <span class="n">hint</span><span class="o">=</span><span class="s2">"Check that the document matches the loader's model_package, "</span>
+                 <span class="s2">"or use a custom extension model (local_model) that defines "</span>
+                 <span class="s2">"this element."</span><span class="p">,</span>
+        <span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="kc">None</span></div>
+
 
 
 <div class="viewcode-block" id="DocumentLoader">
 <a class="viewcode-back" href="../modules.html#document_loader.DocumentLoader">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">DocumentLoader</span><span class="p">(</span><span class="n">ABC</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Abstract base class for odmlib document loaders.</span>
+<span class="w">    </span><span class="sd">"""Abstract base class for odmlib document loaders.</span>
 
 <span class="sd">       All concrete loaders implement this interface so they can be wrapped</span>
 <span class="sd">       by the :class:`~odmlib.loader.ODMLoader` facade.</span>
-<span class="sd">       &quot;&quot;&quot;</span>
+<span class="sd">       """</span>
 
 <div class="viewcode-block" id="DocumentLoader.load_document">
 <a class="viewcode-back" href="../modules.html#document_loader.DocumentLoader.load_document">[docs]</a>
     <span class="nd">@abstractmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">load_document</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">doc</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Recursively load a parsed document element or dict into odmlib objects.</span>
+<span class="w">        </span><span class="sd">"""Recursively load a parsed document element or dict into odmlib objects.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            doc: An XML ``Element`` (XML loaders) or ``dict`` (JSON loaders).</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            An odmlib element object populated from ``doc``.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;Attempted to execute an abstract method load_document in the DocumentLoader class&quot;</span><span class="p">)</span></div>
+<span class="sd">        """</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">"Attempted to execute an abstract method load_document in the DocumentLoader class"</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="DocumentLoader.create_document">
 <a class="viewcode-back" href="../modules.html#document_loader.DocumentLoader.create_document">[docs]</a>
     <span class="nd">@abstractmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">create_document</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Parse a document file and store its contents internally.</span>
+<span class="w">        </span><span class="sd">"""Parse a document file and store its contents internally.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            filename (str): Path to the ODM file (XML or JSON).</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            The parsed root element or dict.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;Attempted to execute an abstract method create_document in the DocumentLoader class&quot;</span><span class="p">)</span></div>
+<span class="sd">        """</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">"Attempted to execute an abstract method create_document in the DocumentLoader class"</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="DocumentLoader.create_document_from_string">
 <a class="viewcode-back" href="../modules.html#document_loader.DocumentLoader.create_document_from_string">[docs]</a>
     <span class="nd">@abstractmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">create_document_from_string</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">odm_string</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Parse a document string and store its contents internally.</span>
+<span class="w">        </span><span class="sd">"""Parse a document string and store its contents internally.</span>
 
 <span class="sd">          Args:</span>
 <span class="sd">              odm_string (str): XML or JSON string containing the ODM document.</span>
 
 <span class="sd">          Returns:</span>
 <span class="sd">              The parsed root element or dict.</span>
-<span class="sd">          &quot;&quot;&quot;</span>
-        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;Attempted to execute an abstract method create_document_from_string in the DocumentLoader class&quot;</span><span class="p">)</span></div>
+<span class="sd">          """</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">"Attempted to execute an abstract method create_document_from_string in the DocumentLoader class"</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="DocumentLoader.load_metadataversion">
 <a class="viewcode-back" href="../modules.html#document_loader.DocumentLoader.load_metadataversion">[docs]</a>
     <span class="nd">@abstractmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">load_metadataversion</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">idx</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the MetaDataVersion at the given index.</span>
+<span class="w">        </span><span class="sd">"""Return the MetaDataVersion at the given index.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            idx (int): Zero-based index of the MetaDataVersion to return.</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            A ``MetaDataVersion`` odmlib object.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;Attempted to execute an abstract method load_metadataversion in the DocumentLoader class&quot;</span><span class="p">)</span></div>
+<span class="sd">        """</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">"Attempted to execute an abstract method load_metadataversion in the DocumentLoader class"</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="DocumentLoader.load_study">
 <a class="viewcode-back" href="../modules.html#document_loader.DocumentLoader.load_study">[docs]</a>
     <span class="nd">@abstractmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">load_study</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">idx</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the Study at the given index.</span>
+<span class="w">        </span><span class="sd">"""Return the Study at the given index.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            idx (int): Zero-based index of the Study to return.</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            A ``Study`` odmlib object.</span>
-<span class="sd">        &quot;&quot;&quot;</span></div>
+<span class="sd">        """</span></div>
 
 
 <div class="viewcode-block" id="DocumentLoader.load_odm">
 <a class="viewcode-back" href="../modules.html#document_loader.DocumentLoader.load_odm">[docs]</a>
     <span class="nd">@abstractmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">load_odm</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the root ODM element loaded from the stored document.</span>
+<span class="w">        </span><span class="sd">"""Return the root ODM element loaded from the stored document.</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            The root odmlib ``ODM`` object.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;Attempted to execute an abstract method load_odm in the DocumentLoader class&quot;</span><span class="p">)</span></div>
+<span class="sd">        """</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">"Attempted to execute an abstract method load_odm in the DocumentLoader class"</span><span class="p">)</span></div>
 </div>
 
 </pre></div>

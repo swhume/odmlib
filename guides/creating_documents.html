@@ -6,14 +6,14 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Creating ODM Documents &mdash; odmlib 0.2.0 documentation</title>
+  <title>Creating ODM Documents &mdash; odmlib 0.2.1 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
 
   
       <script src="../_static/jquery.js?v=5d32c60e"></script>
       <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../_static/documentation_options.js?v=938c9ccc"></script>
+      <script src="../_static/documentation_options.js?v=37f418d5"></script>
       <script src="../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../_static/js/theme.js"></script>
@@ -113,45 +113,45 @@ first, then pass them to parent elements.</p>
 <span class="kn">import</span><span class="w"> </span><span class="nn">odmlib.ns_registry</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">NS</span>
 
 <span class="c1"># Step 1: Set up namespaces</span>
-<span class="n">NS</span><span class="o">.</span><span class="n">NamespaceRegistry</span><span class="p">(</span><span class="n">prefix</span><span class="o">=</span><span class="s2">&quot;odm&quot;</span><span class="p">,</span>
-    <span class="n">uri</span><span class="o">=</span><span class="s2">&quot;http://www.cdisc.org/ns/odm/v1.3&quot;</span><span class="p">,</span>
+<span class="n">NS</span><span class="o">.</span><span class="n">NamespaceRegistry</span><span class="p">(</span><span class="n">prefix</span><span class="o">=</span><span class="s2">"odm"</span><span class="p">,</span>
+    <span class="n">uri</span><span class="o">=</span><span class="s2">"http://www.cdisc.org/ns/odm/v1.3"</span><span class="p">,</span>
     <span class="n">is_default</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">is_reset</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
 <span class="c1"># Step 2: Build global variables</span>
 <span class="n">gv</span> <span class="o">=</span> <span class="n">ODM</span><span class="o">.</span><span class="n">GlobalVariables</span><span class="p">(</span>
-    <span class="n">StudyName</span><span class="o">=</span><span class="n">ODM</span><span class="o">.</span><span class="n">StudyName</span><span class="p">(</span><span class="n">_content</span><span class="o">=</span><span class="s2">&quot;Vital Signs Study&quot;</span><span class="p">),</span>
-    <span class="n">StudyDescription</span><span class="o">=</span><span class="n">ODM</span><span class="o">.</span><span class="n">StudyDescription</span><span class="p">(</span><span class="n">_content</span><span class="o">=</span><span class="s2">&quot;VS collection study&quot;</span><span class="p">),</span>
-    <span class="n">ProtocolName</span><span class="o">=</span><span class="n">ODM</span><span class="o">.</span><span class="n">ProtocolName</span><span class="p">(</span><span class="n">_content</span><span class="o">=</span><span class="s2">&quot;VS-001&quot;</span><span class="p">),</span>
+    <span class="n">StudyName</span><span class="o">=</span><span class="n">ODM</span><span class="o">.</span><span class="n">StudyName</span><span class="p">(</span><span class="n">_content</span><span class="o">=</span><span class="s2">"Vital Signs Study"</span><span class="p">),</span>
+    <span class="n">StudyDescription</span><span class="o">=</span><span class="n">ODM</span><span class="o">.</span><span class="n">StudyDescription</span><span class="p">(</span><span class="n">_content</span><span class="o">=</span><span class="s2">"VS collection study"</span><span class="p">),</span>
+    <span class="n">ProtocolName</span><span class="o">=</span><span class="n">ODM</span><span class="o">.</span><span class="n">ProtocolName</span><span class="p">(</span><span class="n">_content</span><span class="o">=</span><span class="s2">"VS-001"</span><span class="p">),</span>
 <span class="p">)</span>
 
 <span class="c1"># Step 3: Create metadata</span>
-<span class="n">mdv</span> <span class="o">=</span> <span class="n">ODM</span><span class="o">.</span><span class="n">MetaDataVersion</span><span class="p">(</span><span class="n">OID</span><span class="o">=</span><span class="s2">&quot;MDV.001&quot;</span><span class="p">,</span> <span class="n">Name</span><span class="o">=</span><span class="s2">&quot;Version 1&quot;</span><span class="p">)</span>
+<span class="n">mdv</span> <span class="o">=</span> <span class="n">ODM</span><span class="o">.</span><span class="n">MetaDataVersion</span><span class="p">(</span><span class="n">OID</span><span class="o">=</span><span class="s2">"MDV.001"</span><span class="p">,</span> <span class="n">Name</span><span class="o">=</span><span class="s2">"Version 1"</span><span class="p">)</span>
 
 <span class="c1"># Step 4: Create item definitions</span>
 <span class="n">age_item</span> <span class="o">=</span> <span class="n">ODM</span><span class="o">.</span><span class="n">ItemDef</span><span class="p">(</span>
-    <span class="n">OID</span><span class="o">=</span><span class="s2">&quot;IT.AGE&quot;</span><span class="p">,</span> <span class="n">Name</span><span class="o">=</span><span class="s2">&quot;Age&quot;</span><span class="p">,</span> <span class="n">DataType</span><span class="o">=</span><span class="s2">&quot;integer&quot;</span><span class="p">,</span> <span class="n">Length</span><span class="o">=</span><span class="mi">3</span>
+    <span class="n">OID</span><span class="o">=</span><span class="s2">"IT.AGE"</span><span class="p">,</span> <span class="n">Name</span><span class="o">=</span><span class="s2">"Age"</span><span class="p">,</span> <span class="n">DataType</span><span class="o">=</span><span class="s2">"integer"</span><span class="p">,</span> <span class="n">Length</span><span class="o">=</span><span class="mi">3</span>
 <span class="p">)</span>
 <span class="n">mdv</span><span class="o">.</span><span class="n">ItemDef</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">age_item</span><span class="p">)</span>
 
 <span class="c1"># Step 5: Create item group definition</span>
-<span class="n">dm_igd</span> <span class="o">=</span> <span class="n">ODM</span><span class="o">.</span><span class="n">ItemGroupDef</span><span class="p">(</span><span class="n">OID</span><span class="o">=</span><span class="s2">&quot;IG.DM&quot;</span><span class="p">,</span> <span class="n">Name</span><span class="o">=</span><span class="s2">&quot;Demographics&quot;</span><span class="p">,</span> <span class="n">Repeating</span><span class="o">=</span><span class="s2">&quot;No&quot;</span><span class="p">)</span>
+<span class="n">dm_igd</span> <span class="o">=</span> <span class="n">ODM</span><span class="o">.</span><span class="n">ItemGroupDef</span><span class="p">(</span><span class="n">OID</span><span class="o">=</span><span class="s2">"IG.DM"</span><span class="p">,</span> <span class="n">Name</span><span class="o">=</span><span class="s2">"Demographics"</span><span class="p">,</span> <span class="n">Repeating</span><span class="o">=</span><span class="s2">"No"</span><span class="p">)</span>
 <span class="n">dm_igd</span><span class="o">.</span><span class="n">ItemRef</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ODM</span><span class="o">.</span><span class="n">ItemRef</span><span class="p">(</span>
-    <span class="n">ItemOID</span><span class="o">=</span><span class="s2">&quot;IT.AGE&quot;</span><span class="p">,</span> <span class="n">Mandatory</span><span class="o">=</span><span class="s2">&quot;Yes&quot;</span><span class="p">,</span> <span class="n">OrderNumber</span><span class="o">=</span><span class="mi">1</span>
+    <span class="n">ItemOID</span><span class="o">=</span><span class="s2">"IT.AGE"</span><span class="p">,</span> <span class="n">Mandatory</span><span class="o">=</span><span class="s2">"Yes"</span><span class="p">,</span> <span class="n">OrderNumber</span><span class="o">=</span><span class="mi">1</span>
 <span class="p">))</span>
 <span class="n">mdv</span><span class="o">.</span><span class="n">ItemGroupDef</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">dm_igd</span><span class="p">)</span>
 
 <span class="c1"># Step 6: Assemble study and ODM root</span>
-<span class="n">study</span> <span class="o">=</span> <span class="n">ODM</span><span class="o">.</span><span class="n">Study</span><span class="p">(</span><span class="n">OID</span><span class="o">=</span><span class="s2">&quot;S.001&quot;</span><span class="p">,</span> <span class="n">GlobalVariables</span><span class="o">=</span><span class="n">gv</span><span class="p">,</span> <span class="n">MetaDataVersion</span><span class="o">=</span><span class="p">[</span><span class="n">mdv</span><span class="p">])</span>
+<span class="n">study</span> <span class="o">=</span> <span class="n">ODM</span><span class="o">.</span><span class="n">Study</span><span class="p">(</span><span class="n">OID</span><span class="o">=</span><span class="s2">"S.001"</span><span class="p">,</span> <span class="n">GlobalVariables</span><span class="o">=</span><span class="n">gv</span><span class="p">,</span> <span class="n">MetaDataVersion</span><span class="o">=</span><span class="p">[</span><span class="n">mdv</span><span class="p">])</span>
 <span class="n">odm</span> <span class="o">=</span> <span class="n">ODM</span><span class="o">.</span><span class="n">ODM</span><span class="p">(</span>
-    <span class="n">FileOID</span><span class="o">=</span><span class="s2">&quot;F.001&quot;</span><span class="p">,</span>
-    <span class="n">FileType</span><span class="o">=</span><span class="s2">&quot;Snapshot&quot;</span><span class="p">,</span>
-    <span class="n">CreationDateTime</span><span class="o">=</span><span class="s2">&quot;2024-01-15T12:00:00&quot;</span><span class="p">,</span>
+    <span class="n">FileOID</span><span class="o">=</span><span class="s2">"F.001"</span><span class="p">,</span>
+    <span class="n">FileType</span><span class="o">=</span><span class="s2">"Snapshot"</span><span class="p">,</span>
+    <span class="n">CreationDateTime</span><span class="o">=</span><span class="s2">"2024-01-15T12:00:00"</span><span class="p">,</span>
     <span class="n">Study</span><span class="o">=</span><span class="p">[</span><span class="n">study</span><span class="p">]</span>
 <span class="p">)</span>
 
 <span class="c1"># Step 7: Write to file</span>
-<span class="n">odm</span><span class="o">.</span><span class="n">write_xml</span><span class="p">(</span><span class="s2">&quot;study.xml&quot;</span><span class="p">)</span>
-<span class="n">odm</span><span class="o">.</span><span class="n">write_json</span><span class="p">(</span><span class="s2">&quot;study.json&quot;</span><span class="p">)</span>
+<span class="n">odm</span><span class="o">.</span><span class="n">write_xml</span><span class="p">(</span><span class="s2">"study.xml"</span><span class="p">)</span>
+<span class="n">odm</span><span class="o">.</span><span class="n">write_json</span><span class="p">(</span><span class="s2">"study.json"</span><span class="p">)</span>
 </pre></div>
 </div>
 </section>
@@ -159,19 +159,19 @@ first, then pass them to parent elements.</p>
 <h2>Adding Code Lists<a class="headerlink" href="#adding-code-lists" title="Link to this heading"></a></h2>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Create a code list for Sex</span>
 <span class="n">decode_m</span> <span class="o">=</span> <span class="n">ODM</span><span class="o">.</span><span class="n">Decode</span><span class="p">(</span>
-    <span class="n">TranslatedText</span><span class="o">=</span><span class="p">[</span><span class="n">ODM</span><span class="o">.</span><span class="n">TranslatedText</span><span class="p">(</span><span class="n">_content</span><span class="o">=</span><span class="s2">&quot;Male&quot;</span><span class="p">,</span> <span class="n">lang</span><span class="o">=</span><span class="s2">&quot;en&quot;</span><span class="p">)]</span>
+    <span class="n">TranslatedText</span><span class="o">=</span><span class="p">[</span><span class="n">ODM</span><span class="o">.</span><span class="n">TranslatedText</span><span class="p">(</span><span class="n">_content</span><span class="o">=</span><span class="s2">"Male"</span><span class="p">,</span> <span class="n">lang</span><span class="o">=</span><span class="s2">"en"</span><span class="p">)]</span>
 <span class="p">)</span>
 <span class="n">decode_f</span> <span class="o">=</span> <span class="n">ODM</span><span class="o">.</span><span class="n">Decode</span><span class="p">(</span>
-    <span class="n">TranslatedText</span><span class="o">=</span><span class="p">[</span><span class="n">ODM</span><span class="o">.</span><span class="n">TranslatedText</span><span class="p">(</span><span class="n">_content</span><span class="o">=</span><span class="s2">&quot;Female&quot;</span><span class="p">,</span> <span class="n">lang</span><span class="o">=</span><span class="s2">&quot;en&quot;</span><span class="p">)]</span>
+    <span class="n">TranslatedText</span><span class="o">=</span><span class="p">[</span><span class="n">ODM</span><span class="o">.</span><span class="n">TranslatedText</span><span class="p">(</span><span class="n">_content</span><span class="o">=</span><span class="s2">"Female"</span><span class="p">,</span> <span class="n">lang</span><span class="o">=</span><span class="s2">"en"</span><span class="p">)]</span>
 <span class="p">)</span>
-<span class="n">cl_sex</span> <span class="o">=</span> <span class="n">ODM</span><span class="o">.</span><span class="n">CodeList</span><span class="p">(</span><span class="n">OID</span><span class="o">=</span><span class="s2">&quot;CL.SEX&quot;</span><span class="p">,</span> <span class="n">Name</span><span class="o">=</span><span class="s2">&quot;Sex&quot;</span><span class="p">,</span> <span class="n">DataType</span><span class="o">=</span><span class="s2">&quot;text&quot;</span><span class="p">)</span>
-<span class="n">cl_sex</span><span class="o">.</span><span class="n">CodeListItem</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ODM</span><span class="o">.</span><span class="n">CodeListItem</span><span class="p">(</span><span class="n">CodedValue</span><span class="o">=</span><span class="s2">&quot;M&quot;</span><span class="p">,</span> <span class="n">Decode</span><span class="o">=</span><span class="n">decode_m</span><span class="p">))</span>
-<span class="n">cl_sex</span><span class="o">.</span><span class="n">CodeListItem</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ODM</span><span class="o">.</span><span class="n">CodeListItem</span><span class="p">(</span><span class="n">CodedValue</span><span class="o">=</span><span class="s2">&quot;F&quot;</span><span class="p">,</span> <span class="n">Decode</span><span class="o">=</span><span class="n">decode_f</span><span class="p">))</span>
+<span class="n">cl_sex</span> <span class="o">=</span> <span class="n">ODM</span><span class="o">.</span><span class="n">CodeList</span><span class="p">(</span><span class="n">OID</span><span class="o">=</span><span class="s2">"CL.SEX"</span><span class="p">,</span> <span class="n">Name</span><span class="o">=</span><span class="s2">"Sex"</span><span class="p">,</span> <span class="n">DataType</span><span class="o">=</span><span class="s2">"text"</span><span class="p">)</span>
+<span class="n">cl_sex</span><span class="o">.</span><span class="n">CodeListItem</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ODM</span><span class="o">.</span><span class="n">CodeListItem</span><span class="p">(</span><span class="n">CodedValue</span><span class="o">=</span><span class="s2">"M"</span><span class="p">,</span> <span class="n">Decode</span><span class="o">=</span><span class="n">decode_m</span><span class="p">))</span>
+<span class="n">cl_sex</span><span class="o">.</span><span class="n">CodeListItem</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ODM</span><span class="o">.</span><span class="n">CodeListItem</span><span class="p">(</span><span class="n">CodedValue</span><span class="o">=</span><span class="s2">"F"</span><span class="p">,</span> <span class="n">Decode</span><span class="o">=</span><span class="n">decode_f</span><span class="p">))</span>
 <span class="n">mdv</span><span class="o">.</span><span class="n">CodeList</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">cl_sex</span><span class="p">)</span>
 
 <span class="c1"># Reference the code list from an item</span>
-<span class="n">sex_item</span> <span class="o">=</span> <span class="n">ODM</span><span class="o">.</span><span class="n">ItemDef</span><span class="p">(</span><span class="n">OID</span><span class="o">=</span><span class="s2">&quot;IT.SEX&quot;</span><span class="p">,</span> <span class="n">Name</span><span class="o">=</span><span class="s2">&quot;Sex&quot;</span><span class="p">,</span> <span class="n">DataType</span><span class="o">=</span><span class="s2">&quot;text&quot;</span><span class="p">,</span> <span class="n">Length</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-<span class="n">sex_item</span><span class="o">.</span><span class="n">CodeListRef</span> <span class="o">=</span> <span class="n">ODM</span><span class="o">.</span><span class="n">CodeListRef</span><span class="p">(</span><span class="n">CodeListOID</span><span class="o">=</span><span class="s2">&quot;CL.SEX&quot;</span><span class="p">)</span>
+<span class="n">sex_item</span> <span class="o">=</span> <span class="n">ODM</span><span class="o">.</span><span class="n">ItemDef</span><span class="p">(</span><span class="n">OID</span><span class="o">=</span><span class="s2">"IT.SEX"</span><span class="p">,</span> <span class="n">Name</span><span class="o">=</span><span class="s2">"Sex"</span><span class="p">,</span> <span class="n">DataType</span><span class="o">=</span><span class="s2">"text"</span><span class="p">,</span> <span class="n">Length</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">sex_item</span><span class="o">.</span><span class="n">CodeListRef</span> <span class="o">=</span> <span class="n">ODM</span><span class="o">.</span><span class="n">CodeListRef</span><span class="p">(</span><span class="n">CodeListOID</span><span class="o">=</span><span class="s2">"CL.SEX"</span><span class="p">)</span>
 <span class="n">mdv</span><span class="o">.</span><span class="n">ItemDef</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">sex_item</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -179,7 +179,7 @@ first, then pass them to parent elements.</p>
 <section id="adding-descriptions">
 <h2>Adding Descriptions<a class="headerlink" href="#adding-descriptions" title="Link to this heading"></a></h2>
 <p>Most elements accept an optional <code class="docutils literal notranslate"><span class="pre">Description</span></code> child with translated text:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">tt</span> <span class="o">=</span> <span class="n">ODM</span><span class="o">.</span><span class="n">TranslatedText</span><span class="p">(</span><span class="n">_content</span><span class="o">=</span><span class="s2">&quot;Subject age in years&quot;</span><span class="p">,</span> <span class="n">lang</span><span class="o">=</span><span class="s2">&quot;en&quot;</span><span class="p">)</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">tt</span> <span class="o">=</span> <span class="n">ODM</span><span class="o">.</span><span class="n">TranslatedText</span><span class="p">(</span><span class="n">_content</span><span class="o">=</span><span class="s2">"Subject age in years"</span><span class="p">,</span> <span class="n">lang</span><span class="o">=</span><span class="s2">"en"</span><span class="p">)</span>
 <span class="n">desc</span> <span class="o">=</span> <span class="n">ODM</span><span class="o">.</span><span class="n">Description</span><span class="p">(</span><span class="n">TranslatedText</span><span class="o">=</span><span class="p">[</span><span class="n">tt</span><span class="p">])</span>
 <span class="n">age_item</span><span class="o">.</span><span class="n">Description</span> <span class="o">=</span> <span class="n">desc</span>
 </pre></div>
@@ -192,11 +192,11 @@ first, then pass them to parent elements.</p>
 
 <span class="n">builder</span> <span class="o">=</span> <span class="n">ODMBuilder</span><span class="p">()</span>
 <span class="n">odm</span> <span class="o">=</span> <span class="p">(</span><span class="n">builder</span>
-    <span class="o">.</span><span class="n">odm</span><span class="p">(</span><span class="n">FileOID</span><span class="o">=</span><span class="s2">&quot;F.001&quot;</span><span class="p">,</span> <span class="n">FileType</span><span class="o">=</span><span class="s2">&quot;Snapshot&quot;</span><span class="p">,</span>
-         <span class="n">CreationDateTime</span><span class="o">=</span><span class="s2">&quot;2024-01-01T00:00:00&quot;</span><span class="p">)</span>
-    <span class="o">.</span><span class="n">study</span><span class="p">(</span><span class="n">OID</span><span class="o">=</span><span class="s2">&quot;S.001&quot;</span><span class="p">)</span>
-    <span class="o">.</span><span class="n">global_variables</span><span class="p">(</span><span class="s2">&quot;My Study&quot;</span><span class="p">,</span> <span class="s2">&quot;A study&quot;</span><span class="p">,</span> <span class="s2">&quot;PROT-001&quot;</span><span class="p">)</span>
-    <span class="o">.</span><span class="n">metadata_version</span><span class="p">(</span><span class="n">OID</span><span class="o">=</span><span class="s2">&quot;MDV.001&quot;</span><span class="p">,</span> <span class="n">Name</span><span class="o">=</span><span class="s2">&quot;Version 1&quot;</span><span class="p">)</span>
+    <span class="o">.</span><span class="n">odm</span><span class="p">(</span><span class="n">FileOID</span><span class="o">=</span><span class="s2">"F.001"</span><span class="p">,</span> <span class="n">FileType</span><span class="o">=</span><span class="s2">"Snapshot"</span><span class="p">,</span>
+         <span class="n">CreationDateTime</span><span class="o">=</span><span class="s2">"2024-01-01T00:00:00"</span><span class="p">)</span>
+    <span class="o">.</span><span class="n">study</span><span class="p">(</span><span class="n">OID</span><span class="o">=</span><span class="s2">"S.001"</span><span class="p">)</span>
+    <span class="o">.</span><span class="n">global_variables</span><span class="p">(</span><span class="s2">"My Study"</span><span class="p">,</span> <span class="s2">"A study"</span><span class="p">,</span> <span class="s2">"PROT-001"</span><span class="p">)</span>
+    <span class="o">.</span><span class="n">metadata_version</span><span class="p">(</span><span class="n">OID</span><span class="o">=</span><span class="s2">"MDV.001"</span><span class="p">,</span> <span class="n">Name</span><span class="o">=</span><span class="s2">"Version 1"</span><span class="p">)</span>
     <span class="o">.</span><span class="n">build</span><span class="p">()</span>
 <span class="p">)</span>
 </pre></div>
@@ -207,25 +207,37 @@ first, then pass them to parent elements.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">odmlib.define_2_1.model</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">DEF</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">odmlib.ns_registry</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">NS</span>
 
-<span class="n">NS</span><span class="o">.</span><span class="n">NamespaceRegistry</span><span class="p">(</span><span class="n">prefix</span><span class="o">=</span><span class="s2">&quot;odm&quot;</span><span class="p">,</span>
-    <span class="n">uri</span><span class="o">=</span><span class="s2">&quot;http://www.cdisc.org/ns/odm/v1.3&quot;</span><span class="p">,</span>
+<span class="n">NS</span><span class="o">.</span><span class="n">NamespaceRegistry</span><span class="p">(</span><span class="n">prefix</span><span class="o">=</span><span class="s2">"odm"</span><span class="p">,</span>
+    <span class="n">uri</span><span class="o">=</span><span class="s2">"http://www.cdisc.org/ns/odm/v1.3"</span><span class="p">,</span>
     <span class="n">is_default</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">is_reset</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-<span class="n">NS</span><span class="o">.</span><span class="n">NamespaceRegistry</span><span class="p">(</span><span class="n">prefix</span><span class="o">=</span><span class="s2">&quot;def&quot;</span><span class="p">,</span>
-    <span class="n">uri</span><span class="o">=</span><span class="s2">&quot;http://www.cdisc.org/ns/def/v2.1&quot;</span><span class="p">)</span>
+<span class="n">NS</span><span class="o">.</span><span class="n">NamespaceRegistry</span><span class="p">(</span><span class="n">prefix</span><span class="o">=</span><span class="s2">"def"</span><span class="p">,</span>
+    <span class="n">uri</span><span class="o">=</span><span class="s2">"http://www.cdisc.org/ns/def/v2.1"</span><span class="p">)</span>
+<span class="c1"># xlink is required: def:leaf carries xlink:href, and without this the</span>
+<span class="c1"># xmlns:xlink declaration is omitted and the output cannot be re-parsed</span>
+<span class="n">NS</span><span class="o">.</span><span class="n">NamespaceRegistry</span><span class="p">(</span><span class="n">prefix</span><span class="o">=</span><span class="s2">"xlink"</span><span class="p">,</span>
+    <span class="n">uri</span><span class="o">=</span><span class="s2">"http://www.w3.org/1999/xlink"</span><span class="p">)</span>
 
 <span class="c1"># Define-XML uses a single Study (ODMObject, not list)</span>
 <span class="c1"># See the Define-XML 2.1 model for additional attributes</span>
 </pre></div>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p><code class="docutils literal notranslate"><span class="pre">is_reset=True</span></code> clears <strong>every</strong> registered prefix, including the ones each
+model package registers when it is imported. Register every prefix the
+document uses, not only the ones you set yourself: a prefix that appears in
+the tree but not in the registry is dropped from the <code class="docutils literal notranslate"><span class="pre">xmlns</span></code> declarations
+without warning, and the result cannot be re-parsed.</p>
 </div>
 </section>
 <section id="serialization-options">
 <h2>Serialization Options<a class="headerlink" href="#serialization-options" title="Link to this heading"></a></h2>
 <p>All odmlib elements support multiple output formats:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Write XML to file</span>
-<span class="n">odm</span><span class="o">.</span><span class="n">write_xml</span><span class="p">(</span><span class="s2">&quot;output.xml&quot;</span><span class="p">)</span>
+<span class="n">odm</span><span class="o">.</span><span class="n">write_xml</span><span class="p">(</span><span class="s2">"output.xml"</span><span class="p">)</span>
 
 <span class="c1"># Write JSON to file</span>
-<span class="n">odm</span><span class="o">.</span><span class="n">write_json</span><span class="p">(</span><span class="s2">&quot;output.json&quot;</span><span class="p">)</span>
+<span class="n">odm</span><span class="o">.</span><span class="n">write_json</span><span class="p">(</span><span class="s2">"output.json"</span><span class="p">)</span>
 
 <span class="c1"># Get XML as string</span>
 <span class="n">xml_str</span> <span class="o">=</span> <span class="n">odm</span><span class="o">.</span><span class="n">to_xml_string</span><span class="p">()</span>

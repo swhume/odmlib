@@ -5,14 +5,14 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>oid_generator &mdash; odmlib 0.2.0 documentation</title>
+  <title>oid_generator &mdash; odmlib 0.2.1 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
 
   
       <script src="../_static/jquery.js?v=5d32c60e"></script>
       <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../_static/documentation_options.js?v=938c9ccc"></script>
+      <script src="../_static/documentation_options.js?v=37f418d5"></script>
       <script src="../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../_static/js/theme.js"></script>
@@ -93,13 +93,13 @@
            <div itemprop="articleBody">
              
   <h1>Source code for oid_generator</h1><div class="highlight"><pre>
-<span></span><span class="sd">&quot;&quot;&quot;Dynamic OID ref/def check generation from model introspection.</span>
+<span></span><span class="sd">"""Dynamic OID ref/def check generation from model introspection.</span>
 
 <span class="sd">Inspects odmlib model class definitions to automatically derive:</span>
 
 <span class="sd">- Which classes are OID definitions (have an attribute named ``OID``).</span>
 <span class="sd">- Which attributes are OID references (any attribute whose name contains</span>
-<span class="sd">  ``&quot;OID&quot;`` but is not the definition attribute itself).</span>
+<span class="sd">  ``"OID"`` but is not the definition attribute itself).</span>
 <span class="sd">- The mapping from reference attribute names to definition element classes.</span>
 <span class="sd">- The reverse mapping from definition element classes to reference attributes.</span>
 
@@ -111,17 +111,18 @@
 
 <span class="sd">    from odmlib.oid_generator import create_oid_checker</span>
 
-<span class="sd">    checker = create_oid_checker(&quot;odm_1_3_2&quot;)</span>
+<span class="sd">    checker = create_oid_checker("odm_1_3_2")</span>
 <span class="sd">    odm.verify_oids(checker)</span>
 
 <span class="sd">.. versionadded:: 0.2.0</span>
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">"""</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">importlib</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Optional</span>
 
+<span class="kn">from</span><span class="w"> </span><span class="nn">odmlib.exceptions</span><span class="w"> </span><span class="kn">import</span> <span class="n">ErrorReporting</span><span class="p">,</span> <span class="n">OdmlibOIDError</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">odmlib.odm_element</span><span class="w"> </span><span class="kn">import</span> <span class="n">ODMElement</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">odmlib.typed</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">T</span>
 
@@ -130,17 +131,17 @@
 <span class="c1"># Override Mappings</span>
 <span class="c1"># ---------------------------------------------------------------------------</span>
 <span class="c1"># These handle naming irregularities where the convention</span>
-<span class="c1"># (strip &quot;OID&quot; suffix → try &quot;&lt;base&gt;Def&quot;, then &quot;&lt;base&gt;&quot;) doesn&#39;t resolve</span>
+<span class="c1"># (strip "OID" suffix → try "&lt;base&gt;Def", then "&lt;base&gt;") doesn't resolve</span>
 <span class="c1"># to a valid definition class in a given model package.</span>
 <span class="c1">#</span>
 <span class="c1"># Convention example:</span>
-<span class="c1">#   &quot;FormOID&quot;   → &quot;Form&quot;   → &quot;FormDef&quot;   → found in model → OK</span>
-<span class="c1">#   &quot;CodeListOID&quot; → &quot;CodeList&quot; → &quot;CodeListDef&quot; → NOT found → &quot;CodeList&quot; → found → OK</span>
+<span class="c1">#   "FormOID"   → "Form"   → "FormDef"   → found in model → OK</span>
+<span class="c1">#   "CodeListOID" → "CodeList" → "CodeListDef" → NOT found → "CodeList" → found → OK</span>
 <span class="c1">#</span>
 <span class="c1"># Override example:</span>
-<span class="c1">#   &quot;CollectionExceptionConditionOID&quot; → &quot;CollectionExceptionCondition&quot;</span>
-<span class="c1">#   → &quot;CollectionExceptionConditionDef&quot; NOT found → &quot;CollectionExceptionCondition&quot;</span>
-<span class="c1">#   NOT found → falls to this override → &quot;ConditionDef&quot;</span>
+<span class="c1">#   "CollectionExceptionConditionOID" → "CollectionExceptionCondition"</span>
+<span class="c1">#   → "CollectionExceptionConditionDef" NOT found → "CollectionExceptionCondition"</span>
+<span class="c1">#   NOT found → falls to this override → "ConditionDef"</span>
 <span class="c1">#</span>
 <span class="c1"># An override is only applied when the target class EXISTS in the model</span>
 <span class="c1"># being introspected (checked via model_classes lookup).  This means the</span>
@@ -149,23 +150,37 @@
 <span class="n">_REF_DEF_OVERRIDES</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
     <span class="c1"># ODM 1.3.2 -- classes whose names diverge from the &lt;strip&gt;Def / &lt;strip&gt;</span>
     <span class="c1"># convention.</span>
-    <span class="s2">&quot;CollectionExceptionConditionOID&quot;</span><span class="p">:</span> <span class="s2">&quot;ConditionDef&quot;</span><span class="p">,</span>
+    <span class="s2">"CollectionExceptionConditionOID"</span><span class="p">:</span> <span class="s2">"ConditionDef"</span><span class="p">,</span>
 
     <span class="c1"># ODM 2.0 -- workflow and timing constraint OIDs whose targets cannot be</span>
     <span class="c1"># inferred from the attribute name alone.</span>
-    <span class="s2">&quot;StartConditionOID&quot;</span><span class="p">:</span> <span class="s2">&quot;ConditionDef&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;EndConditionOID&quot;</span><span class="p">:</span> <span class="s2">&quot;ConditionDef&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;ConditionOID&quot;</span><span class="p">:</span> <span class="s2">&quot;ConditionDef&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;ArmOID&quot;</span><span class="p">:</span> <span class="s2">&quot;Arm&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;EpochOID&quot;</span><span class="p">:</span> <span class="s2">&quot;Epoch&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;WorkflowOID&quot;</span><span class="p">:</span> <span class="s2">&quot;WorkflowDef&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;StudyEventGroupOID&quot;</span><span class="p">:</span> <span class="s2">&quot;StudyEventGroupDef&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;TransitionOID&quot;</span><span class="p">:</span> <span class="s2">&quot;Transition&quot;</span><span class="p">,</span>
+    <span class="s2">"StartConditionOID"</span><span class="p">:</span> <span class="s2">"ConditionDef"</span><span class="p">,</span>
+    <span class="s2">"EndConditionOID"</span><span class="p">:</span> <span class="s2">"ConditionDef"</span><span class="p">,</span>
+    <span class="s2">"ConditionOID"</span><span class="p">:</span> <span class="s2">"ConditionDef"</span><span class="p">,</span>
+    <span class="s2">"ArmOID"</span><span class="p">:</span> <span class="s2">"Arm"</span><span class="p">,</span>
+    <span class="s2">"EpochOID"</span><span class="p">:</span> <span class="s2">"Epoch"</span><span class="p">,</span>
+    <span class="s2">"WorkflowOID"</span><span class="p">:</span> <span class="s2">"WorkflowDef"</span><span class="p">,</span>
+    <span class="s2">"StudyEventGroupOID"</span><span class="p">:</span> <span class="s2">"StudyEventGroupDef"</span><span class="p">,</span>
+    <span class="s2">"TransitionOID"</span><span class="p">:</span> <span class="s2">"Transition"</span><span class="p">,</span>
 
     <span class="c1"># RoleCodeListOID (found in ItemRef) references a CodeList but the</span>
-    <span class="c1"># naming convention doesn&#39;t resolve (RoleCodeListDef / RoleCodeList</span>
-    <span class="c1"># don&#39;t exist as model classes).</span>
-    <span class="s2">&quot;RoleCodeListOID&quot;</span><span class="p">:</span> <span class="s2">&quot;CodeList&quot;</span><span class="p">,</span>
+    <span class="c1"># naming convention doesn't resolve (RoleCodeListDef / RoleCodeList</span>
+    <span class="c1"># don't exist as model classes).</span>
+    <span class="s2">"RoleCodeListOID"</span><span class="p">:</span> <span class="s2">"CodeList"</span><span class="p">,</span>
+<span class="p">}</span>
+
+
+<span class="c1"># Document references are ID-based rather than OID-named: leaf/@ID</span>
+<span class="c1"># (Define-XML) and Leaf/@ID (ODM 2.0) are the definitions, referenced by</span>
+<span class="c1"># DocumentRef/@leafID, DocumentRef/@LeafID and</span>
+<span class="c1"># ItemGroupDef/@def:ArchiveLocationID.  These pairs are surfaced by</span>
+<span class="c1"># ODMElement._init_oid_check alongside the OID-named attributes; they</span>
+<span class="c1"># are only wired up when the target class exists in the model package.</span>
+<span class="n">_ID_REF_DEF_PAIRS</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">"leafID"</span><span class="p">:</span> <span class="s2">"leaf"</span><span class="p">,</span>
+    <span class="s2">"ArchiveLocationID"</span><span class="p">:</span> <span class="s2">"leaf"</span><span class="p">,</span>
+    <span class="c1"># ODM 2.0 spells the element Leaf and the reference LeafID.</span>
+    <span class="s2">"LeafID"</span><span class="p">:</span> <span class="s2">"Leaf"</span><span class="p">,</span>
 <span class="p">}</span>
 
 
@@ -176,7 +191,7 @@
 <div class="viewcode-block" id="discover_model_classes">
 <a class="viewcode-back" href="../modules.html#oid_generator.discover_model_classes">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">discover_model_classes</span><span class="p">(</span><span class="n">model_module</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">type</span><span class="p">]:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return all ODMElement subclasses found in *model_module*.</span>
+<span class="w">    </span><span class="sd">"""Return all ODMElement subclasses found in *model_module*.</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        model_module: An imported odmlib model module, e.g.</span>
@@ -186,7 +201,7 @@
 <span class="sd">        Mapping of class name → class object for every</span>
 <span class="sd">        :class:`~odmlib.odm_element.ODMElement` subclass exposed at module</span>
 <span class="sd">        level.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">classes</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">type</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
     <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="nb">dir</span><span class="p">(</span><span class="n">model_module</span><span class="p">):</span>
         <span class="n">obj</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">model_module</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>
@@ -203,24 +218,26 @@
 <div class="viewcode-block" id="discover_oid_definitions">
 <a class="viewcode-back" href="../modules.html#oid_generator.discover_oid_definitions">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">discover_oid_definitions</span><span class="p">(</span><span class="n">model_classes</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">type</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Find all model classes that define an OID.</span>
+<span class="w">    </span><span class="sd">"""Find all model classes that define an OID.</span>
 
-<span class="sd">    A class is a &quot;definition&quot; element when it has an attribute literally</span>
-<span class="sd">    named ``&quot;OID&quot;`` in its ``_attrs`` dict (regardless of descriptor type).</span>
+<span class="sd">    A class is a "definition" element when it has an attribute literally</span>
+<span class="sd">    named ``"OID"`` in its ``_attrs`` dict (regardless of descriptor type).</span>
 <span class="sd">    This mirrors the runtime behaviour in</span>
 <span class="sd">    :meth:`~odmlib.odm_element.ODMElement._init_oid_check`, which registers</span>
-<span class="sd">    any ``attr == &quot;OID&quot;`` as a definition.</span>
+<span class="sd">    any ``attr == "OID"`` as a definition.</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        model_classes: Mapping returned by :func:`discover_model_classes`.</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        List of class names that have an ``OID`` attribute.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">oid_defs</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="bp">cls</span> <span class="ow">in</span> <span class="n">model_classes</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-        <span class="n">attrs</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="s2">&quot;_attrs&quot;</span><span class="p">,</span> <span class="p">{})</span>
-        <span class="k">if</span> <span class="s2">&quot;OID&quot;</span> <span class="ow">in</span> <span class="n">attrs</span><span class="p">:</span>
+        <span class="n">attrs</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="s2">"_attrs"</span><span class="p">,</span> <span class="p">{})</span>
+        <span class="k">if</span> <span class="s2">"OID"</span> <span class="ow">in</span> <span class="n">attrs</span><span class="p">:</span>
+            <span class="n">oid_defs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="s2">"ID"</span> <span class="ow">in</span> <span class="n">attrs</span> <span class="ow">and</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">_ID_REF_DEF_PAIRS</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
             <span class="n">oid_defs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">oid_defs</span></div>
 
@@ -229,12 +246,12 @@
 <div class="viewcode-block" id="discover_oid_references">
 <a class="viewcode-back" href="../modules.html#oid_generator.discover_oid_references">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">discover_oid_references</span><span class="p">(</span><span class="n">model_classes</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">type</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Find all OID reference attributes across all model classes.</span>
+<span class="w">    </span><span class="sd">"""Find all OID reference attributes across all model classes.</span>
 
 <span class="sd">    An attribute is an OID reference when its name contains the substring</span>
-<span class="sd">    ``&quot;OID&quot;`` but is NOT itself named exactly ``&quot;OID&quot;`` (which would be a</span>
+<span class="sd">    ``"OID"`` but is NOT itself named exactly ``"OID"`` (which would be a</span>
 <span class="sd">    definition).  This mirrors the runtime check</span>
-<span class="sd">    ``elif &quot;OID&quot; in attr: oid_checker.add_oid_ref(obj, attr)`` in</span>
+<span class="sd">    ``elif "OID" in attr: oid_checker.add_oid_ref(obj, attr)`` in</span>
 <span class="sd">    :meth:`~odmlib.odm_element.ODMElement._init_oid_check`.</span>
 
 <span class="sd">    Args:</span>
@@ -243,12 +260,12 @@
 <span class="sd">    Returns:</span>
 <span class="sd">        Mapping of ``ref_attr_name → [class_names …]`` listing every class</span>
 <span class="sd">        that carries each reference attribute.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">refs</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">{}</span>
     <span class="k">for</span> <span class="n">cls_name</span><span class="p">,</span> <span class="bp">cls</span> <span class="ow">in</span> <span class="n">model_classes</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-        <span class="n">attrs</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="s2">&quot;_attrs&quot;</span><span class="p">,</span> <span class="p">{})</span>
+        <span class="n">attrs</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="s2">"_attrs"</span><span class="p">,</span> <span class="p">{})</span>
         <span class="k">for</span> <span class="n">attr_name</span> <span class="ow">in</span> <span class="n">attrs</span><span class="p">:</span>
-            <span class="k">if</span> <span class="s2">&quot;OID&quot;</span> <span class="ow">in</span> <span class="n">attr_name</span> <span class="ow">and</span> <span class="n">attr_name</span> <span class="o">!=</span> <span class="s2">&quot;OID&quot;</span><span class="p">:</span>
+            <span class="k">if</span> <span class="p">(</span><span class="s2">"OID"</span> <span class="ow">in</span> <span class="n">attr_name</span> <span class="ow">and</span> <span class="n">attr_name</span> <span class="o">!=</span> <span class="s2">"OID"</span><span class="p">)</span> <span class="ow">or</span> <span class="n">attr_name</span> <span class="ow">in</span> <span class="n">_ID_REF_DEF_PAIRS</span><span class="p">:</span>
                 <span class="k">if</span> <span class="n">attr_name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">refs</span><span class="p">:</span>
                     <span class="n">refs</span><span class="p">[</span><span class="n">attr_name</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
                 <span class="n">refs</span><span class="p">[</span><span class="n">attr_name</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">cls_name</span><span class="p">)</span>
@@ -263,14 +280,14 @@
     <span class="n">oid_defs</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
     <span class="n">model_classes</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">type</span><span class="p">],</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Build the mapping from reference attribute names to definition classes.</span>
+<span class="w">    </span><span class="sd">"""Build the mapping from reference attribute names to definition classes.</span>
 
 <span class="sd">    Resolution order for each reference attribute:</span>
 
 <span class="sd">    1. Check :data:`_REF_DEF_OVERRIDES`; only apply the override if its</span>
 <span class="sd">       target class exists in *model_classes* (so the same override dict</span>
 <span class="sd">       works for all model packages).</span>
-<span class="sd">    2. Strip the ``&quot;OID&quot;`` suffix from the attribute name and try</span>
+<span class="sd">    2. Strip the ``"OID"`` suffix from the attribute name and try</span>
 <span class="sd">       ``&lt;base&gt;Def`` first, then ``&lt;base&gt;`` as the definition class name.</span>
 
 <span class="sd">    If neither step resolves to a known definition class, the attribute is</span>
@@ -283,11 +300,18 @@
 
 <span class="sd">    Returns:</span>
 <span class="sd">        Mapping of ``ref_attr_name → definition_class_name``.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">ref_def</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
     <span class="n">oid_def_set</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">oid_defs</span><span class="p">)</span>
 
     <span class="k">for</span> <span class="n">attr_name</span> <span class="ow">in</span> <span class="n">ref_attrs</span><span class="p">:</span>
+        <span class="c1"># --- Step 0: ID-based ref/def pairs (Define-XML leaf references) -------</span>
+        <span class="k">if</span> <span class="n">attr_name</span> <span class="ow">in</span> <span class="n">_ID_REF_DEF_PAIRS</span><span class="p">:</span>
+            <span class="n">target</span> <span class="o">=</span> <span class="n">_ID_REF_DEF_PAIRS</span><span class="p">[</span><span class="n">attr_name</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">target</span> <span class="ow">in</span> <span class="n">model_classes</span><span class="p">:</span>
+                <span class="n">ref_def</span><span class="p">[</span><span class="n">attr_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">target</span>
+            <span class="k">continue</span>
+
         <span class="c1"># --- Step 1: check overrides ------------------------------------------</span>
         <span class="k">if</span> <span class="n">attr_name</span> <span class="ow">in</span> <span class="n">_REF_DEF_OVERRIDES</span><span class="p">:</span>
             <span class="n">target</span> <span class="o">=</span> <span class="n">_REF_DEF_OVERRIDES</span><span class="p">[</span><span class="n">attr_name</span><span class="p">]</span>
@@ -299,10 +323,10 @@
             <span class="k">continue</span>
 
         <span class="c1"># --- Step 2: naming convention ----------------------------------------</span>
-        <span class="k">if</span> <span class="n">attr_name</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;OID&quot;</span><span class="p">):</span>
-            <span class="n">base</span> <span class="o">=</span> <span class="n">attr_name</span><span class="p">[:</span><span class="o">-</span><span class="mi">3</span><span class="p">]</span>  <span class="c1"># strip &quot;OID&quot; suffix</span>
-            <span class="k">if</span> <span class="n">base</span> <span class="o">+</span> <span class="s2">&quot;Def&quot;</span> <span class="ow">in</span> <span class="n">oid_def_set</span><span class="p">:</span>
-                <span class="n">ref_def</span><span class="p">[</span><span class="n">attr_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">base</span> <span class="o">+</span> <span class="s2">&quot;Def&quot;</span>
+        <span class="k">if</span> <span class="n">attr_name</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">"OID"</span><span class="p">):</span>
+            <span class="n">base</span> <span class="o">=</span> <span class="n">attr_name</span><span class="p">[:</span><span class="o">-</span><span class="mi">3</span><span class="p">]</span>  <span class="c1"># strip "OID" suffix</span>
+            <span class="k">if</span> <span class="n">base</span> <span class="o">+</span> <span class="s2">"Def"</span> <span class="ow">in</span> <span class="n">oid_def_set</span><span class="p">:</span>
+                <span class="n">ref_def</span><span class="p">[</span><span class="n">attr_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">base</span> <span class="o">+</span> <span class="s2">"Def"</span>
             <span class="k">elif</span> <span class="n">base</span> <span class="ow">in</span> <span class="n">oid_def_set</span><span class="p">:</span>
                 <span class="n">ref_def</span><span class="p">[</span><span class="n">attr_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">base</span>
             <span class="c1"># else: unresolvable — silently skip; the attr will not be</span>
@@ -317,7 +341,7 @@
 <span class="k">def</span><span class="w"> </span><span class="nf">build_def_ref_mapping</span><span class="p">(</span>
     <span class="n">ref_def</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Build the reverse mapping from definition classes to reference attributes.</span>
+<span class="w">    </span><span class="sd">"""Build the reverse mapping from definition classes to reference attributes.</span>
 
 <span class="sd">    This is used by :meth:`DynamicOIDRef.check_unreferenced_oids` to find</span>
 <span class="sd">    which reference attributes (if any) point to each definition class.</span>
@@ -327,7 +351,7 @@
 
 <span class="sd">    Returns:</span>
 <span class="sd">        Mapping of ``definition_class_name → [ref_attr_names …]``.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">def_ref</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">{}</span>
     <span class="k">for</span> <span class="n">attr_name</span><span class="p">,</span> <span class="n">def_class</span> <span class="ow">in</span> <span class="n">ref_def</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
         <span class="k">if</span> <span class="n">def_class</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">def_ref</span><span class="p">:</span>
@@ -344,8 +368,8 @@
 
 <div class="viewcode-block" id="DynamicOIDRef">
 <a class="viewcode-back" href="../modules.html#oid_generator.DynamicOIDRef">[docs]</a>
-<span class="k">class</span><span class="w"> </span><span class="nc">DynamicOIDRef</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Dynamically-generated OID ref/def checker.</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">DynamicOIDRef</span><span class="p">(</span><span class="n">ErrorReporting</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""Dynamically-generated OID ref/def checker.</span>
 
 <span class="sd">    Drop-in replacement for the manually-coded ``OIDRef`` classes in the</span>
 <span class="sd">    ``rules/oid_ref.py`` files.  Introspects the model module at</span>
@@ -355,23 +379,36 @@
 <span class="sd">    be passed directly to</span>
 <span class="sd">    :meth:`~odmlib.odm_element.ODMElement.verify_oids`.</span>
 
+<span class="sd">    Via the :class:`~odmlib.exceptions.ErrorReporting` mixin it also supports</span>
+<span class="sd">    the collecting-checker protocol, so</span>
+<span class="sd">    :meth:`~odmlib.odm_element.ODMElement.validate` with</span>
+<span class="sd">    ``collect_errors=True`` reports *every* duplicate and every bad reference</span>
+<span class="sd">    rather than only the first. The deprecated manual ``OIDRef`` classes do</span>
+<span class="sd">    not, and contribute at most one error.</span>
+
+<span class="sd">    Note:</span>
+<span class="sd">        A checker accumulates every OID it sees, so it is single-use per</span>
+<span class="sd">        document. Call :meth:`reset` before validating a second document (or</span>
+<span class="sd">        re-validating the same one), otherwise every OID is reported as a</span>
+<span class="sd">        duplicate.</span>
+
 <span class="sd">    Args:</span>
-<span class="sd">        model_package: Model package name, e.g. ``&quot;odm_1_3_2&quot;`` or</span>
-<span class="sd">            ``&quot;define_2_1&quot;``.</span>
+<span class="sd">        model_package: Model package name, e.g. ``"odm_1_3_2"`` or</span>
+<span class="sd">            ``"define_2_1"``.</span>
 <span class="sd">        skip_attrs: Attribute names to ignore during validation (e.g.</span>
-<span class="sd">            ``[&quot;FileOID&quot;, &quot;PriorFileOID&quot;]``).</span>
+<span class="sd">            ``["FileOID", "PriorFileOID"]``).</span>
 <span class="sd">        skip_elems: Element class names to ignore when registering OID</span>
-<span class="sd">            definitions (e.g. ``[&quot;ODM&quot;]``).</span>
+<span class="sd">            definitions (e.g. ``["ODM"]``).</span>
 
 <span class="sd">    Example::</span>
 
 <span class="sd">        from odmlib.oid_generator import create_oid_checker</span>
 
-<span class="sd">        checker = create_oid_checker(&quot;odm_1_3_2&quot;)</span>
+<span class="sd">        checker = create_oid_checker("odm_1_3_2")</span>
 <span class="sd">        odm.verify_oids(checker)</span>
 
 <span class="sd">    .. versionadded:: 0.2.0</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -380,7 +417,7 @@
         <span class="n">skip_elems</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">model_package</span> <span class="o">=</span> <span class="n">model_package</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">model</span> <span class="o">=</span> <span class="n">importlib</span><span class="o">.</span><span class="n">import_module</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;odmlib.</span><span class="si">{</span><span class="n">model_package</span><span class="si">}</span><span class="s2">.model&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">model</span> <span class="o">=</span> <span class="n">importlib</span><span class="o">.</span><span class="n">import_module</span><span class="p">(</span><span class="sa">f</span><span class="s2">"odmlib.</span><span class="si">{</span><span class="n">model_package</span><span class="si">}</span><span class="s2">.model"</span><span class="p">)</span>
 
         <span class="c1"># --- Model introspection ---</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">model_classes</span> <span class="o">=</span> <span class="n">discover_model_classes</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">)</span>
@@ -394,8 +431,13 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">def_ref</span> <span class="o">=</span> <span class="n">build_def_ref_mapping</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ref_def</span><span class="p">)</span>
 
         <span class="c1"># --- Runtime state (populated during verify_oids traversal) ---</span>
-        <span class="c1"># self.oid: OID value → element class name (for definition elements)</span>
+        <span class="c1"># self.oid: OID value → element class name (reference targets only;</span>
+        <span class="c1"># excludes skip_elem element types)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">oid</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="c1"># self.unique_oids: OID value → element class name for EVERY</span>
+        <span class="c1"># definition, including skip_elem types — skip_elem only exempts an</span>
+        <span class="c1"># element from reference-target checking, not from uniqueness</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">unique_oids</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="c1"># self.oid_ref: attr name → set of referenced OID values</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">oid_ref</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">set</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="n">attr</span><span class="p">:</span> <span class="nb">set</span><span class="p">()</span> <span class="k">for</span> <span class="n">attr</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">ref_def</span><span class="p">}</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">is_verified</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
@@ -411,7 +453,7 @@
 <div class="viewcode-block" id="DynamicOIDRef.add_oid">
 <a class="viewcode-back" href="../modules.html#oid_generator.DynamicOIDRef.add_oid">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">add_oid</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">oid</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">element</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Register an OID definition.</span>
+<span class="w">        </span><span class="sd">"""Register an OID definition.</span>
 
 <span class="sd">        Called automatically during</span>
 <span class="sd">        :meth:`~odmlib.odm_element.ODMElement._init_oid_check` traversal.</span>
@@ -422,34 +464,46 @@
 
 <span class="sd">        Raises:</span>
 <span class="sd">            OdmlibOIDError: If *oid* is already registered (duplicate OID).</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">                Inside a :meth:`~odmlib.exceptions.ErrorReporting.collecting`</span>
+<span class="sd">                block the error goes to the sink instead and the traversal</span>
+<span class="sd">                continues, so the reference checks that follow still run.</span>
+
+<span class="sd">        Note:</span>
+<span class="sd">            On a duplicate, the **first** definition is kept — that is what</span>
+<span class="sd">            the error message asserts, and it keeps :attr:`oid` stable so the</span>
+<span class="sd">            reference pass gives a deterministic verdict. A corner case worth</span>
+<span class="sd">            knowing: if the first definition is a ``skip_elem`` type it lands</span>
+<span class="sd">            only in :attr:`unique_oids`, so the reference pass then reports</span>
+<span class="sd">            "not found" for everything pointing at it.</span>
+<span class="sd">        """</span>
+        <span class="k">if</span> <span class="n">oid</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">unique_oids</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">report</span><span class="p">(</span><span class="n">OdmlibOIDError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">"OID </span><span class="si">{</span><span class="n">oid</span><span class="si">}</span><span class="s2"> is not unique - element </span><span class="si">{</span><span class="n">element</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span>
+                <span class="n">attribute</span><span class="o">=</span><span class="s2">"OID"</span><span class="p">,</span>
+                <span class="n">hint</span><span class="o">=</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">"Each OID must be unique within a MetaDataVersion. "</span>
+                    <span class="sa">f</span><span class="s2">"OID '</span><span class="si">{</span><span class="n">oid</span><span class="si">}</span><span class="s2">' is already defined in a </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">unique_oids</span><span class="p">[</span><span class="n">oid</span><span class="p">]</span><span class="si">}</span><span class="s2"> element."</span>
+                <span class="p">),</span>
+            <span class="p">))</span>
+            <span class="k">return</span>                                   <span class="c1"># first definition wins</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">unique_oids</span><span class="p">[</span><span class="n">oid</span><span class="p">]</span> <span class="o">=</span> <span class="n">element</span>
         <span class="k">if</span> <span class="n">element</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">skip_elem</span><span class="p">:</span>
             <span class="k">return</span>
-        <span class="k">if</span> <span class="n">oid</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">oid</span><span class="p">:</span>
-            <span class="kn">from</span><span class="w"> </span><span class="nn">odmlib.exceptions</span><span class="w"> </span><span class="kn">import</span> <span class="n">OdmlibOIDError</span>
-            <span class="k">raise</span> <span class="n">OdmlibOIDError</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;OID </span><span class="si">{</span><span class="n">oid</span><span class="si">}</span><span class="s2"> is not unique - element </span><span class="si">{</span><span class="n">element</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
-                <span class="n">attribute</span><span class="o">=</span><span class="s2">&quot;OID&quot;</span><span class="p">,</span>
-                <span class="n">hint</span><span class="o">=</span><span class="p">(</span>
-                    <span class="sa">f</span><span class="s2">&quot;Each OID must be unique within a MetaDataVersion. &quot;</span>
-                    <span class="sa">f</span><span class="s2">&quot;OID &#39;</span><span class="si">{</span><span class="n">oid</span><span class="si">}</span><span class="s2">&#39; is already defined in a </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">oid</span><span class="p">[</span><span class="n">oid</span><span class="p">]</span><span class="si">}</span><span class="s2"> element.&quot;</span>
-                <span class="p">),</span>
-            <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">oid</span><span class="p">[</span><span class="n">oid</span><span class="p">]</span> <span class="o">=</span> <span class="n">element</span></div>
 
 
 <div class="viewcode-block" id="DynamicOIDRef.add_oid_ref">
 <a class="viewcode-back" href="../modules.html#oid_generator.DynamicOIDRef.add_oid_ref">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">add_oid_ref</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">oid</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">attr</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Register an OID reference.</span>
+<span class="w">        </span><span class="sd">"""Register an OID reference.</span>
 
 <span class="sd">        Called automatically during</span>
 <span class="sd">        :meth:`~odmlib.odm_element.ODMElement._init_oid_check` traversal.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            oid: The referenced OID value.</span>
-<span class="sd">            attr: The attribute name (e.g. ``&quot;FormOID&quot;``, ``&quot;ItemOID&quot;``).</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">            attr: The attribute name (e.g. ``"FormOID"``, ``"ItemOID"``).</span>
+<span class="sd">        """</span>
         <span class="k">if</span> <span class="n">attr</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">skip_attr</span><span class="p">:</span>
             <span class="k">return</span>
         <span class="k">if</span> <span class="n">attr</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">oid_ref</span><span class="p">:</span>
@@ -463,14 +517,14 @@
 <div class="viewcode-block" id="DynamicOIDRef.is_oids_verified">
 <a class="viewcode-back" href="../modules.html#oid_generator.DynamicOIDRef.is_oids_verified">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">is_oids_verified</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return ``True`` if :meth:`check_oid_refs` has been called.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Return ``True`` if :meth:`check_oid_refs` has been called."""</span>
         <span class="k">return</span> <span class="nb">bool</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">oid</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_verified</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="DynamicOIDRef.check_oid_refs">
 <a class="viewcode-back" href="../modules.html#oid_generator.DynamicOIDRef.check_oid_refs">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">check_oid_refs</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Validate that all OID references point to valid definitions.</span>
+<span class="w">        </span><span class="sd">"""Validate that all OID references point to valid definitions.</span>
 
 <span class="sd">        For each collected OID reference, checks:</span>
 
@@ -483,49 +537,71 @@
 
 <span class="sd">        Raises:</span>
 <span class="sd">            OdmlibOIDError: On the first invalid or mismatched reference.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="kn">from</span><span class="w"> </span><span class="nn">odmlib.exceptions</span><span class="w"> </span><span class="kn">import</span> <span class="n">OdmlibOIDError</span>
-
+<span class="sd">                Inside a :meth:`~odmlib.exceptions.ErrorReporting.collecting`</span>
+<span class="sd">                block every bad reference is reported to the sink instead.</span>
+<span class="sd">        """</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">is_verified</span> <span class="o">=</span> <span class="kc">True</span>
         <span class="k">for</span> <span class="n">attr</span><span class="p">,</span> <span class="n">oid_set</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">oid_ref</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
             <span class="k">if</span> <span class="n">attr</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">skip_attr</span><span class="p">:</span>
                 <span class="k">continue</span>
-            <span class="k">for</span> <span class="n">oid</span> <span class="ow">in</span> <span class="n">oid_set</span><span class="p">:</span>
+            <span class="c1"># oid_set is a set, so iteration order varies with PYTHONHASHSEED.</span>
+            <span class="c1"># Sort for stable, reproducible error ordering. key=str guards</span>
+            <span class="c1"># against a non-string OID from a permissive load.</span>
+            <span class="k">for</span> <span class="n">oid</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">oid_set</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="nb">str</span><span class="p">):</span>
                 <span class="k">if</span> <span class="n">oid</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">oid</span><span class="p">:</span>
-                    <span class="k">raise</span> <span class="n">OdmlibOIDError</span><span class="p">(</span>
-                        <span class="sa">f</span><span class="s2">&quot;OID </span><span class="si">{</span><span class="n">oid</span><span class="si">}</span><span class="s2"> referenced in attribute </span><span class="si">{</span><span class="n">attr</span><span class="si">}</span><span class="s2"> is not found.&quot;</span><span class="p">,</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">report</span><span class="p">(</span><span class="n">OdmlibOIDError</span><span class="p">(</span>
+                        <span class="sa">f</span><span class="s2">"OID </span><span class="si">{</span><span class="n">oid</span><span class="si">}</span><span class="s2"> referenced in attribute </span><span class="si">{</span><span class="n">attr</span><span class="si">}</span><span class="s2"> is not found."</span><span class="p">,</span>
                         <span class="n">attribute</span><span class="o">=</span><span class="n">attr</span><span class="p">,</span>
                         <span class="n">hint</span><span class="o">=</span><span class="p">(</span>
-                            <span class="sa">f</span><span class="s2">&quot;Define an element with OID &#39;</span><span class="si">{</span><span class="n">oid</span><span class="si">}</span><span class="s2">&#39; before &quot;</span>
-                            <span class="sa">f</span><span class="s2">&quot;referencing it via </span><span class="si">{</span><span class="n">attr</span><span class="si">}</span><span class="s2">.&quot;</span>
+                            <span class="sa">f</span><span class="s2">"Define an element with OID '</span><span class="si">{</span><span class="n">oid</span><span class="si">}</span><span class="s2">' before "</span>
+                            <span class="sa">f</span><span class="s2">"referencing it via </span><span class="si">{</span><span class="n">attr</span><span class="si">}</span><span class="s2">."</span>
                         <span class="p">),</span>
-                    <span class="p">)</span>
+                    <span class="p">))</span>
+                    <span class="k">continue</span>        <span class="c1"># one error per bad ref, not two</span>
                 <span class="n">expected_type</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ref_def</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">attr</span><span class="p">)</span>
                 <span class="n">actual_type</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">oid</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">oid</span><span class="p">)</span>
                 <span class="k">if</span> <span class="n">expected_type</span> <span class="ow">and</span> <span class="n">actual_type</span> <span class="ow">and</span> <span class="n">expected_type</span> <span class="o">!=</span> <span class="n">actual_type</span><span class="p">:</span>
-                    <span class="k">raise</span> <span class="n">OdmlibOIDError</span><span class="p">(</span>
-                        <span class="sa">f</span><span class="s2">&quot;OID reference for attribute </span><span class="si">{</span><span class="n">attr</span><span class="si">}</span><span class="s2"> element types do &quot;</span>
-                        <span class="sa">f</span><span class="s2">&quot;not match: </span><span class="si">{</span><span class="n">expected_type</span><span class="si">}</span><span class="s2"> and </span><span class="si">{</span><span class="n">actual_type</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">report</span><span class="p">(</span><span class="n">OdmlibOIDError</span><span class="p">(</span>
+                        <span class="sa">f</span><span class="s2">"OID reference for attribute </span><span class="si">{</span><span class="n">attr</span><span class="si">}</span><span class="s2"> element types do "</span>
+                        <span class="sa">f</span><span class="s2">"not match: </span><span class="si">{</span><span class="n">expected_type</span><span class="si">}</span><span class="s2"> and </span><span class="si">{</span><span class="n">actual_type</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span>
                         <span class="n">attribute</span><span class="o">=</span><span class="n">attr</span><span class="p">,</span>
                         <span class="n">hint</span><span class="o">=</span><span class="p">(</span>
-                            <span class="sa">f</span><span class="s2">&quot;Attribute &#39;</span><span class="si">{</span><span class="n">attr</span><span class="si">}</span><span class="s2">&#39; should reference a &quot;</span>
-                            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">expected_type</span><span class="si">}</span><span class="s2">, but OID &#39;</span><span class="si">{</span><span class="n">oid</span><span class="si">}</span><span class="s2">&#39; is defined on &quot;</span>
-                            <span class="sa">f</span><span class="s2">&quot;a </span><span class="si">{</span><span class="n">actual_type</span><span class="si">}</span><span class="s2">.&quot;</span>
+                            <span class="sa">f</span><span class="s2">"Attribute '</span><span class="si">{</span><span class="n">attr</span><span class="si">}</span><span class="s2">' should reference a "</span>
+                            <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">expected_type</span><span class="si">}</span><span class="s2">, but OID '</span><span class="si">{</span><span class="n">oid</span><span class="si">}</span><span class="s2">' is defined on "</span>
+                            <span class="sa">f</span><span class="s2">"a </span><span class="si">{</span><span class="n">actual_type</span><span class="si">}</span><span class="s2">."</span>
                         <span class="p">),</span>
-                    <span class="p">)</span>
+                    <span class="p">))</span>
         <span class="k">return</span> <span class="kc">True</span></div>
+
+
+<div class="viewcode-block" id="DynamicOIDRef.reset">
+<a class="viewcode-back" href="../modules.html#oid_generator.DynamicOIDRef.reset">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">reset</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Clear all state collected by a previous verification pass.</span>
+
+<span class="sd">        A checker accumulates every OID it sees, so reusing one instance for a</span>
+<span class="sd">        second document — or a second ``validate()`` call on the same document</span>
+<span class="sd">        — reports every OID as a duplicate. Call ``reset()`` between runs, or</span>
+<span class="sd">        build a fresh checker with</span>
+<span class="sd">        :func:`~odmlib.oid_generator.create_oid_checker`.</span>
+<span class="sd">        """</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">oid</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">unique_oids</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">oid_set</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">oid_ref</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+            <span class="n">oid_set</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">is_verified</span> <span class="o">=</span> <span class="kc">False</span></div>
 
 
 <div class="viewcode-block" id="DynamicOIDRef.check_unreferenced_oids">
 <a class="viewcode-back" href="../modules.html#oid_generator.DynamicOIDRef.check_unreferenced_oids">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">check_unreferenced_oids</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Find OID definitions that are not referenced anywhere.</span>
+<span class="w">        </span><span class="sd">"""Find OID definitions that are not referenced anywhere.</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            Mapping of ``oid_value → ref_attr_name`` for each OID that is</span>
 <span class="sd">            defined but never referenced.  An empty dict means every</span>
 <span class="sd">            definition is used.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="n">all_referenced</span><span class="p">:</span> <span class="nb">set</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
         <span class="k">for</span> <span class="n">oid_set</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">oid_ref</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
             <span class="n">all_referenced</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">oid_set</span><span class="p">)</span>
@@ -561,7 +637,7 @@
     <span class="n">extra_skip_attrs</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">extra_skip_elems</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DynamicOIDRef</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Create a :class:`DynamicOIDRef` checker for a model package.</span>
+<span class="w">    </span><span class="sd">"""Create a :class:`DynamicOIDRef` checker for a model package.</span>
 
 <span class="sd">    This is the primary public API for creating OID checkers.  It loads</span>
 <span class="sd">    the per-model skip configuration from</span>
@@ -569,8 +645,8 @@
 <span class="sd">    extras before constructing the checker.</span>
 
 <span class="sd">    Args:</span>
-<span class="sd">        model_package: Model package name, e.g. ``&quot;odm_1_3_2&quot;``,</span>
-<span class="sd">            ``&quot;define_2_1&quot;``, ``&quot;odm_2_0&quot;``.</span>
+<span class="sd">        model_package: Model package name, e.g. ``"odm_1_3_2"``,</span>
+<span class="sd">            ``"define_2_1"``, ``"odm_2_0"``.</span>
 <span class="sd">        extra_skip_attrs: Additional attribute names to skip during</span>
 <span class="sd">            validation (merged with model-level defaults).</span>
 <span class="sd">        extra_skip_elems: Additional element class names to skip</span>
@@ -588,11 +664,11 @@
 <span class="sd">        #   from odmlib.odm_1_3_2.rules.oid_ref import OIDRef</span>
 <span class="sd">        #   checker = OIDRef()</span>
 <span class="sd">        # With:</span>
-<span class="sd">        checker = create_oid_checker(&quot;odm_1_3_2&quot;)</span>
+<span class="sd">        checker = create_oid_checker("odm_1_3_2")</span>
 <span class="sd">        odm.verify_oids(checker)</span>
 
 <span class="sd">    .. versionadded:: 0.2.0</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">odmlib.oid_generator_config</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_skip_config</span>
 
     <span class="n">skip_attrs</span><span class="p">,</span> <span class="n">skip_elems</span> <span class="o">=</span> <span class="n">get_skip_config</span><span class="p">(</span><span class="n">model_package</span><span class="p">)</span>

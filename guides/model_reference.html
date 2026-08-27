@@ -6,14 +6,14 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Model Reference &mdash; odmlib 0.2.0 documentation</title>
+  <title>Model Reference &mdash; odmlib 0.2.1 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
 
   
       <script src="../_static/jquery.js?v=5d32c60e"></script>
       <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../_static/documentation_options.js?v=938c9ccc"></script>
+      <script src="../_static/documentation_options.js?v=37f418d5"></script>
       <script src="../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../_static/js/theme.js"></script>
@@ -149,6 +149,11 @@ Select the appropriate package based on the document type you are working with.<
 <td><p><code class="xref py py-class docutils literal notranslate"><span class="pre">XMLODMLoader</span></code> with <code class="docutils literal notranslate"><span class="pre">model_package=&quot;ct_1_1_1&quot;</span></code></p></td>
 <td><p>Controlled terminology</p></td>
 </tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">odmlib.arm_1_0</span></code></p></td>
+<td><p>ARM 1.0</p></td>
+<td><p><code class="xref py py-class docutils literal notranslate"><span class="pre">XMLArmLoader</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">JSONArmLoader</span></code></p></td>
+<td><p>Analysis Results Metadata; extends Define-XML 2.1</p></td>
+</tr>
 </tbody>
 </table>
 </section>
@@ -193,35 +198,38 @@ Select the appropriate package based on the document type you are working with.<
 </section>
 <section id="odm-2-0-known-limitations">
 <h2>ODM 2.0 Known Limitations<a class="headerlink" href="#odm-2-0-known-limitations" title="Link to this heading"></a></h2>
-<p>The ODM 2.0 model is a draft. v0.2.0 aligned it with the ODM 2.0 XSD for the
-core CRF/dataset metadata subset (<code class="docutils literal notranslate"><span class="pre">TranslatedText/&#64;Type</span></code> is now required
-with a builder default, duplicate <code class="docutils literal notranslate"><span class="pre">Arm</span></code>/<code class="docutils literal notranslate"><span class="pre">CheckValue</span></code> removed, 12 missing
-value-set keys added, permissive mode can bypass an unregistered value set).
-Five <strong>structural</strong> features remain deferred to v0.2.1 and produce
-schema-invalid output if used under <code class="docutils literal notranslate"><span class="pre">model_package=&quot;odm_2_0&quot;</span></code>:</p>
+<p>The ODM 2.0 model is a draft, but every <strong>metadata</strong> element the ODM 2.0 XSD
+defines is now modelled. <code class="docutils literal notranslate"><span class="pre">tests/test_odm_2_0_xsd_alignment.py</span></code> compares the
+model against the bundled schema and asserts the divergence set equals a
+declared allowlist, so drift cannot be introduced silently. Two areas remain.</p>
+<p><strong>ClinicalData and ReferenceData are not modelled.</strong>
+<code class="xref py py-class docutils literal notranslate"><span class="pre">ODM</span></code> has no <code class="docutils literal notranslate"><span class="pre">ClinicalData</span></code>, <code class="docutils literal notranslate"><span class="pre">ReferenceData</span></code>
+or <code class="docutils literal notranslate"><span class="pre">Association</span></code> child, and <code class="xref py py-class docutils literal notranslate"><span class="pre">Location</span></code> has no
+<code class="docutils literal notranslate"><span class="pre">Query</span></code>. The 24 elements of that data layer are scoped to v0.3.0; see
+<code class="docutils literal notranslate"><span class="pre">ROADMAP.md</span></code>.</p>
+<p><strong>Three deliberate approximations</strong> remain, where the XSD says something
+odmlib’s descriptor model cannot express. Each is documented in the class
+docstring, and each is caught by
+<code class="xref py py-class docutils literal notranslate"><span class="pre">ODMSchemaValidator</span></code> rather than at build time:</p>
 <ul class="simple">
-<li><p><code class="xref py py-class docutils literal notranslate"><span class="pre">ConditionDef</span></code> lacks the XSD-required
-<code class="docutils literal notranslate"><span class="pre">MethodSignature</span></code> child (and required <code class="docutils literal notranslate"><span class="pre">Description</span></code>) –
-<code class="xref py py-meth docutils literal notranslate"><span class="pre">add_condition_def()</span></code> is unsafe for ODM 2.0.</p></li>
-<li><p><code class="xref py py-class docutils literal notranslate"><span class="pre">FormalExpression</span></code> is text-based; the XSD is
-element-based (<code class="docutils literal notranslate"><span class="pre">Code</span> <span class="pre">|</span> <span class="pre">ExternalCodeLib</span></code>) – do not pass
-<code class="docutils literal notranslate"><span class="pre">formal_expression</span></code> to <code class="xref py py-meth docutils literal notranslate"><span class="pre">add_method_def()</span></code>
-for ODM 2.0.</p></li>
-<li><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Protocol</span></code> carries <code class="docutils literal notranslate"><span class="pre">StudyEventRef</span></code>, removed
-in the ODM 2.0 schema – <code class="xref py py-meth docutils literal notranslate"><span class="pre">add_study_event_ref()</span></code>
-is unsafe for ODM 2.0.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">MetaDataVersion.StudyTiming</span></code> placement (the XSD puts timing under
-<code class="docutils literal notranslate"><span class="pre">Protocol/StudyTimings</span></code>).</p></li>
-<li><p><code class="xref py py-class docutils literal notranslate"><span class="pre">StudyEventGroupDef</span></code> cannot satisfy its
-required <code class="docutils literal notranslate"><span class="pre">(StudyEventGroupRef?,</span> <span class="pre">StudyEventRef?)</span></code> child group.</p></li>
+<li><p><code class="xref py py-class docutils literal notranslate"><span class="pre">FormalExpression</span></code> – the XSD requires exactly
+one of <code class="docutils literal notranslate"><span class="pre">Code</span></code> or <code class="docutils literal notranslate"><span class="pre">ExternalCodeLib</span></code>. odmlib has no way to express an
+<code class="docutils literal notranslate"><span class="pre">xs:choice</span></code>, so both children are declared optional; setting neither, or
+both, builds an object odmlib accepts and the schema rejects.</p></li>
+<li><p><code class="xref py py-class docutils literal notranslate"><span class="pre">StudyEventGroupDef</span></code> – the XSD’s repeating
+<code class="docutils literal notranslate"><span class="pre">(StudyEventGroupRef?,</span> <span class="pre">StudyEventRef?)</span></code> group is approximated by two
+parallel lists, which emit all groups then all events. Both forms are
+schema-valid; only an interleaved ordering is lost.</p></li>
+<li><p><code class="xref py py-class docutils literal notranslate"><span class="pre">TranslatedText</span></code> – the XSD types it
+<code class="docutils literal notranslate"><span class="pre">mixed=&quot;true&quot;</span></code> with an optional <code class="docutils literal notranslate"><span class="pre">xhtml:div</span></code> child, allowing XHTML
+markup. odmlib models the text-only form; an <code class="docutils literal notranslate"><span class="pre">xhtml:div</span></code> present in a
+source document is dropped on load. Plain-text TranslatedText round-trips
+exactly. An opaque text-only <code class="docutils literal notranslate"><span class="pre">div</span></code> was tried in v0.2.1 and withdrawn: it
+could not carry markup either, since element text is XML-escaped on write.
+See <code class="docutils literal notranslate"><span class="pre">ODM_XSD_ALIGNMENT.md</span></code> for what real XHTML support would take.</p></li>
 </ul>
-<p>The <code class="xref py py-class docutils literal notranslate"><span class="pre">ItemDef</span></code> attribute-set alignment (drop
-<code class="docutils literal notranslate"><span class="pre">FractionDigits</span></code> / <code class="docutils literal notranslate"><span class="pre">DatasetVarName</span></code> / <code class="docutils literal notranslate"><span class="pre">SDSVarName</span></code>, add
-<code class="docutils literal notranslate"><span class="pre">DisplayFormat</span></code> / <code class="docutils literal notranslate"><span class="pre">VariableSet</span></code>) landed in v0.2.1; its XSD
-<code class="docutils literal notranslate"><span class="pre">ItemDef/ValueListRef</span></code> child element remains deferred.</p>
-<p>See the ROADMAP “v0.2.1 – ODM v2.0 Model/XSD Alignment” section and
-<code class="docutils literal notranslate"><span class="pre">ODM20-MODEL-XSD-DIFFERENCES_PLAN.md</span></code> for full detail and the schema-valid
-safe-subset workaround.</p>
+<p>See <code class="docutils literal notranslate"><span class="pre">ODM_XSD_ALIGNMENT.md</span></code> for the full model/XSD comparison and the
+remaining work.</p>
 </section>
 <section id="define-xml-extensions">
 <h2>Define-XML Extensions<a class="headerlink" href="#define-xml-extensions" title="Link to this heading"></a></h2>
@@ -252,19 +260,19 @@ safe-subset workaround.</p>
 <span class="kn">import</span><span class="w"> </span><span class="nn">odmlib.define_loader</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">DL</span>
 
 <span class="c1"># ODM 1.3.2 XML</span>
-<span class="n">loader</span> <span class="o">=</span> <span class="n">LD</span><span class="o">.</span><span class="n">ODMLoader</span><span class="p">(</span><span class="n">OL</span><span class="o">.</span><span class="n">XMLODMLoader</span><span class="p">(</span><span class="n">model_package</span><span class="o">=</span><span class="s2">&quot;odm_1_3_2&quot;</span><span class="p">))</span>
+<span class="n">loader</span> <span class="o">=</span> <span class="n">LD</span><span class="o">.</span><span class="n">ODMLoader</span><span class="p">(</span><span class="n">OL</span><span class="o">.</span><span class="n">XMLODMLoader</span><span class="p">(</span><span class="n">model_package</span><span class="o">=</span><span class="s2">"odm_1_3_2"</span><span class="p">))</span>
 
 <span class="c1"># ODM 2.0 XML</span>
-<span class="n">loader</span> <span class="o">=</span> <span class="n">LD</span><span class="o">.</span><span class="n">ODMLoader</span><span class="p">(</span><span class="n">OL</span><span class="o">.</span><span class="n">XMLODMLoader</span><span class="p">(</span><span class="n">model_package</span><span class="o">=</span><span class="s2">&quot;odm_2_0&quot;</span><span class="p">))</span>
+<span class="n">loader</span> <span class="o">=</span> <span class="n">LD</span><span class="o">.</span><span class="n">ODMLoader</span><span class="p">(</span><span class="n">OL</span><span class="o">.</span><span class="n">XMLODMLoader</span><span class="p">(</span><span class="n">model_package</span><span class="o">=</span><span class="s2">"odm_2_0"</span><span class="p">))</span>
 
 <span class="c1"># Define-XML 2.1 XML</span>
-<span class="n">loader</span> <span class="o">=</span> <span class="n">LD</span><span class="o">.</span><span class="n">ODMLoader</span><span class="p">(</span><span class="n">DL</span><span class="o">.</span><span class="n">XMLDefineLoader</span><span class="p">(</span><span class="n">model_package</span><span class="o">=</span><span class="s2">&quot;define_2_1&quot;</span><span class="p">))</span>
+<span class="n">loader</span> <span class="o">=</span> <span class="n">LD</span><span class="o">.</span><span class="n">ODMLoader</span><span class="p">(</span><span class="n">DL</span><span class="o">.</span><span class="n">XMLDefineLoader</span><span class="p">(</span><span class="n">model_package</span><span class="o">=</span><span class="s2">"define_2_1"</span><span class="p">))</span>
 
 <span class="c1"># Define-XML 2.0 JSON</span>
-<span class="n">loader</span> <span class="o">=</span> <span class="n">LD</span><span class="o">.</span><span class="n">ODMLoader</span><span class="p">(</span><span class="n">DL</span><span class="o">.</span><span class="n">JSONDefineLoader</span><span class="p">(</span><span class="n">model_package</span><span class="o">=</span><span class="s2">&quot;define_2_0&quot;</span><span class="p">))</span>
+<span class="n">loader</span> <span class="o">=</span> <span class="n">LD</span><span class="o">.</span><span class="n">ODMLoader</span><span class="p">(</span><span class="n">DL</span><span class="o">.</span><span class="n">JSONDefineLoader</span><span class="p">(</span><span class="n">model_package</span><span class="o">=</span><span class="s2">"define_2_0"</span><span class="p">))</span>
 
 <span class="c1"># Dataset-XML 1.0.1</span>
-<span class="n">loader</span> <span class="o">=</span> <span class="n">LD</span><span class="o">.</span><span class="n">ODMLoader</span><span class="p">(</span><span class="n">OL</span><span class="o">.</span><span class="n">XMLODMLoader</span><span class="p">(</span><span class="n">model_package</span><span class="o">=</span><span class="s2">&quot;dataset_1_0_1&quot;</span><span class="p">))</span>
+<span class="n">loader</span> <span class="o">=</span> <span class="n">LD</span><span class="o">.</span><span class="n">ODMLoader</span><span class="p">(</span><span class="n">OL</span><span class="o">.</span><span class="n">XMLODMLoader</span><span class="p">(</span><span class="n">model_package</span><span class="o">=</span><span class="s2">"dataset_1_0_1"</span><span class="p">))</span>
 </pre></div>
 </div>
 </section>
@@ -282,14 +290,14 @@ safe-subset workaround.</p>
 <span class="kn">import</span><span class="w"> </span><span class="nn">odmlib.typed</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">T</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">odmlib.ns_registry</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">NS</span>
 
-<span class="n">NS</span><span class="o">.</span><span class="n">NamespaceRegistry</span><span class="p">(</span><span class="n">prefix</span><span class="o">=</span><span class="s2">&quot;myext&quot;</span><span class="p">,</span> <span class="n">uri</span><span class="o">=</span><span class="s2">&quot;http://example.com/myext&quot;</span><span class="p">)</span>
+<span class="n">NS</span><span class="o">.</span><span class="n">NamespaceRegistry</span><span class="p">(</span><span class="n">prefix</span><span class="o">=</span><span class="s2">"myext"</span><span class="p">,</span> <span class="n">uri</span><span class="o">=</span><span class="s2">"http://example.com/myext"</span><span class="p">)</span>
 
 <span class="k">class</span><span class="w"> </span><span class="nc">ItemDef</span><span class="p">(</span><span class="n">ODM</span><span class="o">.</span><span class="n">ItemDef</span><span class="p">):</span>
-    <span class="n">CustomAttr</span> <span class="o">=</span> <span class="n">T</span><span class="o">.</span><span class="n">String</span><span class="p">(</span><span class="n">namespace</span><span class="o">=</span><span class="s2">&quot;myext&quot;</span><span class="p">)</span>
+    <span class="n">CustomAttr</span> <span class="o">=</span> <span class="n">T</span><span class="o">.</span><span class="n">String</span><span class="p">(</span><span class="n">namespace</span><span class="o">=</span><span class="s2">"myext"</span><span class="p">)</span>
 
 <span class="c1"># Load using local_model</span>
 <span class="n">loader</span> <span class="o">=</span> <span class="n">LD</span><span class="o">.</span><span class="n">ODMLoader</span><span class="p">(</span><span class="n">OL</span><span class="o">.</span><span class="n">XMLODMLoader</span><span class="p">(</span>
-    <span class="n">model_package</span><span class="o">=</span><span class="s2">&quot;myext&quot;</span><span class="p">,</span>
+    <span class="n">model_package</span><span class="o">=</span><span class="s2">"myext"</span><span class="p">,</span>
     <span class="n">local_model</span><span class="o">=</span><span class="kc">True</span>
 <span class="p">))</span>
 </pre></div>

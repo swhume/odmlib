@@ -5,14 +5,14 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>context &mdash; odmlib 0.2.0 documentation</title>
+  <title>context &mdash; odmlib 0.2.1 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
 
   
       <script src="../_static/jquery.js?v=5d32c60e"></script>
       <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../_static/documentation_options.js?v=938c9ccc"></script>
+      <script src="../_static/documentation_options.js?v=37f418d5"></script>
       <script src="../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../_static/js/theme.js"></script>
@@ -93,34 +93,46 @@
            <div itemprop="articleBody">
              
   <h1>Source code for context</h1><div class="highlight"><pre>
-<span></span><span class="sd">&quot;&quot;&quot;Context managers for common odmlib load-modify-save workflows.</span>
+<span></span><span class="sd">"""Context managers for common odmlib load-modify-save workflows.</span>
 
 <span class="sd">Provides :func:`open_odm` and :func:`open_define` context managers that</span>
-<span class="sd">automatically load an ODM or Define-XML document on entry and write it</span>
-<span class="sd">back on clean exit.</span>
+<span class="sd">automatically load an ODM or Define-XML document on entry and, when a</span>
+<span class="sd">write target is configured, write it back on clean exit.</span>
 
-<span class="sd">Example — read and modify an ODM file::</span>
+<span class="sd">Opening a document with only an ``input_file`` is read-only: nothing is</span>
+<span class="sd">written when the ``with`` block exits.  Provide ``output_file`` to write</span>
+<span class="sd">the (possibly modified) document to a different path, or pass</span>
+<span class="sd">``write_on_exit=True`` to explicitly opt in to updating ``input_file``</span>
+<span class="sd">in place.</span>
+
+<span class="sd">Example — read an ODM file (read-only, nothing written)::</span>
 
 <span class="sd">    from odmlib.context import open_odm</span>
 
-<span class="sd">    with open_odm(&quot;study.xml&quot;) as odm:</span>
+<span class="sd">    with open_odm("study.xml") as odm:</span>
+<span class="sd">        print(odm.FileOID)</span>
+
+<span class="sd">Example — modify an ODM file, write to a different path::</span>
+
+<span class="sd">    with open_odm("study.xml", output_file="study_updated.xml") as odm:</span>
+<span class="sd">        odm.FileOID = "F.002"</span>
+
+<span class="sd">Example — update an ODM file in place (explicit opt-in)::</span>
+
+<span class="sd">    with open_odm("study.xml", write_on_exit=True) as odm:</span>
 <span class="sd">        mdv = odm.Study[0].MetaDataVersion[0]</span>
 <span class="sd">        mdv.ItemGroupDef.append(new_igd)</span>
-<span class="sd">    # study.xml is automatically overwritten with the modified content</span>
-
-<span class="sd">Example — read an ODM file, write to a different path::</span>
-
-<span class="sd">    with open_odm(&quot;study.xml&quot;, output_file=&quot;study_updated.xml&quot;) as odm:</span>
-<span class="sd">        odm.FileOID = &quot;F.002&quot;</span>
+<span class="sd">    # study.xml is overwritten with the modified content</span>
 
 <span class="sd">Example — read a Define-XML 2.1 file::</span>
 
 <span class="sd">    from odmlib.context import open_define</span>
 
-<span class="sd">    with open_define(&quot;define.xml&quot;) as define:</span>
-<span class="sd">        mdv = define.Study[0].MetaDataVersion[0]</span>
+<span class="sd">    with open_define("define.xml") as define:</span>
+<span class="sd">        # Define-XML: Study and MetaDataVersion are single objects, not lists</span>
+<span class="sd">        mdv = define.Study.MetaDataVersion</span>
 <span class="sd">        print(len(mdv.ItemDef))</span>
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">"""</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">odmlib.mode</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">_mode</span>
@@ -129,7 +141,7 @@
 <div class="viewcode-block" id="ODMContext">
 <a class="viewcode-back" href="../modules.html#context.ODMContext">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">ODMContext</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Context manager for load-modify-save ODM workflows.</span>
+<span class="w">    </span><span class="sd">"""Context manager for load-modify-save ODM workflows.</span>
 
 <span class="sd">    The document is loaded when the ``with`` block is entered and</span>
 <span class="sd">    written back to ``output_file`` when the block exits normally.</span>
@@ -137,29 +149,36 @@
 <span class="sd">    **not** written (the exception is re-raised unchanged).</span>
 
 <span class="sd">    :param input_file: Path to the ODM file to load.</span>
-<span class="sd">    :param output_file: Path to write on exit.  Defaults to</span>
-<span class="sd">        ``input_file`` (in-place update).</span>
+<span class="sd">    :param output_file: Path to write on clean exit.  When omitted, the</span>
+<span class="sd">        document is opened read-only and nothing is written (unless</span>
+<span class="sd">        ``write_on_exit=True`` explicitly opts in to updating</span>
+<span class="sd">        ``input_file`` in place).</span>
 <span class="sd">    :param model_package: odmlib model package name.</span>
-<span class="sd">        Defaults to ``&quot;odm_1_3_2&quot;``.</span>
-<span class="sd">    :param format: ``&quot;xml&quot;`` or ``&quot;json&quot;``.  Auto-detected from the</span>
+<span class="sd">        Defaults to ``"odm_1_3_2"``.</span>
+<span class="sd">    :param format: ``"xml"`` or ``"json"``.  Auto-detected from the</span>
 <span class="sd">        file extension when not specified.</span>
-<span class="sd">    :param write_on_exit: If ``True`` (default), the document is written</span>
-<span class="sd">        to ``output_file`` on clean exit.  Pass ``False`` for read-only</span>
-<span class="sd">        inspection without writing back — no file is created or</span>
-<span class="sd">        modified when the ``with`` block exits.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    :param write_on_exit: When omitted, the document is written on clean</span>
+<span class="sd">        exit only if ``output_file`` was provided.  Pass ``True`` to</span>
+<span class="sd">        force writing (to ``output_file``, or in place to ``input_file``</span>
+<span class="sd">        when no ``output_file`` is given).  Pass ``False`` to suppress</span>
+<span class="sd">        writing entirely.</span>
+<span class="sd">    """</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">input_file</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
                  <span class="n">output_file</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-                 <span class="n">model_package</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;odm_1_3_2&quot;</span><span class="p">,</span>
+                 <span class="n">model_package</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"odm_1_3_2"</span><span class="p">,</span>
                  <span class="nb">format</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
                  <span class="n">permissive</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">bool</span><span class="p">,</span> <span class="n">_mode</span><span class="o">.</span><span class="n">ValidationMode</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-                 <span class="n">write_on_exit</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+                 <span class="n">write_on_exit</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">input_file</span> <span class="o">=</span> <span class="n">input_file</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">output_file</span> <span class="o">=</span> <span class="n">output_file</span> <span class="ow">or</span> <span class="n">input_file</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">model_package</span> <span class="o">=</span> <span class="n">model_package</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">format</span> <span class="o">=</span> <span class="nb">format</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">_detect_format</span><span class="p">(</span><span class="n">input_file</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_permissive</span> <span class="o">=</span> <span class="n">permissive</span>
+        <span class="c1"># writing must be opted into: an explicit output_file, or an</span>
+        <span class="c1"># explicit write_on_exit=True (in-place update of input_file)</span>
+        <span class="k">if</span> <span class="n">write_on_exit</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">write_on_exit</span> <span class="o">=</span> <span class="n">output_file</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_write_on_exit</span> <span class="o">=</span> <span class="n">write_on_exit</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_mode_token</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_odm</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="kc">None</span>
@@ -170,15 +189,15 @@
 
     <span class="nd">@staticmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">_detect_format</span><span class="p">(</span><span class="n">filename</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="k">if</span> <span class="n">filename</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;.json&quot;</span><span class="p">):</span>
-            <span class="k">return</span> <span class="s2">&quot;json&quot;</span>
-        <span class="k">return</span> <span class="s2">&quot;xml&quot;</span>
+        <span class="k">if</span> <span class="n">filename</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">".json"</span><span class="p">):</span>
+            <span class="k">return</span> <span class="s2">"json"</span>
+        <span class="k">return</span> <span class="s2">"xml"</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_load</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
         <span class="kn">import</span><span class="w"> </span><span class="nn">odmlib.odm_loader</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">OL</span>
         <span class="kn">import</span><span class="w"> </span><span class="nn">odmlib.loader</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">LD</span>
 
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">format</span> <span class="o">==</span> <span class="s2">&quot;json&quot;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">format</span> <span class="o">==</span> <span class="s2">"json"</span><span class="p">:</span>
             <span class="n">loader</span> <span class="o">=</span> <span class="n">LD</span><span class="o">.</span><span class="n">ODMLoader</span><span class="p">(</span><span class="n">OL</span><span class="o">.</span><span class="n">JSONODMLoader</span><span class="p">(</span><span class="n">model_package</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">model_package</span><span class="p">))</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">loader</span> <span class="o">=</span> <span class="n">LD</span><span class="o">.</span><span class="n">ODMLoader</span><span class="p">(</span><span class="n">OL</span><span class="o">.</span><span class="n">XMLODMLoader</span><span class="p">(</span><span class="n">model_package</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">model_package</span><span class="p">))</span>
@@ -187,7 +206,7 @@
         <span class="k">return</span> <span class="n">loader</span><span class="o">.</span><span class="n">root</span><span class="p">()</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_save</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">odm</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">format</span> <span class="o">==</span> <span class="s2">&quot;json&quot;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">format</span> <span class="o">==</span> <span class="s2">"json"</span><span class="p">:</span>
             <span class="n">odm</span><span class="o">.</span><span class="n">write_json</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">output_file</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">odm</span><span class="o">.</span><span class="n">write_xml</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">output_file</span><span class="p">)</span>
@@ -221,28 +240,31 @@
 <div class="viewcode-block" id="DefineContext">
 <a class="viewcode-back" href="../modules.html#context.DefineContext">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">DefineContext</span><span class="p">(</span><span class="n">ODMContext</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Context manager for load-modify-save Define-XML workflows.</span>
+<span class="w">    </span><span class="sd">"""Context manager for load-modify-save Define-XML workflows.</span>
 
 <span class="sd">    Identical to :class:`ODMContext` but uses Define-XML loaders by</span>
 <span class="sd">    default.</span>
 
 <span class="sd">    :param input_file: Path to the Define-XML file to load.</span>
-<span class="sd">    :param output_file: Path to write on exit.  Defaults to</span>
-<span class="sd">        ``input_file``.</span>
+<span class="sd">    :param output_file: Path to write on clean exit.  When omitted, the</span>
+<span class="sd">        document is opened read-only and nothing is written (unless</span>
+<span class="sd">        ``write_on_exit=True`` explicitly opts in to updating</span>
+<span class="sd">        ``input_file`` in place).</span>
 <span class="sd">    :param model_package: odmlib model package name.</span>
-<span class="sd">        Defaults to ``&quot;define_2_1&quot;``.</span>
-<span class="sd">    :param format: ``&quot;xml&quot;`` or ``&quot;json&quot;``.</span>
-<span class="sd">    :param write_on_exit: If ``True`` (default), the document is written</span>
-<span class="sd">        to ``output_file`` on clean exit.  Pass ``False`` for read-only</span>
-<span class="sd">        inspection without writing back.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">        Defaults to ``"define_2_1"``.</span>
+<span class="sd">    :param format: ``"xml"`` or ``"json"``.</span>
+<span class="sd">    :param write_on_exit: When omitted, the document is written on clean</span>
+<span class="sd">        exit only if ``output_file`` was provided.  ``True`` forces</span>
+<span class="sd">        writing (in place when no ``output_file``); ``False`` suppresses</span>
+<span class="sd">        writing entirely.</span>
+<span class="sd">    """</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">input_file</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
                  <span class="n">output_file</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-                 <span class="n">model_package</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;define_2_1&quot;</span><span class="p">,</span>
+                 <span class="n">model_package</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"define_2_1"</span><span class="p">,</span>
                  <span class="nb">format</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
                  <span class="n">permissive</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">bool</span><span class="p">,</span> <span class="n">_mode</span><span class="o">.</span><span class="n">ValidationMode</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-                 <span class="n">write_on_exit</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+                 <span class="n">write_on_exit</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">input_file</span><span class="p">,</span> <span class="n">output_file</span><span class="p">,</span> <span class="n">model_package</span><span class="p">,</span> <span class="nb">format</span><span class="p">,</span>
                          <span class="n">permissive</span><span class="o">=</span><span class="n">permissive</span><span class="p">,</span> <span class="n">write_on_exit</span><span class="o">=</span><span class="n">write_on_exit</span><span class="p">)</span>
 
@@ -250,7 +272,7 @@
         <span class="kn">import</span><span class="w"> </span><span class="nn">odmlib.define_loader</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">DL</span>
         <span class="kn">import</span><span class="w"> </span><span class="nn">odmlib.loader</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">LD</span>
 
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">format</span> <span class="o">==</span> <span class="s2">&quot;json&quot;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">format</span> <span class="o">==</span> <span class="s2">"json"</span><span class="p">:</span>
             <span class="n">loader</span> <span class="o">=</span> <span class="n">LD</span><span class="o">.</span><span class="n">ODMLoader</span><span class="p">(</span><span class="n">DL</span><span class="o">.</span><span class="n">JSONDefineLoader</span><span class="p">(</span><span class="n">model_package</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">model_package</span><span class="p">))</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">loader</span> <span class="o">=</span> <span class="n">LD</span><span class="o">.</span><span class="n">ODMLoader</span><span class="p">(</span><span class="n">DL</span><span class="o">.</span><span class="n">XMLDefineLoader</span><span class="p">(</span><span class="n">model_package</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">model_package</span><span class="p">))</span>
@@ -268,37 +290,44 @@
 <a class="viewcode-back" href="../modules.html#context.open_odm">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">open_odm</span><span class="p">(</span><span class="n">input_file</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
              <span class="n">output_file</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-             <span class="n">model_package</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;odm_1_3_2&quot;</span><span class="p">,</span>
+             <span class="n">model_package</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"odm_1_3_2"</span><span class="p">,</span>
              <span class="nb">format</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
              <span class="n">permissive</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">bool</span><span class="p">,</span> <span class="n">_mode</span><span class="o">.</span><span class="n">ValidationMode</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-             <span class="n">write_on_exit</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ODMContext</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Open an ODM document as a context manager.</span>
+             <span class="n">write_on_exit</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ODMContext</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Open an ODM document as a context manager.</span>
 
 <span class="sd">    :param input_file: Path to the ODM file.</span>
-<span class="sd">    :param output_file: Write path on exit (defaults to ``input_file``).</span>
-<span class="sd">    :param model_package: odmlib model package (default ``&quot;odm_1_3_2&quot;``).</span>
-<span class="sd">    :param format: ``&quot;xml&quot;`` or ``&quot;json&quot;`` (auto-detected if omitted).</span>
+<span class="sd">    :param output_file: Write path on clean exit.  When omitted, the</span>
+<span class="sd">        document is opened read-only (nothing is written unless</span>
+<span class="sd">        ``write_on_exit=True`` opts in to an in-place update).</span>
+<span class="sd">    :param model_package: odmlib model package (default ``"odm_1_3_2"``).</span>
+<span class="sd">    :param format: ``"xml"`` or ``"json"`` (auto-detected if omitted).</span>
 <span class="sd">    :param permissive: If ``True``, load in fully permissive mode.</span>
 <span class="sd">        Pass a :class:`~odmlib.mode.ValidationMode` flag combination for</span>
 <span class="sd">        targeted relaxation.  Defaults to ``False`` (strict).</span>
-<span class="sd">    :param write_on_exit: If ``True`` (default), the document is written</span>
-<span class="sd">        to ``output_file`` on clean exit.  Pass ``False`` for read-only</span>
-<span class="sd">        inspection without writing back — no file is created or</span>
-<span class="sd">        modified when the ``with`` block exits.</span>
+<span class="sd">    :param write_on_exit: When omitted, the document is written on clean</span>
+<span class="sd">        exit only if ``output_file`` was provided.  ``True`` forces</span>
+<span class="sd">        writing (in place when no ``output_file``); ``False`` suppresses</span>
+<span class="sd">        writing entirely.</span>
 <span class="sd">    :returns: An :class:`ODMContext` instance.</span>
 
 <span class="sd">    Example::</span>
 
-<span class="sd">        with open_odm(&quot;study.xml&quot;) as odm:</span>
+<span class="sd">        # Read-only inspection — input file is never modified</span>
+<span class="sd">        with open_odm("study.xml") as odm:</span>
 <span class="sd">            print(odm.FileOID)</span>
 
-<span class="sd">        with open_odm(&quot;broken.xml&quot;, permissive=True) as odm:</span>
+<span class="sd">        with open_odm("broken.xml", permissive=True) as odm:</span>
 <span class="sd">            ...  # permissive mode active during load</span>
 
-<span class="sd">        # Read-only inspection — input file is never modified</span>
-<span class="sd">        with open_odm(&quot;study.xml&quot;, write_on_exit=False) as odm:</span>
-<span class="sd">            print(odm.FileOID)</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">        # Modify and write to a new file</span>
+<span class="sd">        with open_odm("study.xml", output_file="study_v2.xml") as odm:</span>
+<span class="sd">            odm.FileOID = "F.002"</span>
+
+<span class="sd">        # Update the input file in place (explicit opt-in)</span>
+<span class="sd">        with open_odm("study.xml", write_on_exit=True) as odm:</span>
+<span class="sd">            odm.FileOID = "F.002"</span>
+<span class="sd">    """</span>
     <span class="k">return</span> <span class="n">ODMContext</span><span class="p">(</span><span class="n">input_file</span><span class="p">,</span> <span class="n">output_file</span><span class="p">,</span> <span class="n">model_package</span><span class="p">,</span> <span class="nb">format</span><span class="p">,</span>
                      <span class="n">permissive</span><span class="o">=</span><span class="n">permissive</span><span class="p">,</span> <span class="n">write_on_exit</span><span class="o">=</span><span class="n">write_on_exit</span><span class="p">)</span></div>
 
@@ -308,36 +337,37 @@
 <a class="viewcode-back" href="../modules.html#context.open_define">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">open_define</span><span class="p">(</span><span class="n">input_file</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
                 <span class="n">output_file</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-                <span class="n">model_package</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;define_2_1&quot;</span><span class="p">,</span>
+                <span class="n">model_package</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"define_2_1"</span><span class="p">,</span>
                 <span class="nb">format</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
                 <span class="n">permissive</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">bool</span><span class="p">,</span> <span class="n">_mode</span><span class="o">.</span><span class="n">ValidationMode</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-                <span class="n">write_on_exit</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DefineContext</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Open a Define-XML document as a context manager.</span>
+                <span class="n">write_on_exit</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DefineContext</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Open a Define-XML document as a context manager.</span>
 
 <span class="sd">    :param input_file: Path to the Define-XML file.</span>
-<span class="sd">    :param output_file: Write path on exit (defaults to ``input_file``).</span>
-<span class="sd">    :param model_package: odmlib model package (default ``&quot;define_2_1&quot;``).</span>
-<span class="sd">    :param format: ``&quot;xml&quot;`` or ``&quot;json&quot;`` (auto-detected if omitted).</span>
+<span class="sd">    :param output_file: Write path on clean exit.  When omitted, the</span>
+<span class="sd">        document is opened read-only (nothing is written unless</span>
+<span class="sd">        ``write_on_exit=True`` opts in to an in-place update).</span>
+<span class="sd">    :param model_package: odmlib model package (default ``"define_2_1"``).</span>
+<span class="sd">    :param format: ``"xml"`` or ``"json"`` (auto-detected if omitted).</span>
 <span class="sd">    :param permissive: If ``True``, load in fully permissive mode.</span>
 <span class="sd">        Pass a :class:`~odmlib.mode.ValidationMode` flag combination for</span>
 <span class="sd">        targeted relaxation.  Defaults to ``False`` (strict).</span>
-<span class="sd">    :param write_on_exit: If ``True`` (default), the document is written</span>
-<span class="sd">        to ``output_file`` on clean exit.  Pass ``False`` for read-only</span>
-<span class="sd">        inspection without writing back.</span>
+<span class="sd">    :param write_on_exit: When omitted, the document is written on clean</span>
+<span class="sd">        exit only if ``output_file`` was provided.  ``True`` forces</span>
+<span class="sd">        writing (in place when no ``output_file``); ``False`` suppresses</span>
+<span class="sd">        writing entirely.</span>
 <span class="sd">    :returns: A :class:`DefineContext` instance.</span>
 
 <span class="sd">    Example::</span>
 
-<span class="sd">        with open_define(&quot;define.xml&quot;) as define:</span>
-<span class="sd">            mdv = define.Study[0].MetaDataVersion[0]</span>
-
-<span class="sd">        with open_define(&quot;broken.xml&quot;, permissive=True) as define:</span>
-<span class="sd">            ...  # permissive mode active during load</span>
-
 <span class="sd">        # Read-only inspection — input file is never modified</span>
-<span class="sd">        with open_define(&quot;define.xml&quot;, write_on_exit=False) as define:</span>
-<span class="sd">            print(len(define.Study[0].MetaDataVersion[0].ItemDef))</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">        with open_define("define.xml") as define:</span>
+<span class="sd">            # Define-XML: Study/MetaDataVersion are single objects, not lists</span>
+<span class="sd">            mdv = define.Study.MetaDataVersion</span>
+
+<span class="sd">        with open_define("broken.xml", permissive=True) as define:</span>
+<span class="sd">            ...  # permissive mode active during load</span>
+<span class="sd">    """</span>
     <span class="k">return</span> <span class="n">DefineContext</span><span class="p">(</span><span class="n">input_file</span><span class="p">,</span> <span class="n">output_file</span><span class="p">,</span> <span class="n">model_package</span><span class="p">,</span> <span class="nb">format</span><span class="p">,</span>
                         <span class="n">permissive</span><span class="o">=</span><span class="n">permissive</span><span class="p">,</span> <span class="n">write_on_exit</span><span class="o">=</span><span class="n">write_on_exit</span><span class="p">)</span></div>
 

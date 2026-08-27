@@ -5,14 +5,14 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>odmlib.ct_1_1_1.model &mdash; odmlib 0.2.0 documentation</title>
+  <title>odmlib.ct_1_1_1.model &mdash; odmlib 0.2.1 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=9edc463e" />
 
   
       <script src="../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../../_static/documentation_options.js?v=938c9ccc"></script>
+      <script src="../../../_static/documentation_options.js?v=37f418d5"></script>
       <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../../_static/js/theme.js"></script>
@@ -98,24 +98,24 @@
 <span class="kn">import</span><span class="w"> </span><span class="nn">odmlib.ns_registry</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">NS</span>
 
 
-<span class="n">NS</span><span class="o">.</span><span class="n">NamespaceRegistry</span><span class="p">(</span><span class="n">prefix</span><span class="o">=</span><span class="s2">&quot;odm&quot;</span><span class="p">,</span> <span class="n">uri</span><span class="o">=</span><span class="s2">&quot;http://www.cdisc.org/ns/odm/v1.3&quot;</span><span class="p">,</span> <span class="n">is_default</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-<span class="n">NS</span><span class="o">.</span><span class="n">NamespaceRegistry</span><span class="p">(</span><span class="n">prefix</span><span class="o">=</span><span class="s2">&quot;nciodm&quot;</span><span class="p">,</span> <span class="n">uri</span><span class="o">=</span><span class="s2">&quot;http://ncicb.nci.nih.gov/xml/odm/EVS/CDISC&quot;</span><span class="p">)</span>
-<span class="n">NS</span><span class="o">.</span><span class="n">NamespaceRegistry</span><span class="p">(</span><span class="n">prefix</span><span class="o">=</span><span class="s2">&quot;xs&quot;</span><span class="p">,</span> <span class="n">uri</span><span class="o">=</span><span class="s2">&quot;http://www.w3.org/2001/XMLSchema-instance&quot;</span><span class="p">)</span>
-<span class="n">NS</span><span class="o">.</span><span class="n">NamespaceRegistry</span><span class="p">(</span><span class="n">prefix</span><span class="o">=</span><span class="s2">&quot;xml&quot;</span><span class="p">,</span> <span class="n">uri</span><span class="o">=</span><span class="s2">&quot;http://www.w3.org/XML/1998/namespace&quot;</span><span class="p">)</span>
-<span class="n">NS</span><span class="o">.</span><span class="n">NamespaceRegistry</span><span class="p">(</span><span class="n">prefix</span><span class="o">=</span><span class="s2">&quot;xlink&quot;</span><span class="p">,</span> <span class="n">uri</span><span class="o">=</span><span class="s2">&quot;http://www.w3.org/1999/xlink&quot;</span><span class="p">)</span>
+<span class="n">NS</span><span class="o">.</span><span class="n">NamespaceRegistry</span><span class="p">(</span><span class="n">prefix</span><span class="o">=</span><span class="s2">"odm"</span><span class="p">,</span> <span class="n">uri</span><span class="o">=</span><span class="s2">"http://www.cdisc.org/ns/odm/v1.3"</span><span class="p">,</span> <span class="n">is_default</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">NS</span><span class="o">.</span><span class="n">NamespaceRegistry</span><span class="p">(</span><span class="n">prefix</span><span class="o">=</span><span class="s2">"nciodm"</span><span class="p">,</span> <span class="n">uri</span><span class="o">=</span><span class="s2">"http://ncicb.nci.nih.gov/xml/odm/EVS/CDISC"</span><span class="p">)</span>
+<span class="n">NS</span><span class="o">.</span><span class="n">NamespaceRegistry</span><span class="p">(</span><span class="n">prefix</span><span class="o">=</span><span class="s2">"xs"</span><span class="p">,</span> <span class="n">uri</span><span class="o">=</span><span class="s2">"http://www.w3.org/2001/XMLSchema-instance"</span><span class="p">)</span>
+<span class="n">NS</span><span class="o">.</span><span class="n">NamespaceRegistry</span><span class="p">(</span><span class="n">prefix</span><span class="o">=</span><span class="s2">"xml"</span><span class="p">,</span> <span class="n">uri</span><span class="o">=</span><span class="s2">"http://www.w3.org/XML/1998/namespace"</span><span class="p">)</span>
+<span class="n">NS</span><span class="o">.</span><span class="n">NamespaceRegistry</span><span class="p">(</span><span class="n">prefix</span><span class="o">=</span><span class="s2">"xlink"</span><span class="p">,</span> <span class="n">uri</span><span class="o">=</span><span class="s2">"http://www.w3.org/1999/xlink"</span><span class="p">)</span>
 
 
 <div class="viewcode-block" id="TranslatedText">
 <a class="viewcode-back" href="../../../odmlib.ct_1_1_1.html#odmlib.ct_1_1_1.model.TranslatedText">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">TranslatedText</span><span class="p">(</span><span class="n">OE</span><span class="o">.</span><span class="n">ODMElement</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;A piece of text in a specific language, used inside Description elements.</span>
+<span class="w">    </span><span class="sd">"""A piece of text in a specific language, used inside Description elements.</span>
 
 <span class="sd">    Attributes:</span>
-<span class="sd">        lang (str): BCP 47 language tag (xml:lang attribute), e.g. &quot;en&quot;.</span>
+<span class="sd">        lang (str): BCP 47 language tag (xml:lang attribute), e.g. "en".</span>
 <span class="sd">        _content (str, required): The actual text content.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
-    <span class="n">lang</span> <span class="o">=</span> <span class="n">T</span><span class="o">.</span><span class="n">String</span><span class="p">(</span><span class="n">namespace</span><span class="o">=</span><span class="s2">&quot;xml&quot;</span><span class="p">)</span>
+    <span class="n">lang</span> <span class="o">=</span> <span class="n">T</span><span class="o">.</span><span class="n">String</span><span class="p">(</span><span class="n">namespace</span><span class="o">=</span><span class="s2">"xml"</span><span class="p">)</span>
     <span class="n">_content</span> <span class="o">=</span> <span class="n">T</span><span class="o">.</span><span class="n">String</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
 
 
@@ -123,13 +123,13 @@
 <div class="viewcode-block" id="Alias">
 <a class="viewcode-back" href="../../../odmlib.ct_1_1_1.html#odmlib.ct_1_1_1.model.Alias">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">Alias</span><span class="p">(</span><span class="n">OE</span><span class="o">.</span><span class="n">ODMElement</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;An alternative name or identifier for a CT-XML element in an external context.</span>
+<span class="w">    </span><span class="sd">"""An alternative name or identifier for a CT-XML element in an external context.</span>
 
 <span class="sd">    Attributes:</span>
 <span class="sd">        Context (str, required): The context in which the alias applies,</span>
 <span class="sd">            e.g. the name of an external system or coding standard.</span>
 <span class="sd">        Name (str, required): The alias value in that context.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="n">Context</span> <span class="o">=</span> <span class="n">T</span><span class="o">.</span><span class="n">String</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="n">Name</span> <span class="o">=</span> <span class="n">T</span><span class="o">.</span><span class="n">String</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
@@ -139,11 +139,11 @@
 <div class="viewcode-block" id="StudyDescription">
 <a class="viewcode-back" href="../../../odmlib.ct_1_1_1.html#odmlib.ct_1_1_1.model.StudyDescription">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">StudyDescription</span><span class="p">(</span><span class="n">OE</span><span class="o">.</span><span class="n">ODMElement</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;A plain-text description of the study in a CT-XML GlobalVariables element.</span>
+<span class="w">    </span><span class="sd">"""A plain-text description of the study in a CT-XML GlobalVariables element.</span>
 
 <span class="sd">    Attributes:</span>
 <span class="sd">        _content (str, required): The study description text.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="n">_content</span> <span class="o">=</span> <span class="n">T</span><span class="o">.</span><span class="n">String</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
 
@@ -152,11 +152,11 @@
 <div class="viewcode-block" id="ProtocolName">
 <a class="viewcode-back" href="../../../odmlib.ct_1_1_1.html#odmlib.ct_1_1_1.model.ProtocolName">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">ProtocolName</span><span class="p">(</span><span class="n">OE</span><span class="o">.</span><span class="n">ODMElement</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;The name of the protocol associated with a CT-XML study.</span>
+<span class="w">    </span><span class="sd">"""The name of the protocol associated with a CT-XML study.</span>
 
 <span class="sd">    Attributes:</span>
 <span class="sd">        _content (str, required): The protocol name string.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="n">_content</span> <span class="o">=</span> <span class="n">T</span><span class="o">.</span><span class="n">String</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
 
@@ -165,11 +165,11 @@
 <div class="viewcode-block" id="StudyName">
 <a class="viewcode-back" href="../../../odmlib.ct_1_1_1.html#odmlib.ct_1_1_1.model.StudyName">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">StudyName</span><span class="p">(</span><span class="n">OE</span><span class="o">.</span><span class="n">ODMElement</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;The short name of the study in a CT-XML GlobalVariables element.</span>
+<span class="w">    </span><span class="sd">"""The short name of the study in a CT-XML GlobalVariables element.</span>
 
 <span class="sd">    Attributes:</span>
 <span class="sd">        _content (str, required): The study name string.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="n">_content</span> <span class="o">=</span> <span class="n">T</span><span class="o">.</span><span class="n">String</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
 
@@ -178,7 +178,7 @@
 <div class="viewcode-block" id="GlobalVariables">
 <a class="viewcode-back" href="../../../odmlib.ct_1_1_1.html#odmlib.ct_1_1_1.model.GlobalVariables">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">GlobalVariables</span><span class="p">(</span><span class="n">OE</span><span class="o">.</span><span class="n">ODMElement</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Study-level identification variables for a CT-XML document.</span>
+<span class="w">    </span><span class="sd">"""Study-level identification variables for a CT-XML document.</span>
 
 <span class="sd">    Holds the study name, description, and protocol name that identify</span>
 <span class="sd">    the controlled terminology package.</span>
@@ -187,7 +187,7 @@
 <span class="sd">        StudyName: Short name of the study/package.</span>
 <span class="sd">        StudyDescription: Description of the study/package.</span>
 <span class="sd">        ProtocolName: Name of the associated protocol.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="n">StudyName</span> <span class="o">=</span> <span class="n">T</span><span class="o">.</span><span class="n">ODMObject</span><span class="p">(</span><span class="n">element_class</span><span class="o">=</span><span class="n">StudyName</span><span class="p">)</span>
     <span class="n">StudyDescription</span> <span class="o">=</span> <span class="n">T</span><span class="o">.</span><span class="n">ODMObject</span><span class="p">(</span><span class="n">element_class</span><span class="o">=</span><span class="n">StudyDescription</span><span class="p">)</span>
@@ -198,12 +198,12 @@
 <div class="viewcode-block" id="Description">
 <a class="viewcode-back" href="../../../odmlib.ct_1_1_1.html#odmlib.ct_1_1_1.model.Description">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">Description</span><span class="p">(</span><span class="n">OE</span><span class="o">.</span><span class="n">ODMElement</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;A human-readable description composed of one or more language-tagged text blocks.</span>
+<span class="w">    </span><span class="sd">"""A human-readable description composed of one or more language-tagged text blocks.</span>
 
 <span class="sd">    Attributes:</span>
 <span class="sd">        TranslatedText (list, required): One or more TranslatedText children</span>
 <span class="sd">            providing the description in different languages.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="n">TranslatedText</span> <span class="o">=</span> <span class="n">T</span><span class="o">.</span><span class="n">ODMListObject</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">element_class</span><span class="o">=</span><span class="n">TranslatedText</span><span class="p">)</span></div>
 
@@ -212,14 +212,14 @@
 <div class="viewcode-block" id="CDISCSynonym">
 <a class="viewcode-back" href="../../../odmlib.ct_1_1_1.html#odmlib.ct_1_1_1.model.CDISCSynonym">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">CDISCSynonym</span><span class="p">(</span><span class="n">OE</span><span class="o">.</span><span class="n">ODMElement</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;A CDISC synonym for a controlled terminology term.</span>
+<span class="w">    </span><span class="sd">"""A CDISC synonym for a controlled terminology term.</span>
 
 <span class="sd">    Multiple CDISCSynonym elements may appear within a single EnumeratedItem</span>
 <span class="sd">    or CodeList to list all recognized synonyms.</span>
 
 <span class="sd">    Attributes:</span>
 <span class="sd">        _content (str, required): The synonym text string.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="n">_content</span> <span class="o">=</span> <span class="n">T</span><span class="o">.</span><span class="n">String</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
 
@@ -228,12 +228,12 @@
 <div class="viewcode-block" id="CDISCDefinition">
 <a class="viewcode-back" href="../../../odmlib.ct_1_1_1.html#odmlib.ct_1_1_1.model.CDISCDefinition">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">CDISCDefinition</span><span class="p">(</span><span class="n">OE</span><span class="o">.</span><span class="n">ODMElement</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;The CDISC-authored definition of a controlled terminology term.</span>
+<span class="w">    </span><span class="sd">"""The CDISC-authored definition of a controlled terminology term.</span>
 
 <span class="sd">    Attributes:</span>
 <span class="sd">        _content (str, required): The full definition text for the term as</span>
 <span class="sd">            published by CDISC.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="n">_content</span> <span class="o">=</span> <span class="n">T</span><span class="o">.</span><span class="n">String</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
 
@@ -242,14 +242,14 @@
 <div class="viewcode-block" id="CDISCSubmissionValue">
 <a class="viewcode-back" href="../../../odmlib.ct_1_1_1.html#odmlib.ct_1_1_1.model.CDISCSubmissionValue">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">CDISCSubmissionValue</span><span class="p">(</span><span class="n">OE</span><span class="o">.</span><span class="n">ODMElement</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;The CDISC submission value (the value to use in regulatory submissions) for a CodeList.</span>
+<span class="w">    </span><span class="sd">"""The CDISC submission value (the value to use in regulatory submissions) for a CodeList.</span>
 
 <span class="sd">    Appears as a child of CodeList to provide the canonical submission</span>
 <span class="sd">    value for the entire controlled terminology concept.</span>
 
 <span class="sd">    Attributes:</span>
 <span class="sd">        _content (str, required): The submission value string.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="n">_content</span> <span class="o">=</span> <span class="n">T</span><span class="o">.</span><span class="n">String</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
 
@@ -258,14 +258,14 @@
 <div class="viewcode-block" id="PreferredTerm">
 <a class="viewcode-back" href="../../../odmlib.ct_1_1_1.html#odmlib.ct_1_1_1.model.PreferredTerm">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">PreferredTerm</span><span class="p">(</span><span class="n">OE</span><span class="o">.</span><span class="n">ODMElement</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;The NCI preferred term for a controlled terminology concept.</span>
+<span class="w">    </span><span class="sd">"""The NCI preferred term for a controlled terminology concept.</span>
 
 <span class="sd">    The preferred term is the primary human-readable label used by NCI/EVS</span>
 <span class="sd">    for this concept.</span>
 
 <span class="sd">    Attributes:</span>
 <span class="sd">        _content (str, required): The NCI preferred term string.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="n">_content</span> <span class="o">=</span> <span class="n">T</span><span class="o">.</span><span class="n">String</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
 
@@ -274,7 +274,7 @@
 <div class="viewcode-block" id="EnumeratedItem">
 <a class="viewcode-back" href="../../../odmlib.ct_1_1_1.html#odmlib.ct_1_1_1.model.EnumeratedItem">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">EnumeratedItem</span><span class="p">(</span><span class="n">OE</span><span class="o">.</span><span class="n">ODMElement</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;A single coded term (enumerated value) in a CT-XML CodeList.</span>
+<span class="w">    </span><span class="sd">"""A single coded term (enumerated value) in a CT-XML CodeList.</span>
 
 <span class="sd">    Represents one controlled terminology concept with its NCI code,</span>
 <span class="sd">    CDISC synonyms, definition, and NCI preferred term. Uses the</span>
@@ -291,20 +291,20 @@
 <span class="sd">            (nciodm:CDISCDefinition element).</span>
 <span class="sd">        PreferredTerm (required): NCI preferred term</span>
 <span class="sd">            (nciodm:PreferredTerm element).</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="n">CodedValue</span> <span class="o">=</span> <span class="n">T</span><span class="o">.</span><span class="n">String</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-    <span class="n">ExtCodeID</span> <span class="o">=</span> <span class="n">T</span><span class="o">.</span><span class="n">String</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">namespace</span><span class="o">=</span><span class="s2">&quot;nciodm&quot;</span><span class="p">)</span>
-    <span class="n">CDISCSynonym</span> <span class="o">=</span> <span class="n">T</span><span class="o">.</span><span class="n">ODMListObject</span><span class="p">(</span><span class="n">element_class</span><span class="o">=</span><span class="n">CDISCSynonym</span><span class="p">,</span> <span class="n">namespace</span><span class="o">=</span><span class="s2">&quot;nciodm&quot;</span><span class="p">)</span>
-    <span class="n">CDISCDefinition</span> <span class="o">=</span> <span class="n">T</span><span class="o">.</span><span class="n">ODMObject</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">element_class</span><span class="o">=</span><span class="n">CDISCDefinition</span><span class="p">,</span> <span class="n">namespace</span><span class="o">=</span><span class="s2">&quot;nciodm&quot;</span><span class="p">)</span>
-    <span class="n">PreferredTerm</span> <span class="o">=</span> <span class="n">T</span><span class="o">.</span><span class="n">ODMObject</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">element_class</span><span class="o">=</span><span class="n">PreferredTerm</span><span class="p">,</span> <span class="n">namespace</span><span class="o">=</span><span class="s2">&quot;nciodm&quot;</span><span class="p">)</span></div>
+    <span class="n">ExtCodeID</span> <span class="o">=</span> <span class="n">T</span><span class="o">.</span><span class="n">String</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">namespace</span><span class="o">=</span><span class="s2">"nciodm"</span><span class="p">)</span>
+    <span class="n">CDISCSynonym</span> <span class="o">=</span> <span class="n">T</span><span class="o">.</span><span class="n">ODMListObject</span><span class="p">(</span><span class="n">element_class</span><span class="o">=</span><span class="n">CDISCSynonym</span><span class="p">,</span> <span class="n">namespace</span><span class="o">=</span><span class="s2">"nciodm"</span><span class="p">)</span>
+    <span class="n">CDISCDefinition</span> <span class="o">=</span> <span class="n">T</span><span class="o">.</span><span class="n">ODMObject</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">element_class</span><span class="o">=</span><span class="n">CDISCDefinition</span><span class="p">,</span> <span class="n">namespace</span><span class="o">=</span><span class="s2">"nciodm"</span><span class="p">)</span>
+    <span class="n">PreferredTerm</span> <span class="o">=</span> <span class="n">T</span><span class="o">.</span><span class="n">ODMObject</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">element_class</span><span class="o">=</span><span class="n">PreferredTerm</span><span class="p">,</span> <span class="n">namespace</span><span class="o">=</span><span class="s2">"nciodm"</span><span class="p">)</span></div>
 
 
 
 <div class="viewcode-block" id="CodeList">
 <a class="viewcode-back" href="../../../odmlib.ct_1_1_1.html#odmlib.ct_1_1_1.model.CodeList">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">CodeList</span><span class="p">(</span><span class="n">OE</span><span class="o">.</span><span class="n">ODMElement</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;A CDISC controlled terminology code list in a CT-XML 1.1.1 document.</span>
+<span class="w">    </span><span class="sd">"""A CDISC controlled terminology code list in a CT-XML 1.1.1 document.</span>
 
 <span class="sd">    Represents a single controlled terminology concept (e.g. the RACE</span>
 <span class="sd">    code list) with all its coded values. NCI-specific metadata</span>
@@ -315,11 +315,11 @@
 <span class="sd">        OID (str, required): Unique identifier for this code list.</span>
 <span class="sd">        Name (str, required): Human-readable name of the code list.</span>
 <span class="sd">        DataType (str, required): Data type of the coded values</span>
-<span class="sd">            (e.g. &quot;text&quot;).</span>
+<span class="sd">            (e.g. "text").</span>
 <span class="sd">        ExtCodeID (str, required): NCI concept code for the code list</span>
 <span class="sd">            itself (nciodm:ExtCodeID attribute).</span>
 <span class="sd">        CodeListExtensible (str, required): Whether sponsors may add</span>
-<span class="sd">            additional terms (&quot;Yes&quot; or &quot;No&quot;)</span>
+<span class="sd">            additional terms ("Yes" or "No")</span>
 <span class="sd">            (nciodm:CodeListExtensible attribute).</span>
 <span class="sd">        Description: Optional human-readable description.</span>
 <span class="sd">        EnumeratedItem (list): The coded terms that belong to this code list.</span>
@@ -329,25 +329,25 @@
 <span class="sd">            (nciodm:CDISCSynonym).</span>
 <span class="sd">        PreferredTerm (required): NCI preferred term for the code list</span>
 <span class="sd">            concept (nciodm:PreferredTerm).</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="n">OID</span> <span class="o">=</span> <span class="n">T</span><span class="o">.</span><span class="n">OID</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="n">Name</span> <span class="o">=</span> <span class="n">T</span><span class="o">.</span><span class="n">Name</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="n">DataType</span> <span class="o">=</span> <span class="n">T</span><span class="o">.</span><span class="n">ValueSetString</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-    <span class="n">ExtCodeID</span> <span class="o">=</span> <span class="n">T</span><span class="o">.</span><span class="n">String</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">namespace</span><span class="o">=</span><span class="s2">&quot;nciodm&quot;</span><span class="p">)</span>
-    <span class="n">CodeListExtensible</span> <span class="o">=</span> <span class="n">T</span><span class="o">.</span><span class="n">ValueSetString</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">namespace</span><span class="o">=</span><span class="s2">&quot;nciodm&quot;</span><span class="p">)</span>
+    <span class="n">ExtCodeID</span> <span class="o">=</span> <span class="n">T</span><span class="o">.</span><span class="n">String</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">namespace</span><span class="o">=</span><span class="s2">"nciodm"</span><span class="p">)</span>
+    <span class="n">CodeListExtensible</span> <span class="o">=</span> <span class="n">T</span><span class="o">.</span><span class="n">ValueSetString</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">namespace</span><span class="o">=</span><span class="s2">"nciodm"</span><span class="p">)</span>
     <span class="n">Description</span> <span class="o">=</span> <span class="n">T</span><span class="o">.</span><span class="n">ODMObject</span><span class="p">(</span><span class="n">element_class</span><span class="o">=</span><span class="n">Description</span><span class="p">)</span>
     <span class="n">EnumeratedItem</span> <span class="o">=</span> <span class="n">T</span><span class="o">.</span><span class="n">ODMListObject</span><span class="p">(</span><span class="n">element_class</span><span class="o">=</span><span class="n">EnumeratedItem</span><span class="p">)</span>
-    <span class="n">CDISCSubmissionValue</span> <span class="o">=</span> <span class="n">T</span><span class="o">.</span><span class="n">ODMObject</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">element_class</span><span class="o">=</span><span class="n">CDISCSubmissionValue</span><span class="p">,</span> <span class="n">namespace</span><span class="o">=</span><span class="s2">&quot;nciodm&quot;</span><span class="p">)</span>
-    <span class="n">CDISCSynonym</span> <span class="o">=</span> <span class="n">T</span><span class="o">.</span><span class="n">ODMObject</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">element_class</span><span class="o">=</span><span class="n">CDISCSynonym</span><span class="p">,</span> <span class="n">namespace</span><span class="o">=</span><span class="s2">&quot;nciodm&quot;</span><span class="p">)</span>
-    <span class="n">PreferredTerm</span> <span class="o">=</span> <span class="n">T</span><span class="o">.</span><span class="n">ODMObject</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">element_class</span><span class="o">=</span><span class="n">PreferredTerm</span><span class="p">,</span> <span class="n">namespace</span><span class="o">=</span><span class="s2">&quot;nciodm&quot;</span><span class="p">)</span></div>
+    <span class="n">CDISCSubmissionValue</span> <span class="o">=</span> <span class="n">T</span><span class="o">.</span><span class="n">ODMObject</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">element_class</span><span class="o">=</span><span class="n">CDISCSubmissionValue</span><span class="p">,</span> <span class="n">namespace</span><span class="o">=</span><span class="s2">"nciodm"</span><span class="p">)</span>
+    <span class="n">CDISCSynonym</span> <span class="o">=</span> <span class="n">T</span><span class="o">.</span><span class="n">ODMObject</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">element_class</span><span class="o">=</span><span class="n">CDISCSynonym</span><span class="p">,</span> <span class="n">namespace</span><span class="o">=</span><span class="s2">"nciodm"</span><span class="p">)</span>
+    <span class="n">PreferredTerm</span> <span class="o">=</span> <span class="n">T</span><span class="o">.</span><span class="n">ODMObject</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">element_class</span><span class="o">=</span><span class="n">PreferredTerm</span><span class="p">,</span> <span class="n">namespace</span><span class="o">=</span><span class="s2">"nciodm"</span><span class="p">)</span></div>
 
 
 
 <div class="viewcode-block" id="MetaDataVersion">
 <a class="viewcode-back" href="../../../odmlib.ct_1_1_1.html#odmlib.ct_1_1_1.model.MetaDataVersion">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">MetaDataVersion</span><span class="p">(</span><span class="n">OE</span><span class="o">.</span><span class="n">ODMElement</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;A versioned container for all controlled terminology code lists in a CT-XML document.</span>
+<span class="w">    </span><span class="sd">"""A versioned container for all controlled terminology code lists in a CT-XML document.</span>
 
 <span class="sd">    Attributes:</span>
 <span class="sd">        OID (str, required): Unique identifier for this metadata version.</span>
@@ -355,7 +355,7 @@
 <span class="sd">        Description (str): Optional plain-text description of this version.</span>
 <span class="sd">        CodeList (list): Zero or more CodeList elements defining the</span>
 <span class="sd">            controlled terminology for this version.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="n">OID</span> <span class="o">=</span> <span class="n">T</span><span class="o">.</span><span class="n">OID</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="n">Name</span> <span class="o">=</span> <span class="n">T</span><span class="o">.</span><span class="n">Name</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
@@ -367,7 +367,7 @@
 <div class="viewcode-block" id="Study">
 <a class="viewcode-back" href="../../../odmlib.ct_1_1_1.html#odmlib.ct_1_1_1.model.Study">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">Study</span><span class="p">(</span><span class="n">OE</span><span class="o">.</span><span class="n">ODMElement</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;The study element in a CT-XML 1.1.1 document.</span>
+<span class="w">    </span><span class="sd">"""The study element in a CT-XML 1.1.1 document.</span>
 
 <span class="sd">    Identifies the controlled terminology package and contains the</span>
 <span class="sd">    GlobalVariables and one or more MetaDataVersion elements with the</span>
@@ -379,7 +379,7 @@
 <span class="sd">            description, protocol name).</span>
 <span class="sd">        MetaDataVersion (list): Zero or more versioned containers of</span>
 <span class="sd">            controlled terminology code lists.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="n">OID</span> <span class="o">=</span> <span class="n">T</span><span class="o">.</span><span class="n">String</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="n">GlobalVariables</span> <span class="o">=</span> <span class="n">T</span><span class="o">.</span><span class="n">ODMObject</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">element_class</span><span class="o">=</span><span class="n">GlobalVariables</span><span class="p">)</span>
@@ -390,7 +390,7 @@
 <div class="viewcode-block" id="ODM">
 <a class="viewcode-back" href="../../../odmlib.ct_1_1_1.html#odmlib.ct_1_1_1.model.ODM">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">ODM</span><span class="p">(</span><span class="n">OE</span><span class="o">.</span><span class="n">ODMElement</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;The root element of a CT-XML 1.1.1 controlled terminology document.</span>
+<span class="w">    </span><span class="sd">"""The root element of a CT-XML 1.1.1 controlled terminology document.</span>
 
 <span class="sd">    A CT-XML file distributes CDISC/NCI controlled terminology packages.</span>
 <span class="sd">    It uses the base ODM namespace (``http://www.cdisc.org/ns/odm/v1.3``)</span>
@@ -399,7 +399,7 @@
 
 <span class="sd">    Attributes:</span>
 <span class="sd">        Description (str): Human-readable description of the file.</span>
-<span class="sd">        FileType (str, required): &quot;Snapshot&quot; or &quot;Transactional&quot;.</span>
+<span class="sd">        FileType (str, required): "Snapshot" or "Transactional".</span>
 <span class="sd">        Granularity (str): Level of data included.</span>
 <span class="sd">        FileOID (str, required): Globally unique OID for this file.</span>
 <span class="sd">        CreationDateTime (str, required): ISO 8601 datetime of file creation.</span>
@@ -411,7 +411,7 @@
 <span class="sd">        SourceSystemVersion (str): Version of the source system.</span>
 <span class="sd">        schemaLocation (str): xs:schemaLocation for schema validation.</span>
 <span class="sd">        Study (list): One or more Study elements containing code lists.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="n">Description</span> <span class="o">=</span> <span class="n">T</span><span class="o">.</span><span class="n">String</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
     <span class="n">FileType</span> <span class="o">=</span> <span class="n">T</span><span class="o">.</span><span class="n">ValueSetString</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
@@ -423,7 +423,7 @@
     <span class="n">Originator</span> <span class="o">=</span> <span class="n">T</span><span class="o">.</span><span class="n">String</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
     <span class="n">SourceSystem</span> <span class="o">=</span> <span class="n">T</span><span class="o">.</span><span class="n">String</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
     <span class="n">SourceSystemVersion</span> <span class="o">=</span> <span class="n">T</span><span class="o">.</span><span class="n">String</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-    <span class="n">schemaLocation</span> <span class="o">=</span> <span class="n">T</span><span class="o">.</span><span class="n">String</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">namespace</span><span class="o">=</span><span class="s2">&quot;xs&quot;</span><span class="p">)</span>
+    <span class="n">schemaLocation</span> <span class="o">=</span> <span class="n">T</span><span class="o">.</span><span class="n">String</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">namespace</span><span class="o">=</span><span class="s2">"xs"</span><span class="p">)</span>
     <span class="n">Study</span> <span class="o">=</span> <span class="n">T</span><span class="o">.</span><span class="n">ODMListObject</span><span class="p">(</span><span class="n">element_class</span><span class="o">=</span><span class="n">Study</span><span class="p">)</span></div>
 
 </pre></div>

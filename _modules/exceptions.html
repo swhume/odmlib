@@ -5,14 +5,14 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>exceptions &mdash; odmlib 0.2.0 documentation</title>
+  <title>exceptions &mdash; odmlib 0.2.1 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
 
   
       <script src="../_static/jquery.js?v=5d32c60e"></script>
       <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../_static/documentation_options.js?v=938c9ccc"></script>
+      <script src="../_static/documentation_options.js?v=37f418d5"></script>
       <script src="../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../_static/js/theme.js"></script>
@@ -93,7 +93,7 @@
            <div itemprop="articleBody">
              
   <h1>Source code for exceptions</h1><div class="highlight"><pre>
-<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span></span><span class="sd">"""</span>
 <span class="sd">odmlib exception hierarchy.</span>
 
 <span class="sd">All odmlib-specific exceptions inherit from OdmlibError, which itself</span>
@@ -108,7 +108,8 @@
 <span class="sd">    v0.3.0: Remove the ValueError/TypeError base classes.</span>
 <span class="sd">            Update ``except ValueError`` → ``except OdmlibValidationError``</span>
 <span class="sd">            and ``except TypeError`` → ``except OdmlibTypeError``.</span>
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">"""</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">contextlib</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
 
 
@@ -119,8 +120,18 @@
 <div class="viewcode-block" id="OdmlibError">
 <a class="viewcode-back" href="../modules.html#exceptions.OdmlibError">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">OdmlibError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Base exception for all odmlib errors.&quot;&quot;&quot;</span></div>
+<span class="w">    </span><span class="sd">"""Base exception for all odmlib errors."""</span></div>
 
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">_ErrorLimitReached</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""Internal sentinel: a collector hit its ``max_errors`` cap.</span>
+
+<span class="sd">    Deliberately **not** an :class:`OdmlibError`, so ``except OdmlibError``</span>
+<span class="sd">    clauses inside the validation layers (and in user code) cannot swallow it</span>
+<span class="sd">    and it can never end up in the list returned by</span>
+<span class="sd">    :meth:`~odmlib.odm_element.ODMElement.validate`.</span>
+<span class="sd">    """</span>
 
 
 <span class="c1"># ---------------------------------------------------------------------------</span>
@@ -130,15 +141,15 @@
 <div class="viewcode-block" id="OdmlibValidationError">
 <a class="viewcode-back" href="../modules.html#exceptions.OdmlibValidationError">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">OdmlibValidationError</span><span class="p">(</span><span class="n">OdmlibError</span><span class="p">,</span> <span class="ne">ValueError</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Raised when an element fails conformance, OID, or schema validation.</span>
+<span class="w">    </span><span class="sd">"""Raised when an element fails conformance, OID, or schema validation.</span>
 
 <span class="sd">    Attributes:</span>
 <span class="sd">        element_path: Dot-separated path from root to the failing element,</span>
-<span class="sd">            e.g. &quot;ODM &gt; Study &gt; MetaDataVersion &gt; ItemGroupDef(OID=&#39;IG.VS&#39;)&quot;</span>
+<span class="sd">            e.g. "ODM &gt; Study &gt; MetaDataVersion &gt; ItemGroupDef(OID='IG.VS')"</span>
 <span class="sd">        hint: Optional human-readable suggestion for fixing the problem.</span>
 <span class="sd">        attribute: The attribute name that caused the error (if applicable).</span>
 <span class="sd">        element_type: The class name of the element that failed validation.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">element_path</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">hint</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                  <span class="n">attribute</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">element_type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">actual_value</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
@@ -153,60 +164,149 @@
     <span class="k">def</span><span class="w"> </span><span class="nf">_format</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">parts</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_raw_message</span><span class="p">]</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">element_path</span><span class="p">:</span>
-            <span class="n">parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  Context: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">element_path</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="n">parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">"  Context: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">element_path</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">hint</span><span class="p">:</span>
-            <span class="n">parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  Hint: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">hint</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-        <span class="k">return</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">parts</span><span class="p">)</span></div>
+            <span class="n">parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">"  Hint: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">hint</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+        <span class="k">return</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">"</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">parts</span><span class="p">)</span></div>
 
 
 
 <div class="viewcode-block" id="OdmlibRequiredAttributeError">
 <a class="viewcode-back" href="../modules.html#exceptions.OdmlibRequiredAttributeError">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">OdmlibRequiredAttributeError</span><span class="p">(</span><span class="n">OdmlibValidationError</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Raised when a required attribute is missing during construction.&quot;&quot;&quot;</span></div>
+<span class="w">    </span><span class="sd">"""Raised when a required attribute is missing during construction."""</span></div>
 
 
 
 <div class="viewcode-block" id="OdmlibOIDError">
 <a class="viewcode-back" href="../modules.html#exceptions.OdmlibOIDError">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">OdmlibOIDError</span><span class="p">(</span><span class="n">OdmlibValidationError</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Raised for OID uniqueness or ref/def integrity failures.&quot;&quot;&quot;</span></div>
+<span class="w">    </span><span class="sd">"""Raised for OID uniqueness or ref/def integrity failures."""</span></div>
+
+
+
+<div class="viewcode-block" id="flatten_cerberus_errors">
+<a class="viewcode-back" href="../modules.html#exceptions.flatten_cerberus_errors">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">flatten_cerberus_errors</span><span class="p">(</span><span class="n">errors</span><span class="p">,</span> <span class="n">prefix</span><span class="o">=</span><span class="s2">""</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""Flatten a nested Cerberus error dict into ``(dotted_path, message)`` pairs.</span>
+
+<span class="sd">    Cerberus reports ``{field: [msg | {subkey: [...]}, ...]}`` where *subkey*</span>
+<span class="sd">    is a nested field name or, for sequences, the integer index of the</span>
+<span class="sd">    offending list item::</span>
+
+<span class="sd">        {'ItemGroupDef': [{0: [{'Name': ['required field']}]}]}</span>
+<span class="sd">        -&gt; [('ItemGroupDef.0.Name', 'required field')]</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        errors: A Cerberus error dict (typically</span>
+<span class="sd">            ``OdmlibConformanceError.cerberus_errors``). Anything that is not</span>
+<span class="sd">            a dict yields an empty list.</span>
+<span class="sd">        prefix: Dotted path accumulated so far; used by the recursion.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        list: ``(path, message)`` tuples in Cerberus' own document order,</span>
+<span class="sd">        which is deterministic — no sets are involved.</span>
+<span class="sd">    """</span>
+    <span class="n">flattened</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">errors</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">flattened</span>
+    <span class="k">for</span> <span class="n">field</span><span class="p">,</span> <span class="n">issues</span> <span class="ow">in</span> <span class="n">errors</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="n">path</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">prefix</span><span class="si">}</span><span class="s2">.</span><span class="si">{</span><span class="n">field</span><span class="si">}</span><span class="s2">"</span> <span class="k">if</span> <span class="n">prefix</span> <span class="k">else</span> <span class="nb">str</span><span class="p">(</span><span class="n">field</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">issues</span><span class="p">,</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)):</span>
+            <span class="n">issues</span> <span class="o">=</span> <span class="p">[</span><span class="n">issues</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">issue</span> <span class="ow">in</span> <span class="n">issues</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">issue</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+                <span class="n">flattened</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">flatten_cerberus_errors</span><span class="p">(</span><span class="n">issue</span><span class="p">,</span> <span class="n">path</span><span class="p">))</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">flattened</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">path</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">issue</span><span class="p">)))</span>
+    <span class="k">return</span> <span class="n">flattened</span></div>
 
 
 
 <div class="viewcode-block" id="OdmlibConformanceError">
 <a class="viewcode-back" href="../modules.html#exceptions.OdmlibConformanceError">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">OdmlibConformanceError</span><span class="p">(</span><span class="n">OdmlibValidationError</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Raised when Cerberus conformance validation fails.</span>
+<span class="w">    </span><span class="sd">"""Raised when Cerberus conformance validation fails.</span>
+
+<span class="sd">    A single instance normally bundles *every* violation Cerberus found, so</span>
+<span class="sd">    :meth:`~odmlib.odm_element.ODMElement.validate` calls :meth:`expand` in</span>
+<span class="sd">    collect mode to turn it into one error per failing field.</span>
 
 <span class="sd">    Attributes:</span>
 <span class="sd">        cerberus_errors: The raw Cerberus error dict for programmatic access.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">            On errors produced by :meth:`expand` this remains the **complete**</span>
+<span class="sd">            dict for the document, shared by reference with its siblings.</span>
+<span class="sd">        field_path: Dotted path to the single failing field</span>
+<span class="sd">            (e.g. ``"ItemGroupDef.0.Name"``). Set only on errors produced by</span>
+<span class="sd">            :meth:`expand`; ``None`` on the bundled error.</span>
+<span class="sd">    """</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">cerberus_errors</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">cerberus_errors</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">field_path</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">cerberus_errors</span> <span class="o">=</span> <span class="n">cerberus_errors</span> <span class="ow">or</span> <span class="p">{}</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">message</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">field_path</span> <span class="o">=</span> <span class="n">field_path</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">message</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+<div class="viewcode-block" id="OdmlibConformanceError.expand">
+<a class="viewcode-back" href="../modules.html#exceptions.OdmlibConformanceError.expand">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">expand</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""Split this bundled error into one error per failing leaf field.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            list: One :class:`OdmlibConformanceError` per Cerberus leaf</span>
+<span class="sd">            message, each carrying ``field_path``, ``attribute`` (the leaf</span>
+<span class="sd">            name) and ``element_path`` (the containing path). Returns</span>
+<span class="sd">            ``[self]`` when there is no Cerberus payload to split — e.g. the</span>
+<span class="sd">            "No conformance schema registered" error — so nothing is lost.</span>
+<span class="sd">        """</span>
+        <span class="n">leaves</span> <span class="o">=</span> <span class="n">flatten_cerberus_errors</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cerberus_errors</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">leaves</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">[</span><span class="bp">self</span><span class="p">]</span>
+        <span class="n">expanded</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">path</span><span class="p">,</span> <span class="n">message</span> <span class="ow">in</span> <span class="n">leaves</span><span class="p">:</span>
+            <span class="n">container</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">leaf</span> <span class="o">=</span> <span class="n">path</span><span class="o">.</span><span class="n">rpartition</span><span class="p">(</span><span class="s2">"."</span><span class="p">)</span>
+            <span class="n">expanded</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">OdmlibConformanceError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">path</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">message</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span>
+                <span class="n">cerberus_errors</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">cerberus_errors</span><span class="p">,</span>
+                <span class="n">field_path</span><span class="o">=</span><span class="n">path</span><span class="p">,</span>
+                <span class="n">attribute</span><span class="o">=</span><span class="n">leaf</span><span class="p">,</span>
+                <span class="n">element_path</span><span class="o">=</span><span class="n">container</span> <span class="ow">or</span> <span class="kc">None</span><span class="p">,</span>
+                <span class="n">element_type</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">element_type</span><span class="p">,</span>
+                <span class="n">hint</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">hint</span><span class="p">,</span>
+            <span class="p">))</span>
+        <span class="k">return</span> <span class="n">expanded</span></div>
+</div>
 
 
 
 <div class="viewcode-block" id="OdmlibElementOrderError">
 <a class="viewcode-back" href="../modules.html#exceptions.OdmlibElementOrderError">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">OdmlibElementOrderError</span><span class="p">(</span><span class="n">OdmlibValidationError</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Raised when child elements are not in the order required by the ODM spec.&quot;&quot;&quot;</span></div>
+<span class="w">    </span><span class="sd">"""Raised when child elements are not in the order required by the ODM spec."""</span></div>
+
+
+
+<div class="viewcode-block" id="OdmlibErrorLimitError">
+<a class="viewcode-back" href="../modules.html#exceptions.OdmlibErrorLimitError">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">OdmlibErrorLimitError</span><span class="p">(</span><span class="n">OdmlibValidationError</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""Appended as the final entry when ``validate(max_errors=N)`` stops early.</span>
+
+<span class="sd">    Its presence means validation was truncated and additional problems may</span>
+<span class="sd">    exist. It is never raised — only collected.</span>
+<span class="sd">    """</span></div>
 
 
 
 <div class="viewcode-block" id="OdmlibSchemaValidationError">
 <a class="viewcode-back" href="../modules.html#exceptions.OdmlibSchemaValidationError">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">OdmlibSchemaValidationError</span><span class="p">(</span><span class="n">OdmlibValidationError</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Raised when XSD/XML-Schema validation of an ODM document fails.</span>
+<span class="w">    </span><span class="sd">"""Raised when XSD/XML-Schema validation of an ODM document fails.</span>
 
 <span class="sd">    Wraps the underlying ``xmlschema`` exception raised during XSD</span>
 <span class="sd">    validation (e.g. by :meth:`ODMSchemaValidator.validate_file`). The</span>
 <span class="sd">    wrapped exception is available at ``args[0]`` (for backward</span>
 <span class="sd">    compatibility with callers that introspect ``ex.args[0].msg``) and</span>
 <span class="sd">    via the ``wrapped`` attribute.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">wrapped_exception</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">hint</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="c1"># Bypass OdmlibValidationError.__init__: it would replace args[0]</span>
@@ -230,7 +330,7 @@
 <div class="viewcode-block" id="OdmlibTypeError">
 <a class="viewcode-back" href="../modules.html#exceptions.OdmlibTypeError">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">OdmlibTypeError</span><span class="p">(</span><span class="n">OdmlibError</span><span class="p">,</span> <span class="ne">TypeError</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Raised when a value has the wrong type for an attribute.</span>
+<span class="w">    </span><span class="sd">"""Raised when a value has the wrong type for an attribute.</span>
 
 <span class="sd">    Attributes:</span>
 <span class="sd">        attribute: The attribute name.</span>
@@ -238,7 +338,7 @@
 <span class="sd">        actual_value: The value that was provided.</span>
 <span class="sd">        element_path: Path from root to the failing element (if known).</span>
 <span class="sd">        hint: Optional human-readable suggestion for fixing the problem.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">attribute</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">expected_type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                  <span class="n">actual_value</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">element_path</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">hint</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
@@ -255,10 +355,10 @@
     <span class="k">def</span><span class="w"> </span><span class="nf">_format</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">parts</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_raw_message</span><span class="p">]</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">element_path</span><span class="p">:</span>
-            <span class="n">parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  Context: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">element_path</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="n">parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">"  Context: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">element_path</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">hint</span><span class="p">:</span>
-            <span class="n">parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  Hint: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">hint</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-        <span class="k">return</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">parts</span><span class="p">)</span></div>
+            <span class="n">parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">"  Hint: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">hint</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+        <span class="k">return</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">"</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">parts</span><span class="p">)</span></div>
 
 
 
@@ -269,26 +369,26 @@
 <div class="viewcode-block" id="OdmlibParsingError">
 <a class="viewcode-back" href="../modules.html#exceptions.OdmlibParsingError">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">OdmlibParsingError</span><span class="p">(</span><span class="n">OdmlibError</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Raised when an XML or JSON document cannot be parsed into the model.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Raised when an XML or JSON document cannot be parsed into the model."""</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">hint</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">hint</span> <span class="o">=</span> <span class="n">hint</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_raw_message</span> <span class="o">=</span> <span class="n">message</span>
         <span class="n">parts</span> <span class="o">=</span> <span class="p">[</span><span class="n">message</span><span class="p">]</span>
         <span class="k">if</span> <span class="n">hint</span><span class="p">:</span>
-            <span class="n">parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  Hint: </span><span class="si">{</span><span class="n">hint</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">parts</span><span class="p">))</span></div>
+            <span class="n">parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">"  Hint: </span><span class="si">{</span><span class="n">hint</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="s2">"</span><span class="se">\n</span><span class="s2">"</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">parts</span><span class="p">))</span></div>
 
 
 
 <div class="viewcode-block" id="OdmlibLoaderStateError">
 <a class="viewcode-back" href="../modules.html#exceptions.OdmlibLoaderStateError">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">OdmlibLoaderStateError</span><span class="p">(</span><span class="n">OdmlibParsingError</span><span class="p">,</span> <span class="ne">ValueError</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Raised when a loader method is called before the document is opened.</span>
+<span class="w">    </span><span class="sd">"""Raised when a loader method is called before the document is opened.</span>
 
 <span class="sd">    Also inherits from ValueError for backward compatibility with code that</span>
 <span class="sd">    catches ValueError from loader calls.</span>
-<span class="sd">    &quot;&quot;&quot;</span></div>
+<span class="sd">    """</span></div>
 
 
 
@@ -299,7 +399,7 @@
 <div class="viewcode-block" id="OdmlibSerializationError">
 <a class="viewcode-back" href="../modules.html#exceptions.OdmlibSerializationError">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">OdmlibSerializationError</span><span class="p">(</span><span class="n">OdmlibError</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Raised when an in-memory model cannot be written to XML or JSON.&quot;&quot;&quot;</span></div>
+<span class="w">    </span><span class="sd">"""Raised when an in-memory model cannot be written to XML or JSON."""</span></div>
 
 
 
@@ -310,15 +410,15 @@
 <div class="viewcode-block" id="OdmlibNamespaceError">
 <a class="viewcode-back" href="../modules.html#exceptions.OdmlibNamespaceError">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">OdmlibNamespaceError</span><span class="p">(</span><span class="n">OdmlibError</span><span class="p">,</span> <span class="ne">ValueError</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Raised for namespace registration or lookup failures.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Raised for namespace registration or lookup failures."""</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">hint</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">hint</span> <span class="o">=</span> <span class="n">hint</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_raw_message</span> <span class="o">=</span> <span class="n">message</span>
         <span class="n">parts</span> <span class="o">=</span> <span class="p">[</span><span class="n">message</span><span class="p">]</span>
         <span class="k">if</span> <span class="n">hint</span><span class="p">:</span>
-            <span class="n">parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  Hint: </span><span class="si">{</span><span class="n">hint</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">parts</span><span class="p">))</span></div>
+            <span class="n">parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">"  Hint: </span><span class="si">{</span><span class="n">hint</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="s2">"</span><span class="se">\n</span><span class="s2">"</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">parts</span><span class="p">))</span></div>
 
 
 
@@ -329,21 +429,21 @@
 <div class="viewcode-block" id="OdmlibWarning">
 <a class="viewcode-back" href="../modules.html#exceptions.OdmlibWarning">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">OdmlibWarning</span><span class="p">(</span><span class="ne">UserWarning</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Base warning for all odmlib non-fatal issues.&quot;&quot;&quot;</span></div>
+<span class="w">    </span><span class="sd">"""Base warning for all odmlib non-fatal issues."""</span></div>
 
 
 
 <div class="viewcode-block" id="OdmlibDeprecationWarning">
 <a class="viewcode-back" href="../modules.html#exceptions.OdmlibDeprecationWarning">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">OdmlibDeprecationWarning</span><span class="p">(</span><span class="n">OdmlibWarning</span><span class="p">,</span> <span class="ne">DeprecationWarning</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Issued when a deprecated odmlib feature is used.&quot;&quot;&quot;</span></div>
+<span class="w">    </span><span class="sd">"""Issued when a deprecated odmlib feature is used."""</span></div>
 
 
 
 <div class="viewcode-block" id="OdmlibInteroperabilityWarning">
 <a class="viewcode-back" href="../modules.html#exceptions.OdmlibInteroperabilityWarning">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">OdmlibInteroperabilityWarning</span><span class="p">(</span><span class="n">OdmlibWarning</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Issued for constructs that are valid but may cause interoperability issues.&quot;&quot;&quot;</span></div>
+<span class="w">    </span><span class="sd">"""Issued for constructs that are valid but may cause interoperability issues."""</span></div>
 
 
 
@@ -354,64 +454,189 @@
 <div class="viewcode-block" id="ErrorCollector">
 <a class="viewcode-back" href="../modules.html#exceptions.ErrorCollector">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">ErrorCollector</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Accumulates validation errors instead of raising immediately.</span>
+<span class="w">    </span><span class="sd">"""Accumulates validation errors instead of raising immediately.</span>
 
-<span class="sd">    Pass to :meth:`~odmlib.odm_element.ODMElement.validate` with</span>
-<span class="sd">    ``collect_errors=True`` to gather all errors in a single pass rather</span>
-<span class="sd">    than stopping at the first failure.</span>
+<span class="sd">    Also serves as the *sink* for the collecting-checker protocol: a checker</span>
+<span class="sd">    that mixes in :class:`ErrorReporting` hands its errors here instead of</span>
+<span class="sd">    raising, so one pass surfaces every problem it can find.</span>
 
 <span class="sd">    Example::</span>
 
-<span class="sd">        collector = ErrorCollector()</span>
 <span class="sd">        errors = odm.validate(collect_errors=True, oid_checker=checker)</span>
-<span class="sd">        if errors:</span>
-<span class="sd">            for err in errors:</span>
-<span class="sd">                print(err)</span>
+<span class="sd">        for err in errors:</span>
+<span class="sd">            print(err)</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        max_errors: Optional cap. Once this many errors are collected, the</span>
+<span class="sd">            next :meth:`add_error` sets :attr:`truncated` and raises the</span>
+<span class="sd">            internal ``_ErrorLimitReached`` sentinel to unwind the in-progress</span>
+<span class="sd">            validation walk. ``None`` (the default) collects everything and</span>
+<span class="sd">            never raises, so hand-built ``ErrorCollector()`` instances behave</span>
+<span class="sd">            exactly as before.</span>
 
 <span class="sd">    Attributes:</span>
 <span class="sd">        errors: List of :class:`OdmlibError` instances collected so far.</span>
 <span class="sd">        warnings: List of :class:`OdmlibWarning` instances collected so far.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">        max_errors: The cap, or ``None`` for uncapped.</span>
+<span class="sd">        truncated: True once the cap stopped collection short.</span>
+<span class="sd">    """</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">max_errors</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">errors</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">warnings</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">max_errors</span> <span class="o">=</span> <span class="n">max_errors</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">truncated</span> <span class="o">=</span> <span class="kc">False</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">has_errors</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;True if any errors have been collected.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""True if any errors have been collected."""</span>
         <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">errors</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">is_full</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""True when ``max_errors`` is set and that many errors are collected."""</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_errors</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">errors</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_errors</span>
 
 <div class="viewcode-block" id="ErrorCollector.add_error">
 <a class="viewcode-back" href="../modules.html#exceptions.ErrorCollector.add_error">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">add_error</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">error</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Add an :class:`OdmlibError` to the collection.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Add an :class:`OdmlibError` to the collection.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            _ErrorLimitReached: If the collector is already at ``max_errors``.</span>
+<span class="sd">                Never raised when ``max_errors`` is ``None``.</span>
+<span class="sd">        """</span>
+        <span class="c1"># Check before appending so `truncated` only flips when a *further*</span>
+        <span class="c1"># error was genuinely available — a run that finds exactly max_errors</span>
+        <span class="c1"># problems gets no misleading "more may exist" marker.</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_full</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">truncated</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="k">raise</span> <span class="n">_ErrorLimitReached</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">errors</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">error</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="ErrorCollector.add_warning">
 <a class="viewcode-back" href="../modules.html#exceptions.ErrorCollector.add_warning">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">add_warning</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">warning</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Add an :class:`OdmlibWarning` to the collection.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Add an :class:`OdmlibWarning` to the collection."""</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">warnings</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">warning</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="ErrorCollector.raise_if_errors">
 <a class="viewcode-back" href="../modules.html#exceptions.ErrorCollector.raise_if_errors">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">raise_if_errors</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Raise if any errors were collected.</span>
+<span class="w">        </span><span class="sd">"""Raise if any errors were collected.</span>
 
 <span class="sd">        Raises the single collected error directly if only one exists, or a</span>
 <span class="sd">        new :class:`OdmlibValidationError` summarising all errors otherwise.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">has_errors</span><span class="p">:</span>
             <span class="k">return</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">errors</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
             <span class="k">raise</span> <span class="bp">self</span><span class="o">.</span><span class="n">errors</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-        <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">errors</span><span class="p">)</span><span class="si">}</span><span class="s2"> validation errors found:</span><span class="se">\n</span><span class="s2">&quot;</span>
-        <span class="n">msg</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  </span><span class="si">{</span><span class="n">i</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="si">}</span><span class="s2">. </span><span class="si">{</span><span class="n">err</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">err</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">errors</span><span class="p">))</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">errors</span><span class="p">)</span><span class="si">}</span><span class="s2"> validation errors found:</span><span class="se">\n</span><span class="s2">"</span>
+        <span class="n">msg</span> <span class="o">+=</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">"</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="sa">f</span><span class="s2">"  </span><span class="si">{</span><span class="n">i</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="si">}</span><span class="s2">. </span><span class="si">{</span><span class="n">err</span><span class="si">}</span><span class="s2">"</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">err</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">errors</span><span class="p">))</span>
         <span class="k">raise</span> <span class="n">OdmlibValidationError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span></div>
 </div>
+
+
+
+<span class="c1"># ---------------------------------------------------------------------------</span>
+<span class="c1"># Collecting-checker protocol</span>
+<span class="c1"># ---------------------------------------------------------------------------</span>
+
+<div class="viewcode-block" id="ErrorReporting">
+<a class="viewcode-back" href="../modules.html#exceptions.ErrorReporting">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">ErrorReporting</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Mixin giving a validation checker an optional error sink.</span>
+
+<span class="sd">    A checker that mixes this in replaces ``raise SomeOdmlibError(...)`` with</span>
+<span class="sd">    ``self.report(SomeOdmlibError(...))``. With no sink installed (the</span>
+<span class="sd">    default) :meth:`report` re-raises, so fail-fast behaviour is identical to</span>
+<span class="sd">    raising directly. Inside a :meth:`collecting` block the error is handed to</span>
+<span class="sd">    the sink and the checker keeps going, so a single pass surfaces every</span>
+<span class="sd">    problem rather than only the first.</span>
+
+<span class="sd">    Third-party checkers may opt in by inheriting this mixin, or by</span>
+<span class="sd">    duck-typing ``supports_error_collection = True`` plus :meth:`report` and</span>
+<span class="sd">    :meth:`collecting`. Checkers that do neither still work — they simply</span>
+<span class="sd">    contribute at most one error, exactly as before (see</span>
+<span class="sd">    :func:`is_collecting_checker`).</span>
+
+<span class="sd">    Note:</span>
+<span class="sd">        Not thread-safe: the sink lives on the instance. Checkers are already</span>
+<span class="sd">        stateful (they accumulate OIDs), so use one checker per document per</span>
+<span class="sd">        thread.</span>
+<span class="sd">    """</span>
+
+    <span class="n">supports_error_collection</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="n">_error_sink</span> <span class="o">=</span> <span class="kc">None</span>                       <span class="c1"># class-level default =&gt; fail-fast</span>
+
+<div class="viewcode-block" id="ErrorReporting.report">
+<a class="viewcode-back" href="../modules.html#exceptions.ErrorReporting.report">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">report</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">error</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""Raise *error* (fail-fast) or hand it to the installed sink.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            error: The :class:`OdmlibError` describing the problem.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            OdmlibError: The error itself, when no sink is installed.</span>
+<span class="sd">            _ErrorLimitReached: When the sink is full (see</span>
+<span class="sd">                :class:`ErrorCollector`).</span>
+<span class="sd">        """</span>
+        <span class="n">sink</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_error_sink</span>
+        <span class="k">if</span> <span class="n">sink</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">error</span>
+        <span class="n">sink</span><span class="o">.</span><span class="n">add_error</span><span class="p">(</span><span class="n">error</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="ErrorReporting.collecting">
+<a class="viewcode-back" href="../modules.html#exceptions.ErrorReporting.collecting">[docs]</a>
+    <span class="nd">@contextlib</span><span class="o">.</span><span class="n">contextmanager</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">collecting</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sink</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""Install *sink* for the duration of the block, then restore.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            sink: Any object with an ``add_error(error)`` method — normally an</span>
+<span class="sd">                :class:`ErrorCollector`.</span>
+
+<span class="sd">        Example::</span>
+
+<span class="sd">            collector = ErrorCollector()</span>
+<span class="sd">            with checker.collecting(collector):</span>
+<span class="sd">                odm.verify_oids(checker)</span>
+<span class="sd">            for err in collector.errors:</span>
+<span class="sd">                print(err)</span>
+<span class="sd">        """</span>
+        <span class="n">previous</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"_error_sink"</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span><span class="p">[</span><span class="s2">"_error_sink"</span><span class="p">]</span> <span class="o">=</span> <span class="n">sink</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">yield</span> <span class="bp">self</span>
+        <span class="k">finally</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">previous</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">"_error_sink"</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span><span class="p">[</span><span class="s2">"_error_sink"</span><span class="p">]</span> <span class="o">=</span> <span class="n">previous</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="is_collecting_checker">
+<a class="viewcode-back" href="../modules.html#exceptions.is_collecting_checker">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">is_collecting_checker</span><span class="p">(</span><span class="n">checker</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""Return True if *checker* implements the collecting-checker protocol.</span>
+
+<span class="sd">    Used by :meth:`~odmlib.odm_element.ODMElement.validate` to decide whether</span>
+<span class="sd">    a checker can enumerate every problem or should fall back to fail-fast</span>
+<span class="sd">    (one error for the whole layer). Duck-typed checkers qualify without</span>
+<span class="sd">    inheriting :class:`ErrorReporting`.</span>
+<span class="sd">    """</span>
+    <span class="k">return</span> <span class="p">(</span>
+        <span class="nb">bool</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="n">checker</span><span class="p">,</span> <span class="s2">"supports_error_collection"</span><span class="p">,</span> <span class="kc">False</span><span class="p">))</span>
+        <span class="ow">and</span> <span class="nb">callable</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="n">checker</span><span class="p">,</span> <span class="s2">"report"</span><span class="p">,</span> <span class="kc">None</span><span class="p">))</span>
+        <span class="ow">and</span> <span class="nb">callable</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="n">checker</span><span class="p">,</span> <span class="s2">"collecting"</span><span class="p">,</span> <span class="kc">None</span><span class="p">))</span>
+    <span class="p">)</span></div>
 
 </pre></div>
 

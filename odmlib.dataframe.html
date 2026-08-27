@@ -6,14 +6,14 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>odmlib.dataframe &mdash; odmlib 0.2.0 documentation</title>
+  <title>odmlib.dataframe &mdash; odmlib 0.2.1 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=9edc463e" />
 
   
       <script src="_static/jquery.js?v=5d32c60e"></script>
       <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="_static/documentation_options.js?v=938c9ccc"></script>
+      <script src="_static/documentation_options.js?v=37f418d5"></script>
       <script src="_static/doctools.js?v=fd6eb6e6"></script>
       <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="_static/js/theme.js"></script>
@@ -158,11 +158,11 @@ per metadata table (study, datasets, variables, codelists, etc.).</p>
 <span class="kn">from</span><span class="w"> </span><span class="nn">odmlib.dataframe</span><span class="w"> </span><span class="kn">import</span> <span class="n">metadata_to_dataframe</span>
 
 <span class="n">loader</span> <span class="o">=</span> <span class="n">LD</span><span class="o">.</span><span class="n">ODMLoader</span><span class="p">(</span><span class="n">OL</span><span class="o">.</span><span class="n">XMLODMLoader</span><span class="p">())</span>
-<span class="n">loader</span><span class="o">.</span><span class="n">open_odm_document</span><span class="p">(</span><span class="s2">&quot;study.xml&quot;</span><span class="p">)</span>
+<span class="n">loader</span><span class="o">.</span><span class="n">open_odm_document</span><span class="p">(</span><span class="s2">"study.xml"</span><span class="p">)</span>
 <span class="n">mdv</span> <span class="o">=</span> <span class="n">loader</span><span class="o">.</span><span class="n">MetaDataVersion</span><span class="p">()</span>
 
-<span class="n">df</span> <span class="o">=</span> <span class="n">metadata_to_dataframe</span><span class="p">(</span><span class="n">mdv</span><span class="p">,</span> <span class="s2">&quot;ItemDef&quot;</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">df</span><span class="p">[[</span><span class="s2">&quot;OID&quot;</span><span class="p">,</span> <span class="s2">&quot;Name&quot;</span><span class="p">,</span> <span class="s2">&quot;DataType&quot;</span><span class="p">]]</span><span class="o">.</span><span class="n">to_string</span><span class="p">())</span>
+<span class="n">df</span> <span class="o">=</span> <span class="n">metadata_to_dataframe</span><span class="p">(</span><span class="n">mdv</span><span class="p">,</span> <span class="s2">"ItemDef"</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">df</span><span class="p">[[</span><span class="s2">"OID"</span><span class="p">,</span> <span class="s2">"Name"</span><span class="p">,</span> <span class="s2">"DataType"</span><span class="p">]]</span><span class="o">.</span><span class="n">to_string</span><span class="p">())</span>
 </pre></div>
 </div>
 </section>
@@ -199,8 +199,8 @@ column per scalar attribute.</p>
 </dd>
 </dl>
 <p>Example:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">df</span> <span class="o">=</span> <span class="n">metadata_to_dataframe</span><span class="p">(</span><span class="n">mdv</span><span class="p">,</span> <span class="s2">&quot;ItemDef&quot;</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">df</span><span class="p">[[</span><span class="s2">&quot;OID&quot;</span><span class="p">,</span> <span class="s2">&quot;Name&quot;</span><span class="p">,</span> <span class="s2">&quot;DataType&quot;</span><span class="p">]]</span><span class="o">.</span><span class="n">head</span><span class="p">())</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">df</span> <span class="o">=</span> <span class="n">metadata_to_dataframe</span><span class="p">(</span><span class="n">mdv</span><span class="p">,</span> <span class="s2">"ItemDef"</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">df</span><span class="p">[[</span><span class="s2">"OID"</span><span class="p">,</span> <span class="s2">"Name"</span><span class="p">,</span> <span class="s2">"DataType"</span><span class="p">]]</span><span class="o">.</span><span class="n">head</span><span class="p">())</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -287,7 +287,7 @@ named by variable name.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">odmlib.dataset_json_1_1</span><span class="w"> </span><span class="kn">import</span> <span class="n">DatasetJSON</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">odmlib.dataframe</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataset_json_to_dataframe</span>
 
-<span class="n">ds</span> <span class="o">=</span> <span class="n">DatasetJSON</span><span class="o">.</span><span class="n">read_json</span><span class="p">(</span><span class="s2">&quot;ae.json&quot;</span><span class="p">)</span>
+<span class="n">ds</span> <span class="o">=</span> <span class="n">DatasetJSON</span><span class="o">.</span><span class="n">read_json</span><span class="p">(</span><span class="s2">"ae.json"</span><span class="p">)</span>
 <span class="n">df</span> <span class="o">=</span> <span class="n">dataset_json_to_dataframe</span><span class="p">(</span><span class="n">ds</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">head</span><span class="p">())</span>
 </pre></div>
@@ -328,12 +328,12 @@ loader).</p></li>
 <span class="kn">import</span><span class="w"> </span><span class="nn">odmlib.loader</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">LD</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">odmlib.dataframe</span><span class="w"> </span><span class="kn">import</span> <span class="n">define_metadata_to_dataframes</span>
 
-<span class="n">loader</span> <span class="o">=</span> <span class="n">LD</span><span class="o">.</span><span class="n">ODMLoader</span><span class="p">(</span><span class="n">DL</span><span class="o">.</span><span class="n">XMLDefineLoader</span><span class="p">(</span><span class="n">model_package</span><span class="o">=</span><span class="s1">&#39;define_2_1&#39;</span><span class="p">))</span>
-<span class="n">loader</span><span class="o">.</span><span class="n">open_odm_document</span><span class="p">(</span><span class="s1">&#39;define.xml&#39;</span><span class="p">)</span>
+<span class="n">loader</span> <span class="o">=</span> <span class="n">LD</span><span class="o">.</span><span class="n">ODMLoader</span><span class="p">(</span><span class="n">DL</span><span class="o">.</span><span class="n">XMLDefineLoader</span><span class="p">(</span><span class="n">model_package</span><span class="o">=</span><span class="s1">'define_2_1'</span><span class="p">))</span>
+<span class="n">loader</span><span class="o">.</span><span class="n">open_odm_document</span><span class="p">(</span><span class="s1">'define.xml'</span><span class="p">)</span>
 <span class="n">odm</span> <span class="o">=</span> <span class="n">loader</span><span class="o">.</span><span class="n">root</span><span class="p">()</span>
 
 <span class="n">dfs</span> <span class="o">=</span> <span class="n">define_metadata_to_dataframes</span><span class="p">(</span><span class="n">odm</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">dfs</span><span class="p">[</span><span class="s1">&#39;variables&#39;</span><span class="p">][[</span><span class="s1">&#39;DatasetOID&#39;</span><span class="p">,</span> <span class="s1">&#39;Name&#39;</span><span class="p">,</span> <span class="s1">&#39;DataType&#39;</span><span class="p">]]</span><span class="o">.</span><span class="n">head</span><span class="p">())</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">dfs</span><span class="p">[</span><span class="s1">'variables'</span><span class="p">][[</span><span class="s1">'DatasetOID'</span><span class="p">,</span> <span class="s1">'Name'</span><span class="p">,</span> <span class="s1">'DataType'</span><span class="p">]]</span><span class="o">.</span><span class="n">head</span><span class="p">())</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -373,12 +373,12 @@ the current UTC time is used.</p></li>
 <span class="kn">from</span><span class="w"> </span><span class="nn">odmlib.dataframe</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataframe_to_dataset_json</span>
 
 <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span>
-    <span class="s2">&quot;STUDYID&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;CDISC01&quot;</span><span class="p">,</span> <span class="s2">&quot;CDISC01&quot;</span><span class="p">],</span>
-    <span class="s2">&quot;USUBJID&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;001&quot;</span><span class="p">,</span> <span class="s2">&quot;002&quot;</span><span class="p">],</span>
-    <span class="s2">&quot;AGE&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">65</span><span class="p">,</span> <span class="mi">72</span><span class="p">],</span>
+    <span class="s2">"STUDYID"</span><span class="p">:</span> <span class="p">[</span><span class="s2">"CDISC01"</span><span class="p">,</span> <span class="s2">"CDISC01"</span><span class="p">],</span>
+    <span class="s2">"USUBJID"</span><span class="p">:</span> <span class="p">[</span><span class="s2">"001"</span><span class="p">,</span> <span class="s2">"002"</span><span class="p">],</span>
+    <span class="s2">"AGE"</span><span class="p">:</span> <span class="p">[</span><span class="mi">65</span><span class="p">,</span> <span class="mi">72</span><span class="p">],</span>
 <span class="p">})</span>
-<span class="n">ds</span> <span class="o">=</span> <span class="n">dataframe_to_dataset_json</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="s2">&quot;DM&quot;</span><span class="p">,</span> <span class="s2">&quot;Demographics&quot;</span><span class="p">,</span> <span class="s2">&quot;IG.DM&quot;</span><span class="p">)</span>
-<span class="n">ds</span><span class="o">.</span><span class="n">write_json</span><span class="p">(</span><span class="s2">&quot;dm.json&quot;</span><span class="p">)</span>
+<span class="n">ds</span> <span class="o">=</span> <span class="n">dataframe_to_dataset_json</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="s2">"DM"</span><span class="p">,</span> <span class="s2">"Demographics"</span><span class="p">,</span> <span class="s2">"IG.DM"</span><span class="p">)</span>
+<span class="n">ds</span><span class="o">.</span><span class="n">write_json</span><span class="p">(</span><span class="s2">"dm.json"</span><span class="p">)</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -422,10 +422,10 @@ attribute names exactly.</p></li>
 <span class="kn">from</span><span class="w"> </span><span class="nn">odmlib.dataframe</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataframe_to_items</span>
 
 <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">([</span>
-    <span class="p">{</span><span class="s2">&quot;OID&quot;</span><span class="p">:</span> <span class="s2">&quot;IT.AGE&quot;</span><span class="p">,</span> <span class="s2">&quot;Name&quot;</span><span class="p">:</span> <span class="s2">&quot;AGE&quot;</span><span class="p">,</span> <span class="s2">&quot;DataType&quot;</span><span class="p">:</span> <span class="s2">&quot;integer&quot;</span><span class="p">},</span>
-    <span class="p">{</span><span class="s2">&quot;OID&quot;</span><span class="p">:</span> <span class="s2">&quot;IT.SEX&quot;</span><span class="p">,</span> <span class="s2">&quot;Name&quot;</span><span class="p">:</span> <span class="s2">&quot;SEX&quot;</span><span class="p">,</span> <span class="s2">&quot;DataType&quot;</span><span class="p">:</span> <span class="s2">&quot;text&quot;</span><span class="p">},</span>
+    <span class="p">{</span><span class="s2">"OID"</span><span class="p">:</span> <span class="s2">"IT.AGE"</span><span class="p">,</span> <span class="s2">"Name"</span><span class="p">:</span> <span class="s2">"AGE"</span><span class="p">,</span> <span class="s2">"DataType"</span><span class="p">:</span> <span class="s2">"integer"</span><span class="p">},</span>
+    <span class="p">{</span><span class="s2">"OID"</span><span class="p">:</span> <span class="s2">"IT.SEX"</span><span class="p">,</span> <span class="s2">"Name"</span><span class="p">:</span> <span class="s2">"SEX"</span><span class="p">,</span> <span class="s2">"DataType"</span><span class="p">:</span> <span class="s2">"text"</span><span class="p">},</span>
 <span class="p">])</span>
-<span class="n">items</span> <span class="o">=</span> <span class="n">dataframe_to_items</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">ODM</span><span class="p">,</span> <span class="s2">&quot;ItemDef&quot;</span><span class="p">)</span>
+<span class="n">items</span> <span class="o">=</span> <span class="n">dataframe_to_items</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">ODM</span><span class="p">,</span> <span class="s2">"ItemDef"</span><span class="p">)</span>
 <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">items</span><span class="p">:</span>
     <span class="n">mdv</span><span class="o">.</span><span class="n">ItemDef</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
 </pre></div>

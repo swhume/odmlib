@@ -6,14 +6,14 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Getting Started with odmlib &mdash; odmlib 0.2.0 documentation</title>
+  <title>Getting Started with odmlib &mdash; odmlib 0.2.1 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
 
   
       <script src="../_static/jquery.js?v=5d32c60e"></script>
       <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../_static/documentation_options.js?v=938c9ccc"></script>
+      <script src="../_static/documentation_options.js?v=37f418d5"></script>
       <script src="../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../_static/js/theme.js"></script>
@@ -120,7 +120,7 @@ creating, parsing, and validating ODM files with XML and JSON serialization.</p>
 <p>For development (editable install with all dev tools):</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">git</span> <span class="n">clone</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">github</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">swhume</span><span class="o">/</span><span class="n">odmlib</span><span class="o">.</span><span class="n">git</span>
 <span class="n">cd</span> <span class="n">odmlib</span>
-<span class="n">pip</span> <span class="n">install</span> <span class="o">-</span><span class="n">e</span> <span class="s2">&quot;.[dev]&quot;</span>
+<span class="n">pip</span> <span class="n">install</span> <span class="o">-</span><span class="n">e</span> <span class="s2">".[dev]"</span>
 </pre></div>
 </div>
 </section>
@@ -158,6 +158,14 @@ creating, parsing, and validating ODM files with XML and JSON serialization.</p>
 <td><p><code class="docutils literal notranslate"><span class="pre">odmlib.ct_1_1_1</span></code></p></td>
 <td><p>Stable</p></td>
 </tr>
+<tr class="row-even"><td><p>ARM 1.0</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">odmlib.arm_1_0</span></code></p></td>
+<td><p>Stable</p></td>
+</tr>
+<tr class="row-odd"><td><p>Dataset-JSON 1.1</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">odmlib.dataset_json_1_1</span></code></p></td>
+<td><p>Stable</p></td>
+</tr>
 </tbody>
 </table>
 </section>
@@ -169,19 +177,19 @@ creating, parsing, and validating ODM files with XML and JSON serialization.</p>
 <span class="kn">import</span><span class="w"> </span><span class="nn">odmlib.loader</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">LD</span>
 
 <span class="c1"># Create a loader for ODM 1.3.2 XML</span>
-<span class="n">loader</span> <span class="o">=</span> <span class="n">LD</span><span class="o">.</span><span class="n">ODMLoader</span><span class="p">(</span><span class="n">OL</span><span class="o">.</span><span class="n">XMLODMLoader</span><span class="p">(</span><span class="n">model_package</span><span class="o">=</span><span class="s2">&quot;odm_1_3_2&quot;</span><span class="p">))</span>
-<span class="n">loader</span><span class="o">.</span><span class="n">open_odm_document</span><span class="p">(</span><span class="s2">&quot;my_study.xml&quot;</span><span class="p">)</span>
+<span class="n">loader</span> <span class="o">=</span> <span class="n">LD</span><span class="o">.</span><span class="n">ODMLoader</span><span class="p">(</span><span class="n">OL</span><span class="o">.</span><span class="n">XMLODMLoader</span><span class="p">(</span><span class="n">model_package</span><span class="o">=</span><span class="s2">"odm_1_3_2"</span><span class="p">))</span>
+<span class="n">loader</span><span class="o">.</span><span class="n">open_odm_document</span><span class="p">(</span><span class="s2">"my_study.xml"</span><span class="p">)</span>
 
 <span class="c1"># Get the root ODM object</span>
 <span class="n">odm</span> <span class="o">=</span> <span class="n">loader</span><span class="o">.</span><span class="n">root</span><span class="p">()</span>
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;File OID: </span><span class="si">{</span><span class="n">odm</span><span class="o">.</span><span class="n">FileOID</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"File OID: </span><span class="si">{</span><span class="n">odm</span><span class="o">.</span><span class="n">FileOID</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
 
 <span class="c1"># Get the first MetaDataVersion</span>
 <span class="n">mdv</span> <span class="o">=</span> <span class="n">loader</span><span class="o">.</span><span class="n">MetaDataVersion</span><span class="p">()</span>
 
 <span class="c1"># List all item groups (datasets/domains)</span>
 <span class="k">for</span> <span class="n">igd</span> <span class="ow">in</span> <span class="n">mdv</span><span class="o">.</span><span class="n">ItemGroupDef</span><span class="p">:</span>
-    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  </span><span class="si">{</span><span class="n">igd</span><span class="o">.</span><span class="n">OID</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">igd</span><span class="o">.</span><span class="n">Name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"  </span><span class="si">{</span><span class="n">igd</span><span class="o">.</span><span class="n">OID</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">igd</span><span class="o">.</span><span class="n">Name</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
 </pre></div>
 </div>
 </section>
@@ -191,39 +199,39 @@ creating, parsing, and validating ODM files with XML and JSON serialization.</p>
 <span class="kn">import</span><span class="w"> </span><span class="nn">odmlib.ns_registry</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">NS</span>
 
 <span class="c1"># Set up the namespace registry</span>
-<span class="n">NS</span><span class="o">.</span><span class="n">NamespaceRegistry</span><span class="p">(</span><span class="n">prefix</span><span class="o">=</span><span class="s2">&quot;odm&quot;</span><span class="p">,</span>
-    <span class="n">uri</span><span class="o">=</span><span class="s2">&quot;http://www.cdisc.org/ns/odm/v1.3&quot;</span><span class="p">,</span>
+<span class="n">NS</span><span class="o">.</span><span class="n">NamespaceRegistry</span><span class="p">(</span><span class="n">prefix</span><span class="o">=</span><span class="s2">"odm"</span><span class="p">,</span>
+    <span class="n">uri</span><span class="o">=</span><span class="s2">"http://www.cdisc.org/ns/odm/v1.3"</span><span class="p">,</span>
     <span class="n">is_default</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">is_reset</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
 <span class="c1"># Build the study name and global variables</span>
-<span class="n">sn</span> <span class="o">=</span> <span class="n">ODM</span><span class="o">.</span><span class="n">StudyName</span><span class="p">(</span><span class="n">_content</span><span class="o">=</span><span class="s2">&quot;My Clinical Study&quot;</span><span class="p">)</span>
-<span class="n">sd</span> <span class="o">=</span> <span class="n">ODM</span><span class="o">.</span><span class="n">StudyDescription</span><span class="p">(</span><span class="n">_content</span><span class="o">=</span><span class="s2">&quot;A phase II clinical trial&quot;</span><span class="p">)</span>
-<span class="n">pn</span> <span class="o">=</span> <span class="n">ODM</span><span class="o">.</span><span class="n">ProtocolName</span><span class="p">(</span><span class="n">_content</span><span class="o">=</span><span class="s2">&quot;STUDY-001&quot;</span><span class="p">)</span>
+<span class="n">sn</span> <span class="o">=</span> <span class="n">ODM</span><span class="o">.</span><span class="n">StudyName</span><span class="p">(</span><span class="n">_content</span><span class="o">=</span><span class="s2">"My Clinical Study"</span><span class="p">)</span>
+<span class="n">sd</span> <span class="o">=</span> <span class="n">ODM</span><span class="o">.</span><span class="n">StudyDescription</span><span class="p">(</span><span class="n">_content</span><span class="o">=</span><span class="s2">"A phase II clinical trial"</span><span class="p">)</span>
+<span class="n">pn</span> <span class="o">=</span> <span class="n">ODM</span><span class="o">.</span><span class="n">ProtocolName</span><span class="p">(</span><span class="n">_content</span><span class="o">=</span><span class="s2">"STUDY-001"</span><span class="p">)</span>
 <span class="n">gv</span> <span class="o">=</span> <span class="n">ODM</span><span class="o">.</span><span class="n">GlobalVariables</span><span class="p">(</span><span class="n">StudyName</span><span class="o">=</span><span class="n">sn</span><span class="p">,</span> <span class="n">StudyDescription</span><span class="o">=</span><span class="n">sd</span><span class="p">,</span> <span class="n">ProtocolName</span><span class="o">=</span><span class="n">pn</span><span class="p">)</span>
 
 <span class="c1"># Create an item definition</span>
-<span class="n">item</span> <span class="o">=</span> <span class="n">ODM</span><span class="o">.</span><span class="n">ItemDef</span><span class="p">(</span><span class="n">OID</span><span class="o">=</span><span class="s2">&quot;IT.AGE&quot;</span><span class="p">,</span> <span class="n">Name</span><span class="o">=</span><span class="s2">&quot;Age&quot;</span><span class="p">,</span> <span class="n">DataType</span><span class="o">=</span><span class="s2">&quot;integer&quot;</span><span class="p">,</span> <span class="n">Length</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+<span class="n">item</span> <span class="o">=</span> <span class="n">ODM</span><span class="o">.</span><span class="n">ItemDef</span><span class="p">(</span><span class="n">OID</span><span class="o">=</span><span class="s2">"IT.AGE"</span><span class="p">,</span> <span class="n">Name</span><span class="o">=</span><span class="s2">"Age"</span><span class="p">,</span> <span class="n">DataType</span><span class="o">=</span><span class="s2">"integer"</span><span class="p">,</span> <span class="n">Length</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
 
 <span class="c1"># Create an item group definition</span>
-<span class="n">igd</span> <span class="o">=</span> <span class="n">ODM</span><span class="o">.</span><span class="n">ItemGroupDef</span><span class="p">(</span><span class="n">OID</span><span class="o">=</span><span class="s2">&quot;IG.DM&quot;</span><span class="p">,</span> <span class="n">Name</span><span class="o">=</span><span class="s2">&quot;Demographics&quot;</span><span class="p">,</span> <span class="n">Repeating</span><span class="o">=</span><span class="s2">&quot;No&quot;</span><span class="p">)</span>
-<span class="n">igd</span><span class="o">.</span><span class="n">ItemRef</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ODM</span><span class="o">.</span><span class="n">ItemRef</span><span class="p">(</span><span class="n">ItemOID</span><span class="o">=</span><span class="s2">&quot;IT.AGE&quot;</span><span class="p">,</span> <span class="n">Mandatory</span><span class="o">=</span><span class="s2">&quot;Yes&quot;</span><span class="p">,</span> <span class="n">OrderNumber</span><span class="o">=</span><span class="mi">1</span><span class="p">))</span>
+<span class="n">igd</span> <span class="o">=</span> <span class="n">ODM</span><span class="o">.</span><span class="n">ItemGroupDef</span><span class="p">(</span><span class="n">OID</span><span class="o">=</span><span class="s2">"IG.DM"</span><span class="p">,</span> <span class="n">Name</span><span class="o">=</span><span class="s2">"Demographics"</span><span class="p">,</span> <span class="n">Repeating</span><span class="o">=</span><span class="s2">"No"</span><span class="p">)</span>
+<span class="n">igd</span><span class="o">.</span><span class="n">ItemRef</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ODM</span><span class="o">.</span><span class="n">ItemRef</span><span class="p">(</span><span class="n">ItemOID</span><span class="o">=</span><span class="s2">"IT.AGE"</span><span class="p">,</span> <span class="n">Mandatory</span><span class="o">=</span><span class="s2">"Yes"</span><span class="p">,</span> <span class="n">OrderNumber</span><span class="o">=</span><span class="mi">1</span><span class="p">))</span>
 
 <span class="c1"># Assemble the metadata version</span>
-<span class="n">mdv</span> <span class="o">=</span> <span class="n">ODM</span><span class="o">.</span><span class="n">MetaDataVersion</span><span class="p">(</span><span class="n">OID</span><span class="o">=</span><span class="s2">&quot;MDV.001&quot;</span><span class="p">,</span> <span class="n">Name</span><span class="o">=</span><span class="s2">&quot;Version 1&quot;</span><span class="p">)</span>
+<span class="n">mdv</span> <span class="o">=</span> <span class="n">ODM</span><span class="o">.</span><span class="n">MetaDataVersion</span><span class="p">(</span><span class="n">OID</span><span class="o">=</span><span class="s2">"MDV.001"</span><span class="p">,</span> <span class="n">Name</span><span class="o">=</span><span class="s2">"Version 1"</span><span class="p">)</span>
 <span class="n">mdv</span><span class="o">.</span><span class="n">ItemGroupDef</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">igd</span><span class="p">)</span>
 <span class="n">mdv</span><span class="o">.</span><span class="n">ItemDef</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
 
 <span class="c1"># Create the study and ODM root</span>
-<span class="n">study</span> <span class="o">=</span> <span class="n">ODM</span><span class="o">.</span><span class="n">Study</span><span class="p">(</span><span class="n">OID</span><span class="o">=</span><span class="s2">&quot;S.001&quot;</span><span class="p">,</span> <span class="n">GlobalVariables</span><span class="o">=</span><span class="n">gv</span><span class="p">,</span> <span class="n">MetaDataVersion</span><span class="o">=</span><span class="p">[</span><span class="n">mdv</span><span class="p">])</span>
+<span class="n">study</span> <span class="o">=</span> <span class="n">ODM</span><span class="o">.</span><span class="n">Study</span><span class="p">(</span><span class="n">OID</span><span class="o">=</span><span class="s2">"S.001"</span><span class="p">,</span> <span class="n">GlobalVariables</span><span class="o">=</span><span class="n">gv</span><span class="p">,</span> <span class="n">MetaDataVersion</span><span class="o">=</span><span class="p">[</span><span class="n">mdv</span><span class="p">])</span>
 <span class="n">odm</span> <span class="o">=</span> <span class="n">ODM</span><span class="o">.</span><span class="n">ODM</span><span class="p">(</span>
-    <span class="n">FileOID</span><span class="o">=</span><span class="s2">&quot;F.001&quot;</span><span class="p">,</span>
-    <span class="n">FileType</span><span class="o">=</span><span class="s2">&quot;Snapshot&quot;</span><span class="p">,</span>
-    <span class="n">CreationDateTime</span><span class="o">=</span><span class="s2">&quot;2024-01-01T00:00:00&quot;</span><span class="p">,</span>
+    <span class="n">FileOID</span><span class="o">=</span><span class="s2">"F.001"</span><span class="p">,</span>
+    <span class="n">FileType</span><span class="o">=</span><span class="s2">"Snapshot"</span><span class="p">,</span>
+    <span class="n">CreationDateTime</span><span class="o">=</span><span class="s2">"2024-01-01T00:00:00"</span><span class="p">,</span>
     <span class="n">Study</span><span class="o">=</span><span class="p">[</span><span class="n">study</span><span class="p">]</span>
 <span class="p">)</span>
 
 <span class="c1"># Write to XML</span>
-<span class="n">odm</span><span class="o">.</span><span class="n">write_xml</span><span class="p">(</span><span class="s2">&quot;my_study.xml&quot;</span><span class="p">)</span>
+<span class="n">odm</span><span class="o">.</span><span class="n">write_xml</span><span class="p">(</span><span class="s2">"my_study.xml"</span><span class="p">)</span>
 </pre></div>
 </div>
 </section>
@@ -240,7 +248,9 @@ assignment time. Invalid values raise
 to register XML namespaces before creating or loading documents. Call
 <code class="xref py py-meth docutils literal notranslate"><span class="pre">reset()</span></code> to clear namespace state between
 independent operations.</p>
-<p><strong>Bidirectional serialization</strong>: All elements support <code class="xref py py-meth docutils literal notranslate"><span class="pre">to_xml()</span></code>,
+<p><strong>Bidirectional serialization</strong>: All elements support
+<code class="xref py py-meth docutils literal notranslate"><span class="pre">to_xml_string()</span></code>,
+<code class="xref py py-meth docutils literal notranslate"><span class="pre">to_element()</span></code>,
 <code class="xref py py-meth docutils literal notranslate"><span class="pre">to_json()</span></code>, and
 <code class="xref py py-meth docutils literal notranslate"><span class="pre">to_dict()</span></code> for conversion back to
 standard formats.</p>

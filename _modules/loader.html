@@ -5,14 +5,14 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>loader &mdash; odmlib 0.2.0 documentation</title>
+  <title>loader &mdash; odmlib 0.2.1 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
 
   
       <script src="../_static/jquery.js?v=5d32c60e"></script>
       <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../_static/documentation_options.js?v=938c9ccc"></script>
+      <script src="../_static/documentation_options.js?v=37f418d5"></script>
       <script src="../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../_static/js/theme.js"></script>
@@ -93,7 +93,7 @@
            <div itemprop="articleBody">
              
   <h1>Source code for loader</h1><div class="highlight"><pre>
-<span></span><span class="sd">&quot;&quot;&quot;Facade loader for ODM, Define-XML, and ARM documents.</span>
+<span></span><span class="sd">"""Facade loader for ODM, Define-XML, and ARM documents.</span>
 
 <span class="sd">This module provides :class:`ODMLoader`, a unified interface that wraps</span>
 <span class="sd">any specialized loader (:class:`~odmlib.odm_loader.XMLODMLoader`,</span>
@@ -103,17 +103,18 @@
 <span class="sd">:class:`~odmlib.arm_loader.XMLArmLoader`, or</span>
 <span class="sd">:class:`~odmlib.arm_loader.JSONArmLoader`) and delegates all</span>
 <span class="sd">document loading operations to it.</span>
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">"""</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Optional</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">odmlib.document_loader</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">DL</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">odmlib.ns_registry</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">NS</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">odmlib.exceptions</span><span class="w"> </span><span class="kn">import</span> <span class="n">OdmlibTypeError</span>
 
 
 <div class="viewcode-block" id="ODMLoader">
 <a class="viewcode-back" href="../modules.html#loader.ODMLoader">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">ODMLoader</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Facade providing a unified interface for loading ODM documents.</span>
+<span class="w">    </span><span class="sd">"""Facade providing a unified interface for loading ODM documents.</span>
 
 <span class="sd">    Wraps a specialized loader (:class:`~odmlib.odm_loader.XMLODMLoader`,</span>
 <span class="sd">    :class:`~odmlib.odm_loader.JSONODMLoader`,</span>
@@ -134,28 +135,46 @@
 <span class="sd">        import odmlib.odm_loader as OL</span>
 <span class="sd">        import odmlib.loader as LD</span>
 
-<span class="sd">        loader = LD.ODMLoader(OL.XMLODMLoader(model_package=&quot;odm_1_3_2&quot;))</span>
-<span class="sd">        loader.open_odm_document(&quot;study.xml&quot;)</span>
+<span class="sd">        loader = LD.ODMLoader(OL.XMLODMLoader(model_package="odm_1_3_2"))</span>
+<span class="sd">        loader.open_odm_document("study.xml")</span>
 <span class="sd">        odm = loader.root()</span>
 <span class="sd">        mdv = loader.MetaDataVersion()</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">odm_loader</span><span class="p">:</span> <span class="n">DL</span><span class="o">.</span><span class="n">DocumentLoader</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">odm_loader</span><span class="p">,</span> <span class="n">DL</span><span class="o">.</span><span class="n">DocumentLoader</span><span class="p">):</span>
             <span class="k">raise</span> <span class="n">OdmlibTypeError</span><span class="p">(</span>
-                <span class="s2">&quot;odm_loader argument must implement DocumentLoader&quot;</span><span class="p">,</span>
-                <span class="n">expected_type</span><span class="o">=</span><span class="s2">&quot;DocumentLoader&quot;</span><span class="p">,</span>
+                <span class="s2">"odm_loader argument must implement DocumentLoader"</span><span class="p">,</span>
+                <span class="n">expected_type</span><span class="o">=</span><span class="s2">"DocumentLoader"</span><span class="p">,</span>
                 <span class="n">actual_value</span><span class="o">=</span><span class="nb">type</span><span class="p">(</span><span class="n">odm_loader</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span>
-                <span class="n">hint</span><span class="o">=</span><span class="s2">&quot;Pass an instance of XMLODMLoader, JSONODMLoader, XMLDefineLoader, JSONDefineLoader, XMLArmLoader, or JSONArmLoader&quot;</span><span class="p">,</span>
+                <span class="n">hint</span><span class="o">=</span><span class="s2">"Pass an instance of XMLODMLoader, JSONODMLoader, XMLDefineLoader, JSONDefineLoader, XMLArmLoader, or JSONArmLoader"</span><span class="p">,</span>
             <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">loader</span> <span class="o">=</span> <span class="n">odm_loader</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_ns_snapshot</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_bind_namespaces</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">odm_obj</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Attach the document-open-time namespace snapshot to *odm_obj*.</span>
+
+<span class="sd">        The NamespaceRegistry is shared process-wide, so opening another</span>
+<span class="sd">        document later can change it; binding a snapshot lets write_xml /</span>
+<span class="sd">        to_xml_string serialize this document with the namespaces it was</span>
+<span class="sd">        actually loaded under.</span>
+
+<span class="sd">        Bound recursively so that serializing a nested element reached by walking</span>
+<span class="sd">        the tree behaves like serializing its root. Elements constructed *after*</span>
+<span class="sd">        the load and grafted in are not covered - bind those explicitly with</span>
+<span class="sd">        ``NS.bind_document_namespaces(new_elem, NS.get_document_namespaces(root))``.</span>
+<span class="sd">        """</span>
+        <span class="k">if</span> <span class="n">odm_obj</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">NS</span><span class="o">.</span><span class="n">bind_document_namespaces</span><span class="p">(</span><span class="n">odm_obj</span><span class="p">,</span> <span class="n">snapshot</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_ns_snapshot</span><span class="p">,</span> <span class="n">recursive</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">odm_obj</span>
 
 <div class="viewcode-block" id="ODMLoader.create_odmlib">
 <a class="viewcode-back" href="../modules.html#loader.ODMLoader.create_odmlib">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">create_odmlib</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">odm_doc</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">odm_key</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Load an odmlib object from an existing document dict or element.</span>
+<span class="w">        </span><span class="sd">"""Load an odmlib object from an existing document dict or element.</span>
 
-<span class="sd">        Delegates to the wrapped loader&#39;s ``load_document`` method.</span>
+<span class="sd">        Delegates to the wrapped loader's ``load_document`` method.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            odm_doc: The document dict (JSON loaders) or XML Element</span>
@@ -165,60 +184,62 @@
 
 <span class="sd">        Returns:</span>
 <span class="sd">            An odmlib element object populated from ``odm_doc``.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="n">odm_obj</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">loader</span><span class="o">.</span><span class="n">load_document</span><span class="p">(</span><span class="n">odm_doc</span><span class="p">,</span> <span class="n">odm_key</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">odm_obj</span></div>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_bind_namespaces</span><span class="p">(</span><span class="n">odm_obj</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="ODMLoader.open_odm_document">
 <a class="viewcode-back" href="../modules.html#loader.ODMLoader.open_odm_document">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">open_odm_document</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Parse an ODM document file and prepare for loading.</span>
+<span class="w">        </span><span class="sd">"""Parse an ODM document file and prepare for loading.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            filename (str): Path to the ODM XML or JSON file.</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            The parsed root element or dict, depending on the loader type.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="n">root</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">loader</span><span class="o">.</span><span class="n">create_document</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_ns_snapshot</span> <span class="o">=</span> <span class="n">NS</span><span class="o">.</span><span class="n">NamespaceRegistry</span><span class="p">()</span><span class="o">.</span><span class="n">snapshot</span><span class="p">()</span>
         <span class="k">return</span> <span class="n">root</span></div>
 
 
 <div class="viewcode-block" id="ODMLoader.load_odm_string">
 <a class="viewcode-back" href="../modules.html#loader.ODMLoader.load_odm_string">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">load_odm_string</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">odm_string</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Parse an ODM document from a string and prepare for loading.</span>
+<span class="w">        </span><span class="sd">"""Parse an ODM document from a string and prepare for loading.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            odm_string (str): XML or JSON string containing the ODM document.</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            The parsed root element or dict, depending on the loader type.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="n">root</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">loader</span><span class="o">.</span><span class="n">create_document_from_string</span><span class="p">(</span><span class="n">odm_string</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_ns_snapshot</span> <span class="o">=</span> <span class="n">NS</span><span class="o">.</span><span class="n">NamespaceRegistry</span><span class="p">()</span><span class="o">.</span><span class="n">snapshot</span><span class="p">()</span>
         <span class="k">return</span> <span class="n">root</span></div>
 
 
 <div class="viewcode-block" id="ODMLoader.root">
 <a class="viewcode-back" href="../modules.html#loader.ODMLoader.root">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">root</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the root ODM element.</span>
+<span class="w">        </span><span class="sd">"""Return the root ODM element.</span>
 
 <span class="sd">        Must be called after :meth:`open_odm_document` or</span>
 <span class="sd">        :meth:`load_odm_string`.</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            The root odmlib ODM object (e.g., an ``ODM`` instance).</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="n">odm</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">loader</span><span class="o">.</span><span class="n">load_odm</span><span class="p">()</span>
-        <span class="k">return</span> <span class="n">odm</span></div>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_bind_namespaces</span><span class="p">(</span><span class="n">odm</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="ODMLoader.MetaDataVersion">
 <a class="viewcode-back" href="../modules.html#loader.ODMLoader.MetaDataVersion">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">MetaDataVersion</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">idx</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the MetaDataVersion at the specified index.</span>
+<span class="w">        </span><span class="sd">"""Return the MetaDataVersion at the specified index.</span>
 
 <span class="sd">        Must be called after :meth:`open_odm_document` or</span>
 <span class="sd">        :meth:`load_odm_string`.</span>
@@ -229,15 +250,15 @@
 
 <span class="sd">        Returns:</span>
 <span class="sd">            A ``MetaDataVersion`` odmlib object.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="n">mdv</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">loader</span><span class="o">.</span><span class="n">load_metadataversion</span><span class="p">(</span><span class="n">idx</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">mdv</span></div>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_bind_namespaces</span><span class="p">(</span><span class="n">mdv</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="ODMLoader.Study">
 <a class="viewcode-back" href="../modules.html#loader.ODMLoader.Study">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">Study</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">idx</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the Study at the specified index.</span>
+<span class="w">        </span><span class="sd">"""Return the Study at the specified index.</span>
 
 <span class="sd">        Must be called after :meth:`open_odm_document` or</span>
 <span class="sd">        :meth:`load_odm_string`.</span>
@@ -248,13 +269,13 @@
 
 <span class="sd">        Returns:</span>
 <span class="sd">            A ``Study`` odmlib object.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="n">study</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">loader</span><span class="o">.</span><span class="n">load_study</span><span class="p">(</span><span class="n">idx</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">study</span></div>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_bind_namespaces</span><span class="p">(</span><span class="n">study</span><span class="p">)</span></div>
 
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__getattr__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Delegate unknown method calls to the wrapped loader.</span>
+<span class="w">        </span><span class="sd">"""Delegate unknown method calls to the wrapped loader.</span>
 
 <span class="sd">        Allows calling loader-specific methods (e.g., ``load_odm_dataset``)</span>
 <span class="sd">        directly on the facade without explicitly exposing them.</span>
@@ -268,15 +289,15 @@
 <span class="sd">        Raises:</span>
 <span class="sd">            AttributeError: If the attribute does not exist on the loader,</span>
 <span class="sd">                or exists but is not callable.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">loader</span><span class="p">,</span> <span class="n">attr</span><span class="p">):</span>
             <span class="n">load_func</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">loader</span><span class="p">,</span> <span class="n">attr</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
             <span class="k">if</span> <span class="nb">callable</span><span class="p">(</span><span class="n">load_func</span><span class="p">):</span>
                 <span class="k">return</span> <span class="n">load_func</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">attr</span><span class="si">}</span><span class="s2"> is not callable in the loader </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">loader</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">attr</span><span class="si">}</span><span class="s2"> is not callable in the loader </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">loader</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;The </span><span class="si">{</span><span class="n">attr</span><span class="si">}</span><span class="s2"> method does not exist in the loader </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">loader</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
+            <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"The </span><span class="si">{</span><span class="n">attr</span><span class="si">}</span><span class="s2"> method does not exist in the loader </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">loader</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span></div>
 
 </pre></div>
 

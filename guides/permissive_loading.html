@@ -6,14 +6,14 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Permissive Loading Mode &mdash; odmlib 0.2.0 documentation</title>
+  <title>Permissive Loading Mode &mdash; odmlib 0.2.1 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
 
   
       <script src="../_static/jquery.js?v=5d32c60e"></script>
       <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../_static/documentation_options.js?v=938c9ccc"></script>
+      <script src="../_static/documentation_options.js?v=37f418d5"></script>
       <script src="../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../_static/js/theme.js"></script>
@@ -138,7 +138,7 @@ re-validate documents that contain invalid content.</p>
 <span class="n">loader</span> <span class="o">=</span> <span class="n">LD</span><span class="o">.</span><span class="n">ODMLoader</span><span class="p">(</span><span class="n">OL</span><span class="o">.</span><span class="n">XMLODMLoader</span><span class="p">())</span>
 
 <span class="k">with</span> <span class="n">permissive</span><span class="p">():</span>
-    <span class="n">loader</span><span class="o">.</span><span class="n">open_odm_document</span><span class="p">(</span><span class="s2">&quot;incomplete_define.xml&quot;</span><span class="p">)</span>
+    <span class="n">loader</span><span class="o">.</span><span class="n">open_odm_document</span><span class="p">(</span><span class="s2">"incomplete_define.xml"</span><span class="p">)</span>
     <span class="n">odm</span> <span class="o">=</span> <span class="n">loader</span><span class="o">.</span><span class="n">root</span><span class="p">()</span>
 
 <span class="c1"># odm is now loaded -- mode is back to strict</span>
@@ -213,23 +213,23 @@ that controls exactly which validation categories to bypass:</p>
 <span class="c1"># Step 1: Load permissively</span>
 <span class="n">loader</span> <span class="o">=</span> <span class="n">LD</span><span class="o">.</span><span class="n">ODMLoader</span><span class="p">(</span><span class="n">OL</span><span class="o">.</span><span class="n">XMLODMLoader</span><span class="p">())</span>
 <span class="k">with</span> <span class="n">permissive</span><span class="p">():</span>
-    <span class="n">loader</span><span class="o">.</span><span class="n">open_odm_document</span><span class="p">(</span><span class="s2">&quot;broken_define.xml&quot;</span><span class="p">)</span>
+    <span class="n">loader</span><span class="o">.</span><span class="n">open_odm_document</span><span class="p">(</span><span class="s2">"broken_define.xml"</span><span class="p">)</span>
     <span class="n">odm</span> <span class="o">=</span> <span class="n">loader</span><span class="o">.</span><span class="n">root</span><span class="p">()</span>
 
 <span class="c1"># Step 2: Inspect -- mode is strict again, but objects are populated</span>
 <span class="n">mdv</span> <span class="o">=</span> <span class="n">odm</span><span class="o">.</span><span class="n">Study</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">MetaDataVersion</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
 <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">mdv</span><span class="o">.</span><span class="n">ItemDef</span><span class="p">:</span>
-    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;OID=</span><span class="si">{</span><span class="n">item</span><span class="o">.</span><span class="n">OID</span><span class="si">}</span><span class="s2">, DataType=</span><span class="si">{</span><span class="n">item</span><span class="o">.</span><span class="n">DataType</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"OID=</span><span class="si">{</span><span class="n">item</span><span class="o">.</span><span class="n">OID</span><span class="si">}</span><span class="s2">, DataType=</span><span class="si">{</span><span class="n">item</span><span class="o">.</span><span class="n">DataType</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
 
 <span class="c1"># Step 3: Fix issues (assignments are validated in strict mode)</span>
 <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">mdv</span><span class="o">.</span><span class="n">ItemDef</span><span class="p">:</span>
-    <span class="k">if</span> <span class="n">item</span><span class="o">.</span><span class="n">DataType</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;text&quot;</span><span class="p">,</span> <span class="s2">&quot;integer&quot;</span><span class="p">,</span> <span class="s2">&quot;float&quot;</span><span class="p">]:</span>
-        <span class="n">item</span><span class="o">.</span><span class="n">DataType</span> <span class="o">=</span> <span class="s2">&quot;text&quot;</span>
+    <span class="k">if</span> <span class="n">item</span><span class="o">.</span><span class="n">DataType</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">"text"</span><span class="p">,</span> <span class="s2">"integer"</span><span class="p">,</span> <span class="s2">"float"</span><span class="p">]:</span>
+        <span class="n">item</span><span class="o">.</span><span class="n">DataType</span> <span class="o">=</span> <span class="s2">"text"</span>
 
-<span class="c1"># Step 4: Validate</span>
-<span class="n">errors</span> <span class="o">=</span> <span class="n">odm</span><span class="o">.</span><span class="n">validate</span><span class="p">(</span><span class="n">collect_errors</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="c1"># Step 4: Validate (max_errors caps a badly broken document)</span>
+<span class="n">errors</span> <span class="o">=</span> <span class="n">odm</span><span class="o">.</span><span class="n">validate</span><span class="p">(</span><span class="n">collect_errors</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">max_errors</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
 <span class="k">if</span> <span class="ow">not</span> <span class="n">errors</span><span class="p">:</span>
-    <span class="n">odm</span><span class="o">.</span><span class="n">write_xml</span><span class="p">(</span><span class="s2">&quot;fixed_define.xml&quot;</span><span class="p">)</span>
+    <span class="n">odm</span><span class="o">.</span><span class="n">write_xml</span><span class="p">(</span><span class="s2">"fixed_define.xml"</span><span class="p">)</span>
 <span class="k">else</span><span class="p">:</span>
     <span class="k">for</span> <span class="n">err</span> <span class="ow">in</span> <span class="n">errors</span><span class="p">:</span>
         <span class="nb">print</span><span class="p">(</span><span class="n">err</span><span class="p">)</span>
@@ -243,14 +243,14 @@ that controls exactly which validation categories to bypass:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">odmlib.context</span><span class="w"> </span><span class="kn">import</span> <span class="n">open_odm</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">odmlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">ValidationMode</span>
 
-<span class="k">with</span> <span class="n">open_odm</span><span class="p">(</span><span class="s2">&quot;broken.xml&quot;</span><span class="p">,</span> <span class="n">output_file</span><span class="o">=</span><span class="s2">&quot;fixed.xml&quot;</span><span class="p">,</span>
+<span class="k">with</span> <span class="n">open_odm</span><span class="p">(</span><span class="s2">"broken.xml"</span><span class="p">,</span> <span class="n">output_file</span><span class="o">=</span><span class="s2">"fixed.xml"</span><span class="p">,</span>
               <span class="n">permissive</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="k">as</span> <span class="n">odm</span><span class="p">:</span>
     <span class="c1"># Fix issues here</span>
     <span class="o">...</span>
 <span class="c1"># Saves on clean exit -- but note: save runs in strict mode</span>
 
 <span class="c1"># Targeted relaxation</span>
-<span class="k">with</span> <span class="n">open_odm</span><span class="p">(</span><span class="s2">&quot;broken.xml&quot;</span><span class="p">,</span> <span class="n">output_file</span><span class="o">=</span><span class="s2">&quot;fixed.xml&quot;</span><span class="p">,</span>
+<span class="k">with</span> <span class="n">open_odm</span><span class="p">(</span><span class="s2">"broken.xml"</span><span class="p">,</span> <span class="n">output_file</span><span class="o">=</span><span class="s2">"fixed.xml"</span><span class="p">,</span>
               <span class="n">permissive</span><span class="o">=</span><span class="n">ValidationMode</span><span class="o">.</span><span class="n">SKIP_REQUIRED</span><span class="p">)</span> <span class="k">as</span> <span class="n">odm</span><span class="p">:</span>
     <span class="o">...</span>
 </pre></div>
@@ -385,7 +385,9 @@ exception), restores the previous mode via token reset.</p>
 <li><p>Permissively loaded objects may contain invalid data that does not
 conform to the ODM specification.</p></li>
 <li><p>Always call <code class="docutils literal notranslate"><span class="pre">validate(collect_errors=True)</span></code> before serializing for
-production use.</p></li>
+production use.  Every layer reports all the problems it finds, so a
+badly broken document can yield a long list — pass <code class="docutils literal notranslate"><span class="pre">max_errors</span></code> to
+cap it and work through the issues in batches.</p></li>
 <li><p>The permissive mode affects only the current context (thread or
 coroutine); other threads and coroutines remain in strict mode.</p></li>
 <li><p>When using <code class="docutils literal notranslate"><span class="pre">open_odm(permissive=True)</span></code>, the auto-save on exit runs
@@ -398,7 +400,7 @@ document to enumerate its issues without risking a strict-mode save
 failure overwriting the input — pass <code class="docutils literal notranslate"><span class="pre">write_on_exit=False</span></code>.  No
 file is created or modified when the <code class="docutils literal notranslate"><span class="pre">with</span></code> block exits, regardless
 of <code class="docutils literal notranslate"><span class="pre">output_file</span></code>.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">with</span> <span class="n">open_odm</span><span class="p">(</span><span class="s2">&quot;broken.xml&quot;</span><span class="p">,</span> <span class="n">permissive</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">with</span> <span class="n">open_odm</span><span class="p">(</span><span class="s2">"broken.xml"</span><span class="p">,</span> <span class="n">permissive</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
               <span class="n">write_on_exit</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span> <span class="k">as</span> <span class="n">odm</span><span class="p">:</span>
     <span class="n">errors</span> <span class="o">=</span> <span class="n">odm</span><span class="o">.</span><span class="n">validate</span><span class="p">(</span><span class="n">collect_errors</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="k">for</span> <span class="n">err</span> <span class="ow">in</span> <span class="n">errors</span><span class="p">:</span>

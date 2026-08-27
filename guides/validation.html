@@ -6,14 +6,14 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Validating ODM Documents &mdash; odmlib 0.2.0 documentation</title>
+  <title>Validating ODM Documents &mdash; odmlib 0.2.1 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
 
   
       <script src="../_static/jquery.js?v=5d32c60e"></script>
       <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../_static/documentation_options.js?v=938c9ccc"></script>
+      <script src="../_static/documentation_options.js?v=37f418d5"></script>
       <script src="../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../_static/js/theme.js"></script>
@@ -60,8 +60,17 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#conformance-validation">Conformance Validation</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#combined-validation-with-error-collection">Combined Validation with Error Collection</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#xml-schema-xsd-validation">XML Schema (XSD) Validation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#combined-validation-with-error-collection">Combined Validation with Error Collection</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#what-every-error-means-per-layer">What “every error” means per layer</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#capping-the-error-list">Capping the error list</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#checker-reuse">Checker reuse</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#collecting-from-verify-oids-directly">Collecting from <code class="docutils literal notranslate"><span class="pre">verify_oids()</span></code> directly</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#xml-schema-xsd-validation">XML Schema (XSD) Validation</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#validating-arm-analysis-results-metadata">Validating ARM (Analysis Results Metadata)</a></li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="#understanding-error-types">Understanding Error Types</a></li>
 </ul>
 </li>
@@ -138,12 +147,12 @@ you mutate the in-memory <code class="docutils literal notranslate"><span class=
 <span class="c1"># Check order (raises OdmlibElementOrderError if out of order)</span>
 <span class="k">try</span><span class="p">:</span>
     <span class="n">odm</span><span class="o">.</span><span class="n">verify_order</span><span class="p">()</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Element order is correct&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">"Element order is correct"</span><span class="p">)</span>
 <span class="k">except</span> <span class="n">OdmlibElementOrderError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Order error: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Order error: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
     <span class="c1"># Fix automatically (issues OdmlibWarning)</span>
     <span class="k">with</span> <span class="n">warnings</span><span class="o">.</span><span class="n">catch_warnings</span><span class="p">():</span>
-        <span class="n">warnings</span><span class="o">.</span><span class="n">simplefilter</span><span class="p">(</span><span class="s2">&quot;ignore&quot;</span><span class="p">)</span>
+        <span class="n">warnings</span><span class="o">.</span><span class="n">simplefilter</span><span class="p">(</span><span class="s2">"ignore"</span><span class="p">)</span>
         <span class="n">odm</span><span class="o">.</span><span class="n">reorder_object</span><span class="p">()</span>
 </pre></div>
 </div>
@@ -219,16 +228,16 @@ point to valid definitions:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">odmlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">create_oid_checker</span>
 
 <span class="c1"># Create a dynamic checker for ODM 1.3.2</span>
-<span class="n">checker</span> <span class="o">=</span> <span class="n">create_oid_checker</span><span class="p">(</span><span class="s2">&quot;odm_1_3_2&quot;</span><span class="p">)</span>
+<span class="n">checker</span> <span class="o">=</span> <span class="n">create_oid_checker</span><span class="p">(</span><span class="s2">"odm_1_3_2"</span><span class="p">)</span>
 
 <span class="c1"># Verify OIDs (raises OdmlibOIDError on failure)</span>
 <span class="n">is_valid</span> <span class="o">=</span> <span class="n">odm</span><span class="o">.</span><span class="n">verify_oids</span><span class="p">(</span><span class="n">checker</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;OIDs valid: </span><span class="si">{</span><span class="n">is_valid</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"OIDs valid: </span><span class="si">{</span><span class="n">is_valid</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
 
 <span class="c1"># Find unreferenced definitions (e.g., unused code lists)</span>
 <span class="n">unreferenced</span> <span class="o">=</span> <span class="n">odm</span><span class="o">.</span><span class="n">unreferenced_oids</span><span class="p">(</span><span class="n">checker</span><span class="p">)</span>
 <span class="k">for</span> <span class="n">oid</span> <span class="ow">in</span> <span class="n">unreferenced</span><span class="p">:</span>
-    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unreferenced: </span><span class="si">{</span><span class="n">oid</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Unreferenced: </span><span class="si">{</span><span class="n">oid</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
 </pre></div>
 </div>
 </section>
@@ -238,7 +247,7 @@ point to valid definitions:</p>
 <span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
 
 <span class="k">with</span> <span class="n">warnings</span><span class="o">.</span><span class="n">catch_warnings</span><span class="p">():</span>
-    <span class="n">warnings</span><span class="o">.</span><span class="n">simplefilter</span><span class="p">(</span><span class="s2">&quot;ignore&quot;</span><span class="p">,</span> <span class="ne">DeprecationWarning</span><span class="p">)</span>
+    <span class="n">warnings</span><span class="o">.</span><span class="n">simplefilter</span><span class="p">(</span><span class="s2">"ignore"</span><span class="p">,</span> <span class="ne">DeprecationWarning</span><span class="p">)</span>
     <span class="n">checker</span> <span class="o">=</span> <span class="n">OR</span><span class="o">.</span><span class="n">OIDRef</span><span class="p">()</span>
 
 <span class="n">is_valid</span> <span class="o">=</span> <span class="n">odm</span><span class="o">.</span><span class="n">verify_oids</span><span class="p">(</span><span class="n">checker</span><span class="p">)</span>
@@ -253,18 +262,18 @@ point to valid definitions:</p>
 
 <span class="n">validator</span> <span class="o">=</span> <span class="n">SC</span><span class="o">.</span><span class="n">MetadataSchema</span><span class="p">()</span>
 <span class="n">result</span> <span class="o">=</span> <span class="n">mdv</span><span class="o">.</span><span class="n">verify_conformance</span><span class="p">(</span><span class="n">validator</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Conformance result: </span><span class="si">{</span><span class="n">result</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Conformance result: </span><span class="si">{</span><span class="n">result</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
 </pre></div>
 </div>
 </section>
 <section id="combined-validation-with-error-collection">
 <h2>Combined Validation with Error Collection<a class="headerlink" href="#combined-validation-with-error-collection" title="Link to this heading"></a></h2>
-<p>Use the <code class="docutils literal notranslate"><span class="pre">validate()</span></code> method to run all checks and collect all errors
+<p>Use the <code class="docutils literal notranslate"><span class="pre">validate()</span></code> method to run all checks and collect every error
 instead of failing on the first one:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">odmlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">create_oid_checker</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">odmlib.odm_1_3_2.rules.metadata_schema</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">SC</span>
 
-<span class="n">checker</span> <span class="o">=</span> <span class="n">create_oid_checker</span><span class="p">(</span><span class="s2">&quot;odm_1_3_2&quot;</span><span class="p">)</span>
+<span class="n">checker</span> <span class="o">=</span> <span class="n">create_oid_checker</span><span class="p">(</span><span class="s2">"odm_1_3_2"</span><span class="p">)</span>
 <span class="n">validator</span> <span class="o">=</span> <span class="n">SC</span><span class="o">.</span><span class="n">MetadataSchema</span><span class="p">()</span>
 
 <span class="n">errors</span> <span class="o">=</span> <span class="n">odm</span><span class="o">.</span><span class="n">validate</span><span class="p">(</span>
@@ -274,10 +283,88 @@ instead of failing on the first one:</p>
 <span class="p">)</span>
 
 <span class="k">if</span> <span class="ow">not</span> <span class="n">errors</span><span class="p">:</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Document is valid&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">"Document is valid"</span><span class="p">)</span>
 <span class="k">else</span><span class="p">:</span>
     <span class="k">for</span> <span class="n">err</span> <span class="ow">in</span> <span class="n">errors</span><span class="p">:</span>
-        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error: </span><span class="si">{</span><span class="n">err</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Error: </span><span class="si">{</span><span class="n">err</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+</pre></div>
+</div>
+<section id="what-every-error-means-per-layer">
+<h3>What “every error” means per layer<a class="headerlink" href="#what-every-error-means-per-layer" title="Link to this heading"></a></h3>
+<p>Each of the three layers enumerates its own problems rather than stopping at
+the first:</p>
+<ul class="simple">
+<li><p><strong>Element order</strong> — one <code class="xref py py-class docutils literal notranslate"><span class="pre">OdmlibElementOrderError</span></code>
+per misordered element. The walk continues into the children of a misordered
+element, so a single pass lists everything
+<code class="xref py py-meth docutils literal notranslate"><span class="pre">reorder_object()</span></code> needs to fix.</p></li>
+<li><p><strong>OID</strong> — one <code class="xref py py-class docutils literal notranslate"><span class="pre">OdmlibOIDError</span></code> per duplicate OID
+and per bad reference. Duplicates no longer abort the traversal, so the
+reference checks still run. On a duplicate the <em>first</em> definition is kept.</p></li>
+<li><p><strong>Conformance</strong> — the bundled Cerberus result is expanded into one
+<code class="xref py py-class docutils literal notranslate"><span class="pre">OdmlibConformanceError</span></code> per failing field, each
+carrying a dotted <code class="docutils literal notranslate"><span class="pre">field_path</span></code> (e.g. <code class="docutils literal notranslate"><span class="pre">&quot;ItemGroupDef.0.Name&quot;</span></code>) and the
+complete raw dict on <code class="docutils literal notranslate"><span class="pre">cerberus_errors</span></code>.</p></li>
+</ul>
+<p>Because the number of errors is now unbounded, errors are best filtered by
+type rather than accessed by index:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">odmlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">OdmlibOIDError</span>
+
+<span class="n">oid_problems</span> <span class="o">=</span> <span class="p">[</span><span class="n">e</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">errors</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">e</span><span class="p">,</span> <span class="n">OdmlibOIDError</span><span class="p">)]</span>
+</pre></div>
+</div>
+</section>
+<section id="capping-the-error-list">
+<h3>Capping the error list<a class="headerlink" href="#capping-the-error-list" title="Link to this heading"></a></h3>
+<p>A badly broken document can produce thousands of errors.  <code class="docutils literal notranslate"><span class="pre">max_errors</span></code> stops
+collection once the cap is reached and appends a final
+<code class="xref py py-class docutils literal notranslate"><span class="pre">OdmlibErrorLimitError</span></code>, so the list holds at most
+<code class="docutils literal notranslate"><span class="pre">max_errors</span> <span class="pre">+</span> <span class="pre">1</span></code> entries:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">errors</span> <span class="o">=</span> <span class="n">odm</span><span class="o">.</span><span class="n">validate</span><span class="p">(</span><span class="n">collect_errors</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">oid_checker</span><span class="o">=</span><span class="n">checker</span><span class="p">,</span>
+                      <span class="n">max_errors</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
+
+<span class="k">if</span> <span class="n">errors</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">errors</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">OdmlibErrorLimitError</span><span class="p">):</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">"More problems remain — fix these and re-run"</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The cap is enforced inside each layer, so validation genuinely stops early
+rather than collecting everything and truncating the result.</p>
+</section>
+<section id="checker-reuse">
+<h3>Checker reuse<a class="headerlink" href="#checker-reuse" title="Link to this heading"></a></h3>
+<p>An OID checker accumulates every OID it sees, so it is single-use per
+document.  Reusing one reports every OID as a duplicate.  Either build a fresh
+checker per document, or call <code class="docutils literal notranslate"><span class="pre">reset()</span></code>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">checker</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
+<span class="n">errors</span> <span class="o">=</span> <span class="n">other_odm</span><span class="o">.</span><span class="n">validate</span><span class="p">(</span><span class="n">collect_errors</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">oid_checker</span><span class="o">=</span><span class="n">checker</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">validate()</span></code> emits an <code class="xref py py-class docutils literal notranslate"><span class="pre">OdmlibWarning</span></code> in collect
+mode when it is handed a checker that still holds state.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The deprecated <code class="docutils literal notranslate"><span class="pre">rules/oid_ref.py</span></code> <code class="docutils literal notranslate"><span class="pre">OIDRef</span></code> classes (removed in v0.3.0)
+do not implement the collecting protocol and contribute at most <strong>one</strong>
+error for the whole OID layer.  Use
+<code class="xref py py-func docutils literal notranslate"><span class="pre">create_oid_checker()</span></code> to get full reporting.
+<code class="xref py py-func docutils literal notranslate"><span class="pre">is_collecting_checker()</span></code> tells you which you have.</p>
+</div>
+<p>Only <code class="xref py py-class docutils literal notranslate"><span class="pre">OdmlibError</span></code> subclasses are collected.  Any
+other exception — a bug in a custom checker, an <code class="docutils literal notranslate"><span class="pre">AttributeError</span></code> from a
+malformed tree — propagates in both modes rather than being reported as a
+document defect.</p>
+</section>
+<section id="collecting-from-verify-oids-directly">
+<h3>Collecting from <code class="docutils literal notranslate"><span class="pre">verify_oids()</span></code> directly<a class="headerlink" href="#collecting-from-verify-oids-directly" title="Link to this heading"></a></h3>
+<p>The OID layer can be run on its own with collection enabled:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">odmlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">ErrorCollector</span>
+
+<span class="n">collector</span> <span class="o">=</span> <span class="n">ErrorCollector</span><span class="p">()</span>
+<span class="k">with</span> <span class="n">checker</span><span class="o">.</span><span class="n">collecting</span><span class="p">(</span><span class="n">collector</span><span class="p">):</span>
+    <span class="n">odm</span><span class="o">.</span><span class="n">verify_oids</span><span class="p">(</span><span class="n">checker</span><span class="p">)</span>
+
+<span class="k">for</span> <span class="n">err</span> <span class="ow">in</span> <span class="n">collector</span><span class="o">.</span><span class="n">errors</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">err</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>This pattern is particularly useful after permissive loading, where a
@@ -285,6 +372,7 @@ non-conformant document has been loaded with validation bypassed.  After
 fixing known issues, use <code class="docutils literal notranslate"><span class="pre">validate(collect_errors=True)</span></code> to confirm all
 problems have been resolved.  See <a class="reference internal" href="permissive_loading.html"><span class="doc">Permissive Loading Mode</span></a> for the
 complete workflow.</p>
+</section>
 </section>
 <section id="xml-schema-xsd-validation">
 <h2>XML Schema (XSD) Validation<a class="headerlink" href="#xml-schema-xsd-validation" title="Link to this heading"></a></h2>
@@ -294,29 +382,60 @@ odmlib:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">odmlib.odm_parser</span><span class="w"> </span><span class="kn">import</span> <span class="n">ODMSchemaValidator</span><span class="p">,</span> <span class="n">ODMParser</span>
 
 <span class="c1"># ODM 1.3.2</span>
-<span class="n">validator</span> <span class="o">=</span> <span class="n">ODMSchemaValidator</span><span class="p">(</span><span class="n">standard</span><span class="o">=</span><span class="s2">&quot;odm&quot;</span><span class="p">,</span> <span class="n">version</span><span class="o">=</span><span class="s2">&quot;1.3.2&quot;</span><span class="p">)</span>
+<span class="n">validator</span> <span class="o">=</span> <span class="n">ODMSchemaValidator</span><span class="p">(</span><span class="n">standard</span><span class="o">=</span><span class="s2">"odm"</span><span class="p">,</span> <span class="n">version</span><span class="o">=</span><span class="s2">"1.3.2"</span><span class="p">)</span>
 
 <span class="c1"># ODM 2.0</span>
-<span class="n">validator</span> <span class="o">=</span> <span class="n">ODMSchemaValidator</span><span class="p">(</span><span class="n">standard</span><span class="o">=</span><span class="s2">&quot;odm&quot;</span><span class="p">,</span> <span class="n">version</span><span class="o">=</span><span class="s2">&quot;2.0&quot;</span><span class="p">)</span>
+<span class="n">validator</span> <span class="o">=</span> <span class="n">ODMSchemaValidator</span><span class="p">(</span><span class="n">standard</span><span class="o">=</span><span class="s2">"odm"</span><span class="p">,</span> <span class="n">version</span><span class="o">=</span><span class="s2">"2.0"</span><span class="p">)</span>
 
 <span class="c1"># Define-XML 2.0 / 2.1</span>
-<span class="n">validator</span> <span class="o">=</span> <span class="n">ODMSchemaValidator</span><span class="p">(</span><span class="n">standard</span><span class="o">=</span><span class="s2">&quot;define&quot;</span><span class="p">,</span> <span class="n">version</span><span class="o">=</span><span class="s2">&quot;2.1&quot;</span><span class="p">)</span>
+<span class="n">validator</span> <span class="o">=</span> <span class="n">ODMSchemaValidator</span><span class="p">(</span><span class="n">standard</span><span class="o">=</span><span class="s2">"define"</span><span class="p">,</span> <span class="n">version</span><span class="o">=</span><span class="s2">"2.1"</span><span class="p">)</span>
+
+<span class="c1"># ARM 1.0 (Analysis Results Metadata) in a Define-XML 2.1 document</span>
+<span class="n">validator</span> <span class="o">=</span> <span class="n">ODMSchemaValidator</span><span class="p">(</span><span class="n">standard</span><span class="o">=</span><span class="s2">"arm"</span><span class="p">,</span> <span class="n">version</span><span class="o">=</span><span class="s2">"1.0-define2.1"</span><span class="p">)</span>
 
 <span class="c1"># Validate a file directly (raises OdmlibSchemaValidationError on failure)</span>
-<span class="n">validator</span><span class="o">.</span><span class="n">validate_file</span><span class="p">(</span><span class="s2">&quot;study.xml&quot;</span><span class="p">)</span>
+<span class="n">validator</span><span class="o">.</span><span class="n">validate_file</span><span class="p">(</span><span class="s2">"study.xml"</span><span class="p">)</span>
 
 <span class="c1"># Or validate an already-parsed ElementTree (returns bool)</span>
-<span class="n">tree</span> <span class="o">=</span> <span class="n">ODMParser</span><span class="p">(</span><span class="s2">&quot;study.xml&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">parse_tree</span><span class="p">()</span>
+<span class="n">tree</span> <span class="o">=</span> <span class="n">ODMParser</span><span class="p">(</span><span class="s2">"study.xml"</span><span class="p">)</span><span class="o">.</span><span class="n">parse_tree</span><span class="p">()</span>
 <span class="n">is_valid</span> <span class="o">=</span> <span class="n">validator</span><span class="o">.</span><span class="n">validate_tree</span><span class="p">(</span><span class="n">tree</span><span class="p">)</span>
 </pre></div>
 </div>
+<p>Both <code class="docutils literal notranslate"><span class="pre">standard</span></code> and <code class="docutils literal notranslate"><span class="pre">version</span></code> are required; there is no default.</p>
+<section id="validating-arm-analysis-results-metadata">
+<h3>Validating ARM (Analysis Results Metadata)<a class="headerlink" href="#validating-arm-analysis-results-metadata" title="Link to this heading"></a></h3>
+<p>ARM 1.0 is an extension embedded in a Define-XML document rather than a
+standalone document type, so odmlib bundles two ARM schema sets — one per
+Define-XML version:</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p><code class="docutils literal notranslate"><span class="pre">(standard,</span> <span class="pre">version)</span></code></p></th>
+<th class="head"><p>Validates</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">(&quot;arm&quot;,</span> <span class="pre">&quot;1.0&quot;)</span></code></p></td>
+<td><p>ARM 1.0 inside a Define-XML <strong>2.0</strong> document (the CDISC original)</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">(&quot;arm&quot;,</span> <span class="pre">&quot;1.0-define2.1&quot;)</span></code></p></td>
+<td><p>ARM 1.0 inside a Define-XML <strong>2.1</strong> document</p></td>
+</tr>
+</tbody>
+</table>
+<p>The two are <strong>not</strong> interchangeable: Define-XML 2.0 and 2.1 use different
+<code class="docutils literal notranslate"><span class="pre">def:</span></code> namespace URIs, so the wrong pairing rejects the document on the
+first <code class="docutils literal notranslate"><span class="pre">def:</span></code>-prefixed attribute it encounters. Use <code class="docutils literal notranslate"><span class="pre">&quot;1.0-define2.1&quot;</span></code>
+with <code class="xref py py-mod docutils literal notranslate"><span class="pre">odmlib.arm_1_0</span></code>, which extends <code class="xref py py-mod docutils literal notranslate"><span class="pre">odmlib.define_2_1</span></code>.</p>
+<p>Both ARM schemas are supersets of their base Define-XML schema, so either
+one also validates an ARM-free Define-XML document of the matching version.</p>
 <p>For a custom or local XSD that is not bundled with odmlib, pass an
 explicit <code class="docutils literal notranslate"><span class="pre">xsd_file</span></code> path:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">validator</span> <span class="o">=</span> <span class="n">ODMSchemaValidator</span><span class="p">(</span><span class="n">xsd_file</span><span class="o">=</span><span class="s2">&quot;/path/to/custom.xsd&quot;</span><span class="p">)</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">validator</span> <span class="o">=</span> <span class="n">ODMSchemaValidator</span><span class="p">(</span><span class="n">xsd_file</span><span class="o">=</span><span class="s2">"/path/to/custom.xsd"</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>The supported <code class="docutils literal notranslate"><span class="pre">(standard,</span> <span class="pre">version)</span></code> combinations are listed in
 <code class="xref py py-data docutils literal notranslate"><span class="pre">odmlib.schema_manager._MAIN_SCHEMA</span></code>.</p>
+</section>
 </section>
 <section id="understanding-error-types">
 <h2>Understanding Error Types<a class="headerlink" href="#understanding-error-types" title="Link to this heading"></a></h2>

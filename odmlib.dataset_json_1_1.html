@@ -6,14 +6,14 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>odmlib.dataset_json_1_1 &mdash; odmlib 0.2.0 documentation</title>
+  <title>odmlib.dataset_json_1_1 &mdash; odmlib 0.2.1 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=9edc463e" />
 
   
       <script src="_static/jquery.js?v=5d32c60e"></script>
       <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="_static/documentation_options.js?v=938c9ccc"></script>
+      <script src="_static/documentation_options.js?v=37f418d5"></script>
       <script src="_static/doctools.js?v=fd6eb6e6"></script>
       <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="_static/js/theme.js"></script>
@@ -166,6 +166,7 @@
 <li class="toctree-l4"><a class="reference internal" href="#odmlib.dataset_json_1_1.model.DatasetJSONElement.namespace"><code class="docutils literal notranslate"><span class="pre">DatasetJSONElement.namespace</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#odmlib.dataset_json_1_1.model.DatasetJSONElement.to_xml"><code class="docutils literal notranslate"><span class="pre">DatasetJSONElement.to_xml()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#odmlib.dataset_json_1_1.model.DatasetJSONElement.to_xml_string"><code class="docutils literal notranslate"><span class="pre">DatasetJSONElement.to_xml_string()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#odmlib.dataset_json_1_1.model.DatasetJSONElement.to_element"><code class="docutils literal notranslate"><span class="pre">DatasetJSONElement.to_element()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#odmlib.dataset_json_1_1.model.DatasetJSONElement.write_xml"><code class="docutils literal notranslate"><span class="pre">DatasetJSONElement.write_xml()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#odmlib.dataset_json_1_1.model.DatasetJSONElement.to_dict"><code class="docutils literal notranslate"><span class="pre">DatasetJSONElement.to_dict()</span></code></a></li>
 </ul>
@@ -1064,13 +1065,13 @@ Define-XML, there is always exactly one Study.</p></li>
 <span class="kn">import</span><span class="w"> </span><span class="nn">odmlib.loader</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">LD</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">odmlib.dataset_json_1_1.define_flattener</span><span class="w"> </span><span class="kn">import</span> <span class="n">DefineFlattener</span>
 
-<span class="n">loader</span> <span class="o">=</span> <span class="n">LD</span><span class="o">.</span><span class="n">ODMLoader</span><span class="p">(</span><span class="n">DL</span><span class="o">.</span><span class="n">XMLDefineLoader</span><span class="p">(</span><span class="n">model_package</span><span class="o">=</span><span class="s1">&#39;define_2_1&#39;</span><span class="p">))</span>
-<span class="n">loader</span><span class="o">.</span><span class="n">open_odm_document</span><span class="p">(</span><span class="s1">&#39;define.xml&#39;</span><span class="p">)</span>
+<span class="n">loader</span> <span class="o">=</span> <span class="n">LD</span><span class="o">.</span><span class="n">ODMLoader</span><span class="p">(</span><span class="n">DL</span><span class="o">.</span><span class="n">XMLDefineLoader</span><span class="p">(</span><span class="n">model_package</span><span class="o">=</span><span class="s1">'define_2_1'</span><span class="p">))</span>
+<span class="n">loader</span><span class="o">.</span><span class="n">open_odm_document</span><span class="p">(</span><span class="s1">'define.xml'</span><span class="p">)</span>
 <span class="n">odm</span> <span class="o">=</span> <span class="n">loader</span><span class="o">.</span><span class="n">root</span><span class="p">()</span>
 
 <span class="n">flattener</span> <span class="o">=</span> <span class="n">DefineFlattener</span><span class="p">(</span><span class="n">odm</span><span class="p">)</span>
 <span class="n">datasets</span> <span class="o">=</span> <span class="n">flattener</span><span class="o">.</span><span class="n">flatten_all</span><span class="p">()</span>
-<span class="n">flattener</span><span class="o">.</span><span class="n">write_all</span><span class="p">(</span><span class="s1">&#39;/output/dir&#39;</span><span class="p">)</span>
+<span class="n">flattener</span><span class="o">.</span><span class="n">write_all</span><span class="p">(</span><span class="s1">'/output/dir'</span><span class="p">)</span>
 </pre></div>
 </div>
 <dl class="py attribute">
@@ -1435,8 +1436,24 @@ lists and plain data arrays) and omits None-valued optional fields.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="odmlib.dataset_json_1_1.model.DatasetJSONElement.to_xml_string">
-<span class="sig-name descname"><span class="pre">to_xml_string</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/odmlib/dataset_json_1_1/model.html#DatasetJSONElement.to_xml_string"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#odmlib.dataset_json_1_1.model.DatasetJSONElement.to_xml_string" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">to_xml_string</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">xml_declaration</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/odmlib/dataset_json_1_1/model.html#DatasetJSONElement.to_xml_string"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#odmlib.dataset_json_1_1.model.DatasetJSONElement.to_xml_string" title="Link to this definition"></a></dt>
 <dd><p>Dataset-JSON does not support XML serialization.</p>
+<p>Accepts the same keyword as <code class="xref py py-meth docutils literal notranslate"><span class="pre">ODMElement.to_xml_string()</span></code> so that
+<code class="docutils literal notranslate"><span class="pre">to_xml_string(xml_declaration=True)</span></code> raises the intended
+NotImplementedError rather than a TypeError.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#NotImplementedError" title="(in Python v3.14)"><strong>NotImplementedError</strong></a> – Always.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="odmlib.dataset_json_1_1.model.DatasetJSONElement.to_element">
+<span class="sig-name descname"><span class="pre">to_element</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/odmlib/dataset_json_1_1/model.html#DatasetJSONElement.to_element"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#odmlib.dataset_json_1_1.model.DatasetJSONElement.to_element" title="Link to this definition"></a></dt>
+<dd><p>Dataset-JSON does not support XML serialization.</p>
+<p>Overridden explicitly so the failure comes from here rather than from
+inside <a class="reference internal" href="#odmlib.dataset_json_1_1.model.DatasetJSONElement.to_xml_string" title="odmlib.dataset_json_1_1.model.DatasetJSONElement.to_xml_string"><code class="xref py py-meth docutils literal notranslate"><span class="pre">to_xml_string()</span></code></a>, which would give a confusing traceback.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Raises<span class="colon">:</span></dt>
 <dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#NotImplementedError" title="(in Python v3.14)"><strong>NotImplementedError</strong></a> – Always.</p>
@@ -2228,13 +2245,13 @@ Define-XML, there is always exactly one Study.</p></li>
 <span class="kn">import</span><span class="w"> </span><span class="nn">odmlib.loader</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">LD</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">odmlib.dataset_json_1_1.define_flattener</span><span class="w"> </span><span class="kn">import</span> <span class="n">DefineFlattener</span>
 
-<span class="n">loader</span> <span class="o">=</span> <span class="n">LD</span><span class="o">.</span><span class="n">ODMLoader</span><span class="p">(</span><span class="n">DL</span><span class="o">.</span><span class="n">XMLDefineLoader</span><span class="p">(</span><span class="n">model_package</span><span class="o">=</span><span class="s1">&#39;define_2_1&#39;</span><span class="p">))</span>
-<span class="n">loader</span><span class="o">.</span><span class="n">open_odm_document</span><span class="p">(</span><span class="s1">&#39;define.xml&#39;</span><span class="p">)</span>
+<span class="n">loader</span> <span class="o">=</span> <span class="n">LD</span><span class="o">.</span><span class="n">ODMLoader</span><span class="p">(</span><span class="n">DL</span><span class="o">.</span><span class="n">XMLDefineLoader</span><span class="p">(</span><span class="n">model_package</span><span class="o">=</span><span class="s1">'define_2_1'</span><span class="p">))</span>
+<span class="n">loader</span><span class="o">.</span><span class="n">open_odm_document</span><span class="p">(</span><span class="s1">'define.xml'</span><span class="p">)</span>
 <span class="n">odm</span> <span class="o">=</span> <span class="n">loader</span><span class="o">.</span><span class="n">root</span><span class="p">()</span>
 
 <span class="n">flattener</span> <span class="o">=</span> <span class="n">DefineFlattener</span><span class="p">(</span><span class="n">odm</span><span class="p">)</span>
 <span class="n">datasets</span> <span class="o">=</span> <span class="n">flattener</span><span class="o">.</span><span class="n">flatten_all</span><span class="p">()</span>
-<span class="n">flattener</span><span class="o">.</span><span class="n">write_all</span><span class="p">(</span><span class="s1">&#39;/output/dir&#39;</span><span class="p">)</span>
+<span class="n">flattener</span><span class="o">.</span><span class="n">write_all</span><span class="p">(</span><span class="s1">'/output/dir'</span><span class="p">)</span>
 </pre></div>
 </div>
 <dl class="py attribute">
@@ -2603,7 +2620,7 @@ codelist_terms.</p>
 <span class="n">flattener</span> <span class="o">=</span> <span class="n">DefineFlattener</span><span class="p">(</span><span class="n">odm_root</span><span class="p">)</span>
 <span class="n">flat</span> <span class="o">=</span> <span class="n">flattener</span><span class="o">.</span><span class="n">flatten_all</span><span class="p">()</span>
 <span class="n">rebuilt</span> <span class="o">=</span> <span class="n">DefineBuilder</span><span class="p">(</span><span class="n">flat</span><span class="p">)</span><span class="o">.</span><span class="n">build</span><span class="p">()</span>
-<span class="n">rebuilt</span><span class="o">.</span><span class="n">write_xml</span><span class="p">(</span><span class="s1">&#39;rebuilt_define.xml&#39;</span><span class="p">)</span>
+<span class="n">rebuilt</span><span class="o">.</span><span class="n">write_xml</span><span class="p">(</span><span class="s1">'rebuilt_define.xml'</span><span class="p">)</span>
 </pre></div>
 </div>
 <dl class="py attribute">

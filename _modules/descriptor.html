@@ -5,14 +5,14 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>descriptor &mdash; odmlib 0.2.0 documentation</title>
+  <title>descriptor &mdash; odmlib 0.2.1 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
 
   
       <script src="../_static/jquery.js?v=5d32c60e"></script>
       <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../_static/documentation_options.js?v=938c9ccc"></script>
+      <script src="../_static/documentation_options.js?v=37f418d5"></script>
       <script src="../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../_static/js/theme.js"></script>
@@ -93,46 +93,94 @@
            <div itemprop="articleBody">
              
   <h1>Source code for descriptor</h1><div class="highlight"><pre>
-<span></span><span class="sd">&quot;&quot;&quot;Base descriptor protocol for ODM element attributes.</span>
+<span></span><span class="sd">"""Base descriptor protocol for ODM element attributes.</span>
 
 <span class="sd">This module provides the :class:`Descriptor` base class that implements</span>
 <span class="sd">the Python descriptor protocol for ODM element attributes. All odmlib</span>
 <span class="sd">attribute types inherit from this class.</span>
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">"""</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">weakref</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Optional</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">odmlib.exceptions</span><span class="w"> </span><span class="kn">import</span> <span class="n">OdmlibRequiredAttributeError</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">odmlib.mode</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">_mode</span>
 
 
+<span class="c1"># Elements instantiated as a side effect of reading an unset optional child</span>
+<span class="c1"># attribute (the auto-vivification that makes `elem.Child.Sub.append(...)`</span>
+<span class="c1"># work). Serialization skips members of this set that were never populated,</span>
+<span class="c1"># so read-only inspection cannot inject spurious empty elements into output.</span>
+<span class="n">_AUTO_CREATED</span><span class="p">:</span> <span class="s2">"weakref.WeakSet"</span> <span class="o">=</span> <span class="n">weakref</span><span class="o">.</span><span class="n">WeakSet</span><span class="p">()</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_effectively_empty</span><span class="p">(</span><span class="n">elem</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""True when every stored value is None, an empty list, or itself a</span>
+<span class="sd">    pristine auto-created element."""</span>
+    <span class="k">for</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">elem</span><span class="o">.</span><span class="vm">__dict__</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+        <span class="k">if</span> <span class="n">value</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">continue</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">value</span><span class="p">:</span>
+                <span class="k">return</span> <span class="kc">False</span>
+            <span class="k">continue</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">auto_created</span> <span class="o">=</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">_AUTO_CREATED</span>
+        <span class="k">except</span> <span class="ne">TypeError</span><span class="p">:</span>
+            <span class="n">auto_created</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="k">if</span> <span class="n">auto_created</span> <span class="ow">and</span> <span class="n">_effectively_empty</span><span class="p">(</span><span class="n">value</span><span class="p">):</span>
+            <span class="k">continue</span>
+        <span class="k">return</span> <span class="kc">False</span>
+    <span class="k">return</span> <span class="kc">True</span>
+
+
+<div class="viewcode-block" id="is_pristine_auto_created">
+<a class="viewcode-back" href="../modules.html#descriptor.is_pristine_auto_created">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">is_pristine_auto_created</span><span class="p">(</span><span class="n">elem</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""True if *elem* was auto-created by attribute access and never populated.</span>
+
+<span class="sd">    Used by serialization to skip empty elements that exist only because an</span>
+<span class="sd">    unset optional child attribute was read.</span>
+<span class="sd">    """</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">elem</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">_AUTO_CREATED</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span>
+    <span class="k">except</span> <span class="ne">TypeError</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">False</span>
+    <span class="k">return</span> <span class="n">_effectively_empty</span><span class="p">(</span><span class="n">elem</span><span class="p">)</span></div>
+
+
+
 <div class="viewcode-block" id="Descriptor">
 <a class="viewcode-back" href="../modules.html#descriptor.Descriptor">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">Descriptor</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Base descriptor for all ODM element attributes.</span>
+<span class="w">    </span><span class="sd">"""Base descriptor for all ODM element attributes.</span>
 
 <span class="sd">    Implements the Python descriptor protocol (``__get__``, ``__set__``,</span>
 <span class="sd">    ``__delete__``). When accessed on a class, returns the descriptor</span>
 <span class="sd">    itself. When accessed on an instance, returns the value from the</span>
-<span class="sd">    instance&#39;s ``__dict__``.</span>
+<span class="sd">    instance's ``__dict__``.</span>
 
 <span class="sd">    For required attributes without a set value, raises</span>
 <span class="sd">    :exc:`~odmlib.exceptions.OdmlibRequiredAttributeError`.</span>
-<span class="sd">    For optional list attributes without a value, auto-initializes to [].</span>
-<span class="sd">    For optional element attributes without a value, auto-instantiates</span>
-<span class="sd">    the element class.</span>
+<span class="sd">    For optional list attributes without a value, auto-initializes to []</span>
+<span class="sd">    (stored on the instance so the append idiom works).</span>
+<span class="sd">    For unset optional scalar attributes, returns ``None``.</span>
+<span class="sd">    For unset single child elements, auto-instantiates the element class</span>
+<span class="sd">    when it can be constructed empty (returns ``None`` otherwise); the</span>
+<span class="sd">    auto-created child is skipped by serialization unless populated.</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        name (str): Attribute name (set by :class:`ODMMeta` during class creation).</span>
 <span class="sd">        required (bool): If True, attribute must be provided at construction.</span>
 <span class="sd">        element_class (type): For child element descriptors, the expected class.</span>
 <span class="sd">        valid_values (list): List of permitted values (empty = any value).</span>
-<span class="sd">        namespace (str): XML namespace prefix (default: &quot;odm&quot;).</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">        namespace (str): XML namespace prefix (default: "odm").</span>
+<span class="sd">    """</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">required</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
                  <span class="n">element_class</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">type</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
                  <span class="n">valid_values</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">list</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-                 <span class="n">namespace</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;odm&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+                 <span class="n">namespace</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"odm"</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">required</span> <span class="o">=</span> <span class="n">required</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">element_class</span> <span class="o">=</span> <span class="n">element_class</span>
@@ -140,7 +188,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">namespace</span> <span class="o">=</span> <span class="n">namespace</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__get__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">instance</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="bp">cls</span><span class="p">:</span> <span class="nb">type</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the descriptor itself (class access) or the stored value (instance access).</span>
+<span class="w">        </span><span class="sd">"""Return the descriptor itself (class access) or the stored value (instance access).</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            instance: The object instance, or None if accessed on the class.</span>
@@ -153,7 +201,7 @@
 <span class="sd">        Raises:</span>
 <span class="sd">            OdmlibRequiredAttributeError: If the attribute is required and has</span>
 <span class="sd">                not been set on the instance.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">if</span> <span class="n">instance</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">self</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="ow">in</span> <span class="n">instance</span><span class="o">.</span><span class="vm">__dict__</span><span class="p">:</span>
@@ -163,41 +211,48 @@
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">required</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">element_class</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">_mode</span><span class="o">.</span><span class="n">is_permissive</span><span class="p">(</span><span class="n">_mode</span><span class="o">.</span><span class="n">ValidationMode</span><span class="o">.</span><span class="n">SKIP_REQUIRED</span><span class="p">):</span>
                 <span class="k">raise</span> <span class="n">OdmlibRequiredAttributeError</span><span class="p">(</span>
-                    <span class="sa">f</span><span class="s2">&quot;Missing attribute or element </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> in </span><span class="si">{</span><span class="bp">cls</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                    <span class="sa">f</span><span class="s2">"Missing attribute or element </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> in </span><span class="si">{</span><span class="bp">cls</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span>
                     <span class="n">attribute</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
                     <span class="n">element_type</span><span class="o">=</span><span class="bp">cls</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span>
-                    <span class="n">hint</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;Attribute &#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&#39; is required when constructing </span><span class="si">{</span><span class="bp">cls</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                    <span class="n">hint</span><span class="o">=</span><span class="sa">f</span><span class="s2">"Attribute '</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">' is required when constructing </span><span class="si">{</span><span class="bp">cls</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span>
                 <span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="k">return</span> <span class="kc">None</span>
-        <span class="c1"># Auto-initialize optional attributes</span>
+        <span class="c1"># Auto-initialize optional LIST attributes: the stored empty list is</span>
+        <span class="c1"># what makes the `elem.Child.append(...)` idiom work.</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="fm">__set__</span><span class="p">(</span><span class="n">instance</span><span class="p">,</span> <span class="p">[])</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">element_class</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="n">instance</span><span class="o">.</span><span class="vm">__dict__</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">element_class</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="k">try</span><span class="p">:</span>
-                    <span class="n">instance</span><span class="o">.</span><span class="vm">__dict__</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">element_class</span><span class="p">()</span>
-                <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
-                    <span class="n">instance</span><span class="o">.</span><span class="vm">__dict__</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="k">return</span> <span class="n">instance</span><span class="o">.</span><span class="vm">__dict__</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">]</span>
+            <span class="k">return</span> <span class="n">instance</span><span class="o">.</span><span class="vm">__dict__</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">]</span>
+        <span class="c1"># Unset optional scalar: read as None without mutating the instance.</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">element_class</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+        <span class="c1"># Unset single child element: auto-create so chained population works</span>
+        <span class="c1"># (`rc.ErrorMessage.TranslatedText.append(...)`). The instance is</span>
+        <span class="c1"># tracked so serialization can skip it if it is never populated.</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">child</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">element_class</span><span class="p">()</span>
+        <span class="k">except</span> <span class="n">OdmlibRequiredAttributeError</span><span class="p">:</span>
+            <span class="c1"># cannot be constructed empty — leave the attribute unset</span>
+            <span class="k">return</span> <span class="kc">None</span>
+        <span class="n">instance</span><span class="o">.</span><span class="vm">__dict__</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">child</span>
+        <span class="n">_AUTO_CREATED</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">child</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">child</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__set__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">instance</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Store ``value`` in the instance&#39;s ``__dict__`` under this descriptor&#39;s name.</span>
+<span class="w">        </span><span class="sd">"""Store ``value`` in the instance's ``__dict__`` under this descriptor's name.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            instance: The object instance on which to set the value.</span>
 <span class="sd">            value: The value to store.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="n">instance</span><span class="o">.</span><span class="vm">__dict__</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__delete__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">instance</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Remove this attribute from the instance&#39;s ``__dict__``.</span>
+<span class="w">        </span><span class="sd">"""Remove this attribute from the instance's ``__dict__``.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            instance: The object instance from which to remove the attribute.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">del</span> <span class="n">instance</span><span class="o">.</span><span class="vm">__dict__</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">]</span></div>
 
 </pre></div>

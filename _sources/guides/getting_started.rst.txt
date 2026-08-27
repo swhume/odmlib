@@ -45,6 +45,12 @@ Supported Standards
    * - CT-XML 1.1.1
      - ``odmlib.ct_1_1_1``
      - Stable
+   * - ARM 1.0
+     - ``odmlib.arm_1_0``
+     - Stable
+   * - Dataset-JSON 1.1
+     - ``odmlib.dataset_json_1_1``
+     - Stable
 
 Quick Start
 -----------
@@ -131,7 +137,9 @@ to register XML namespaces before creating or loading documents. Call
 :meth:`~odmlib.ns_registry.Borg.reset` to clear namespace state between
 independent operations.
 
-**Bidirectional serialization**: All elements support :meth:`~odmlib.odm_element.ODMElement.to_xml`,
+**Bidirectional serialization**: All elements support
+:meth:`~odmlib.odm_element.ODMElement.to_xml_string`,
+:meth:`~odmlib.odm_element.ODMElement.to_element`,
 :meth:`~odmlib.odm_element.ODMElement.to_json`, and
 :meth:`~odmlib.odm_element.ODMElement.to_dict` for conversion back to
 standard formats.

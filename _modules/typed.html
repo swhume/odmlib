@@ -5,14 +5,14 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>typed &mdash; odmlib 0.2.0 documentation</title>
+  <title>typed &mdash; odmlib 0.2.1 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
 
   
       <script src="../_static/jquery.js?v=5d32c60e"></script>
       <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../_static/documentation_options.js?v=938c9ccc"></script>
+      <script src="../_static/documentation_options.js?v=37f418d5"></script>
       <script src="../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../_static/js/theme.js"></script>
@@ -93,7 +93,7 @@
            <div itemprop="articleBody">
              
   <h1>Source code for typed</h1><div class="highlight"><pre>
-<span></span><span class="sd">&quot;&quot;&quot;Type-validated descriptors for ODM element attributes.</span>
+<span></span><span class="sd">"""Type-validated descriptors for ODM element attributes.</span>
 
 <span class="sd">This module defines descriptor classes that enforce type validation</span>
 <span class="sd">on ODM element attributes at assignment time. Each descriptor validates</span>
@@ -117,7 +117,7 @@
 <span class="sd">    - :class:`ValueSetString` -- combined enumerated + string validator</span>
 <span class="sd">    - :class:`ODMObject` -- single child ODM element container</span>
 <span class="sd">    - :class:`ODMListObject` -- list of child ODM elements container</span>
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">"""</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">odmlib.descriptor</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">DESC</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">re</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">odmlib.valueset</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">VS</span>
@@ -131,14 +131,14 @@
 <div class="viewcode-block" id="Typed">
 <a class="viewcode-back" href="../modules.html#typed.Typed">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">Typed</span><span class="p">(</span><span class="n">DESC</span><span class="o">.</span><span class="n">Descriptor</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Base descriptor that validates value type on assignment.</span>
+<span class="w">    </span><span class="sd">"""Base descriptor that validates value type on assignment.</span>
 
 <span class="sd">    Subclasses set ``odm_type`` to the expected Python type.</span>
 <span class="sd">    Raises :exc:`~odmlib.exceptions.OdmlibTypeError` on type mismatch.</span>
 
 <span class="sd">    Attributes:</span>
 <span class="sd">        odm_type (type): The expected Python type (default: object).</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="n">odm_type</span> <span class="o">=</span> <span class="nb">object</span>
 
@@ -146,11 +146,11 @@
         <span class="k">if</span> <span class="p">(</span><span class="n">value</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">odm_type</span><span class="p">):</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">_mode</span><span class="o">.</span><span class="n">is_permissive</span><span class="p">(</span><span class="n">_mode</span><span class="o">.</span><span class="n">ValidationMode</span><span class="o">.</span><span class="n">SKIP_TYPE</span><span class="p">):</span>
                 <span class="k">raise</span> <span class="n">OdmlibTypeError</span><span class="p">(</span>
-                    <span class="sa">f</span><span class="s2">&quot;Expected type </span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">odm_type</span><span class="p">)</span><span class="si">}</span><span class="s2"> for </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> with value </span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">value</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                    <span class="sa">f</span><span class="s2">"Expected type </span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">odm_type</span><span class="p">)</span><span class="si">}</span><span class="s2"> for </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> with value </span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">value</span><span class="p">)</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span>
                     <span class="n">attribute</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
                     <span class="n">expected_type</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">odm_type</span><span class="p">),</span>
                     <span class="n">actual_value</span><span class="o">=</span><span class="n">value</span><span class="p">,</span>
-                    <span class="n">hint</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;Provide a value of type </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">odm_type</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                    <span class="n">hint</span><span class="o">=</span><span class="sa">f</span><span class="s2">"Provide a value of type </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">odm_type</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span>
                 <span class="p">)</span>
         <span class="c1"># often does not call parent, calls next on __mro__ which maybe influenced by multiple inheritance</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__set__</span><span class="p">(</span><span class="n">instance</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span></div>
@@ -160,35 +160,35 @@
 <div class="viewcode-block" id="Integer">
 <a class="viewcode-back" href="../modules.html#typed.Integer">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">Integer</span><span class="p">(</span><span class="n">DESC</span><span class="o">.</span><span class="n">Descriptor</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Descriptor for integer-valued ODM attributes.</span>
+<span class="w">    </span><span class="sd">"""Descriptor for integer-valued ODM attributes.</span>
 
-<span class="sd">    Accepts int values and strings that convert to int (e.g., &quot;42&quot;).</span>
+<span class="sd">    Accepts int values and strings that convert to int (e.g., "42").</span>
 <span class="sd">    Used for OrderNumber, KeySequence, and similar integer attributes.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__set__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">instance</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
-        <span class="c1"># in XML integers are presented as strings e.g. OrderNumber=&quot;1&quot;</span>
+        <span class="c1"># in XML integers are presented as strings e.g. OrderNumber="1"</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
             <span class="k">try</span><span class="p">:</span>
                 <span class="n">value</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
             <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
                 <span class="k">if</span> <span class="ow">not</span> <span class="n">_mode</span><span class="o">.</span><span class="n">is_permissive</span><span class="p">(</span><span class="n">_mode</span><span class="o">.</span><span class="n">ValidationMode</span><span class="o">.</span><span class="n">SKIP_TYPE</span><span class="p">):</span>
                     <span class="k">raise</span> <span class="n">OdmlibTypeError</span><span class="p">(</span>
-                        <span class="sa">f</span><span class="s2">&quot;Expected string to convert to integer for </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> with a value </span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">value</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                        <span class="sa">f</span><span class="s2">"Expected string to convert to integer for </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> with a value </span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">value</span><span class="p">)</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span>
                         <span class="n">attribute</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
                         <span class="n">actual_value</span><span class="o">=</span><span class="n">value</span><span class="p">,</span>
-                        <span class="n">hint</span><span class="o">=</span><span class="s2">&quot;Provide a string that represents a valid integer, e.g., &#39;42&#39;&quot;</span><span class="p">,</span>
+                        <span class="n">hint</span><span class="o">=</span><span class="s2">"Provide a string that represents a valid integer, e.g., '42'"</span><span class="p">,</span>
                     <span class="p">)</span>
                 <span class="c1"># permissive: fall through — store the string as-is</span>
         <span class="n">odm_type</span> <span class="o">=</span> <span class="nb">int</span>
         <span class="k">if</span> <span class="p">(</span><span class="n">value</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">odm_type</span><span class="p">):</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">_mode</span><span class="o">.</span><span class="n">is_permissive</span><span class="p">(</span><span class="n">_mode</span><span class="o">.</span><span class="n">ValidationMode</span><span class="o">.</span><span class="n">SKIP_TYPE</span><span class="p">):</span>
                 <span class="k">raise</span> <span class="n">OdmlibTypeError</span><span class="p">(</span>
-                    <span class="sa">f</span><span class="s2">&quot;Expected type </span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">odm_type</span><span class="p">)</span><span class="si">}</span><span class="s2"> for </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> with value </span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">value</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                    <span class="sa">f</span><span class="s2">"Expected type </span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">odm_type</span><span class="p">)</span><span class="si">}</span><span class="s2"> for </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> with value </span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">value</span><span class="p">)</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span>
                     <span class="n">attribute</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
                     <span class="n">expected_type</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">odm_type</span><span class="p">),</span>
                     <span class="n">actual_value</span><span class="o">=</span><span class="n">value</span><span class="p">,</span>
-                    <span class="n">hint</span><span class="o">=</span><span class="s2">&quot;Provide an integer or a string that can be converted to an integer&quot;</span><span class="p">,</span>
+                    <span class="n">hint</span><span class="o">=</span><span class="s2">"Provide an integer or a string that can be converted to an integer"</span><span class="p">,</span>
                 <span class="p">)</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__set__</span><span class="p">(</span><span class="n">instance</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span></div>
 
@@ -197,11 +197,11 @@
 <div class="viewcode-block" id="Float">
 <a class="viewcode-back" href="../modules.html#typed.Float">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">Float</span><span class="p">(</span><span class="n">DESC</span><span class="o">.</span><span class="n">Descriptor</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Descriptor for float-valued ODM attributes.</span>
+<span class="w">    </span><span class="sd">"""Descriptor for float-valued ODM attributes.</span>
 
 <span class="sd">    Accepts float, int, and string values that convert to float.</span>
 <span class="sd">    Used for Rank attributes in CodeListItem and EnumeratedItem.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__set__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">instance</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
         <span class="c1"># in XML floats are presented as strings</span>
@@ -211,10 +211,10 @@
             <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
                 <span class="k">if</span> <span class="ow">not</span> <span class="n">_mode</span><span class="o">.</span><span class="n">is_permissive</span><span class="p">(</span><span class="n">_mode</span><span class="o">.</span><span class="n">ValidationMode</span><span class="o">.</span><span class="n">SKIP_TYPE</span><span class="p">):</span>
                     <span class="k">raise</span> <span class="n">OdmlibTypeError</span><span class="p">(</span>
-                        <span class="sa">f</span><span class="s2">&quot;Expected string to convert to float for </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> with a value </span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">value</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                        <span class="sa">f</span><span class="s2">"Expected string to convert to float for </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> with a value </span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">value</span><span class="p">)</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span>
                         <span class="n">attribute</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
                         <span class="n">actual_value</span><span class="o">=</span><span class="n">value</span><span class="p">,</span>
-                        <span class="n">hint</span><span class="o">=</span><span class="s2">&quot;Provide a string that represents a valid float, e.g., &#39;3.14&#39;&quot;</span><span class="p">,</span>
+                        <span class="n">hint</span><span class="o">=</span><span class="s2">"Provide a string that represents a valid float, e.g., '3.14'"</span><span class="p">,</span>
                     <span class="p">)</span>
                 <span class="c1"># permissive: fall through — store the string as-is</span>
         <span class="c1"># convert integer into a float (e.g. 1 to 1.0)</span>
@@ -223,11 +223,11 @@
         <span class="k">if</span> <span class="p">(</span><span class="n">value</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">float</span><span class="p">):</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">_mode</span><span class="o">.</span><span class="n">is_permissive</span><span class="p">(</span><span class="n">_mode</span><span class="o">.</span><span class="n">ValidationMode</span><span class="o">.</span><span class="n">SKIP_TYPE</span><span class="p">):</span>
                 <span class="k">raise</span> <span class="n">OdmlibTypeError</span><span class="p">(</span>
-                    <span class="sa">f</span><span class="s2">&quot;Expected type float for </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> with value </span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">value</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                    <span class="sa">f</span><span class="s2">"Expected type float for </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> with value </span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">value</span><span class="p">)</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span>
                     <span class="n">attribute</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
-                    <span class="n">expected_type</span><span class="o">=</span><span class="s2">&quot;float&quot;</span><span class="p">,</span>
+                    <span class="n">expected_type</span><span class="o">=</span><span class="s2">"float"</span><span class="p">,</span>
                     <span class="n">actual_value</span><span class="o">=</span><span class="n">value</span><span class="p">,</span>
-                    <span class="n">hint</span><span class="o">=</span><span class="s2">&quot;Provide a float, integer, or a string convertible to a float&quot;</span><span class="p">,</span>
+                    <span class="n">hint</span><span class="o">=</span><span class="s2">"Provide a float, integer, or a string convertible to a float"</span><span class="p">,</span>
                 <span class="p">)</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__set__</span><span class="p">(</span><span class="n">instance</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span></div>
 
@@ -236,7 +236,7 @@
 <div class="viewcode-block" id="String">
 <a class="viewcode-back" href="../modules.html#typed.String">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">String</span><span class="p">(</span><span class="n">Typed</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Descriptor for string-valued ODM attributes.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Descriptor for string-valued ODM attributes."""</span>
 
     <span class="n">odm_type</span> <span class="o">=</span> <span class="nb">str</span></div>
 
@@ -245,11 +245,11 @@
 <div class="viewcode-block" id="OID">
 <a class="viewcode-back" href="../modules.html#typed.OID">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">OID</span><span class="p">(</span><span class="n">Typed</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Descriptor for OID (Object Identifier) attributes.</span>
+<span class="w">    </span><span class="sd">"""Descriptor for OID (Object Identifier) attributes.</span>
 
 <span class="sd">    OIDs uniquely identify definition elements within a MetaDataVersion.</span>
 <span class="sd">    Used on the ``OID`` attribute of *Def elements (e.g., ``ItemDef.OID``).</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="n">odm_type</span> <span class="o">=</span> <span class="nb">str</span></div>
 
@@ -258,11 +258,11 @@
 <div class="viewcode-block" id="OIDRef">
 <a class="viewcode-back" href="../modules.html#typed.OIDRef">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">OIDRef</span><span class="p">(</span><span class="n">Typed</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Descriptor for OID reference attributes.</span>
+<span class="w">    </span><span class="sd">"""Descriptor for OID reference attributes.</span>
 
 <span class="sd">    References the OID of a definition element.</span>
 <span class="sd">    Used on reference elements (e.g., ``ItemRef.ItemOID`` references ``ItemDef.OID``).</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="n">odm_type</span> <span class="o">=</span> <span class="nb">str</span></div>
 
@@ -271,7 +271,7 @@
 <div class="viewcode-block" id="Name">
 <a class="viewcode-back" href="../modules.html#typed.Name">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">Name</span><span class="p">(</span><span class="n">Typed</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Descriptor for the Name attribute of ODM elements.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Descriptor for the Name attribute of ODM elements."""</span>
 
     <span class="n">odm_type</span> <span class="o">=</span> <span class="nb">str</span></div>
 
@@ -280,7 +280,7 @@
 <div class="viewcode-block" id="ID">
 <a class="viewcode-back" href="../modules.html#typed.ID">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">ID</span><span class="p">(</span><span class="n">Typed</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Descriptor for XML ID attributes.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Descriptor for XML ID attributes."""</span>
 
     <span class="n">odm_type</span> <span class="o">=</span> <span class="nb">str</span></div>
 
@@ -289,7 +289,7 @@
 <div class="viewcode-block" id="IDRef">
 <a class="viewcode-back" href="../modules.html#typed.IDRef">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">IDRef</span><span class="p">(</span><span class="n">Typed</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Descriptor for XML IDREF attributes.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Descriptor for XML IDREF attributes."""</span>
 
     <span class="n">odm_type</span> <span class="o">=</span> <span class="nb">str</span></div>
 
@@ -298,7 +298,7 @@
 <div class="viewcode-block" id="List">
 <a class="viewcode-back" href="../modules.html#typed.List">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">List</span><span class="p">(</span><span class="n">Typed</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Descriptor for list-valued attributes.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Descriptor for list-valued attributes."""</span>
 
     <span class="n">odm_type</span> <span class="o">=</span> <span class="nb">list</span></div>
 
@@ -307,7 +307,7 @@
 <div class="viewcode-block" id="Dictionary">
 <a class="viewcode-back" href="../modules.html#typed.Dictionary">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">Dictionary</span><span class="p">(</span><span class="n">Typed</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Descriptor for dictionary-valued attributes.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Descriptor for dictionary-valued attributes."""</span>
 
     <span class="n">odm_type</span> <span class="o">=</span> <span class="nb">dict</span></div>
 
@@ -316,19 +316,19 @@
 <div class="viewcode-block" id="Positive">
 <a class="viewcode-back" href="../modules.html#typed.Positive">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">Positive</span><span class="p">(</span><span class="n">DESC</span><span class="o">.</span><span class="n">Descriptor</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Mixin descriptor that enforces value &gt; 0.</span>
+<span class="w">    </span><span class="sd">"""Mixin descriptor that enforces value &gt; 0.</span>
 
 <span class="sd">    Raises :exc:`~odmlib.exceptions.OdmlibTypeError` if value is &lt;= 0.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__set__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">instance</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
         <span class="k">if</span> <span class="p">(</span><span class="n">value</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">))</span> <span class="ow">and</span> <span class="n">value</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">_mode</span><span class="o">.</span><span class="n">is_permissive</span><span class="p">(</span><span class="n">_mode</span><span class="o">.</span><span class="n">ValidationMode</span><span class="o">.</span><span class="n">SKIP_TYPE</span><span class="p">):</span>
                 <span class="k">raise</span> <span class="n">OdmlibTypeError</span><span class="p">(</span>
-                    <span class="sa">f</span><span class="s2">&quot;Expected value &gt; 0 for type Positive for </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                    <span class="sa">f</span><span class="s2">"Expected value &gt; 0 for type Positive for </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span>
                     <span class="n">attribute</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
                     <span class="n">actual_value</span><span class="o">=</span><span class="n">value</span><span class="p">,</span>
-                    <span class="n">hint</span><span class="o">=</span><span class="s2">&quot;Provide a positive number (&gt; 0)&quot;</span><span class="p">,</span>
+                    <span class="n">hint</span><span class="o">=</span><span class="s2">"Provide a positive number (&gt; 0)"</span><span class="p">,</span>
                 <span class="p">)</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__set__</span><span class="p">(</span><span class="n">instance</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span></div>
 
@@ -337,19 +337,19 @@
 <div class="viewcode-block" id="NonNegative">
 <a class="viewcode-back" href="../modules.html#typed.NonNegative">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">NonNegative</span><span class="p">(</span><span class="n">DESC</span><span class="o">.</span><span class="n">Descriptor</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Mixin descriptor that enforces value &gt;= 0.</span>
+<span class="w">    </span><span class="sd">"""Mixin descriptor that enforces value &gt;= 0.</span>
 
 <span class="sd">    Raises :exc:`~odmlib.exceptions.OdmlibTypeError` if value is &lt; 0.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__set__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">instance</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
         <span class="k">if</span> <span class="p">(</span><span class="n">value</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">))</span> <span class="ow">and</span> <span class="n">value</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">_mode</span><span class="o">.</span><span class="n">is_permissive</span><span class="p">(</span><span class="n">_mode</span><span class="o">.</span><span class="n">ValidationMode</span><span class="o">.</span><span class="n">SKIP_TYPE</span><span class="p">):</span>
                 <span class="k">raise</span> <span class="n">OdmlibTypeError</span><span class="p">(</span>
-                    <span class="sa">f</span><span class="s2">&quot;Expected value &gt;= 0 for type Non-negative for </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                    <span class="sa">f</span><span class="s2">"Expected value &gt;= 0 for type Non-negative for </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span>
                     <span class="n">attribute</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
                     <span class="n">actual_value</span><span class="o">=</span><span class="n">value</span><span class="p">,</span>
-                    <span class="n">hint</span><span class="o">=</span><span class="s2">&quot;Provide a non-negative number (&gt;= 0)&quot;</span><span class="p">,</span>
+                    <span class="n">hint</span><span class="o">=</span><span class="s2">"Provide a non-negative number (&gt;= 0)"</span><span class="p">,</span>
                 <span class="p">)</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__set__</span><span class="p">(</span><span class="n">instance</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span></div>
 
@@ -358,11 +358,11 @@
 <div class="viewcode-block" id="PositiveInteger">
 <a class="viewcode-back" href="../modules.html#typed.PositiveInteger">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">PositiveInteger</span><span class="p">(</span><span class="n">Integer</span><span class="p">,</span> <span class="n">Positive</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Descriptor for positive integer attributes (value &gt; 0).</span>
+<span class="w">    </span><span class="sd">"""Descriptor for positive integer attributes (value &gt; 0).</span>
 
 <span class="sd">    Combines integer type validation with positive value constraint.</span>
 <span class="sd">    Used for Length, ItemGroupDataSeq, and similar attributes.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="k">pass</span></div>
 
@@ -371,11 +371,11 @@
 <div class="viewcode-block" id="NonNegativeInteger">
 <a class="viewcode-back" href="../modules.html#typed.NonNegativeInteger">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">NonNegativeInteger</span><span class="p">(</span><span class="n">Integer</span><span class="p">,</span> <span class="n">NonNegative</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Descriptor for non-negative integer attributes (value &gt;= 0).</span>
+<span class="w">    </span><span class="sd">"""Descriptor for non-negative integer attributes (value &gt;= 0).</span>
 
 <span class="sd">    Combines integer type validation with non-negative constraint.</span>
 <span class="sd">    Used for SignificantDigits and similar attributes.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="k">pass</span></div>
 
@@ -384,7 +384,7 @@
 <div class="viewcode-block" id="PositiveFloat">
 <a class="viewcode-back" href="../modules.html#typed.PositiveFloat">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">PositiveFloat</span><span class="p">(</span><span class="n">Float</span><span class="p">,</span> <span class="n">Positive</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Descriptor for positive float attributes (value &gt; 0).&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Descriptor for positive float attributes (value &gt; 0)."""</span>
 
     <span class="k">pass</span></div>
 
@@ -393,7 +393,7 @@
 <div class="viewcode-block" id="NonNegativeFloat">
 <a class="viewcode-back" href="../modules.html#typed.NonNegativeFloat">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">NonNegativeFloat</span><span class="p">(</span><span class="n">Float</span><span class="p">,</span> <span class="n">NonNegative</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Descriptor for non-negative float attributes (value &gt;= 0).&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Descriptor for non-negative float attributes (value &gt;= 0)."""</span>
 
     <span class="k">pass</span></div>
 
@@ -402,11 +402,11 @@
 <div class="viewcode-block" id="Sized">
 <a class="viewcode-back" href="../modules.html#typed.Sized">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">Sized</span><span class="p">(</span><span class="n">DESC</span><span class="o">.</span><span class="n">Descriptor</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Mixin descriptor that enforces a maximum string length.</span>
+<span class="w">    </span><span class="sd">"""Mixin descriptor that enforces a maximum string length.</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        max_length (int): Maximum allowed length of the string value.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="n">max_length</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="c1"># pulls out named arg max_length and passes the remaining arguments along</span>
@@ -417,11 +417,11 @@
         <span class="k">if</span> <span class="p">(</span><span class="n">value</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_length</span><span class="p">):</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">_mode</span><span class="o">.</span><span class="n">is_permissive</span><span class="p">(</span><span class="n">_mode</span><span class="o">.</span><span class="n">ValidationMode</span><span class="o">.</span><span class="n">SKIP_FORMAT</span><span class="p">):</span>
                 <span class="k">raise</span> <span class="n">OdmlibValidationError</span><span class="p">(</span>
-                    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> has a length of </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">value</span><span class="p">)</span><span class="si">}</span><span class="s2"> and exceeds the maximum length of &quot;</span>
-                    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">max_length</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                    <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> has a length of </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">value</span><span class="p">)</span><span class="si">}</span><span class="s2"> and exceeds the maximum length of "</span>
+                    <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">max_length</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span>
                     <span class="n">attribute</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
                     <span class="n">actual_value</span><span class="o">=</span><span class="n">value</span><span class="p">,</span>
-                    <span class="n">hint</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;Shorten the value to </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">max_length</span><span class="si">}</span><span class="s2"> characters or fewer&quot;</span><span class="p">,</span>
+                    <span class="n">hint</span><span class="o">=</span><span class="sa">f</span><span class="s2">"Shorten the value to </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">max_length</span><span class="si">}</span><span class="s2"> characters or fewer"</span><span class="p">,</span>
                 <span class="p">)</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__set__</span><span class="p">(</span><span class="n">instance</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span></div>
 
@@ -430,7 +430,7 @@
 <div class="viewcode-block" id="SizedString">
 <a class="viewcode-back" href="../modules.html#typed.SizedString">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">SizedString</span><span class="p">(</span><span class="n">String</span><span class="p">,</span> <span class="n">Sized</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;String descriptor with a maximum length constraint.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""String descriptor with a maximum length constraint."""</span>
 
     <span class="k">pass</span></div>
 
@@ -439,11 +439,11 @@
 <div class="viewcode-block" id="Regex">
 <a class="viewcode-back" href="../modules.html#typed.Regex">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">Regex</span><span class="p">(</span><span class="n">DESC</span><span class="o">.</span><span class="n">Descriptor</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Descriptor that validates a string against a regular expression pattern.</span>
+<span class="w">    </span><span class="sd">"""Descriptor that validates a string against a regular expression pattern.</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        pat (str): Regular expression pattern the value must match.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="n">pat</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="c1"># takes a pattern arg named pat and passes the remaining arguments along</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">pat</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">pat</span><span class="p">)</span>
@@ -453,10 +453,10 @@
         <span class="k">if</span> <span class="p">(</span><span class="n">value</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">pat</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">value</span><span class="p">):</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">_mode</span><span class="o">.</span><span class="n">is_permissive</span><span class="p">(</span><span class="n">_mode</span><span class="o">.</span><span class="n">ValidationMode</span><span class="o">.</span><span class="n">SKIP_FORMAT</span><span class="p">):</span>
                 <span class="k">raise</span> <span class="n">OdmlibValidationError</span><span class="p">(</span>
-                    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> has an invalid string of </span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                    <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> has an invalid string of </span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span>
                     <span class="n">attribute</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
                     <span class="n">actual_value</span><span class="o">=</span><span class="n">value</span><span class="p">,</span>
-                    <span class="n">hint</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;Value must match pattern: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">pat</span><span class="o">.</span><span class="n">pattern</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                    <span class="n">hint</span><span class="o">=</span><span class="sa">f</span><span class="s2">"Value must match pattern: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">pat</span><span class="o">.</span><span class="n">pattern</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span>
                 <span class="p">)</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__set__</span><span class="p">(</span><span class="n">instance</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span></div>
 
@@ -465,32 +465,44 @@
 <div class="viewcode-block" id="SizedRegexString">
 <a class="viewcode-back" href="../modules.html#typed.SizedRegexString">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">SizedRegexString</span><span class="p">(</span><span class="n">SizedString</span><span class="p">,</span> <span class="n">Regex</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;String descriptor with both size and regex constraints.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""String descriptor with both size and regex constraints."""</span>
 
     <span class="k">pass</span></div>
 
 
 
+<span class="c1"># format patterns compiled once at import time — these run in __set__, which</span>
+<span class="c1"># is a hot path when loading large documents</span>
+<span class="n">_DATETIME_PAT</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s1">'^(-?(?:[1-9][0-9]*)?[0-9]</span><span class="si">{4}</span><span class="s1">)-(1[0-2]|0[1-9])-(3[01]|0[1-9]|[12][0-9])T(2[0-3]|[01][0-9]):([0-5][0-9]):([0-5][0-9])(\.[0-9]+)?(Z|[+-](?:2[0-3]|[01][0-9]):[0-5][0-9])?$'</span><span class="p">)</span>
+<span class="n">_PARTIAL_DATETIME_PAT</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s1">'^((([0-9][0-9][0-9][0-9])((-(([0][1-9])|([1][0-2])))((-(([0][1-9])|([1-2][0-9])|([3][0-1])))(T((([0-1][0-9])|([2][0-3]))((:([0-5][0-9]))(((:([0-5][0-9]))((\.[0-9]+)?))?)?)?((((\+|-)(([0-1][0-9])|([2][0-3])):[0-5][0-9])|(Z)))?))?)?)?))$'</span><span class="p">)</span>
+<span class="n">_PARTIAL_DATE_PAT</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s1">'^(([0-9][0-9][0-9][0-9])(-(([0][1-9])|([1][0-2])))?)$'</span><span class="p">)</span>
+<span class="n">_TIME_PAT</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s1">'^(2[0-3]|[01][0-9]):([0-5][0-9]):([0-5][0-9])(\.[0-9]+)?(Z|[+-](?:2[0-3]|[01][0-9]):[0-5][0-9])?$'</span><span class="p">)</span>
+<span class="n">_PARTIAL_TIME_PAT</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s1">'^((([0-1][0-9])|([2][0-3]))(:[0-5][0-9])?(((\+|-)(([0-1][0-9])|([2][0-3])):[0-5][0-9])|(Z))?)$'</span><span class="p">)</span>
+<span class="n">_INCOMPLETE_DATETIME_PAT</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s1">'^(((([0-9][0-9][0-9][0-9]))|-)-(((([0][1-9])|([1][0-2])))|-)-(((([0][1-9])|([1-2][0-9])|([3][0-1])))|-)T(((([0-1][0-9])|([2][0-3])))|-):((([0-5][0-9]))|-):((([0-5][0-9](\.[0-9]+)?))|-)((((\+|-)(([0-1][0-9])|([2][0-3])):[0-5][0-9])|Z|-))?)$'</span><span class="p">)</span>
+<span class="n">_INCOMPLETE_DATE_PAT</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s1">'^(((([0-9][0-9][0-9][0-9]))|-)-(((([0][1-9])|([1][0-2])))|-)-(((([0][1-9])|([1-2][0-9])|([3][0-1])))|-))$'</span><span class="p">)</span>
+<span class="n">_INCOMPLETE_TIME_PAT</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s1">'^((((([0-1][0-9])|([2][0-3])))|-):((([0-5][0-9]))|-):((([0-5][0-9](\.[0-9]+)?))|-)((((\+|-)(([0-1][0-9])|([2][0-3])):[0-5][0-9])|Z|-))?)$'</span><span class="p">)</span>
+<span class="n">_SAS_NAME_PAT</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">"[A-Za-z_][A-Za-z0-9_]*$"</span><span class="p">)</span>
+<span class="n">_SAS_FORMAT_PAT</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">"[A-Za-z_$][A-Za-z0-9_.]*$"</span><span class="p">)</span>
+
+
 <div class="viewcode-block" id="DateTimeString">
 <a class="viewcode-back" href="../modules.html#typed.DateTimeString">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">DateTimeString</span><span class="p">(</span><span class="n">DESC</span><span class="o">.</span><span class="n">Descriptor</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Descriptor for ISO 8601 datetime strings.</span>
+<span class="w">    </span><span class="sd">"""Descriptor for ISO 8601 datetime strings.</span>
 
 <span class="sd">    Validates format: ``YYYY-MM-DDTHH:MM:SS[.sss][Z|±HH:MM]``</span>
 
 <span class="sd">    Used for ``CreationDateTime``, ``AsOfDateTime``, and similar attributes.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__set__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">instance</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
-        <span class="n">iso_pat</span> <span class="o">=</span> <span class="sa">r</span><span class="s1">&#39;^(-?(?:[1-9][0-9]*)?[0-9]</span><span class="si">{4}</span><span class="s1">)-(1[0-2]|0[1-9])-(3[01]|0[1-9]|[12][0-9])T(2[0-3]|[01][0-9]):([0-5][0-9]):([0-5][0-9])(\.[0-9]+)?(Z|[+-](?:2[0-3]|[01][0-9]):[0-5][0-9])?$&#39;</span>
-        <span class="n">pat</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">iso_pat</span><span class="p">)</span>
-        <span class="k">if</span> <span class="p">(</span><span class="n">value</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="ow">not</span> <span class="n">pat</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">value</span><span class="p">)):</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">value</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="ow">not</span> <span class="n">_DATETIME_PAT</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">value</span><span class="p">)):</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">_mode</span><span class="o">.</span><span class="n">is_permissive</span><span class="p">(</span><span class="n">_mode</span><span class="o">.</span><span class="n">ValidationMode</span><span class="o">.</span><span class="n">SKIP_FORMAT</span><span class="p">):</span>
                 <span class="k">raise</span> <span class="n">OdmlibValidationError</span><span class="p">(</span>
-                    <span class="sa">f</span><span class="s2">&quot;Expected type datetime for </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">, found value </span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                    <span class="sa">f</span><span class="s2">"Expected type datetime for </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">, found value </span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span>
                     <span class="n">attribute</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
                     <span class="n">actual_value</span><span class="o">=</span><span class="n">value</span><span class="p">,</span>
-                    <span class="n">hint</span><span class="o">=</span><span class="s2">&quot;Use ISO 8601 datetime format: YYYY-MM-DDTHH:MM:SS[.sss][Z|±HH:MM]&quot;</span><span class="p">,</span>
+                    <span class="n">hint</span><span class="o">=</span><span class="s2">"Use ISO 8601 datetime format: YYYY-MM-DDTHH:MM:SS[.sss][Z|±HH:MM]"</span><span class="p">,</span>
                 <span class="p">)</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__set__</span><span class="p">(</span><span class="n">instance</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span></div>
 
@@ -499,21 +511,19 @@
 <div class="viewcode-block" id="PartialDateTimeString">
 <a class="viewcode-back" href="../modules.html#typed.PartialDateTimeString">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">PartialDateTimeString</span><span class="p">(</span><span class="n">DESC</span><span class="o">.</span><span class="n">Descriptor</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Descriptor for partial ISO 8601 datetime strings.</span>
+<span class="w">    </span><span class="sd">"""Descriptor for partial ISO 8601 datetime strings.</span>
 
 <span class="sd">    Allows partial date/time values where some components may be omitted.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__set__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">instance</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
-        <span class="n">part_pat</span> <span class="o">=</span> <span class="sa">r</span><span class="s1">&#39;^((([0-9][0-9][0-9][0-9])((-(([0][1-9])|([1][0-2])))((-(([0][1-9])|([1-2][0-9])|([3][0-1])))(T((([0-1][0-9])|([2][0-3]))((:([0-5][0-9]))(((:([0-5][0-9]))((\.[0-9]+)?))?)?)?((((\+|-)(([0-1][0-9])|([2][0-3])):[0-5][0-9])|(Z)))?))?)?)?))$&#39;</span>
-        <span class="n">compiled_part_pat</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">part_pat</span><span class="p">)</span>
-        <span class="k">if</span> <span class="p">(</span><span class="n">value</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="ow">not</span> <span class="n">compiled_part_pat</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">value</span><span class="p">)):</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">value</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="ow">not</span> <span class="n">_PARTIAL_DATETIME_PAT</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">value</span><span class="p">)):</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">_mode</span><span class="o">.</span><span class="n">is_permissive</span><span class="p">(</span><span class="n">_mode</span><span class="o">.</span><span class="n">ValidationMode</span><span class="o">.</span><span class="n">SKIP_FORMAT</span><span class="p">):</span>
                 <span class="k">raise</span> <span class="n">OdmlibValidationError</span><span class="p">(</span>
-                    <span class="sa">f</span><span class="s2">&quot;Expected type PartialDateTime for </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">, found value </span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                    <span class="sa">f</span><span class="s2">"Expected type PartialDateTime for </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">, found value </span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span>
                     <span class="n">attribute</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
                     <span class="n">actual_value</span><span class="o">=</span><span class="n">value</span><span class="p">,</span>
-                    <span class="n">hint</span><span class="o">=</span><span class="s2">&quot;Use a valid partial datetime format per ISO 8601&quot;</span><span class="p">,</span>
+                    <span class="n">hint</span><span class="o">=</span><span class="s2">"Use a valid partial datetime format per ISO 8601"</span><span class="p">,</span>
                 <span class="p">)</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__set__</span><span class="p">(</span><span class="n">instance</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span></div>
 
@@ -522,33 +532,31 @@
 <div class="viewcode-block" id="PartialDateString">
 <a class="viewcode-back" href="../modules.html#typed.PartialDateString">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">PartialDateString</span><span class="p">(</span><span class="n">DESC</span><span class="o">.</span><span class="n">Descriptor</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Descriptor for partial ISO 8601 date strings.</span>
+<span class="w">    </span><span class="sd">"""Descriptor for partial ISO 8601 date strings.</span>
 
 <span class="sd">    Accepts full ``YYYY-MM-DD``, year-month ``YYYY-MM``, or year-only ``YYYY``.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__set__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">instance</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
-        <span class="k">if</span> <span class="n">value</span> <span class="ow">and</span> <span class="n">value</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="s1">&#39;-&#39;</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">value</span> <span class="ow">and</span> <span class="n">value</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="s1">'-'</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
             <span class="k">try</span><span class="p">:</span>
-                <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="s1">&#39;%Y-%m-</span><span class="si">%d</span><span class="s1">&#39;</span><span class="p">)</span>
+                <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="s1">'%Y-%m-</span><span class="si">%d</span><span class="s1">'</span><span class="p">)</span>
             <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
                 <span class="k">if</span> <span class="ow">not</span> <span class="n">_mode</span><span class="o">.</span><span class="n">is_permissive</span><span class="p">(</span><span class="n">_mode</span><span class="o">.</span><span class="n">ValidationMode</span><span class="o">.</span><span class="n">SKIP_FORMAT</span><span class="p">):</span>
                     <span class="k">raise</span> <span class="n">OdmlibValidationError</span><span class="p">(</span>
-                        <span class="sa">f</span><span class="s2">&quot;Expected type PartialDate for </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">, found value </span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                        <span class="sa">f</span><span class="s2">"Expected type PartialDate for </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">, found value </span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span>
                         <span class="n">attribute</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
                         <span class="n">actual_value</span><span class="o">=</span><span class="n">value</span><span class="p">,</span>
-                        <span class="n">hint</span><span class="o">=</span><span class="s2">&quot;Use YYYY-MM-DD date format&quot;</span><span class="p">,</span>
+                        <span class="n">hint</span><span class="o">=</span><span class="s2">"Use YYYY-MM-DD date format"</span><span class="p">,</span>
                     <span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">part_pat</span> <span class="o">=</span> <span class="sa">r</span><span class="s1">&#39;^(([0-9][0-9][0-9][0-9])(-(([0][1-9])|([1][0-2])))?)$&#39;</span>
-            <span class="n">compiled_part_pat</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">part_pat</span><span class="p">)</span>
-            <span class="k">if</span> <span class="p">(</span><span class="n">value</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="ow">not</span> <span class="n">compiled_part_pat</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">value</span><span class="p">)):</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">value</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="ow">not</span> <span class="n">_PARTIAL_DATE_PAT</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">value</span><span class="p">)):</span>
                 <span class="k">if</span> <span class="ow">not</span> <span class="n">_mode</span><span class="o">.</span><span class="n">is_permissive</span><span class="p">(</span><span class="n">_mode</span><span class="o">.</span><span class="n">ValidationMode</span><span class="o">.</span><span class="n">SKIP_FORMAT</span><span class="p">):</span>
                     <span class="k">raise</span> <span class="n">OdmlibValidationError</span><span class="p">(</span>
-                        <span class="sa">f</span><span class="s2">&quot;Expected type PartialDate for </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">, found value </span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                        <span class="sa">f</span><span class="s2">"Expected type PartialDate for </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">, found value </span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span>
                         <span class="n">attribute</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
                         <span class="n">actual_value</span><span class="o">=</span><span class="n">value</span><span class="p">,</span>
-                        <span class="n">hint</span><span class="o">=</span><span class="s2">&quot;Use YYYY or YYYY-MM format for partial dates&quot;</span><span class="p">,</span>
+                        <span class="n">hint</span><span class="o">=</span><span class="s2">"Use YYYY or YYYY-MM format for partial dates"</span><span class="p">,</span>
                     <span class="p">)</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__set__</span><span class="p">(</span><span class="n">instance</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span></div>
 
@@ -557,23 +565,19 @@
 <div class="viewcode-block" id="PartialTimeString">
 <a class="viewcode-back" href="../modules.html#typed.PartialTimeString">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">PartialTimeString</span><span class="p">(</span><span class="n">DESC</span><span class="o">.</span><span class="n">Descriptor</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Descriptor for partial ISO 8601 time strings.</span>
+<span class="w">    </span><span class="sd">"""Descriptor for partial ISO 8601 time strings.</span>
 
 <span class="sd">    Accepts full ``HH:MM:SS`` or partial time values.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__set__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">instance</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
-        <span class="n">time_pat</span> <span class="o">=</span> <span class="sa">r</span><span class="s1">&#39;^(2[0-3]|[01][0-9]):([0-5][0-9]):([0-5][0-9])(\.[0-9]+)?(Z|[+-](?:2[0-3]|[01][0-9]):[0-5][0-9])?$&#39;</span>
-        <span class="n">compiled_time_pat</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">time_pat</span><span class="p">)</span>
-        <span class="n">part_pat</span> <span class="o">=</span> <span class="sa">r</span><span class="s1">&#39;^((([0-1][0-9])|([2][0-3]))(:[0-5][0-9])?(((\+|-)(([0-1][0-9])|([2][0-3])):[0-5][0-9])|(Z))?)$&#39;</span>
-        <span class="n">compiled_part_pat</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">part_pat</span><span class="p">)</span>
-        <span class="k">if</span> <span class="p">(</span><span class="n">value</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="ow">not</span> <span class="p">(</span><span class="n">compiled_time_pat</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="ow">or</span> <span class="n">compiled_part_pat</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">value</span><span class="p">))):</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">value</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="ow">not</span> <span class="p">(</span><span class="n">_TIME_PAT</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="ow">or</span> <span class="n">_PARTIAL_TIME_PAT</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">value</span><span class="p">))):</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">_mode</span><span class="o">.</span><span class="n">is_permissive</span><span class="p">(</span><span class="n">_mode</span><span class="o">.</span><span class="n">ValidationMode</span><span class="o">.</span><span class="n">SKIP_FORMAT</span><span class="p">):</span>
                 <span class="k">raise</span> <span class="n">OdmlibValidationError</span><span class="p">(</span>
-                    <span class="sa">f</span><span class="s2">&quot;Expected type IncompleteTime for </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">, found value </span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                    <span class="sa">f</span><span class="s2">"Expected type IncompleteTime for </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">, found value </span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span>
                     <span class="n">attribute</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
                     <span class="n">actual_value</span><span class="o">=</span><span class="n">value</span><span class="p">,</span>
-                    <span class="n">hint</span><span class="o">=</span><span class="s2">&quot;Use a valid partial time format per ISO 8601&quot;</span><span class="p">,</span>
+                    <span class="n">hint</span><span class="o">=</span><span class="s2">"Use a valid partial time format per ISO 8601"</span><span class="p">,</span>
                 <span class="p">)</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__set__</span><span class="p">(</span><span class="n">instance</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span></div>
 
@@ -582,21 +586,19 @@
 <div class="viewcode-block" id="IncompleteDateTimeString">
 <a class="viewcode-back" href="../modules.html#typed.IncompleteDateTimeString">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">IncompleteDateTimeString</span><span class="p">(</span><span class="n">DESC</span><span class="o">.</span><span class="n">Descriptor</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Descriptor for incomplete ISO 8601 datetime strings.</span>
+<span class="w">    </span><span class="sd">"""Descriptor for incomplete ISO 8601 datetime strings.</span>
 
 <span class="sd">    Allows ``-`` as a placeholder for unknown date/time components.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__set__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">instance</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
-        <span class="n">inc_pat</span> <span class="o">=</span> <span class="sa">r</span><span class="s1">&#39;^(((([0-9][0-9][0-9][0-9]))|-)-(((([0][1-9])|([1][0-2])))|-)-(((([0][1-9])|([1-2][0-9])|([3][0-1])))|-)T(((([0-1][0-9])|([2][0-3])))|-):((([0-5][0-9]))|-):((([0-5][0-9](\.[0-9]+)?))|-)((((\+|-)(([0-1][0-9])|([2][0-3])):[0-5][0-9])|Z|-))?)$&#39;</span>
-        <span class="n">compiled_inc_pat</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">inc_pat</span><span class="p">)</span>
-        <span class="k">if</span> <span class="p">(</span><span class="n">value</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="ow">not</span> <span class="n">compiled_inc_pat</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">value</span><span class="p">)):</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">value</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="ow">not</span> <span class="n">_INCOMPLETE_DATETIME_PAT</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">value</span><span class="p">)):</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">_mode</span><span class="o">.</span><span class="n">is_permissive</span><span class="p">(</span><span class="n">_mode</span><span class="o">.</span><span class="n">ValidationMode</span><span class="o">.</span><span class="n">SKIP_FORMAT</span><span class="p">):</span>
                 <span class="k">raise</span> <span class="n">OdmlibValidationError</span><span class="p">(</span>
-                    <span class="sa">f</span><span class="s2">&quot;Expected type IncompleteDateTime for </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">, found value </span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                    <span class="sa">f</span><span class="s2">"Expected type IncompleteDateTime for </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">, found value </span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span>
                     <span class="n">attribute</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
                     <span class="n">actual_value</span><span class="o">=</span><span class="n">value</span><span class="p">,</span>
-                    <span class="n">hint</span><span class="o">=</span><span class="s2">&quot;Use an ISO 8601 incomplete datetime, replacing unknown parts with &#39;-&#39;&quot;</span><span class="p">,</span>
+                    <span class="n">hint</span><span class="o">=</span><span class="s2">"Use an ISO 8601 incomplete datetime, replacing unknown parts with '-'"</span><span class="p">,</span>
                 <span class="p">)</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__set__</span><span class="p">(</span><span class="n">instance</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span></div>
 
@@ -605,21 +607,19 @@
 <div class="viewcode-block" id="IncompleteDateString">
 <a class="viewcode-back" href="../modules.html#typed.IncompleteDateString">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">IncompleteDateString</span><span class="p">(</span><span class="n">DESC</span><span class="o">.</span><span class="n">Descriptor</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Descriptor for incomplete ISO 8601 date strings.</span>
+<span class="w">    </span><span class="sd">"""Descriptor for incomplete ISO 8601 date strings.</span>
 
 <span class="sd">    Allows ``-`` as a placeholder for unknown date components.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__set__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">instance</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
-        <span class="n">inc_pat</span> <span class="o">=</span> <span class="sa">r</span><span class="s1">&#39;^(((([0-9][0-9][0-9][0-9]))|-)-(((([0][1-9])|([1][0-2])))|-)-(((([0][1-9])|([1-2][0-9])|([3][0-1])))|-))$&#39;</span>
-        <span class="n">compiled_inc_pat</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">inc_pat</span><span class="p">)</span>
-        <span class="k">if</span> <span class="p">(</span><span class="n">value</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="ow">not</span> <span class="n">compiled_inc_pat</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">value</span><span class="p">)):</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">value</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="ow">not</span> <span class="n">_INCOMPLETE_DATE_PAT</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">value</span><span class="p">)):</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">_mode</span><span class="o">.</span><span class="n">is_permissive</span><span class="p">(</span><span class="n">_mode</span><span class="o">.</span><span class="n">ValidationMode</span><span class="o">.</span><span class="n">SKIP_FORMAT</span><span class="p">):</span>
                 <span class="k">raise</span> <span class="n">OdmlibValidationError</span><span class="p">(</span>
-                    <span class="sa">f</span><span class="s2">&quot;Expected type IncompleteDate for </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">, found value </span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                    <span class="sa">f</span><span class="s2">"Expected type IncompleteDate for </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">, found value </span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span>
                     <span class="n">attribute</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
                     <span class="n">actual_value</span><span class="o">=</span><span class="n">value</span><span class="p">,</span>
-                    <span class="n">hint</span><span class="o">=</span><span class="s2">&quot;Use an ISO 8601 incomplete date, e.g., &#39;YYYY--DD&#39;&quot;</span><span class="p">,</span>
+                    <span class="n">hint</span><span class="o">=</span><span class="s2">"Use an ISO 8601 incomplete date, e.g., 'YYYY--DD'"</span><span class="p">,</span>
                 <span class="p">)</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__set__</span><span class="p">(</span><span class="n">instance</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span></div>
 
@@ -628,46 +628,60 @@
 <div class="viewcode-block" id="IncompleteTimeString">
 <a class="viewcode-back" href="../modules.html#typed.IncompleteTimeString">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">IncompleteTimeString</span><span class="p">(</span><span class="n">DESC</span><span class="o">.</span><span class="n">Descriptor</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Descriptor for incomplete ISO 8601 time strings.</span>
+<span class="w">    </span><span class="sd">"""Descriptor for incomplete ISO 8601 time strings.</span>
 
 <span class="sd">    Allows ``-`` as a placeholder for unknown time components.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__set__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">instance</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
-        <span class="n">inc_pat</span> <span class="o">=</span> <span class="sa">r</span><span class="s1">&#39;^((((([0-1][0-9])|([2][0-3])))|-):((([0-5][0-9]))|-):((([0-5][0-9](\.[0-9]+)?))|-)((((\+|-)(([0-1][0-9])|([2][0-3])):[0-5][0-9])|Z|-))?)$&#39;</span>
-        <span class="n">compiled_inc_pat</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">inc_pat</span><span class="p">)</span>
-        <span class="k">if</span> <span class="p">(</span><span class="n">value</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="ow">not</span> <span class="n">compiled_inc_pat</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">value</span><span class="p">)):</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">value</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="ow">not</span> <span class="n">_INCOMPLETE_TIME_PAT</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">value</span><span class="p">)):</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">_mode</span><span class="o">.</span><span class="n">is_permissive</span><span class="p">(</span><span class="n">_mode</span><span class="o">.</span><span class="n">ValidationMode</span><span class="o">.</span><span class="n">SKIP_FORMAT</span><span class="p">):</span>
                 <span class="k">raise</span> <span class="n">OdmlibValidationError</span><span class="p">(</span>
-                    <span class="sa">f</span><span class="s2">&quot;Expected type IncompleteTime for </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">, found value </span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                    <span class="sa">f</span><span class="s2">"Expected type IncompleteTime for </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">, found value </span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span>
                     <span class="n">attribute</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
                     <span class="n">actual_value</span><span class="o">=</span><span class="n">value</span><span class="p">,</span>
-                    <span class="n">hint</span><span class="o">=</span><span class="s2">&quot;Use an ISO 8601 incomplete time, replacing unknown parts with &#39;-&#39;&quot;</span><span class="p">,</span>
+                    <span class="n">hint</span><span class="o">=</span><span class="s2">"Use an ISO 8601 incomplete time, replacing unknown parts with '-'"</span><span class="p">,</span>
                 <span class="p">)</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__set__</span><span class="p">(</span><span class="n">instance</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span></div>
 
 
 
-<span class="n">_DURATION_PAT</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;^[+-]?P\d+W$&#39;</span><span class="p">)</span>
+<span class="c1"># The ODM 2.0 XSD types these attributes as ``durationDatetime``, a union of</span>
+<span class="c1"># ``emptyTag`` (empty or a single space), ``xs:duration`` (the full ISO 8601</span>
+<span class="c1"># form) and ``tDuration`` (the week-based form, which xs:duration disallows).</span>
+<span class="n">_DURATION_PAT</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span>
+    <span class="sa">r</span><span class="s1">'^(?:'</span>
+    <span class="sa">r</span><span class="s1">'[ ]?'</span>                                                   <span class="c1"># emptyTag</span>
+    <span class="sa">r</span><span class="s1">'|[+-]?P\d+W'</span>                                            <span class="c1"># tDuration</span>
+    <span class="sa">r</span><span class="s1">'|-?P(?=\d|T\d)(?:\d+Y)?(?:\d+M)?(?:\d+D)?'</span>              <span class="c1"># xs:duration</span>
+    <span class="sa">r</span><span class="s1">'(?:T(?=\d)(?:\d+H)?(?:\d+M)?(?:\d+(?:\.\d+)?S)?)?'</span>
+    <span class="sa">r</span><span class="s1">')$'</span>
+<span class="p">)</span>
 
 
 <div class="viewcode-block" id="DurationDateTimeString">
 <a class="viewcode-back" href="../modules.html#typed.DurationDateTimeString">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">DurationDateTimeString</span><span class="p">(</span><span class="n">DESC</span><span class="o">.</span><span class="n">Descriptor</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Descriptor for ISO 8601 duration strings (week-based).</span>
+<span class="w">    </span><span class="sd">'''Descriptor for ISO 8601 duration strings.</span>
 
-<span class="sd">    Validates format: ``[+-]P{n}W`` (e.g., ``P1W`` for one week).</span>
+<span class="sd">    Accepts the whole ``durationDatetime`` union the ODM 2.0 XSD defines:</span>
+<span class="sd">    the week form (``P2W``, ``-P1W``), the general ISO 8601 form</span>
+<span class="sd">    (``P3D``, ``P1Y2M``, ``PT1H30M``, ``P1DT2H3M4.5S``), and the empty tag.</span>
 <span class="sd">    Used for timing window attributes in ODM 2.0.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+
+<span class="sd">    .. versionchanged:: 0.2.1</span>
+<span class="sd">       Previously only ``[+-]P{n}W`` was accepted, rejecting XSD-valid values</span>
+<span class="sd">       such as ``P3D`` and ``PT1H``.</span>
+<span class="sd">    '''</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__set__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">instance</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
         <span class="k">if</span> <span class="p">(</span><span class="n">value</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="ow">not</span> <span class="n">_DURATION_PAT</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">value</span><span class="p">)):</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">_mode</span><span class="o">.</span><span class="n">is_permissive</span><span class="p">(</span><span class="n">_mode</span><span class="o">.</span><span class="n">ValidationMode</span><span class="o">.</span><span class="n">SKIP_FORMAT</span><span class="p">):</span>
                 <span class="k">raise</span> <span class="n">OdmlibValidationError</span><span class="p">(</span>
-                    <span class="sa">f</span><span class="s2">&quot;Expected type DurationDateTime for </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">, found value </span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                    <span class="sa">f</span><span class="s2">"Expected type DurationDateTime for </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">, found value </span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span>
                     <span class="n">attribute</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
                     <span class="n">actual_value</span><span class="o">=</span><span class="n">value</span><span class="p">,</span>
-                    <span class="n">hint</span><span class="o">=</span><span class="s2">&quot;Use ISO 8601 duration format, e.g., &#39;P1W&#39; or &#39;P2W&#39;&quot;</span><span class="p">,</span>
+                    <span class="n">hint</span><span class="o">=</span><span class="s2">"Use an ISO 8601 duration, e.g. 'P2W', 'P3D' or 'PT1H30M'"</span><span class="p">,</span>
                 <span class="p">)</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__set__</span><span class="p">(</span><span class="n">instance</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span></div>
 
@@ -676,22 +690,22 @@
 <div class="viewcode-block" id="DateString">
 <a class="viewcode-back" href="../modules.html#typed.DateString">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">DateString</span><span class="p">(</span><span class="n">DESC</span><span class="o">.</span><span class="n">Descriptor</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Descriptor for ISO 8601 date strings (YYYY-MM-DD).</span>
+<span class="w">    </span><span class="sd">"""Descriptor for ISO 8601 date strings (YYYY-MM-DD).</span>
 
 <span class="sd">    Used for ``EffectiveDate`` in MetaDataVersionRef.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__set__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">instance</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">value</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="s1">&#39;%Y-%m-</span><span class="si">%d</span><span class="s1">&#39;</span><span class="p">)</span>
+                <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="s1">'%Y-%m-</span><span class="si">%d</span><span class="s1">'</span><span class="p">)</span>
         <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">_mode</span><span class="o">.</span><span class="n">is_permissive</span><span class="p">(</span><span class="n">_mode</span><span class="o">.</span><span class="n">ValidationMode</span><span class="o">.</span><span class="n">SKIP_FORMAT</span><span class="p">):</span>
                 <span class="k">raise</span> <span class="n">OdmlibValidationError</span><span class="p">(</span>
-                    <span class="sa">f</span><span class="s2">&quot;Expected type date (YYYY-MM-DD) for </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">, found value </span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                    <span class="sa">f</span><span class="s2">"Expected type date (YYYY-MM-DD) for </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">, found value </span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span>
                     <span class="n">attribute</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
                     <span class="n">actual_value</span><span class="o">=</span><span class="n">value</span><span class="p">,</span>
-                    <span class="n">hint</span><span class="o">=</span><span class="s2">&quot;Use YYYY-MM-DD date format&quot;</span><span class="p">,</span>
+                    <span class="n">hint</span><span class="o">=</span><span class="s2">"Use YYYY-MM-DD date format"</span><span class="p">,</span>
                 <span class="p">)</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__set__</span><span class="p">(</span><span class="n">instance</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span></div>
 
@@ -700,23 +714,22 @@
 <div class="viewcode-block" id="SASName">
 <a class="viewcode-back" href="../modules.html#typed.SASName">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">SASName</span><span class="p">(</span><span class="n">DESC</span><span class="o">.</span><span class="n">Descriptor</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Descriptor for SAS variable/dataset name attributes.</span>
+<span class="w">    </span><span class="sd">"""Descriptor for SAS variable/dataset name attributes.</span>
 
 <span class="sd">    Validates that the value starts with a letter or underscore,</span>
 <span class="sd">    contains only alphanumerics and underscores, and is at most 8</span>
 <span class="sd">    characters long. Used for SASFieldName, SASDatasetName, etc.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__set__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">instance</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
-        <span class="n">pat</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="s2">&quot;[A-Za-z_][A-Za-z0-9_]*$&quot;</span><span class="p">)</span>
-        <span class="k">if</span> <span class="p">(</span><span class="n">value</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="ow">not</span> <span class="n">pat</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">8</span><span class="p">):</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">value</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="ow">not</span> <span class="n">_SAS_NAME_PAT</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">8</span><span class="p">):</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">_mode</span><span class="o">.</span><span class="n">is_permissive</span><span class="p">(</span><span class="n">_mode</span><span class="o">.</span><span class="n">ValidationMode</span><span class="o">.</span><span class="n">SKIP_FORMAT</span><span class="p">):</span>
                 <span class="k">raise</span> <span class="n">OdmlibValidationError</span><span class="p">(</span>
-                    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> has an invalid sasName of </span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                    <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> has an invalid sasName of </span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span>
                     <span class="n">attribute</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
                     <span class="n">actual_value</span><span class="o">=</span><span class="n">value</span><span class="p">,</span>
-                    <span class="n">hint</span><span class="o">=</span><span class="s2">&quot;SAS names must start with a letter or underscore, contain only &quot;</span>
-                         <span class="s2">&quot;alphanumerics/underscores, and be 8 characters or fewer&quot;</span><span class="p">,</span>
+                    <span class="n">hint</span><span class="o">=</span><span class="s2">"SAS names must start with a letter or underscore, contain only "</span>
+                         <span class="s2">"alphanumerics/underscores, and be 8 characters or fewer"</span><span class="p">,</span>
                 <span class="p">)</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__set__</span><span class="p">(</span><span class="n">instance</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span></div>
 
@@ -725,22 +738,21 @@
 <div class="viewcode-block" id="SASFormat">
 <a class="viewcode-back" href="../modules.html#typed.SASFormat">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">SASFormat</span><span class="p">(</span><span class="n">DESC</span><span class="o">.</span><span class="n">Descriptor</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Descriptor for SAS format name attributes.</span>
+<span class="w">    </span><span class="sd">"""Descriptor for SAS format name attributes.</span>
 
 <span class="sd">    Validates that the value starts with a letter, underscore, or ``$``,</span>
 <span class="sd">    contains only alphanumerics, underscores, and dots, and is at most</span>
 <span class="sd">    8 characters long. Used for SASFormatName.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__set__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">instance</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
-        <span class="n">pat</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="s2">&quot;[A-Za-z_$][A-Za-z0-9_.]*$&quot;</span><span class="p">)</span>
-        <span class="k">if</span> <span class="p">(</span><span class="n">value</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="ow">not</span> <span class="n">pat</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">8</span><span class="p">):</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">value</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="ow">not</span> <span class="n">_SAS_FORMAT_PAT</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">8</span><span class="p">):</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">_mode</span><span class="o">.</span><span class="n">is_permissive</span><span class="p">(</span><span class="n">_mode</span><span class="o">.</span><span class="n">ValidationMode</span><span class="o">.</span><span class="n">SKIP_FORMAT</span><span class="p">):</span>
                 <span class="k">raise</span> <span class="n">OdmlibValidationError</span><span class="p">(</span>
-                    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> has an invalid sasFormat of </span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                    <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> has an invalid sasFormat of </span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span>
                     <span class="n">attribute</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
                     <span class="n">actual_value</span><span class="o">=</span><span class="n">value</span><span class="p">,</span>
-                    <span class="n">hint</span><span class="o">=</span><span class="s2">&quot;SAS formats must start with a letter, underscore, or &#39;$&#39;, and be 8 characters or fewer&quot;</span><span class="p">,</span>
+                    <span class="n">hint</span><span class="o">=</span><span class="s2">"SAS formats must start with a letter, underscore, or '$', and be 8 characters or fewer"</span><span class="p">,</span>
                 <span class="p">)</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__set__</span><span class="p">(</span><span class="n">instance</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span></div>
 
@@ -749,19 +761,19 @@
 <div class="viewcode-block" id="Email">
 <a class="viewcode-back" href="../modules.html#typed.Email">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">Email</span><span class="p">(</span><span class="n">DESC</span><span class="o">.</span><span class="n">Descriptor</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Descriptor for email address attributes.</span>
+<span class="w">    </span><span class="sd">"""Descriptor for email address attributes.</span>
 
 <span class="sd">    Validates using the ``validators.email`` function.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__set__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">instance</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
         <span class="k">if</span> <span class="p">(</span><span class="n">value</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="ow">not</span> <span class="n">valid_email</span><span class="p">(</span><span class="n">value</span><span class="p">)):</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">_mode</span><span class="o">.</span><span class="n">is_permissive</span><span class="p">(</span><span class="n">_mode</span><span class="o">.</span><span class="n">ValidationMode</span><span class="o">.</span><span class="n">SKIP_FORMAT</span><span class="p">):</span>
                 <span class="k">raise</span> <span class="n">OdmlibValidationError</span><span class="p">(</span>
-                    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> has an invalid email format of </span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                    <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> has an invalid email format of </span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span>
                     <span class="n">attribute</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
                     <span class="n">actual_value</span><span class="o">=</span><span class="n">value</span><span class="p">,</span>
-                    <span class="n">hint</span><span class="o">=</span><span class="s2">&quot;Provide a valid email address, e.g., &#39;user@example.com&#39;&quot;</span><span class="p">,</span>
+                    <span class="n">hint</span><span class="o">=</span><span class="s2">"Provide a valid email address, e.g., 'user@example.com'"</span><span class="p">,</span>
                 <span class="p">)</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__set__</span><span class="p">(</span><span class="n">instance</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span></div>
 
@@ -770,19 +782,19 @@
 <div class="viewcode-block" id="Url">
 <a class="viewcode-back" href="../modules.html#typed.Url">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">Url</span><span class="p">(</span><span class="n">DESC</span><span class="o">.</span><span class="n">Descriptor</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Descriptor for URL attributes.</span>
+<span class="w">    </span><span class="sd">"""Descriptor for URL attributes.</span>
 
 <span class="sd">    Validates using the ``validators.url`` function.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__set__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">instance</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
         <span class="k">if</span> <span class="p">(</span><span class="n">value</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="ow">not</span> <span class="n">valid_url</span><span class="p">(</span><span class="n">value</span><span class="p">)):</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">_mode</span><span class="o">.</span><span class="n">is_permissive</span><span class="p">(</span><span class="n">_mode</span><span class="o">.</span><span class="n">ValidationMode</span><span class="o">.</span><span class="n">SKIP_FORMAT</span><span class="p">):</span>
                 <span class="k">raise</span> <span class="n">OdmlibValidationError</span><span class="p">(</span>
-                    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> has an invalid url format of </span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                    <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> has an invalid url format of </span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span>
                     <span class="n">attribute</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
                     <span class="n">actual_value</span><span class="o">=</span><span class="n">value</span><span class="p">,</span>
-                    <span class="n">hint</span><span class="o">=</span><span class="s2">&quot;Provide a valid URL, e.g., &#39;https://example.com&#39;&quot;</span><span class="p">,</span>
+                    <span class="n">hint</span><span class="o">=</span><span class="s2">"Provide a valid URL, e.g., 'https://example.com'"</span><span class="p">,</span>
                 <span class="p">)</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__set__</span><span class="p">(</span><span class="n">instance</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span></div>
 
@@ -791,20 +803,20 @@
 <div class="viewcode-block" id="FileName">
 <a class="viewcode-back" href="../modules.html#typed.FileName">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">FileName</span><span class="p">(</span><span class="n">DESC</span><span class="o">.</span><span class="n">Descriptor</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Descriptor for file name attributes.</span>
+<span class="w">    </span><span class="sd">"""Descriptor for file name attributes.</span>
 
 <span class="sd">    Validates using ``pathvalidate.is_valid_filename``.</span>
 <span class="sd">    Used for PdfFileName, PictureFileName, etc.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__set__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">instance</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
         <span class="k">if</span> <span class="p">(</span><span class="n">value</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="ow">not</span> <span class="n">is_valid_filename</span><span class="p">(</span><span class="n">value</span><span class="p">)):</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">_mode</span><span class="o">.</span><span class="n">is_permissive</span><span class="p">(</span><span class="n">_mode</span><span class="o">.</span><span class="n">ValidationMode</span><span class="o">.</span><span class="n">SKIP_FORMAT</span><span class="p">):</span>
                 <span class="k">raise</span> <span class="n">OdmlibValidationError</span><span class="p">(</span>
-                    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> has an invalid fileName of </span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                    <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> has an invalid fileName of </span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span>
                     <span class="n">attribute</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
                     <span class="n">actual_value</span><span class="o">=</span><span class="n">value</span><span class="p">,</span>
-                    <span class="n">hint</span><span class="o">=</span><span class="s2">&quot;Provide a valid filename without illegal characters&quot;</span><span class="p">,</span>
+                    <span class="n">hint</span><span class="o">=</span><span class="s2">"Provide a valid filename without illegal characters"</span><span class="p">,</span>
                 <span class="p">)</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__set__</span><span class="p">(</span><span class="n">instance</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span></div>
 
@@ -813,20 +825,33 @@
 <div class="viewcode-block" id="ValidValues">
 <a class="viewcode-back" href="../modules.html#typed.ValidValues">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">ValidValues</span><span class="p">(</span><span class="n">DESC</span><span class="o">.</span><span class="n">Descriptor</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Descriptor that validates against a dynamically-loaded set of permitted values.</span>
+<span class="w">    </span><span class="sd">"""Descriptor that validates against a dynamically-loaded set of permitted values.</span>
 
 <span class="sd">    Looks up valid values from the ValueSet registry using the element</span>
 <span class="sd">    class name and attribute name (e.g., ``ODM.FileType``).</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_resolve_attr_key</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">instance</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""Return the "ClassName.attr" valueset key, walking the MRO.</span>
+
+<span class="sd">        Subclasses (e.g. custom extensions of a model class) have no</span>
+<span class="sd">        valueset registered under their own name, so fall back to the</span>
+<span class="sd">        first ancestor class that does.</span>
+<span class="sd">        """</span>
+        <span class="k">for</span> <span class="n">klass</span> <span class="ow">in</span> <span class="nb">type</span><span class="p">(</span><span class="n">instance</span><span class="p">)</span><span class="o">.</span><span class="vm">__mro__</span><span class="p">:</span>
+            <span class="n">candidate</span> <span class="o">=</span> <span class="n">klass</span><span class="o">.</span><span class="vm">__name__</span> <span class="o">+</span> <span class="s2">"."</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span>
+            <span class="k">if</span> <span class="n">VS</span><span class="o">.</span><span class="n">ValueSet</span><span class="o">.</span><span class="n">value_set</span><span class="p">(</span><span class="n">candidate</span><span class="p">,</span> <span class="n">instance</span><span class="o">=</span><span class="n">instance</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">VS</span><span class="o">.</span><span class="n">UNKNOWN_ATTRIBUTE</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">candidate</span>
+        <span class="k">return</span> <span class="nb">type</span><span class="p">(</span><span class="n">instance</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span> <span class="o">+</span> <span class="s2">"."</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__set__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">instance</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
         <span class="k">if</span> <span class="p">(</span><span class="n">value</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">):</span>
-            <span class="n">attr_key</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span><span class="n">instance</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span> <span class="o">+</span> <span class="s2">&quot;.&quot;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span>
+            <span class="n">attr_key</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_resolve_attr_key</span><span class="p">(</span><span class="n">instance</span><span class="p">)</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">VS</span><span class="o">.</span><span class="n">ValueSet</span><span class="o">.</span><span class="n">validate</span><span class="p">(</span><span class="n">attr_key</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">instance</span><span class="o">=</span><span class="n">instance</span><span class="p">):</span>
                 <span class="k">if</span> <span class="ow">not</span> <span class="n">_mode</span><span class="o">.</span><span class="n">is_permissive</span><span class="p">(</span><span class="n">_mode</span><span class="o">.</span><span class="n">ValidationMode</span><span class="o">.</span><span class="n">SKIP_VALUESET</span><span class="p">):</span>
                     <span class="n">description</span> <span class="o">=</span> <span class="n">VS</span><span class="o">.</span><span class="n">ValueSet</span><span class="o">.</span><span class="n">describe</span><span class="p">(</span><span class="n">attr_key</span><span class="p">,</span> <span class="n">instance</span><span class="o">=</span><span class="n">instance</span><span class="p">)</span>
                     <span class="k">raise</span> <span class="n">OdmlibTypeError</span><span class="p">(</span>
-                        <span class="sa">f</span><span class="s2">&quot;Invalid value </span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s2"> for </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">. </span><span class="si">{</span><span class="n">description</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                        <span class="sa">f</span><span class="s2">"Invalid value </span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s2"> for </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">. </span><span class="si">{</span><span class="n">description</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span>
                         <span class="n">attribute</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
                         <span class="n">actual_value</span><span class="o">=</span><span class="n">value</span><span class="p">,</span>
                         <span class="n">hint</span><span class="o">=</span><span class="n">description</span><span class="p">,</span>
@@ -838,21 +863,21 @@
 <div class="viewcode-block" id="ExtendedValidValues">
 <a class="viewcode-back" href="../modules.html#typed.ExtendedValidValues">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">ExtendedValidValues</span><span class="p">(</span><span class="n">DESC</span><span class="o">.</span><span class="n">Descriptor</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Descriptor that validates against an explicit list of permitted values.</span>
+<span class="w">    </span><span class="sd">"""Descriptor that validates against an explicit list of permitted values.</span>
 
 <span class="sd">    Unlike ValidValues, the allowed values are provided at class definition</span>
 <span class="sd">    time in the ``valid_values`` list argument.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__set__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">instance</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
         <span class="k">if</span> <span class="p">(</span><span class="n">value</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">and</span> <span class="n">value</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">valid_values</span><span class="p">:</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">_mode</span><span class="o">.</span><span class="n">is_permissive</span><span class="p">(</span><span class="n">_mode</span><span class="o">.</span><span class="n">ValidationMode</span><span class="o">.</span><span class="n">SKIP_VALUESET</span><span class="p">):</span>
                 <span class="k">raise</span> <span class="n">OdmlibTypeError</span><span class="p">(</span>
-                    <span class="sa">f</span><span class="s2">&quot;Invalid value </span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s2"> for </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">. Value must be one of &quot;</span>
-                    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">valid_values</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                    <span class="sa">f</span><span class="s2">"Invalid value </span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s2"> for </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">. Value must be one of "</span>
+                    <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="s1">', '</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">valid_values</span><span class="p">)</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span>
                     <span class="n">attribute</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
                     <span class="n">actual_value</span><span class="o">=</span><span class="n">value</span><span class="p">,</span>
-                    <span class="n">hint</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;Valid values are: </span><span class="si">{</span><span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">valid_values</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                    <span class="n">hint</span><span class="o">=</span><span class="sa">f</span><span class="s2">"Valid values are: </span><span class="si">{</span><span class="s1">', '</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">valid_values</span><span class="p">)</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span>
                 <span class="p">)</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__set__</span><span class="p">(</span><span class="n">instance</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span></div>
 
@@ -861,11 +886,11 @@
 <div class="viewcode-block" id="ValueSetString">
 <a class="viewcode-back" href="../modules.html#typed.ValueSetString">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">ValueSetString</span><span class="p">(</span><span class="n">ValidValues</span><span class="p">,</span> <span class="n">String</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;String descriptor that validates against a dynamically-loaded set of permitted values.</span>
+<span class="w">    </span><span class="sd">"""String descriptor that validates against a dynamically-loaded set of permitted values.</span>
 
 <span class="sd">    Combines string type validation with value set membership checking.</span>
 <span class="sd">    Used for attributes like FileType, Repeating, Mandatory, DataType, etc.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="k">pass</span></div>
 
@@ -874,7 +899,7 @@
 <div class="viewcode-block" id="ODMObject">
 <a class="viewcode-back" href="../modules.html#typed.ODMObject">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">ODMObject</span><span class="p">(</span><span class="n">DESC</span><span class="o">.</span><span class="n">Descriptor</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Descriptor for a single child ODM element.</span>
+<span class="w">    </span><span class="sd">"""Descriptor for a single child ODM element.</span>
 
 <span class="sd">    Stores a reference to the element class and validates type on</span>
 <span class="sd">    assignment. When accessed on an unset optional attribute, instantiates</span>
@@ -882,24 +907,35 @@
 
 <span class="sd">    Args:</span>
 <span class="sd">        element_class (type): The expected child element class.</span>
-<span class="sd">        namespace (str): XML namespace prefix (default: &quot;odm&quot;).</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">        namespace (str): XML namespace prefix (default: "odm").</span>
+<span class="sd">    """</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="n">element_class</span><span class="p">,</span>  <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">obj_type</span> <span class="o">=</span> <span class="n">element_class</span>
-        <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;element_class&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">element_class</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">namespace</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;namespace&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+        <span class="n">kwargs</span><span class="p">[</span><span class="s2">"element_class"</span><span class="p">]</span> <span class="o">=</span> <span class="n">element_class</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__set__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">instance</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">obj_type</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+            <span class="c1"># historically tolerated; every item must still be the right type</span>
+            <span class="k">for</span> <span class="n">obj</span> <span class="ow">in</span> <span class="n">value</span><span class="p">:</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">obj_type</span><span class="p">):</span>
+                    <span class="k">if</span> <span class="ow">not</span> <span class="n">_mode</span><span class="o">.</span><span class="n">is_permissive</span><span class="p">(</span><span class="n">_mode</span><span class="o">.</span><span class="n">ValidationMode</span><span class="o">.</span><span class="n">SKIP_TYPE</span><span class="p">):</span>
+                        <span class="k">raise</span> <span class="n">OdmlibTypeError</span><span class="p">(</span>
+                            <span class="sa">f</span><span class="s2">"Every </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> object in the list must be of type </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">obj_type</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span>
+                            <span class="n">attribute</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+                            <span class="n">expected_type</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">obj_type</span><span class="p">),</span>
+                            <span class="n">actual_value</span><span class="o">=</span><span class="n">obj</span><span class="p">,</span>
+                            <span class="n">hint</span><span class="o">=</span><span class="sa">f</span><span class="s2">"Each element in </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> must be of type </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">obj_type</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span>
+                        <span class="p">)</span>
+        <span class="k">elif</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">obj_type</span><span class="p">):</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">_mode</span><span class="o">.</span><span class="n">is_permissive</span><span class="p">(</span><span class="n">_mode</span><span class="o">.</span><span class="n">ValidationMode</span><span class="o">.</span><span class="n">SKIP_TYPE</span><span class="p">):</span>
                 <span class="k">raise</span> <span class="n">OdmlibTypeError</span><span class="p">(</span>
-                    <span class="sa">f</span><span class="s2">&quot;The </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> object must be of type </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">obj_type</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                    <span class="sa">f</span><span class="s2">"The </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> object must be of type </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">obj_type</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span>
                     <span class="n">attribute</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
                     <span class="n">expected_type</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">obj_type</span><span class="p">),</span>
                     <span class="n">actual_value</span><span class="o">=</span><span class="n">value</span><span class="p">,</span>
-                    <span class="n">hint</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;Assign an instance of </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">obj_type</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                    <span class="n">hint</span><span class="o">=</span><span class="sa">f</span><span class="s2">"Assign an instance of </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">obj_type</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span>
                 <span class="p">)</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__set__</span><span class="p">(</span><span class="n">instance</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span></div>
 
@@ -908,15 +944,15 @@
 <div class="viewcode-block" id="ODMListObject">
 <a class="viewcode-back" href="../modules.html#typed.ODMListObject">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">ODMListObject</span><span class="p">(</span><span class="n">ODMObject</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Descriptor for a list of child ODM elements.</span>
+<span class="w">    </span><span class="sd">"""Descriptor for a list of child ODM elements.</span>
 
 <span class="sd">    Validates that all items assigned to the list are instances of</span>
 <span class="sd">    the expected element class. Stored as a plain list in the instance.</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        element_class (type): The class that all list items must be.</span>
-<span class="sd">        namespace (str): XML namespace prefix (default: &quot;odm&quot;).</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">        namespace (str): XML namespace prefix (default: "odm").</span>
+<span class="sd">    """</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__set__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">instance</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
@@ -924,19 +960,19 @@
                 <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">obj_type</span><span class="p">):</span>
                     <span class="k">if</span> <span class="ow">not</span> <span class="n">_mode</span><span class="o">.</span><span class="n">is_permissive</span><span class="p">(</span><span class="n">_mode</span><span class="o">.</span><span class="n">ValidationMode</span><span class="o">.</span><span class="n">SKIP_TYPE</span><span class="p">):</span>
                         <span class="k">raise</span> <span class="n">OdmlibTypeError</span><span class="p">(</span>
-                            <span class="sa">f</span><span class="s2">&quot;Every </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> object in the list must be of type </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">obj_type</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                            <span class="sa">f</span><span class="s2">"Every </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> object in the list must be of type </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">obj_type</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span>
                             <span class="n">attribute</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
                             <span class="n">expected_type</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">obj_type</span><span class="p">),</span>
                             <span class="n">actual_value</span><span class="o">=</span><span class="n">obj</span><span class="p">,</span>
-                            <span class="n">hint</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;Each element in </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> must be of type </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">obj_type</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                            <span class="n">hint</span><span class="o">=</span><span class="sa">f</span><span class="s2">"Each element in </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> must be of type </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">obj_type</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span>
                         <span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">_mode</span><span class="o">.</span><span class="n">is_permissive</span><span class="p">(</span><span class="n">_mode</span><span class="o">.</span><span class="n">ValidationMode</span><span class="o">.</span><span class="n">SKIP_TYPE</span><span class="p">):</span>
                 <span class="k">raise</span> <span class="n">OdmlibTypeError</span><span class="p">(</span>
-                    <span class="sa">f</span><span class="s2">&quot;The </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> object must be a list&quot;</span><span class="p">,</span>
+                    <span class="sa">f</span><span class="s2">"The </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> object must be a list"</span><span class="p">,</span>
                     <span class="n">attribute</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
                     <span class="n">actual_value</span><span class="o">=</span><span class="n">value</span><span class="p">,</span>
-                    <span class="n">hint</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;Assign a list of </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">obj_type</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2"> objects&quot;</span><span class="p">,</span>
+                    <span class="n">hint</span><span class="o">=</span><span class="sa">f</span><span class="s2">"Assign a list of </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">obj_type</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2"> objects"</span><span class="p">,</span>
                 <span class="p">)</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__set__</span><span class="p">(</span><span class="n">instance</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span></div>
 

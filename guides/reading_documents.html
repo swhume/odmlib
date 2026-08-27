@@ -6,14 +6,14 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Reading ODM Documents &mdash; odmlib 0.2.0 documentation</title>
+  <title>Reading ODM Documents &mdash; odmlib 0.2.1 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
 
   
       <script src="../_static/jquery.js?v=5d32c60e"></script>
       <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../_static/documentation_options.js?v=938c9ccc"></script>
+      <script src="../_static/documentation_options.js?v=37f418d5"></script>
       <script src="../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../_static/js/theme.js"></script>
@@ -174,12 +174,12 @@ URI is derived from <code class="docutils literal notranslate"><span class="pre"
 non-standard URI (for example, a custom extension namespace). Passing an
 explicit value overrides the derived default.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Just works — ns_uri is derived from model_package</span>
-<span class="n">loader</span> <span class="o">=</span> <span class="n">LD</span><span class="o">.</span><span class="n">ODMLoader</span><span class="p">(</span><span class="n">DL</span><span class="o">.</span><span class="n">XMLDefineLoader</span><span class="p">(</span><span class="n">model_package</span><span class="o">=</span><span class="s2">&quot;define_2_1&quot;</span><span class="p">))</span>
+<span class="n">loader</span> <span class="o">=</span> <span class="n">LD</span><span class="o">.</span><span class="n">ODMLoader</span><span class="p">(</span><span class="n">DL</span><span class="o">.</span><span class="n">XMLDefineLoader</span><span class="p">(</span><span class="n">model_package</span><span class="o">=</span><span class="s2">"define_2_1"</span><span class="p">))</span>
 
 <span class="c1"># Override only when you need to</span>
 <span class="n">loader</span> <span class="o">=</span> <span class="n">LD</span><span class="o">.</span><span class="n">ODMLoader</span><span class="p">(</span><span class="n">DL</span><span class="o">.</span><span class="n">XMLDefineLoader</span><span class="p">(</span>
-    <span class="n">model_package</span><span class="o">=</span><span class="s2">&quot;define_2_1&quot;</span><span class="p">,</span>
-    <span class="n">ns_uri</span><span class="o">=</span><span class="s2">&quot;http://example.com/extensions/v1&quot;</span><span class="p">,</span>
+    <span class="n">model_package</span><span class="o">=</span><span class="s2">"define_2_1"</span><span class="p">,</span>
+    <span class="n">ns_uri</span><span class="o">=</span><span class="s2">"http://example.com/extensions/v1"</span><span class="p">,</span>
 <span class="p">))</span>
 </pre></div>
 </div>
@@ -189,13 +189,13 @@ explicit value overrides the derived default.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">odmlib.odm_loader</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">OL</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">odmlib.loader</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">LD</span>
 
-<span class="n">loader</span> <span class="o">=</span> <span class="n">LD</span><span class="o">.</span><span class="n">ODMLoader</span><span class="p">(</span><span class="n">OL</span><span class="o">.</span><span class="n">XMLODMLoader</span><span class="p">(</span><span class="n">model_package</span><span class="o">=</span><span class="s2">&quot;odm_1_3_2&quot;</span><span class="p">))</span>
-<span class="n">loader</span><span class="o">.</span><span class="n">open_odm_document</span><span class="p">(</span><span class="s2">&quot;study.xml&quot;</span><span class="p">)</span>
+<span class="n">loader</span> <span class="o">=</span> <span class="n">LD</span><span class="o">.</span><span class="n">ODMLoader</span><span class="p">(</span><span class="n">OL</span><span class="o">.</span><span class="n">XMLODMLoader</span><span class="p">(</span><span class="n">model_package</span><span class="o">=</span><span class="s2">"odm_1_3_2"</span><span class="p">))</span>
+<span class="n">loader</span><span class="o">.</span><span class="n">open_odm_document</span><span class="p">(</span><span class="s2">"study.xml"</span><span class="p">)</span>
 
 <span class="c1"># Get the root ODM element</span>
 <span class="n">odm</span> <span class="o">=</span> <span class="n">loader</span><span class="o">.</span><span class="n">root</span><span class="p">()</span>
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;File OID: </span><span class="si">{</span><span class="n">odm</span><span class="o">.</span><span class="n">FileOID</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;File Type: </span><span class="si">{</span><span class="n">odm</span><span class="o">.</span><span class="n">FileType</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"File OID: </span><span class="si">{</span><span class="n">odm</span><span class="o">.</span><span class="n">FileOID</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"File Type: </span><span class="si">{</span><span class="n">odm</span><span class="o">.</span><span class="n">FileType</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
 </pre></div>
 </div>
 </section>
@@ -204,8 +204,8 @@ explicit value overrides the derived default.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">odmlib.define_loader</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">DL</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">odmlib.loader</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">LD</span>
 
-<span class="n">loader</span> <span class="o">=</span> <span class="n">LD</span><span class="o">.</span><span class="n">ODMLoader</span><span class="p">(</span><span class="n">DL</span><span class="o">.</span><span class="n">XMLDefineLoader</span><span class="p">(</span><span class="n">model_package</span><span class="o">=</span><span class="s2">&quot;define_2_1&quot;</span><span class="p">))</span>
-<span class="n">loader</span><span class="o">.</span><span class="n">open_odm_document</span><span class="p">(</span><span class="s2">&quot;define.xml&quot;</span><span class="p">)</span>
+<span class="n">loader</span> <span class="o">=</span> <span class="n">LD</span><span class="o">.</span><span class="n">ODMLoader</span><span class="p">(</span><span class="n">DL</span><span class="o">.</span><span class="n">XMLDefineLoader</span><span class="p">(</span><span class="n">model_package</span><span class="o">=</span><span class="s2">"define_2_1"</span><span class="p">))</span>
+<span class="n">loader</span><span class="o">.</span><span class="n">open_odm_document</span><span class="p">(</span><span class="s2">"define.xml"</span><span class="p">)</span>
 
 <span class="n">odm</span> <span class="o">=</span> <span class="n">loader</span><span class="o">.</span><span class="n">root</span><span class="p">()</span>
 <span class="n">mdv</span> <span class="o">=</span> <span class="n">loader</span><span class="o">.</span><span class="n">MetaDataVersion</span><span class="p">()</span>
@@ -217,12 +217,12 @@ explicit value overrides the derived default.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">odmlib.odm_loader</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">OL</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">odmlib.loader</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">LD</span>
 
-<span class="n">xml_string</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot;?&gt;</span>
-<span class="s2">&lt;ODM xmlns=&quot;http://www.cdisc.org/ns/odm/v1.3&quot;</span>
-<span class="s2">     FileOID=&quot;F.001&quot; FileType=&quot;Snapshot&quot;</span>
-<span class="s2">     CreationDateTime=&quot;2024-01-01T00:00:00&quot;&gt;</span>
-<span class="s2">  &lt;Study OID=&quot;S.001&quot;&gt;...&lt;/Study&gt;</span>
-<span class="s2">&lt;/ODM&gt;&quot;&quot;&quot;</span>
+<span class="n">xml_string</span> <span class="o">=</span> <span class="s2">"""&lt;?xml version="1.0" encoding="utf-8"?&gt;</span>
+<span class="s2">&lt;ODM xmlns="http://www.cdisc.org/ns/odm/v1.3"</span>
+<span class="s2">     FileOID="F.001" FileType="Snapshot"</span>
+<span class="s2">     CreationDateTime="2024-01-01T00:00:00"&gt;</span>
+<span class="s2">  &lt;Study OID="S.001"&gt;...&lt;/Study&gt;</span>
+<span class="s2">&lt;/ODM&gt;"""</span>
 
 <span class="n">loader</span> <span class="o">=</span> <span class="n">LD</span><span class="o">.</span><span class="n">ODMLoader</span><span class="p">(</span><span class="n">OL</span><span class="o">.</span><span class="n">XMLODMLoader</span><span class="p">())</span>
 <span class="n">loader</span><span class="o">.</span><span class="n">load_odm_string</span><span class="p">(</span><span class="n">xml_string</span><span class="p">)</span>
@@ -238,7 +238,7 @@ attribute access:</p>
 
 <span class="c1"># Iterate over item group definitions</span>
 <span class="k">for</span> <span class="n">igd</span> <span class="ow">in</span> <span class="n">mdv</span><span class="o">.</span><span class="n">ItemGroupDef</span><span class="p">:</span>
-    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Dataset: </span><span class="si">{</span><span class="n">igd</span><span class="o">.</span><span class="n">OID</span><span class="si">}</span><span class="s2"> - </span><span class="si">{</span><span class="n">igd</span><span class="o">.</span><span class="n">Name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Dataset: </span><span class="si">{</span><span class="n">igd</span><span class="o">.</span><span class="n">OID</span><span class="si">}</span><span class="s2"> - </span><span class="si">{</span><span class="n">igd</span><span class="o">.</span><span class="n">Name</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
 
 <span class="c1"># Access a specific element</span>
 <span class="n">study</span> <span class="o">=</span> <span class="n">loader</span><span class="o">.</span><span class="n">Study</span><span class="p">()</span>
@@ -251,21 +251,21 @@ attribute access:</p>
 <p>Use <code class="xref py py-meth docutils literal notranslate"><span class="pre">find()</span></code> to find the first
 matching element:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Find an ItemDef by OID</span>
-<span class="n">item</span> <span class="o">=</span> <span class="n">mdv</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s2">&quot;ItemDef&quot;</span><span class="p">,</span> <span class="s2">&quot;OID&quot;</span><span class="p">,</span> <span class="s2">&quot;IT.AGE&quot;</span><span class="p">)</span>
+<span class="n">item</span> <span class="o">=</span> <span class="n">mdv</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s2">"ItemDef"</span><span class="p">,</span> <span class="s2">"OID"</span><span class="p">,</span> <span class="s2">"IT.AGE"</span><span class="p">)</span>
 <span class="k">if</span> <span class="n">item</span><span class="p">:</span>
-    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;DataType: </span><span class="si">{</span><span class="n">item</span><span class="o">.</span><span class="n">DataType</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"DataType: </span><span class="si">{</span><span class="n">item</span><span class="o">.</span><span class="n">DataType</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
 
 <span class="c1"># Find an ItemGroupDef by Name</span>
-<span class="n">dm</span> <span class="o">=</span> <span class="n">mdv</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s2">&quot;ItemGroupDef&quot;</span><span class="p">,</span> <span class="s2">&quot;Name&quot;</span><span class="p">,</span> <span class="s2">&quot;Demographics&quot;</span><span class="p">)</span>
+<span class="n">dm</span> <span class="o">=</span> <span class="n">mdv</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s2">"ItemGroupDef"</span><span class="p">,</span> <span class="s2">"Name"</span><span class="p">,</span> <span class="s2">"Demographics"</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>Use <code class="xref py py-meth docutils literal notranslate"><span class="pre">find_all()</span></code> to get all matches:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Find all items with DataType &quot;text&quot;</span>
-<span class="n">text_items</span> <span class="o">=</span> <span class="n">mdv</span><span class="o">.</span><span class="n">find_all</span><span class="p">(</span><span class="s2">&quot;ItemDef&quot;</span><span class="p">,</span> <span class="s2">&quot;DataType&quot;</span><span class="p">,</span> <span class="s2">&quot;text&quot;</span><span class="p">)</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Find all items with DataType "text"</span>
+<span class="n">text_items</span> <span class="o">=</span> <span class="n">mdv</span><span class="o">.</span><span class="n">find_all</span><span class="p">(</span><span class="s2">"ItemDef"</span><span class="p">,</span> <span class="s2">"DataType"</span><span class="p">,</span> <span class="s2">"text"</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>Use <code class="xref py py-meth docutils literal notranslate"><span class="pre">find_by()</span></code> for multi-attribute search:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">item</span> <span class="o">=</span> <span class="n">mdv</span><span class="o">.</span><span class="n">find_by</span><span class="p">(</span><span class="s2">&quot;ItemDef&quot;</span><span class="p">,</span> <span class="n">OID</span><span class="o">=</span><span class="s2">&quot;IT.AGE&quot;</span><span class="p">,</span> <span class="n">DataType</span><span class="o">=</span><span class="s2">&quot;integer&quot;</span><span class="p">)</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">item</span> <span class="o">=</span> <span class="n">mdv</span><span class="o">.</span><span class="n">find_by</span><span class="p">(</span><span class="s2">"ItemDef"</span><span class="p">,</span> <span class="n">OID</span><span class="o">=</span><span class="s2">"IT.AGE"</span><span class="p">,</span> <span class="n">DataType</span><span class="o">=</span><span class="s2">"integer"</span><span class="p">)</span>
 </pre></div>
 </div>
 </section>
@@ -283,8 +283,8 @@ parameter to access others:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">odmlib.odm_loader</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">OL</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">odmlib.loader</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">LD</span>
 
-<span class="n">loader</span> <span class="o">=</span> <span class="n">LD</span><span class="o">.</span><span class="n">ODMLoader</span><span class="p">(</span><span class="n">OL</span><span class="o">.</span><span class="n">JSONODMLoader</span><span class="p">(</span><span class="n">model_package</span><span class="o">=</span><span class="s2">&quot;odm_1_3_2&quot;</span><span class="p">))</span>
-<span class="n">loader</span><span class="o">.</span><span class="n">open_odm_document</span><span class="p">(</span><span class="s2">&quot;study.json&quot;</span><span class="p">)</span>
+<span class="n">loader</span> <span class="o">=</span> <span class="n">LD</span><span class="o">.</span><span class="n">ODMLoader</span><span class="p">(</span><span class="n">OL</span><span class="o">.</span><span class="n">JSONODMLoader</span><span class="p">(</span><span class="n">model_package</span><span class="o">=</span><span class="s2">"odm_1_3_2"</span><span class="p">))</span>
+<span class="n">loader</span><span class="o">.</span><span class="n">open_odm_document</span><span class="p">(</span><span class="s2">"study.json"</span><span class="p">)</span>
 <span class="n">odm</span> <span class="o">=</span> <span class="n">loader</span><span class="o">.</span><span class="n">root</span><span class="p">()</span>
 </pre></div>
 </div>
@@ -299,10 +299,10 @@ parameter to access others:</p>
 <span class="n">doc_dict</span> <span class="o">=</span> <span class="n">odm</span><span class="o">.</span><span class="n">to_dict</span><span class="p">()</span>
 
 <span class="c1"># Write to XML file</span>
-<span class="n">odm</span><span class="o">.</span><span class="n">write_xml</span><span class="p">(</span><span class="s2">&quot;output.xml&quot;</span><span class="p">)</span>
+<span class="n">odm</span><span class="o">.</span><span class="n">write_xml</span><span class="p">(</span><span class="s2">"output.xml"</span><span class="p">)</span>
 
 <span class="c1"># Write to JSON file</span>
-<span class="n">odm</span><span class="o">.</span><span class="n">write_json</span><span class="p">(</span><span class="s2">&quot;output.json&quot;</span><span class="p">)</span>
+<span class="n">odm</span><span class="o">.</span><span class="n">write_json</span><span class="p">(</span><span class="s2">"output.json"</span><span class="p">)</span>
 </pre></div>
 </div>
 </section>
@@ -314,11 +314,11 @@ inspection and repair:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">odmlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">permissive</span>
 
 <span class="k">with</span> <span class="n">permissive</span><span class="p">():</span>
-    <span class="n">loader</span><span class="o">.</span><span class="n">open_odm_document</span><span class="p">(</span><span class="s2">&quot;broken.xml&quot;</span><span class="p">)</span>
+    <span class="n">loader</span><span class="o">.</span><span class="n">open_odm_document</span><span class="p">(</span><span class="s2">"broken.xml"</span><span class="p">)</span>
     <span class="n">odm</span> <span class="o">=</span> <span class="n">loader</span><span class="o">.</span><span class="n">root</span><span class="p">()</span>
 
 <span class="c1"># Fix issues in strict mode, then validate</span>
-<span class="n">errors</span> <span class="o">=</span> <span class="n">odm</span><span class="o">.</span><span class="n">validate</span><span class="p">(</span><span class="n">collect_errors</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">errors</span> <span class="o">=</span> <span class="n">odm</span><span class="o">.</span><span class="n">validate</span><span class="p">(</span><span class="n">collect_errors</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">max_errors</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>See <a class="reference internal" href="permissive_loading.html"><span class="doc">Permissive Loading Mode</span></a> for the full guide including graduated

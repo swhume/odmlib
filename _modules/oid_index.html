@@ -5,14 +5,14 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>oid_index &mdash; odmlib 0.2.0 documentation</title>
+  <title>oid_index &mdash; odmlib 0.2.1 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
 
   
       <script src="../_static/jquery.js?v=5d32c60e"></script>
       <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../_static/documentation_options.js?v=938c9ccc"></script>
+      <script src="../_static/documentation_options.js?v=37f418d5"></script>
       <script src="../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../_static/js/theme.js"></script>
@@ -105,7 +105,7 @@
 <div class="viewcode-block" id="OIDIndex.add_oid">
 <a class="viewcode-back" href="../modules.html#oid_index.OIDIndex.add_oid">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">add_oid</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">oid</span><span class="p">,</span> <span class="n">element</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot; odmlib expects all OIDs to be unique within the scope of an ODM document &quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">""" odmlib expects all OIDs to be unique within the scope of an ODM document """</span>
         <span class="k">if</span> <span class="n">oid</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">oid_index</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">oid_index</span><span class="p">[</span><span class="n">oid</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">oid_index</span><span class="p">[</span><span class="n">oid</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">element</span><span class="p">)</span></div>
@@ -116,15 +116,15 @@
     <span class="k">def</span><span class="w"> </span><span class="nf">find_all</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">oid</span><span class="p">):</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">oid_index</span><span class="p">:</span>
             <span class="k">raise</span> <span class="n">OdmlibOIDError</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;The OID index is empty. Build the index prior to using find_all. OID </span><span class="si">{</span><span class="n">oid</span><span class="si">}</span><span class="s2"> not found.&quot;</span><span class="p">,</span>
-                <span class="n">attribute</span><span class="o">=</span><span class="s2">&quot;OID&quot;</span><span class="p">,</span>
-                <span class="n">hint</span><span class="o">=</span><span class="s2">&quot;Call build_oid_index() on the root ODM element before using find_all()&quot;</span><span class="p">,</span>
+                <span class="sa">f</span><span class="s2">"The OID index is empty. Build the index prior to using find_all. OID </span><span class="si">{</span><span class="n">oid</span><span class="si">}</span><span class="s2"> not found."</span><span class="p">,</span>
+                <span class="n">attribute</span><span class="o">=</span><span class="s2">"OID"</span><span class="p">,</span>
+                <span class="n">hint</span><span class="o">=</span><span class="s2">"Call build_oid_index() on the root ODM element before using find_all()"</span><span class="p">,</span>
             <span class="p">)</span>
         <span class="k">elif</span> <span class="n">oid</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">oid_index</span><span class="p">:</span>
             <span class="k">raise</span> <span class="n">OdmlibOIDError</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;OID </span><span class="si">{</span><span class="n">oid</span><span class="si">}</span><span class="s2"> not found in the OID index.&quot;</span><span class="p">,</span>
-                <span class="n">attribute</span><span class="o">=</span><span class="s2">&quot;OID&quot;</span><span class="p">,</span>
-                <span class="n">hint</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;Verify that an element with OID &#39;</span><span class="si">{</span><span class="n">oid</span><span class="si">}</span><span class="s2">&#39; has been added to the model&quot;</span><span class="p">,</span>
+                <span class="sa">f</span><span class="s2">"OID </span><span class="si">{</span><span class="n">oid</span><span class="si">}</span><span class="s2"> not found in the OID index."</span><span class="p">,</span>
+                <span class="n">attribute</span><span class="o">=</span><span class="s2">"OID"</span><span class="p">,</span>
+                <span class="n">hint</span><span class="o">=</span><span class="sa">f</span><span class="s2">"Verify that an element with OID '</span><span class="si">{</span><span class="n">oid</span><span class="si">}</span><span class="s2">' has been added to the model"</span><span class="p">,</span>
             <span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">oid_index</span><span class="p">[</span><span class="n">oid</span><span class="p">]</span></div>
 </div>

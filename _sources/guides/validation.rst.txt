@@ -160,7 +160,7 @@ Cerberus-based schema validation checks structural conformance:
 Combined Validation with Error Collection
 ------------------------------------------
 
-Use the ``validate()`` method to run all checks and collect all errors
+Use the ``validate()`` method to run all checks and collect every error
 instead of failing on the first one:
 
 .. code-block:: python
@@ -182,6 +182,96 @@ instead of failing on the first one:
     else:
         for err in errors:
             print(f"Error: {err}")
+
+What "every error" means per layer
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Each of the three layers enumerates its own problems rather than stopping at
+the first:
+
+* **Element order** — one :class:`~odmlib.exceptions.OdmlibElementOrderError`
+  per misordered element. The walk continues into the children of a misordered
+  element, so a single pass lists everything
+  :meth:`~odmlib.odm_element.ODMElement.reorder_object` needs to fix.
+* **OID** — one :class:`~odmlib.exceptions.OdmlibOIDError` per duplicate OID
+  and per bad reference. Duplicates no longer abort the traversal, so the
+  reference checks still run. On a duplicate the *first* definition is kept.
+* **Conformance** — the bundled Cerberus result is expanded into one
+  :class:`~odmlib.exceptions.OdmlibConformanceError` per failing field, each
+  carrying a dotted ``field_path`` (e.g. ``"ItemGroupDef.0.Name"``) and the
+  complete raw dict on ``cerberus_errors``.
+
+Because the number of errors is now unbounded, errors are best filtered by
+type rather than accessed by index:
+
+.. code-block:: python
+
+    from odmlib import OdmlibOIDError
+
+    oid_problems = [e for e in errors if isinstance(e, OdmlibOIDError)]
+
+Capping the error list
+~~~~~~~~~~~~~~~~~~~~~~
+
+A badly broken document can produce thousands of errors.  ``max_errors`` stops
+collection once the cap is reached and appends a final
+:class:`~odmlib.exceptions.OdmlibErrorLimitError`, so the list holds at most
+``max_errors + 1`` entries:
+
+.. code-block:: python
+
+    errors = odm.validate(collect_errors=True, oid_checker=checker,
+                          max_errors=100)
+
+    if errors and isinstance(errors[-1], OdmlibErrorLimitError):
+        print("More problems remain — fix these and re-run")
+
+The cap is enforced inside each layer, so validation genuinely stops early
+rather than collecting everything and truncating the result.
+
+Checker reuse
+~~~~~~~~~~~~~
+
+An OID checker accumulates every OID it sees, so it is single-use per
+document.  Reusing one reports every OID as a duplicate.  Either build a fresh
+checker per document, or call ``reset()``:
+
+.. code-block:: python
+
+    checker.reset()
+    errors = other_odm.validate(collect_errors=True, oid_checker=checker)
+
+``validate()`` emits an :class:`~odmlib.exceptions.OdmlibWarning` in collect
+mode when it is handed a checker that still holds state.
+
+.. note::
+
+   The deprecated ``rules/oid_ref.py`` ``OIDRef`` classes (removed in v0.3.0)
+   do not implement the collecting protocol and contribute at most **one**
+   error for the whole OID layer.  Use
+   :func:`~odmlib.oid_generator.create_oid_checker` to get full reporting.
+   :func:`~odmlib.exceptions.is_collecting_checker` tells you which you have.
+
+Only :class:`~odmlib.exceptions.OdmlibError` subclasses are collected.  Any
+other exception — a bug in a custom checker, an ``AttributeError`` from a
+malformed tree — propagates in both modes rather than being reported as a
+document defect.
+
+Collecting from ``verify_oids()`` directly
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The OID layer can be run on its own with collection enabled:
+
+.. code-block:: python
+
+    from odmlib import ErrorCollector
+
+    collector = ErrorCollector()
+    with checker.collecting(collector):
+        odm.verify_oids(checker)
+
+    for err in collector.errors:
+        print(err)
 
 This pattern is particularly useful after permissive loading, where a
 non-conformant document has been loaded with validation bypassed.  After
@@ -209,12 +299,42 @@ odmlib:
     # Define-XML 2.0 / 2.1
     validator = ODMSchemaValidator(standard="define", version="2.1")
 
+    # ARM 1.0 (Analysis Results Metadata) in a Define-XML 2.1 document
+    validator = ODMSchemaValidator(standard="arm", version="1.0-define2.1")
+
     # Validate a file directly (raises OdmlibSchemaValidationError on failure)
     validator.validate_file("study.xml")
 
     # Or validate an already-parsed ElementTree (returns bool)
     tree = ODMParser("study.xml").parse_tree()
     is_valid = validator.validate_tree(tree)
+
+Both ``standard`` and ``version`` are required; there is no default.
+
+Validating ARM (Analysis Results Metadata)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+ARM 1.0 is an extension embedded in a Define-XML document rather than a
+standalone document type, so odmlib bundles two ARM schema sets — one per
+Define-XML version:
+
+.. list-table::
+   :header-rows: 1
+
+   * - ``(standard, version)``
+     - Validates
+   * - ``("arm", "1.0")``
+     - ARM 1.0 inside a Define-XML **2.0** document (the CDISC original)
+   * - ``("arm", "1.0-define2.1")``
+     - ARM 1.0 inside a Define-XML **2.1** document
+
+The two are **not** interchangeable: Define-XML 2.0 and 2.1 use different
+``def:`` namespace URIs, so the wrong pairing rejects the document on the
+first ``def:``-prefixed attribute it encounters. Use ``"1.0-define2.1"``
+with :mod:`odmlib.arm_1_0`, which extends :mod:`odmlib.define_2_1`.
+
+Both ARM schemas are supersets of their base Define-XML schema, so either
+one also validates an ARM-free Define-XML document of the matching version.
 
 For a custom or local XSD that is not bundled with odmlib, pass an
 explicit ``xsd_file`` path:

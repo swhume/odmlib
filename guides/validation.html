@@ -164,7 +164,7 @@ so it works on any odmlib model object — the <code class="docutils literal not
 recurses through every <code class="docutils literal notranslate"><span class="pre">ODMElement</span></code> child and every entry of every
 <code class="docutils literal notranslate"><span class="pre">ODMListObject</span></code> list, so a single call on the odmlib root covers the
 whole document.</p>
-<p>It does <strong>not</strong> work on <a class="reference external" href="https://docs.python.org/3/library/xml.etree.elementtree.html#xml.etree.ElementTree.Element" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">xml.etree.ElementTree.Element</span></code></a> — that
+<p>It does <strong>not</strong> work on <a class="reference external" href="https://docs.python.org/3/library/xml.etree.elementtree.html#xml.etree.ElementTree.Element" title="(in Python v3.15)"><code class="xref py py-class docutils literal notranslate"><span class="pre">xml.etree.ElementTree.Element</span></code></a> — that
 is the parsed XML representation, not an odmlib object. If you only
 have an ElementTree, load it through
 <code class="xref py py-class docutils literal notranslate"><span class="pre">XMLODMLoader</span></code> (or

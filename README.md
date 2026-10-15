@@ -66,8 +66,20 @@ use this library correctly — the right loader per standard, namespace registra
 ordering, validation layers, and the serialization pitfalls that are easy to get wrong by hand.
 
 The skill lives in this repository at `.claude/skills/odmlib/`. It is **not** part of the PyPI
-package, so `pip install odmlib` does not install it — copy the directory into whichever
-`.claude/skills/` directory you want it available from:
+package, so `pip install odmlib` does not install it. 
+
+Use the follow commands to install the skill from the odmlib GitHub repo:
+
+```bash
+# project scope
+curl -L -o /tmp/odmlib.skill https://github.com/swhume/odmlib/raw/v0.2.1/.claude/skills/odmlib.skill
+mkdir -p .claude/skills && unzip -o /tmp/odmlib.skill -d .claude/skills/
+
+# or, without unzip:
+npx degit swhume/odmlib/.claude/skills/odmlib .claude/skills/odmlib
+```
+
+Alternatively, copy the directory into whichever `.claude/skills/` directory you want it available from:
 
 ```bash
 git clone https://github.com/swhume/odmlib.git

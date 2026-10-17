@@ -118,8 +118,8 @@ Creating a Define-XML 2.1 Document
         is_default=True, is_reset=True)
     NS.NamespaceRegistry(prefix="def",
         uri="http://www.cdisc.org/ns/def/v2.1")
-    # xlink is required: def:leaf carries xlink:href, and without this the
-    # xmlns:xlink declaration is omitted and the output cannot be re-parsed
+    # def:leaf carries xlink:href; xlink is declared automatically if you
+    # do not register it
     NS.NamespaceRegistry(prefix="xlink",
         uri="http://www.w3.org/1999/xlink")
 
@@ -129,10 +129,12 @@ Creating a Define-XML 2.1 Document
 .. warning::
 
    ``is_reset=True`` clears **every** registered prefix, including the ones each
-   model package registers when it is imported. Register every prefix the
-   document uses, not only the ones you set yourself: a prefix that appears in
-   the tree but not in the registry is dropped from the ``xmlns`` declarations
-   without warning, and the result cannot be re-parsed.
+   model package registers when it is imported. Since v0.3.0 a prefix with one
+   URI in every odmlib model (``xs``, ``xlink``, ``nciodm``, ``data``, ``arm``)
+   is declared automatically when it is missing. A version-dependent prefix --
+   ``def`` here -- must be registered: if it is missing, serialization emits an
+   :class:`~odmlib.exceptions.OdmlibInteroperabilityWarning` and the result
+   cannot be re-parsed.
 
 Serialization Options
 ---------------------

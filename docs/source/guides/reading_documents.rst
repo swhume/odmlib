@@ -161,6 +161,24 @@ Use :meth:`~odmlib.odm_element.ODMElement.find_by` for multi-attribute search:
 
     item = mdv.find_by("ItemDef", OID="IT.AGE", DataType="integer")
 
+Reading Children in Document Order
+----------------------------------
+
+:meth:`~odmlib.odm_element.ODMElement.children` returns an element's child
+elements in the order they are written to XML, optionally filtered by name.
+Use it where ODM 2.0 lets two child types alternate -- an ``ItemGroupDef``'s
+``ItemRef`` and ``ItemGroupRef``, for example -- because the per-type lists
+cannot tell you how they interleave:
+
+.. code-block:: python
+
+    form = mdv.find("ItemGroupDef", "OID", "IG.DM")
+    for child in form.children("ItemRef", "ItemGroupRef"):
+        print(type(child).__name__, getattr(child, "ItemOID", None)
+              or child.ItemGroupOID)
+
+A loaded element keeps the order of its source document (new in v0.3.0).
+
 Loading Multiple MetaDataVersions
 -----------------------------------
 

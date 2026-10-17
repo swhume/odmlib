@@ -69,6 +69,15 @@ ODM 2.0 is a draft and differs from 1.3.2 in ways that break naive code reuse:
   `StudyStructure`, `Epoch`, `Arm`, `WorkflowRef`, etc.
 - Adds elements like `StudyStructure`, `Arm`, `Epoch`, `Include`, `Coding`, `Definition`,
   `Prompt`, `CRFCompletionInstructions`, `ImplementationNotes`, `SourceItems`.
+- **Interleaved children (0.3.0+).** `ItemGroupDef`'s `ItemGroupRef`/`ItemRef`,
+  `StudyEventGroupDef`'s `StudyEventGroupRef`/`StudyEventRef` and `WorkflowDef`'s
+  `Transition`/`Branching` may alternate. The per-type lists still work, but they share one
+  order: a loaded document keeps its order, and appending to either list adds at the end.
+  Read the combined order with `igd.children("ItemRef", "ItemGroupRef")` — don't
+  concatenate the two lists, which loses it. On 0.2.x every group ref was written first.
+- **XHTML text (0.3.0+).** `TranslatedText.div` holds an `xhtml:div` child as a markup
+  string (`'<div xmlns="http://www.w3.org/1999/xhtml"><p>…</p></div>'`); plain text stays in
+  `_content`, which may also be empty.
 
 The `ODMBuilder` constructs the correct shape for whichever package you pass, so prefer the
 builder when generating ODM 2.0. If you construct raw objects, do not copy a 1.3.2 study

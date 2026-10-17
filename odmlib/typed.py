@@ -15,17 +15,23 @@ The descriptor hierarchy:
     - :class:`DateTimeString`, :class:`DateString`, :class:`PartialDateTimeString`,
       :class:`PartialDateString`, :class:`PartialTimeString`,
       :class:`IncompleteDateTimeString`, :class:`IncompleteDateString`,
-      :class:`IncompleteTimeString`, :class:`DurationDateTimeString` -- temporal types
+      :class:`IncompleteTimeString`, :class:`DurationDateTimeString`,
+      :class:`TimepointString` -- temporal types
+    - :class:`Language` -- ``xs:language`` codes (``xml:lang``)
     - :class:`SASName`, :class:`SASFormat` -- SAS naming constraints
     - :class:`Email`, :class:`Url`, :class:`FileName` -- format validators
     - :class:`ValidValues`, :class:`ExtendedValidValues` -- enumerated value validators
     - :class:`ValueSetString` -- combined enumerated + string validator
+    - :class:`XHTMLDiv` -- an ``xhtml:div`` child carried as markup text
     - :class:`ODMObject` -- single child ODM element container
     - :class:`ODMListObject` -- list of child ODM elements container
 """
 import odmlib.descriptor as DESC
 import re
+import math
 import odmlib.valueset as VS
+import odmlib.interleave as IL
+import odmlib.xhtml as XH
 import datetime
 from validators import email as valid_email, url as valid_url
 from pathvalidate import is_valid_filename
@@ -94,29 +100,43 @@ class Integer(DESC.Descriptor):
 
 
 class Float(DESC.Descriptor):
-    """Descriptor for float-valued ODM attributes.
+    """Descriptor for decimal-valued ODM attributes, stored as ``float``.
 
-    Accepts float, int, and string values that convert to float.
-    Used for Rank attributes in CodeListItem and EnumeratedItem.
+    Accepts float, int, and strings in the ``xs:decimal`` lexical space (``"1"``,
+    ``"-2.5"``, ``".5"``; surrounding whitespace is ignored). Every attribute that uses
+    it -- ``Rank`` on CodeListItem and EnumeratedItem, and ODM 2.0's GeoPosition
+    coordinates -- is ``xs:decimal`` in its schema.
+
+    .. versionchanged:: 0.3.0
+       Strings are checked against ``xs:decimal`` before conversion. ``float()`` also
+       accepts ``"1e3"``, ``"nan"``, ``"inf"`` and ``"1_000"``, none of which the XSD
+       allows, and non-finite floats are now rejected too.
     """
 
     def __set__(self, instance, value):
         # in XML floats are presented as strings
         if isinstance(value, str):
-            try:
+            if _XS_DECIMAL_PAT.fullmatch(_xsd_collapse(value)):
                 value = float(value)
-            except ValueError:
-                if not _mode.is_permissive(_mode.ValidationMode.SKIP_TYPE):
-                    raise OdmlibTypeError(
-                        f"Expected string to convert to float for {self.name} with a value {str(value)}",
-                        attribute=self.name,
-                        actual_value=value,
-                        hint="Provide a string that represents a valid float, e.g., '3.14'",
-                    )
-                # permissive: fall through — store the string as-is
+            elif not _mode.is_permissive(_mode.ValidationMode.SKIP_TYPE):
+                raise OdmlibTypeError(
+                    f"Expected string to convert to float for {self.name} with a value {str(value)}",
+                    attribute=self.name,
+                    actual_value=value,
+                    hint="Provide an xs:decimal string, e.g., '3.14' (no exponent, NaN or INF)",
+                )
+            # permissive: fall through — store the string as-is
         # convert integer into a float (e.g. 1 to 1.0)
         elif isinstance(value, int):
             value = float(value)
+        if isinstance(value, float) and not math.isfinite(value):
+            if not _mode.is_permissive(_mode.ValidationMode.SKIP_TYPE):
+                raise OdmlibTypeError(
+                    f"Expected a finite decimal for {self.name}, found {value}",
+                    attribute=self.name,
+                    actual_value=value,
+                    hint="xs:decimal has no NaN or infinity",
+                )
         if (value is not None) and not isinstance(value, float):
             if not _mode.is_permissive(_mode.ValidationMode.SKIP_TYPE):
                 raise OdmlibTypeError(
@@ -135,42 +155,126 @@ class String(Typed):
     odm_type = str
 
 
-class OID(Typed):
+class NonEmptyString(Typed):
+    """String descriptor that rejects the empty string.
+
+    Base of :class:`OID`, :class:`OIDRef` and :class:`Name`: the ODM ``oid``,
+    ``oidref`` and ``name`` types are ``xs:string`` with ``minLength 1`` in ODM 1.3.2,
+    ODM 2.0 and the Define-XML schemas built on them.
+
+    .. versionadded:: 0.3.0
+    """
+
+    odm_type = str
+
+    def __set__(self, instance, value):
+        if value == "":
+            if not _mode.is_permissive(_mode.ValidationMode.SKIP_FORMAT):
+                raise OdmlibValidationError(
+                    f"{self.name} must not be an empty string",
+                    attribute=self.name,
+                    actual_value=value,
+                    hint=f"Provide a non-empty value for {self.name}, or omit it if optional",
+                )
+        super().__set__(instance, value)
+
+
+class OID(NonEmptyString):
     """Descriptor for OID (Object Identifier) attributes.
 
     OIDs uniquely identify definition elements within a MetaDataVersion.
     Used on the ``OID`` attribute of *Def elements (e.g., ``ItemDef.OID``).
+
+    .. versionchanged:: 0.3.0
+       The empty string is rejected (``minLength 1`` in the XSD).
     """
 
-    odm_type = str
 
-
-class OIDRef(Typed):
+class OIDRef(NonEmptyString):
     """Descriptor for OID reference attributes.
 
     References the OID of a definition element.
     Used on reference elements (e.g., ``ItemRef.ItemOID`` references ``ItemDef.OID``).
+
+    .. versionchanged:: 0.3.0
+       The empty string is rejected (``minLength 1`` in the XSD).
+    """
+
+
+class Name(NonEmptyString):
+    """Descriptor for the Name attribute of ODM elements.
+
+    .. versionchanged:: 0.3.0
+       The empty string is rejected (``minLength 1`` in the XSD).
+    """
+
+
+# XML 1.0 (Fifth Edition) NameStartChar and NameChar, without the colon: an NCName,
+# the lexical space of xs:ID and xs:IDREF.
+_NCNAME_START = ("A-Z_a-z\u00C0-\u00D6\u00D8-\u00F6\u00F8-\u02FF\u0370-\u037D"
+                 "\u037F-\u1FFF\u200C-\u200D\u2070-\u218F\u2C00-\u2FEF\u3001-\uD7FF"
+                 "\uF900-\uFDCF\uFDF0-\uFFFD\U00010000-\U000EFFFF")
+_NCNAME_PAT = re.compile(
+    f"[{_NCNAME_START}][{_NCNAME_START}\\-.0-9\u00B7\u0300-\u036F\u203F-\u2040]*")
+
+
+class _NCNameString(Typed):
+    """String descriptor restricted to the NCName lexical space (whitespace collapsed)."""
+
+    odm_type = str
+    _xsd_type = "NCName"
+
+    def __set__(self, instance, value):
+        if isinstance(value, str) and not _NCNAME_PAT.fullmatch(_xsd_collapse(value)):
+            if not _mode.is_permissive(_mode.ValidationMode.SKIP_FORMAT):
+                raise OdmlibValidationError(
+                    f"{self.name} has an invalid {self._xsd_type} value of {value!r}",
+                    attribute=self.name,
+                    actual_value=value,
+                    hint=f"An {self._xsd_type} starts with a letter or underscore and contains "
+                         "only letters, digits, '.', '-' and '_' (no spaces or colons)",
+                )
+        super().__set__(instance, value)
+
+
+class ID(_NCNameString):
+    """Descriptor for XML ID attributes (``xs:ID``).
+
+    .. versionchanged:: 0.3.0
+       Values must be NCNames, as ``xs:ID`` requires.
+    """
+
+    _xsd_type = "xs:ID"
+
+
+class IDRef(_NCNameString):
+    """Descriptor for XML IDREF attributes (``xs:IDREF``).
+
+    .. versionchanged:: 0.3.0
+       Values must be NCNames, as ``xs:IDREF`` requires.
+    """
+
+    _xsd_type = "xs:IDREF"
+
+
+class Language(Typed):
+    """Descriptor for ``xs:language`` values, such as ``xml:lang`` (``en``, ``en-US``).
+
+    .. versionadded:: 0.3.0
     """
 
     odm_type = str
 
-
-class Name(Typed):
-    """Descriptor for the Name attribute of ODM elements."""
-
-    odm_type = str
-
-
-class ID(Typed):
-    """Descriptor for XML ID attributes."""
-
-    odm_type = str
-
-
-class IDRef(Typed):
-    """Descriptor for XML IDREF attributes."""
-
-    odm_type = str
+    def __set__(self, instance, value):
+        if isinstance(value, str) and not _XS_LANGUAGE_PAT.fullmatch(_xsd_collapse(value)):
+            if not _mode.is_permissive(_mode.ValidationMode.SKIP_FORMAT):
+                raise OdmlibValidationError(
+                    f"{self.name} has an invalid language code of {value!r}",
+                    attribute=self.name,
+                    actual_value=value,
+                    hint="Use a BCP 47 language tag, e.g. 'en' or 'en-US'",
+                )
+        super().__set__(instance, value)
 
 
 class List(Typed):
@@ -315,7 +419,6 @@ class SizedRegexString(SizedString, Regex):
 
 # format patterns compiled once at import time — these run in __set__, which
 # is a hot path when loading large documents
-_DATETIME_PAT = re.compile(r'^(-?(?:[1-9][0-9]*)?[0-9]{4})-(1[0-2]|0[1-9])-(3[01]|0[1-9]|[12][0-9])T(2[0-3]|[01][0-9]):([0-5][0-9]):([0-5][0-9])(\.[0-9]+)?(Z|[+-](?:2[0-3]|[01][0-9]):[0-5][0-9])?$')
 _PARTIAL_DATETIME_PAT = re.compile(r'^((([0-9][0-9][0-9][0-9])((-(([0][1-9])|([1][0-2])))((-(([0][1-9])|([1-2][0-9])|([3][0-1])))(T((([0-1][0-9])|([2][0-3]))((:([0-5][0-9]))(((:([0-5][0-9]))((\.[0-9]+)?))?)?)?((((\+|-)(([0-1][0-9])|([2][0-3])):[0-5][0-9])|(Z)))?))?)?)?))$')
 _PARTIAL_DATE_PAT = re.compile(r'^(([0-9][0-9][0-9][0-9])(-(([0][1-9])|([1][0-2])))?)$')
 _TIME_PAT = re.compile(r'^(2[0-3]|[01][0-9]):([0-5][0-9]):([0-5][0-9])(\.[0-9]+)?(Z|[+-](?:2[0-3]|[01][0-9]):[0-5][0-9])?$')
@@ -327,16 +430,97 @@ _SAS_NAME_PAT = re.compile(r"[A-Za-z_][A-Za-z0-9_]*$")
 _SAS_FORMAT_PAT = re.compile(r"[A-Za-z_$][A-Za-z0-9_.]*$")
 
 
+# ---------------------------------------------------------------------------
+# XML Schema 1.0 lexical spaces
+# ---------------------------------------------------------------------------
+# The built-in date/time, duration, decimal and language types collapse whitespace
+# before matching, so they are tested against _xsd_collapse(value). The ODM pattern
+# types (emptyTag, tHour, tDatetime, tDuration, tIncomplete*) derive from xs:string,
+# which preserves whitespace, so they are tested against the raw value. A union
+# accepts a value that any one member accepts. Every pattern is applied with
+# fullmatch(): a "$" anchor alone also matches before a trailing newline.
+
+_XSD_WHITESPACE = " \t\n\r"
+_YEAR = r"(?P<year>-?(?:[1-9][0-9]{4,}|[0-9]{4}))"
+_MONTH = r"(?P<month>0[1-9]|1[0-2])"
+_DAY = r"(?P<day>0[1-9]|[12][0-9]|3[01])"
+_TZ = r"(?:Z|[+-](?:(?:0[0-9]|1[0-3]):[0-5][0-9]|14:00))"
+_CLOCK = r"(?:(?:[01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9](?:\.[0-9]+)?|24:00:00(?:\.0+)?)"
+_XS_DATETIME_PAT = re.compile(rf"{_YEAR}-{_MONTH}-{_DAY}T{_CLOCK}{_TZ}?", re.ASCII)
+_XS_DATE_PAT = re.compile(rf"{_YEAR}-{_MONTH}-{_DAY}{_TZ}?", re.ASCII)
+_XS_TIME_PAT = re.compile(rf"{_CLOCK}{_TZ}?", re.ASCII)
+_XS_GYEARMONTH_PAT = re.compile(rf"{_YEAR}-{_MONTH}{_TZ}?", re.ASCII)
+_XS_GYEAR_PAT = re.compile(rf"{_YEAR}{_TZ}?", re.ASCII)
+_XS_DURATION_PAT = re.compile(
+    r"-?P(?=[0-9]|T[0-9])(?:[0-9]+Y)?(?:[0-9]+M)?(?:[0-9]+D)?"
+    r"(?:T(?=[0-9])(?:[0-9]+H)?(?:[0-9]+M)?(?:[0-9]+(?:\.[0-9]+)?S)?)?", re.ASCII)
+_XS_DECIMAL_PAT = re.compile(r"[+-]?(?:[0-9]+(?:\.[0-9]*)?|\.[0-9]+)", re.ASCII)
+_XS_LANGUAGE_PAT = re.compile(r"[a-zA-Z]{1,8}(?:-[a-zA-Z0-9]{1,8})*", re.ASCII)
+_EMPTY_TAG_PAT = re.compile(r"[ ]?")                       # emptyTag: "" or one space
+_T_DURATION_PAT = re.compile(r"[+-]?P[0-9]+W", re.ASCII)   # tDuration (week form)
+# tHour, tDatetime, tIncomplete, tIncompleteDate and tIncompleteTime are
+# _PARTIAL_TIME_PAT, _PARTIAL_DATETIME_PAT, _INCOMPLETE_DATETIME_PAT,
+# _INCOMPLETE_DATE_PAT and _INCOMPLETE_TIME_PAT above, copied from ODM-types.xsd.
+
+
+def _xsd_collapse(value):
+    """Strip the XML whitespace a collapsing XSD type ignores at either end."""
+    return value.strip(_XSD_WHITESPACE)
+
+
+def _calendar_ok(match):
+    """Apply the value checks a date pattern cannot express.
+
+    XML Schema 1.0 has no year 0000, and the day must exist in its month: 2021-02-29
+    is rejected, 2020-02-29 accepted. The leap-year rule is applied to the year as
+    written, negative years included, which is what xmlschema (the validator behind
+    ODMSchemaValidator) does.
+    """
+    year = int(match.group("year"))
+    if year == 0:
+        return False
+    day = match.groupdict().get("day")
+    if day is None or int(day) <= 28:
+        return True
+    month = int(match.group("month"))
+    if month == 2:
+        leap = year % 4 == 0 and (year % 100 != 0 or year % 400 == 0)
+        return int(day) <= (29 if leap else 28)
+    return int(day) <= (30 if month in (4, 6, 9, 11) else 31)
+
+
+def _is_xs(pattern, value):
+    """True when *value* is in the lexical space of a collapsing built-in type."""
+    if not isinstance(value, str):
+        return False
+    match = pattern.fullmatch(_xsd_collapse(value))
+    return match is not None and ("year" not in pattern.groupindex or _calendar_ok(match))
+
+
+def _is_any(value, raw_patterns=(), xs_patterns=()):
+    """True when any raw (string-derived) or built-in union member accepts *value*."""
+    if not isinstance(value, str):
+        return False
+    return (any(p.fullmatch(value) for p in raw_patterns)
+            or any(_is_xs(p, value) for p in xs_patterns))
+
+
 class DateTimeString(DESC.Descriptor):
-    """Descriptor for ISO 8601 datetime strings.
+    """Descriptor for ``xs:dateTime`` strings.
 
     Validates format: ``YYYY-MM-DDTHH:MM:SS[.sss][Z|±HH:MM]``
 
     Used for ``CreationDateTime``, ``AsOfDateTime``, and similar attributes.
+
+    .. versionchanged:: 0.3.0
+       Follows the ``xs:dateTime`` lexical space exactly: days that do not exist
+       (``2021-02-30``) and the year 0000 are rejected; ``24:00:00``, years beyond
+       9999 and surrounding whitespace are accepted; time zone offsets are limited to
+       ±14:00.
     """
 
     def __set__(self, instance, value):
-        if (value is not None) and (not _DATETIME_PAT.match(value)):
+        if (value is not None) and (not _is_xs(_XS_DATETIME_PAT, value)):
             if not _mode.is_permissive(_mode.ValidationMode.SKIP_FORMAT):
                 raise OdmlibValidationError(
                     f"Expected type datetime for {self.name}, found value {value}",
@@ -414,13 +598,20 @@ class PartialTimeString(DESC.Descriptor):
 
 
 class IncompleteDateTimeString(DESC.Descriptor):
-    """Descriptor for incomplete ISO 8601 datetime strings.
+    """Descriptor for incomplete ISO 8601 datetime strings (XSD ``incompleteDatetime``).
 
     Allows ``-`` as a placeholder for unknown date/time components.
+
+    .. versionchanged:: 0.3.0
+       Accepts the whole XSD union -- ``emptyTag | xs:dateTime | tDatetime |
+       tIncomplete`` -- so partial datetimes such as ``2004-12`` and the empty tag are
+       accepted. Previously only the ``tIncomplete`` member was checked.
     """
 
     def __set__(self, instance, value):
-        if (value is not None) and (not _INCOMPLETE_DATETIME_PAT.match(value)):
+        if (value is not None) and (not _is_any(
+                value, (_EMPTY_TAG_PAT, _PARTIAL_DATETIME_PAT, _INCOMPLETE_DATETIME_PAT),
+                (_XS_DATETIME_PAT,))):
             if not _mode.is_permissive(_mode.ValidationMode.SKIP_FORMAT):
                 raise OdmlibValidationError(
                     f"Expected type IncompleteDateTime for {self.name}, found value {value}",
@@ -432,13 +623,20 @@ class IncompleteDateTimeString(DESC.Descriptor):
 
 
 class IncompleteDateString(DESC.Descriptor):
-    """Descriptor for incomplete ISO 8601 date strings.
+    """Descriptor for incomplete ISO 8601 date strings (XSD ``incompleteDate``).
 
     Allows ``-`` as a placeholder for unknown date components.
+
+    .. versionchanged:: 0.3.0
+       Accepts the whole XSD union -- ``emptyTag | xs:date | xs:gYearMonth |
+       xs:gYear | tIncompleteDate`` -- where previously only ``tIncompleteDate`` was
+       checked, so ``2004-12`` and ``2004`` were rejected.
     """
 
     def __set__(self, instance, value):
-        if (value is not None) and (not _INCOMPLETE_DATE_PAT.match(value)):
+        if (value is not None) and (not _is_any(
+                value, (_EMPTY_TAG_PAT, _INCOMPLETE_DATE_PAT),
+                (_XS_DATE_PAT, _XS_GYEARMONTH_PAT, _XS_GYEAR_PAT))):
             if not _mode.is_permissive(_mode.ValidationMode.SKIP_FORMAT):
                 raise OdmlibValidationError(
                     f"Expected type IncompleteDate for {self.name}, found value {value}",
@@ -450,13 +648,20 @@ class IncompleteDateString(DESC.Descriptor):
 
 
 class IncompleteTimeString(DESC.Descriptor):
-    """Descriptor for incomplete ISO 8601 time strings.
+    """Descriptor for incomplete ISO 8601 time strings (XSD ``incompleteTime``).
 
     Allows ``-`` as a placeholder for unknown time components.
+
+    .. versionchanged:: 0.3.0
+       Accepts the whole XSD union -- ``emptyTag | xs:time | tHour |
+       tIncompleteTime`` -- where previously only ``tIncompleteTime`` was checked, so
+       ``12`` and ``12:30`` were rejected.
     """
 
     def __set__(self, instance, value):
-        if (value is not None) and (not _INCOMPLETE_TIME_PAT.match(value)):
+        if (value is not None) and (not _is_any(
+                value, (_EMPTY_TAG_PAT, _PARTIAL_TIME_PAT, _INCOMPLETE_TIME_PAT),
+                (_XS_TIME_PAT,))):
             if not _mode.is_permissive(_mode.ValidationMode.SKIP_FORMAT):
                 raise OdmlibValidationError(
                     f"Expected type IncompleteTime for {self.name}, found value {value}",
@@ -465,19 +670,6 @@ class IncompleteTimeString(DESC.Descriptor):
                     hint="Use an ISO 8601 incomplete time, replacing unknown parts with '-'",
                 )
         super().__set__(instance, value)
-
-
-# The ODM 2.0 XSD types these attributes as ``durationDatetime``, a union of
-# ``emptyTag`` (empty or a single space), ``xs:duration`` (the full ISO 8601
-# form) and ``tDuration`` (the week-based form, which xs:duration disallows).
-_DURATION_PAT = re.compile(
-    r'^(?:'
-    r'[ ]?'                                                   # emptyTag
-    r'|[+-]?P\d+W'                                            # tDuration
-    r'|-?P(?=\d|T\d)(?:\d+Y)?(?:\d+M)?(?:\d+D)?'              # xs:duration
-    r'(?:T(?=\d)(?:\d+H)?(?:\d+M)?(?:\d+(?:\.\d+)?S)?)?'
-    r')$'
-)
 
 
 class DurationDateTimeString(DESC.Descriptor):
@@ -491,16 +683,54 @@ class DurationDateTimeString(DESC.Descriptor):
     .. versionchanged:: 0.2.1
        Previously only ``[+-]P{n}W`` was accepted, rejecting XSD-valid values
        such as ``P3D`` and ``PT1H``.
+
+    .. versionchanged:: 0.3.0
+       Surrounding whitespace is accepted on the ``xs:duration`` form (``" P3D "``),
+       which collapses whitespace; the week form and the empty tag derive from
+       ``xs:string`` and still must match exactly.
     '''
 
     def __set__(self, instance, value):
-        if (value is not None) and (not _DURATION_PAT.match(value)):
+        if (value is not None) and (not _is_any(
+                value, (_EMPTY_TAG_PAT, _T_DURATION_PAT), (_XS_DURATION_PAT,))):
             if not _mode.is_permissive(_mode.ValidationMode.SKIP_FORMAT):
                 raise OdmlibValidationError(
                     f"Expected type DurationDateTime for {self.name}, found value {value}",
                     attribute=self.name,
                     actual_value=value,
                     hint="Use an ISO 8601 duration, e.g. 'P2W', 'P3D' or 'PT1H30M'",
+                )
+        super().__set__(instance, value)
+
+
+class TimepointString(DESC.Descriptor):
+    """Descriptor for a date, time or datetime that may be partial.
+
+    The ODM 2.0 XSD types ``AbsoluteTimingConstraint/@TimepointTarget`` as an
+    anonymous union of ``date time datetime partialDate partialTime partialDatetime``.
+    Expanded, a value is accepted when it is any of:
+
+    - empty, or a single space (``emptyTag``);
+    - a full or partial date: ``2021-01-01``, ``2021-01``, ``2021`` (time zone allowed);
+    - a full or partial time: ``14:30:00``, ``14:30``, ``14`` (time zone allowed);
+    - a full or partial datetime: ``2021-01-01T14:30:00Z``, ``2021-01-01T14``.
+
+    .. versionadded:: 0.3.0
+       Replaces :class:`IncompleteDateTimeString` on ``TimepointTarget``, which checked
+       only the dash-placeholder form and so rejected values such as ``2021-01-01``.
+    """
+
+    def __set__(self, instance, value):
+        if (value is not None) and (not _is_any(
+                value, (_EMPTY_TAG_PAT, _PARTIAL_TIME_PAT, _PARTIAL_DATETIME_PAT),
+                (_XS_DATETIME_PAT, _XS_DATE_PAT, _XS_GYEARMONTH_PAT, _XS_GYEAR_PAT,
+                 _XS_TIME_PAT))):
+            if not _mode.is_permissive(_mode.ValidationMode.SKIP_FORMAT):
+                raise OdmlibValidationError(
+                    f"Expected a date, time or datetime for {self.name}, found value {value}",
+                    attribute=self.name,
+                    actual_value=value,
+                    hint="Use e.g. '2021-01-01', '2021-01', '14:30', or '2021-01-01T14:30:00'",
                 )
         super().__set__(instance, value)
 
@@ -687,6 +917,59 @@ class ValueSetString(ValidValues, String):
     pass
 
 
+class XHTMLDiv(DESC.Descriptor):
+    """An ``xhtml:div`` child element carried as a markup string.
+
+    ODM 2.0 ``TranslatedText`` is mixed content with an optional ``xhtml:div`` child.
+    Rather than model the XHTML element set, the descriptor holds the serialized
+    ``div`` (plus any text following it inside the parent) as a string, which the XML
+    loader fills from the source document and ``to_xml()`` writes back as a real
+    subtree. The string declares its own XHTML namespace, so it serializes correctly
+    regardless of :class:`~odmlib.ns_registry.NamespaceRegistry` state, and it
+    survives ``to_dict()``/JSON unchanged.
+
+    Assigned markup is normalized: elements written without a namespace are placed
+    in the XHTML namespace, so ``"<div><p>Hi</p></div>"`` is accepted. Anything other
+    than a single well-formed ``div``, optionally followed by text, raises
+    :class:`~odmlib.exceptions.OdmlibValidationError`.
+
+    .. versionadded:: 0.3.0
+    """
+
+    #: Marks the descriptor for ODMMeta, which lists it in ``_markup``. Markup is
+    #: stored like an attribute but serialized as a child element.
+    is_markup = True
+    #: Clark-notation tag of the element carried, used by the XML loader.
+    tag = XH.XHTML_DIV
+    #: The element's reference in the XSD content model.
+    xsd_ref = "xhtml:div"
+
+    def __set__(self, instance, value):
+        if value is not None:
+            if not isinstance(value, str):
+                if not _mode.is_permissive(_mode.ValidationMode.SKIP_TYPE):
+                    raise OdmlibTypeError(
+                        f"Expected XHTML markup as a string for {self.name}",
+                        attribute=self.name,
+                        expected_type="str",
+                        actual_value=value,
+                        hint='Assign markup text, e.g. \'<div xmlns="http://www.w3.org/1999/xhtml">'
+                             '<p>Text</p></div>\'',
+                    )
+            else:
+                try:
+                    value = XH.normalize(value)
+                except ValueError as ex:
+                    if not _mode.is_permissive(_mode.ValidationMode.SKIP_FORMAT):
+                        raise OdmlibValidationError(
+                            f"Invalid XHTML markup for {self.name}: {ex}",
+                            attribute=self.name,
+                            actual_value=value,
+                            hint="Provide a single well-formed xhtml:div element",
+                        ) from ex
+        super().__set__(instance, value)
+
+
 class ODMObject(DESC.Descriptor):
     """Descriptor for a single child ODM element.
 
@@ -738,7 +1021,24 @@ class ODMListObject(ODMObject, list):
     Args:
         element_class (type): The class that all list items must be.
         namespace (str): XML namespace prefix (default: "odm").
+        group (str): Optional name of an XSD repeating group whose members may
+            interleave (e.g. ``ItemGroupDef``'s ``ItemGroupRef``/``ItemRef``). Every
+            member descriptor of a class that shares a ``group`` name stores its list as
+            a :class:`~odmlib.interleave.GroupMemberList` view onto one ordered
+            sequence, so the document order of the group is kept on load and written
+            back on serialization. See :mod:`odmlib.interleave`.
+
+    .. versionchanged:: 0.3.0
+       Added ``group``.
     """
+
+    def __init__(self, *args, group=None, **kwargs):
+        self.group = group
+        super().__init__(*args, **kwargs)
+
+    def __delete__(self, instance):
+        IL.detach(instance.__dict__.get(self.name))
+        super().__delete__(instance)
 
     def __set__(self, instance, value):
         if isinstance(value, list):
@@ -760,4 +1060,8 @@ class ODMListObject(ODMObject, list):
                     actual_value=value,
                     hint=f"Assign a list of {self.obj_type.__name__} objects",
                 )
+        if self.group is not None and isinstance(value, list):
+            names = getattr(type(instance), "_groups", {}).get(self.group)
+            if names:
+                value = IL.attach(instance, self.name, names, value)
         super().__set__(instance, value)

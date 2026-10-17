@@ -192,6 +192,16 @@ loader binds the snapshot **recursively**, so nested elements reached by walking
 snapshot and falls back to global state. Bind it explicitly:
 `NS.bind_document_namespaces(new_elem, NS.get_document_namespaces(root))`.
 
+**Missing prefixes (0.3.0).** `set_odm_namespace_attributes()` declares every used prefix
+it finds in the registry/snapshot. A used prefix that is missing — typically after
+`reset()`, which drops what models registered on import — is declared from
+`ns_registry.FIXED_PREFIX_URIS` when odmlib binds it to one URI in every model (`xs`,
+`xlink`, `nciodm`, `data`, `arm`). Anything else (`def`, `odm`, custom prefixes) can't be
+resolved without guessing the version, so it emits an `OdmlibInteroperabilityWarning` and the
+output stays unparseable until the prefix is registered. If a model ever binds a fixed
+prefix to another URI, remove it from the table; `tests/test_namespace_fallback.py` checks
+the table against every `model.py`.
+
 **Important:** Use `NS.NamespaceRegistry.reset()` to clear state between tests.
 
 ### OID Validation System
@@ -208,6 +218,13 @@ Two-phase OID checking system (see `odm_element.py` methods):
 - `ref_def`: Maps reference attributes (e.g., "FormOID") to definition elements (e.g., "FormDef")
 - `def_ref`: Reverse mapping for checking unreferenced definitions
 - `skip_attr` / `skip_elem`: Elements excluded from validation
+
+The dynamic checker (`create_oid_checker`, `oid_generator.py`) also has `ref_def_any_of`
+(0.3.0) for references that may point at several element types — ODM 2.0's workflow and
+timing references (`StartOID`, `SourceOID`, `TargetOID`, `EndOID`, `StructuralElementOID`,
+`PredecessorOID`, `SuccessorOID`), from `_REF_DEF_ANY_OF`. The target sets follow the ODM
+v2.0 spec as transcribed in the cdisc-org/DataExchange-ODM-LinkML model; for ODM 2.0 only
+`FileOID`/`PriorFileOID` are skipped.
 
 ### Conformance Validation
 
@@ -254,6 +271,17 @@ ODM requires specific element order in XML. odmlib enforces this:
 - `reorder_object()`: Reorders instance dict to match model order
 - Order violations raise `ValueError`
 
+**Interleaved repeating groups** (`interleave.py`, 0.3.0). Where the XSD lets two child
+types alternate — ODM 2.0 `ItemGroupDef` (`ItemGroupRef`/`ItemRef`), `StudyEventGroupDef`
+(`StudyEventGroupRef`/`StudyEventRef`), `WorkflowDef` (`Transition`/`Branching`) — the
+member descriptors are declared `T.ODMListObject(..., group="<XSD group name>")`.
+`ODMMeta` records them in `_groups`/`_group_of`, and each list is stored as a
+`GroupMemberList`: a real `list` that writes through to one shared `InterleavedGroup`
+sequence. The XML loader appends members in document order, `to_xml()` writes the shared
+order, `append` goes last, and `verify_order()` treats a group as one slot. Read the
+combined order with `elem.children("ItemRef", "ItemGroupRef")` — never concatenate the
+lists. ODM 2.0 JSON keeps one array per type, so it does not carry the interleaving.
+
 ## Important Model Differences
 
 ### ODM 1.3.2 vs 2.0
@@ -264,6 +292,14 @@ ODM v2.0 changes:
 - Different namespace URI: `http://www.cdisc.org/ns/odm/v2.0`
 - The ODM v2.0 standard is complete, but the JSON implementation is still draft. 
 - The ODM v2.0 odmlib model is still draft.
+- `TranslatedText.div` (`T.XHTMLDiv`, `xhtml.py`) holds an `xhtml:div` child as a
+  self-contained markup string; `ODMMeta` lists such descriptors in `_markup`, which are
+  stored like attributes but written as a child after `_content`.
+- Every ODM v2.0 metadata file the plan surveyed loads in strict mode (crfutils relies on
+  it). Keep `tests/test_odm_2_0_xsd_alignment.py` green: it also checks reachability
+  from `ODM` and that no `_content` is required where the XSD allows empty text.
+- `xsi:*` attributes a class does not model are ignored on load (all models);
+  `ODM.schemaLocation` is modelled and round-trips.
 
 ### Define-XML Extensions
 
@@ -290,6 +326,7 @@ Use the `find()` method (defined in `ODMElement`):
 ```python
 item = mdv.find("ItemDef", "OID", "IT.AGE")  # Find in list
 form_ref = sed.find("FormRef", "Mandatory", "Yes")  # Find in nested list
+refs = igd.children("ItemRef", "ItemGroupRef")  # children in written (document) order
 ```
 
 ### Working with Specific Models

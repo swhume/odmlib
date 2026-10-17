@@ -1,6 +1,7 @@
 """Tests for DefineBuilder — reconstructing Define-XML 2.1 from Dataset-JSON."""
 import os
 import tempfile
+import xml.etree.ElementTree as ET
 from unittest import TestCase
 
 import odmlib.define_2_1.model as DEF
@@ -447,6 +448,11 @@ class TestDefineBuilderRoundtrip(TestCase):
             rebuilt.write_xml(tmpfile)
             self.assertTrue(os.path.exists(tmpfile))
             self.assertGreater(os.path.getsize(tmpfile), 0)
+            # the file must re-parse: def:leaf carries xlink:href, whose xmlns:xlink
+            # was omitted before 0.3.0 once the registry had been reset
+            root = ET.parse(tmpfile).getroot()
+            self.assertEqual(root.tag, "{http://www.cdisc.org/ns/odm/v1.3}ODM")
+            self.assertIsNotNone(root.find(".//{http://www.cdisc.org/ns/def/v2.1}leaf"))
         finally:
             os.unlink(tmpfile)
 

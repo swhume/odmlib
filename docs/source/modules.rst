@@ -47,6 +47,14 @@ exceptions module
    :undoc-members:
    :show-inheritance:
 
+interleave module
+-----------------
+
+.. automodule:: interleave
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 loader module
 -------------
 
@@ -147,6 +155,14 @@ valueset module
 ----------------------
 
 .. automodule:: valueset
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+xhtml module
+------------
+
+.. automodule:: xhtml
    :members:
    :undoc-members:
    :show-inheritance:

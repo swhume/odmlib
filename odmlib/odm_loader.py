@@ -14,10 +14,12 @@ from typing import Any, Optional
 import odmlib.document_loader as DL
 import odmlib.odm_parser as P
 import odmlib.ns_registry as NS
+import odmlib.xhtml as XH
 import json
 import importlib
+import warnings
 import xml.etree.ElementTree as ET
-from odmlib.exceptions import OdmlibLoaderStateError, OdmlibParsingError
+from odmlib.exceptions import OdmlibLoaderStateError, OdmlibParsingError, OdmlibWarning
 
 ODM_PREFIX = "odm:"
 ODM_NS = {'odm': 'http://www.cdisc.org/ns/odm/v1.3'}
@@ -26,6 +28,24 @@ _DEFAULT_ODM_NS_URI = {
     "odm_1_3_2": "http://www.cdisc.org/ns/odm/v1.3",
     "odm_2_0": "http://www.cdisc.org/ns/odm/v2.0",
 }
+
+
+def _element_content(elem: ET.Element, elem_class: Any) -> Optional[str]:
+    """Return the ``_content`` to load for *elem*, or None for no content.
+
+    Text with any non-whitespace character is always content. Whitespace-only
+    text is content only for a class that models ``_content`` and an element
+    with no child elements: ``<CheckValue> </CheckValue>`` carries a real
+    value, while the whitespace before a child element is indentation.
+    """
+    text = elem.text
+    if text is None:
+        return None
+    if not text.isspace():
+        return text
+    if "_content" in elem_class._fields and len(elem) == 0:
+        return text
+    return None
 
 
 class JSONODMLoader(DL.DocumentLoader):
@@ -238,22 +258,42 @@ class XMLODMLoader(DL.DocumentLoader):
         Strips the namespace URI from the tag name, instantiates the
         matching odmlib class, and recurses into child elements.
 
+        Element text becomes ``_content``. Whitespace-only text is kept for a
+        class that models ``_content`` when the element has no child elements
+        (``<CheckValue> </CheckValue>`` holds a real space), and is treated as
+        indentation otherwise. The members of an interleaved repeating group are
+        loaded in document order (see :mod:`odmlib.interleave`), and an
+        ``xhtml:div`` modelled as markup is captured as a string.
+
         Args:
             elem (ET.Element): The XML element to load.
             *args: Unused; present for interface compatibility.
 
         Returns:
             An odmlib element object populated from ``elem``.
+
+        .. versionchanged:: 0.3.0
+           Keeps whitespace-only text content, interleaved group order, and
+           ``xhtml:div`` markup.
         """
         elem_name = elem.tag[elem.tag.find('}') + 1:]
         elem_class = DL.resolve_model_class(self.ODM, elem_name)
-        if elem.text and not elem.text.isspace():
-            attrib = {**elem.attrib, **{"_content": elem.text}}
-            odm_obj = elem_class(**attrib)
-        else:
-            odm_obj = elem_class(**elem.attrib)
+        attrib = dict(elem.attrib)
+        content = _element_content(elem, elem_class)
+        if content is not None:
+            attrib["_content"] = content
+        if elem_class._markup:
+            attrib.update(self._load_markup(elem, elem_class))
+        odm_obj = elem_class(**attrib)
+        loaded_groups = set()
         odm_obj_dict = elem_class._elems.items()
         for k, v in odm_obj_dict:
+            group = elem_class._group_of.get(k)
+            if group is not None:
+                if group not in loaded_groups:
+                    loaded_groups.add(group)
+                    self._load_group(elem, odm_obj, elem_class._groups[group])
+                continue
             if type(v).__name__ == "ODMObject":
                 namespace = self.nsr.get_ns_entry_dict(v.namespace)
                 e = elem.find(v.namespace + ":" + k, namespace)
@@ -266,6 +306,57 @@ class XMLODMLoader(DL.DocumentLoader):
                     odm_child_obj = self.load_document(e)
                     getattr(odm_obj, k).append(odm_child_obj)
         return odm_obj
+
+    def _child_tag(self, elem_class: Any, name: str) -> Optional[str]:
+        """Return the Clark-notation tag of child *name*, or None if its prefix is unknown."""
+        prefix = elem_class._elems[name].namespace
+        uri = self.nsr.get_ns_entry_dict(prefix).get(prefix)
+        return None if uri is None else "{" + uri + "}" + name
+
+    def _load_group(self, elem: ET.Element, odm_obj: Any, names: tuple) -> None:
+        """Load the members of an interleaved repeating group in document order."""
+        tags = {self._child_tag(type(odm_obj), name): name for name in names}
+        if None in tags:
+            # unknown prefix: fall back to one findall per member, which reports it
+            for name in names:
+                prefix = type(odm_obj)._elems[name].namespace
+                for e in elem.findall(prefix + ":" + name, self.nsr.get_ns_entry_dict(prefix)):
+                    getattr(odm_obj, name).append(self.load_document(e))
+            return
+        members = [(tags[child.tag], child) for child in elem if child.tag in tags]
+        present = {name for name, _ in members}
+        for name in names:
+            if name in present:
+                getattr(odm_obj, name)      # create the lists in model order, as findall did
+        for name, child in members:
+            getattr(odm_obj, name).append(self.load_document(child))
+
+    def _load_markup(self, elem: ET.Element, elem_class: Any) -> dict:
+        """Capture modelled ``xhtml:div`` children as markup strings.
+
+        Warns about any other child element the class cannot hold (a second div,
+        or a foreign element), since those are dropped.
+        """
+        markup = {}
+        consumed = set()
+        for name in elem_class._markup:
+            descriptor = elem_class._attrs[name]
+            found = elem.find(descriptor.tag)
+            if found is not None:
+                markup[name] = XH.serialize_div(found)
+                consumed.add(id(found))
+        modelled = {self._child_tag(elem_class, name) for name in elem_class._elems}
+        dropped = [child.tag for child in elem
+                   if isinstance(child.tag, str) and id(child) not in consumed
+                   and child.tag not in modelled]
+        if dropped:
+            warnings.warn(
+                f"{elem_class.__name__}: dropped {len(dropped)} child element(s) it cannot "
+                f"hold: {', '.join(dropped)}",
+                OdmlibWarning,
+                stacklevel=2,
+            )
+        return markup
 
     def create_document(self, filename: str, namespace_registry: Optional[Any] = None) -> ET.Element:
         """Parse an ODM XML file and store the parsed tree internally.

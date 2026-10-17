@@ -52,6 +52,7 @@ import ast
 import glob
 import json
 import os
+import re
 import xml.etree.ElementTree as ET
 from unittest import TestCase
 
@@ -189,11 +190,16 @@ def compare_model_to_xsd():
         if has_content:
             xsd_attrs = [("_content", False)] + xsd_attrs
         xsd_attr_req = dict(xsd_attrs)
-        model_attr_req = {a: d.required for a, d in cls._attrs.items()}
+        # xsi:* attributes (namespace "xs") are allowed on any element, and a
+        # markup descriptor carries a child element, not an attribute
+        model_attr_req = {a: d.required for a, d in cls._attrs.items()
+                          if d.namespace != "xs" and not getattr(d, "is_markup", False)}
+        markup = [d for d in cls._attrs.values() if getattr(d, "is_markup", False)]
         model_children = {
             e: (isinstance(d, T.ODMListObject), d.required)
             for e, d in cls._elems.items()
         }
+        model_children.update({d.xsd_ref: (False, d.required) for d in markup})
 
         found = set()
         for attr, required in xsd_attr_req.items():
@@ -224,7 +230,9 @@ def compare_model_to_xsd():
 
         shared = set(xsd_child_spec) & set(model_children)
         xsd_order = [n for n, _, _ in xsd_children if n in shared]
-        model_order = [e for e in cls._elems if e in shared]
+        # to_xml() writes markup straight after the text, before any _elems child
+        model_order = [e for e in [d.xsd_ref for d in markup] + list(cls._elems)
+                       if e in shared]
         if xsd_order != model_order:
             found.add("elem-order")
 
@@ -364,6 +372,68 @@ def compare_valuesets_to_model():
 
 
 # ---------------------------------------------------------------------------
+# Comparison D -- reachability and text content (crfutils plan §4A)
+# ---------------------------------------------------------------------------
+
+def xsd_reachable_from(root, stop=frozenset()):
+    """XSD element names reachable from *root* through the content models.
+
+    Elements named in *stop* are not entered, so nothing reachable only through
+    them is included.
+    """
+    seen, stack = set(), [root]
+    while stack:
+        name = stack.pop()
+        if name in seen or name not in ELEM_TYPE or name in stop:   # skips xhtml:div
+            continue
+        seen.add(name)
+        stack.extend(child for child, _, _ in _xsd_children(CTYPES[ELEM_TYPE[name]]))
+    return seen
+
+
+def model_reachable_from(root):
+    """Model classes reachable from *root*, resolving each child by name.
+
+    This is how crfutils' crfmetrics builds its element inventory:
+    ``getattr(model, name, descriptor.element_class)`` for every ``_elems`` entry.
+    """
+    seen, stack = set(), [MODEL[root]]
+    while stack:
+        cls = stack.pop()
+        if cls.__name__ in seen:
+            continue
+        seen.add(cls.__name__)
+        stack.extend(getattr(ODM2, name, d.element_class) for name, d in cls._elems.items())
+    return seen
+
+
+def content_allows_empty(name):
+    """True when the XSD text content of element *name* may be empty.
+
+    Returns None for an element with no text content.
+    """
+    ctype = CTYPES[ELEM_TYPE[name]]
+    if ctype.get("mixed") == "true":
+        return True
+    simple = ctype.find(f"{XS}simpleContent")
+    if simple is None:
+        return None
+    kind, payload = _classify(simple[0].get("base"))
+    if kind == "pattern":
+        return re.fullmatch(payload, "") is not None
+    if kind == "closed":
+        return "" in payload
+    return True                                     # free text, or an extensible union
+
+
+def required_content_that_may_be_empty():
+    """Classes whose ``_content`` is required although the XSD allows it empty."""
+    return {name for name, cls in MODEL.items()
+            if "_content" in cls._attrs and cls._attrs["_content"].required
+            and name in ELEM_TYPE and content_allows_empty(name)}
+
+
+# ---------------------------------------------------------------------------
 # Allowlists -- shrink these as each alignment phase lands
 # ---------------------------------------------------------------------------
 
@@ -376,9 +446,6 @@ MODEL_XSD_DIVERGENCES: dict[str, set[str]] = {
         "elem-missing:Association",
         "elem-missing:ClinicalData",
         "elem-missing:ReferenceData",
-    },
-    "TranslatedText": {
-        "elem-missing:xhtml:div",
     },
 }
 
@@ -434,7 +501,6 @@ STUB_FIELD_MISMATCHES: set[str] = {
     "ItemGroupDef",
     "ItemRef",
     "MethodDef",
-    "ODM",
     "Study",
     "StudyEventDef",
 }
@@ -568,6 +634,30 @@ class TestValuesetsMatchModel(TestCase):
         self.assertEqual(
             (unexpected, stale), (set(), set()),
             _diff_message("valueset/XSD value mismatches", unexpected, stale))
+
+
+class TestModelCoversTheXSD(TestCase):
+    """Properties crfutils relies on when it loads a CRF strictly and walks the model."""
+
+    def test_every_metadata_element_is_reachable_from_odm(self):
+        """Each XSD element reachable from Study has a model class reachable from ODM."""
+        xsd = xsd_reachable_from("Study")
+        model = model_reachable_from("ODM")
+        self.assertGreater(len(xsd), 90)
+        self.assertEqual(sorted(xsd - model), [])
+
+    def test_admin_data_is_reachable_from_odm(self):
+        """AdminData too, short of the deferred data layer that Location/Query leads into."""
+        xsd = xsd_reachable_from("AdminData", stop=CLASSES_MISSING_FROM_MODEL)
+        self.assertEqual(sorted(xsd - model_reachable_from("ODM")), [])
+
+    def test_text_content_is_optional_where_the_xsd_allows_it_empty(self):
+        """An empty element the XSD accepts must load strictly (plan O1/O3).
+
+        Until v0.3.0, ``<TranslatedText/>``, ``<CheckValue/>`` and 16 other
+        text-only elements raised "Missing required keyword argument _content".
+        """
+        self.assertEqual(sorted(required_content_that_may_be_empty()), [])
 
 
 # ---------------------------------------------------------------------------

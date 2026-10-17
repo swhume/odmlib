@@ -1438,31 +1438,35 @@ class TestPhase5WaiversV2(TestCase):
                          ["Code", "ExternalCodeLib"])
         self.assertIn("Known approximation", ODM2.FormalExpression.__doc__)
 
-    def test_study_event_group_def_cannot_interleave_refs(self):
-        """The XSD group permits interleaving; parallel lists cannot."""
-        seg = ODM2.StudyEventGroupDef(
-            OID="SEG.1", Name="G",
-            StudyEventGroupRef=[ODM2.StudyEventGroupRef(
-                StudyEventGroupOID="SEG.2", Mandatory="No")],
-            StudyEventRef=[ODM2.StudyEventRef(StudyEventOID="SE.1",
-                                              Mandatory="Yes")])
-        # always grouped, never interleaved
+    def test_study_event_group_def_keeps_interleaved_refs(self):
+        """Closed in v0.3.0: the XSD group permits interleaving, and so does odmlib.
+
+        Until v0.3.0 the two refs were parallel lists, always written grouped.
+        """
+        seg = ODM2.StudyEventGroupDef(OID="SEG.1", Name="G")
+        seg.StudyEventRef.append(ODM2.StudyEventRef(StudyEventOID="SE.1", Mandatory="Yes"))
+        seg.StudyEventGroupRef.append(ODM2.StudyEventGroupRef(
+            StudyEventGroupOID="SEG.2", Mandatory="No"))
+        seg.StudyEventRef.append(ODM2.StudyEventRef(StudyEventOID="SE.2", Mandatory="Yes"))
         self.assertEqual([e.tag for e in seg.to_xml()],
-                         ["StudyEventGroupRef", "StudyEventRef"])
-        self.assertIn("Known approximation", ODM2.StudyEventGroupDef.__doc__)
+                         ["StudyEventRef", "StudyEventGroupRef", "StudyEventRef"])
+        self.assertNotIn("Known approximation", ODM2.StudyEventGroupDef.__doc__)
 
-    def test_translated_text_is_text_only(self):
-        """The XSD is mixed content with an optional xhtml:div child.
+    def test_translated_text_carries_xhtml_div(self):
+        """Closed in v0.3.0: the xhtml:div child is kept as a markup string.
 
-        An opaque text-only div was tried in v0.2.1 and withdrawn: it could
-        not carry markup either, since element text is XML-escaped on write.
+        An opaque text-only div class was tried in v0.2.1 and withdrawn. The div is
+        now a markup field, not a model class, so plain text is unaffected.
         """
         self.assertFalse(hasattr(ODM2, "div"))
         self.assertEqual(list(ODM2.TranslatedText._elems), [])
+        self.assertEqual(ODM2.TranslatedText._markup, ("div",))
         tt = _tt("plain text")
         self.assertEqual(tt.to_xml().text, "plain text")
         self.assertEqual(list(tt.to_xml()), [])
-        self.assertIn("Known approximation", ODM2.TranslatedText.__doc__)
+        marked = ODM2.TranslatedText(Type="text/html", lang="en", div="<div><p>Bold</p></div>")
+        self.assertEqual([e.tag for e in marked.to_xml()], ["div"])
+        self.assertNotIn("Known approximation", ODM2.TranslatedText.__doc__)
 
     def test_every_model_class_is_an_odm_2_0_xsd_element(self):
         """The ODM 1.3.2 carry-over classes were removed in Phase 5.

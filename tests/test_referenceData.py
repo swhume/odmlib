@@ -40,7 +40,7 @@ class TestReferenceData(TestCase):
         self.assertEqual(item_data[0]["Value"], "2")
 
     def test_audit_records(self):
-        ar = ODM.AuditRecord(EditPoint="Monitoring", UsedImputationMethod="Yes", ID="2")
+        ar = ODM.AuditRecord(EditPoint="Monitoring", UsedImputationMethod="Yes", ID="AR.002")
         ar.UserRef = ODM.UserRef(UserOID="USER.001")
         ar.LocationRef = ODM.LocationRef(LocationOID="SITE.102")
         ar.DateTimeStamp = ODM.DateTimeStamp(_content="2020-12-01T10:28:16")
@@ -51,7 +51,7 @@ class TestReferenceData(TestCase):
         rd = []
         rd.append(ODM.ReferenceData(StudyOID="P2006-101", MetaDataVersionOID="101.01"))
         rd[0].AuditRecords.append(ars)
-        self.assertEqual(rd[0].AuditRecords[0].AuditRecord[0].ID, "2")
+        self.assertEqual(rd[0].AuditRecords[0].AuditRecord[0].ID, "AR.002")
         self.assertEqual(rd[0].AuditRecords[0].AuditRecord[0].LocationRef.LocationOID, "SITE.102")
 
     def test_signatures(self):

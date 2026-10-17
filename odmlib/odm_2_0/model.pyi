@@ -7,6 +7,7 @@ class TranslatedText(ODMElement):
     lang: Optional[str]
     Type: Optional[str]
     _content: Optional[str]
+    div: Optional[str]
 
 
 class Description(ODMElement):
@@ -837,9 +838,9 @@ class Study(ODMElement):
 
 
 class ODM(ODMElement):
-    Description: Optional[str]
     FileType: Optional[str]
     Granularity: Optional[str]
+    Context: Optional[str]
     FileOID: Optional[str]
     CreationDateTime: Optional[str]
     PriorFileOID: Optional[str]
@@ -848,4 +849,7 @@ class ODM(ODMElement):
     Originator: Optional[str]
     SourceSystem: Optional[str]
     SourceSystemVersion: Optional[str]
+    schemaLocation: Optional[str]
+    Description: Optional[Description]
     Study: List[Study]
+    AdminData: List[AdminData]

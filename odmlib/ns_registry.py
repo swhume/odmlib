@@ -20,7 +20,8 @@ Example::
 import validators
 import warnings
 import weakref
-from odmlib.exceptions import OdmlibDeprecationWarning, OdmlibNamespaceError
+from odmlib.exceptions import (OdmlibDeprecationWarning, OdmlibInteroperabilityWarning,
+                               OdmlibNamespaceError)
 
 
 # Side table associating loaded document roots with the namespace state in
@@ -29,6 +30,17 @@ from odmlib.exceptions import OdmlibDeprecationWarning, OdmlibNamespaceError
 # serialization consults this table first so a document is always written
 # with the namespaces it was loaded under.
 _DOCUMENT_NAMESPACES: "weakref.WeakKeyDictionary" = weakref.WeakKeyDictionary()
+
+#: Prefixes every odmlib model package binds to the same URI, so a declaration missing
+#: from the registry (e.g. after reset()) can be supplied without guessing. "odm" and
+#: "def" are absent on purpose: their URI depends on the model version.
+FIXED_PREFIX_URIS = {
+    "xs": "http://www.w3.org/2001/XMLSchema-instance",   # odmlib's prefix for xsi
+    "xlink": "http://www.w3.org/1999/xlink",
+    "nciodm": "http://ncicb.nci.nih.gov/xml/odm/EVS/CDISC",
+    "data": "http://www.cdisc.org/ns/Dataset-XML/v1.0",
+    "arm": "http://www.cdisc.org/ns/arm/v1.0",
+}
 
 
 def _is_odm_element(obj):
@@ -277,6 +289,18 @@ class NamespaceRegistry(Borg):
                     used.add(attr_name.split(":", 1)[0])
         return used
 
+    @staticmethod
+    def _locally_declared_prefixes(odm_elem):
+        """Collect the prefixes a serialized tree already declares on its own elements.
+
+        Markup carried verbatim -- the XHTML in an ODM 2.0 ``TranslatedText`` -- declares
+        any extra prefix it uses on the element that uses it, so those need nothing
+        from the registry.
+        """
+        return {attr_name[len("xmlns:"):]
+                for elem in odm_elem.iter() for attr_name in elem.attrib
+                if attr_name.startswith("xmlns:")}
+
     def set_odm_namespace_attributes(self, odm_elem, namespaces=None, default=None):
         """Set xmlns attributes on an ElementTree root element.
 
@@ -284,6 +308,14 @@ class NamespaceRegistry(Borg):
         each additional namespace that is actually used in the tree.  The
         reserved ``xml`` prefix is never declared (it is implicitly bound
         per the XML specification).
+
+        A used prefix missing from the namespace map -- typically after
+        :meth:`reset` -- is declared from :data:`FIXED_PREFIX_URIS` when odmlib
+        binds it to one URI everywhere (``xs``, ``xlink``, ...). Any other
+        missing prefix (``def``, a custom extension prefix) cannot be resolved
+        without guessing, so an
+        :class:`~odmlib.exceptions.OdmlibInteroperabilityWarning` names it: the
+        output will not re-parse until it is registered.
 
         Args:
             odm_elem (ET.Element): The root XML element to annotate.
@@ -294,6 +326,11 @@ class NamespaceRegistry(Borg):
 
         Raises:
             OdmlibNamespaceError: If no default namespace is registered.
+
+        .. versionchanged:: 0.3.0
+           Declares fixed-URI prefixes missing from the map, and warns about
+           any other used prefix it cannot declare. Both used to be omitted
+           silently, leaving an unbound prefix in the output.
         """
         ns_map = self.namespaces if namespaces is None else namespaces
         default_prefix, default_uri = self._require_default(default)
@@ -304,6 +341,25 @@ class NamespaceRegistry(Borg):
                 continue
             if prefix in used:
                 odm_elem.attrib["xmlns:" + prefix] = uri
+        missing = used - set(ns_map) - {default_prefix, "xml"} \
+            - self._locally_declared_prefixes(odm_elem)
+        unresolved = []
+        for prefix in sorted(missing):
+            if prefix in FIXED_PREFIX_URIS:
+                odm_elem.attrib["xmlns:" + prefix] = FIXED_PREFIX_URIS[prefix]
+            else:
+                unresolved.append(prefix)
+        if unresolved:
+            names = ", ".join(f"'{prefix}'" for prefix in unresolved)
+            warnings.warn(
+                f"Namespace prefix {names} is used but not registered, so the output "
+                f"has no declaration for it and cannot be re-parsed. Register it first, "
+                f"e.g. NamespaceRegistry(prefix='{unresolved[0]}', uri='...'); "
+                f"NamespaceRegistry.reset() also removes the prefixes model packages "
+                f"register on import.",
+                OdmlibInteroperabilityWarning,
+                stacklevel=3,
+            )
 
     def set_odm_namespace_attributes_string(self, odm_str):
         """Add xmlns attributes to an ODM XML string.

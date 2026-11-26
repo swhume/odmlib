@@ -196,6 +196,7 @@ After `verify_oids()` (or a collect-mode `validate()`) the checker is populated:
 |---|---|---|
 | `checker.oid_defs` | `list[str]` | element classes that **define** an OID (always via their `OID` attribute) |
 | `checker.ref_def` | `dict[str, str]` | reference attribute → the element class it must resolve to |
+| `checker.ref_def_any_of` | `dict[str, tuple[str, ...]]` | 0.3.0+: reference attribute → the element classes it may resolve to (ODM 2.0 workflow/timing refs such as `StartOID`, `SourceOID`) |
 | `checker.def_ref` | `dict[str, list[str]]` | def class → the reference attributes that may point at it |
 | `checker.ref_attrs` | `dict[str, list[str]]` | reference attribute → element classes that carry it |
 | `checker.oid` | `dict[str, str]` | OID value → defining element class (**populated during** `verify_oids`) |

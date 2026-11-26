@@ -205,6 +205,10 @@ class TestDocumentedSignatures(TestCase):
         from odmlib.odm_element import ODMElement
         self._assert_signature(ODMElement.to_element, [])
 
+    def test_children(self):
+        from odmlib.odm_element import ODMElement
+        self._assert_signature(ODMElement.children, [("*names", REQUIRED)])
+
     # -- validation ---------------------------------------------------------
 
     def test_validate(self):

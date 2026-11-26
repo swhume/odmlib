@@ -203,6 +203,7 @@ Every model object subclasses `ODMElement` and inherits:
 .find(obj_name, attr, val)            # first match or None
 .find_all(obj_name, attr, val)        # list of matches
 .find_by(obj_name, **kwargs)          # first match by attribute kwargs, or None
+.children(*names) -> list             # 0.3.0+: child elements in the order they are written
 
 # OID indexing / integrity
 .build_oid_index() -> OIDIndex
@@ -310,8 +311,8 @@ so a second pass with the same checker raises a false "not unique". Construct a 
 verification, or call `checker.reset()` (clears `oid`, `unique_oids`, `oid_ref`, and
 `is_verified`). In collect mode `validate()` warns when handed a checker that still holds
 state. Static mappings usable without verifying: `oid_defs` (list of defining class names),
-`ref_def`, `def_ref`, `ref_attrs`, `skip_attr`, `skip_elem`; `oid` and `oid_ref` populate
-during `verify_oids()`.
+`ref_def`, `ref_def_any_of` (0.3.0+), `def_ref`, `ref_attrs`, `skip_attr`, `skip_elem`;
+`oid` and `oid_ref` populate during `verify_oids()`.
 
 ```python
 from odmlib.<package>.rules.metadata_schema import MetadataSchema   # e.g. odm_1_3_2, define_2_1

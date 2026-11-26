@@ -87,6 +87,9 @@ object and is broken — use `to_xml_string()`. See
 
    ODM 1.3.2 and ODM 2.0 differ structurally — see `references/models.md` before mixing
    them up. Define-XML 2.1 is itself an ODM extension, so it is loaded as Define, not ODM.
+   For what the ODM v2.0 *standard* allows and means (element rules, XSD structure,
+   enumerations, 1.3.2 → 2.0 changes, validated examples, and an XSD + OID-reference
+   validator), use the **odm-v2** skill alongside this one; this skill covers the library.
 3. Decide which API altitude fits the task (next section).
 4. **Validate** anything you create or modify before treating it as done (see Validation).
 
@@ -440,10 +443,11 @@ first run:
   inside the test, or `checker.reset()` in `setUp`.
 - **The namespace registry is process-wide state, so reset it between tests.** odmlib's own
   suite does this with an `autouse` fixture (`tests/conftest.py`) that resets the Borg
-  singleton to *ODM 1.3.2 only* before every test — which means a test that needs `def:`,
-  `xlink:` or `xml:` must re-register them itself in `setUp` (see
+  singleton to *ODM 1.3.2 only* before every test — which means a test that needs a
+  version-dependent prefix such as `def:` must re-register it in `setUp` (see
   `tests/test_odm_loader_define_string.py`). A Define test that passes alone and fails in
-  the suite is almost always this.
+  the suite is almost always this. (Since 0.3.0 `xs:` and `xlink:` are declared
+  automatically when missing; on 0.2.x register them too.)
 - **Probes must tolerate empty collections.** The failure modes worth testing for produce
   *structurally valid but empty* documents — a string that lost its namespaces re-loads with
   `FileOID` intact and `Study` empty. A test that asserts on `odm.Study[0]` then raises

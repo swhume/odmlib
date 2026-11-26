@@ -27,12 +27,18 @@ from odmlib.exceptions import (
     OdmlibConformanceError,
     OdmlibElementOrderError,
     OdmlibErrorLimitError,
+    OdmlibSerializationError,
     OdmlibWarning,
     ErrorCollector,
     is_collecting_checker,
     _ErrorLimitReached,
 )
 import odmlib.mode as _mode
+import odmlib.interleave as IL
+import odmlib.xhtml as XH
+
+# xsi:* attributes are allowed on any element of an XSD-validated document
+_XSI_NS = "http://www.w3.org/2001/XMLSchema-instance"
 
 
 # ---------------------------------------------------------------------------
@@ -93,6 +99,16 @@ def _run_validation_layer(collector, layer):
             return
 
 
+def _collapse_groups(names, group_of):
+    """Replace each interleaved-group member name by its group, merging neighbours."""
+    collapsed = []
+    for name in names:
+        slot = group_of.get(name, name)
+        if not collapsed or collapsed[-1] != slot:
+            collapsed.append(slot)
+    return collapsed
+
+
 def _warn_if_checker_dirty(oid_checker):
     """Warn when an OID checker still holds state from a previous run."""
     if getattr(oid_checker, "oid", None) or getattr(oid_checker, "unique_oids", None):
@@ -114,6 +130,11 @@ class ODMMeta(type):
     - Separate XML attributes (``_attrs``) from child elements (``_elems``)
     - Track non-default namespace prefixes (``_attr_ns``)
     - Build the ``_fields`` list of all declared properties
+    - Record interleaved repeating groups (``_groups``: group name -> member
+      names; ``_group_of``: member name -> group name) from ``ODMListObject``
+      descriptors declared with ``group=``
+    - Record markup descriptors (``_markup``), which are stored like attributes
+      but serialized as child elements
     - Set the default ``namespace`` to "odm" if not specified
     """
 
@@ -189,6 +210,17 @@ class ODMMeta(type):
                 else:
                     attr_ns.pop(key, None)
 
+        # repeating groups whose members interleave (see odmlib.interleave), and
+        # markup descriptors, which are stored like attributes but written as children
+        groups = {}
+        for key, val in elems.items():
+            group = getattr(val, "group", None)
+            if group is not None:
+                groups.setdefault(group, []).append(key)
+        clsdict["_groups"] = {group: tuple(names) for group, names in groups.items()}
+        clsdict["_group_of"] = {name: group for group, names in groups.items() for name in names}
+        clsdict["_markup"] = tuple(key for key, val in attrs.items() if getattr(val, "is_markup", False))
+
         # the default class namespace is odm (merged subclasses inherit theirs)
         if "namespace" not in clsdict:
             if not (merge_fields and any(hasattr(base, "namespace") for base in bases)):
@@ -257,6 +289,7 @@ class ODMElement(metaclass=ODMMeta):
         - :meth:`find` -- find first child element by attribute value
         - :meth:`find_all` -- find all matching child elements
         - :meth:`find_by` -- find by multiple attribute criteria
+        - :meth:`children` -- child elements in serialization (document) order
     """
 
     def __init__(self, **kwargs: Any) -> None:
@@ -273,12 +306,21 @@ class ODMElement(metaclass=ODMMeta):
         Raises:
             OdmlibTypeError: If an unknown keyword argument is provided.
             OdmlibRequiredAttributeError: If a required attribute is missing.
+
+        .. versionchanged:: 0.3.0
+           An ``xsi:*`` attribute (``{http://www.w3.org/2001/XMLSchema-instance}...``)
+           the class does not model is ignored instead of raising: XML Schema allows
+           those attributes on any element. A modelled one, such as ``ODM``'s
+           ``schemaLocation``, is still set.
         """
         for name, val in kwargs.items():
             if name not in self._fields and name not in self.__class__.__dict__:
                 # strip out non-default elementtree namespaces from the XML to work with just the name e.g. xml:lang
                 if "}" in name:
+                    uri = name[1:name.find('}')] if name.startswith("{") else ""
                     name = name[name.find('}') + 1:]
+                    if uri == _XSI_NS and name not in self._fields:
+                        continue
                 else:
                     if not _mode.is_permissive(_mode.ValidationMode.SKIP_TYPE):
                         raise OdmlibTypeError(
@@ -362,6 +404,10 @@ class ODMElement(metaclass=ODMMeta):
 
         Optional children that were never assigned are silently skipped.
 
+        The members of an interleaved repeating group (e.g. an ODM 2.0
+        ``ItemGroupDef``'s ``ItemGroupRef``/``ItemRef``) are written in their shared
+        document order rather than one list after the other; see :meth:`children`.
+
         :param parent_elem: (obj) Element that is the parent of the element to be created
         :param top_elem: (obj) Topmost element that has been created
         :return: top_elem: (obj) Topmost element created during the recursive calls
@@ -369,7 +415,8 @@ class ODMElement(metaclass=ODMMeta):
         # create attributes
         attrs = {}
         for attr, obj in self.__dict__.items():
-            if not isinstance(obj, (ODMElement, list)) and attr != "_content" and obj is not None:
+            if not isinstance(obj, (ODMElement, list)) and attr != "_content" and obj is not None \
+                    and attr not in self._markup:
                 # add namespace if not the default namespace
                 if attr in self.__class__.__dict__["_attr_ns"]:
                     attrs[self.__class__.__dict__["_attr_ns"][attr] + ":" + attr] = str(obj)
@@ -385,16 +432,67 @@ class ODMElement(metaclass=ODMMeta):
         # add text to element if it exists
         if "_content" in self.__dict__:
             odm_elem.text = self.__dict__["_content"]
+        # markup (an xhtml:div) follows the text, as in the mixed content it came from
+        for name in self._markup:
+            markup = self.__dict__.get(name)
+            if isinstance(markup, str):
+                try:
+                    odm_elem.append(XH.to_literal(XH.parse_fragment(markup)))
+                except ValueError as ex:
+                    # only reachable for markup stored unchecked in permissive mode
+                    raise OdmlibSerializationError(
+                        f"Cannot write {self.__class__.__name__}.{name}: {ex}") from ex
         # emit children in model declaration order (driven by _elems), not __dict__ insertion order,
         # so the schema's required element ordering is preserved regardless of how the user assigned attributes.
-        for name in self._elems:
-            obj = self.__dict__.get(name)
-            if isinstance(obj, list) and obj:
-                for o in obj:
-                    o.to_xml(odm_elem, top_elem)
-            elif isinstance(obj, ODMElement) and not DESC.is_pristine_auto_created(obj):
-                obj.to_xml(odm_elem, top_elem)
+        for _, child in self._iter_children():
+            child.to_xml(odm_elem, top_elem)
         return top_elem
+
+    def _iter_children(self):
+        """Yield ``(name, child)`` for every child element, in serialization order.
+
+        Children follow model declaration order (``_elems``); the members of an
+        interleaved repeating group come out together, in their shared order. Unset
+        children, and auto-created ones that were never populated, are skipped.
+        """
+        done = set()
+        for name in self._elems:
+            group = self._group_of.get(name)
+            if group is not None:
+                if group not in done:
+                    done.add(group)
+                    yield from IL.ordered_members(self, self._groups[group])
+                continue
+            obj = self.__dict__.get(name)
+            if isinstance(obj, list):
+                for o in obj:
+                    yield name, o
+            elif isinstance(obj, ODMElement) and not DESC.is_pristine_auto_created(obj):
+                yield name, obj
+
+    def children(self, *names: str) -> List[ODMElement]:
+        """Return this element's child elements in the order they are written to XML.
+
+        Children follow the model's declaration order, which is the XSD sequence order.
+        Where the XSD lets two child types interleave in one repeating group -- ODM 2.0
+        ``ItemGroupDef`` (``ItemGroupRef``/``ItemRef``), ``StudyEventGroupDef``
+        (``StudyEventGroupRef``/``StudyEventRef``) and ``WorkflowDef``
+        (``Transition``/``Branching``) -- their members come out in document order:
+        the order of the source document for a loaded element, then the order in which
+        children were appended. Optional children that were never set are omitted.
+
+        Args:
+            *names: Optional child element names to keep, e.g.
+                ``igd.children("ItemRef", "ItemGroupRef")``. With no names, every child
+                is returned.
+
+        Returns:
+            A new list of child elements. Changing it does not change the element.
+
+        .. versionadded:: 0.3.0
+        """
+        wanted = set(names)
+        return [child for name, child in self._iter_children() if not wanted or name in wanted]
 
     def to_xml_string(self, *, xml_declaration: bool = False) -> str:
         """Convert this element to an XML string.
@@ -760,6 +858,10 @@ class ODMElement(metaclass=ODMMeta):
         """
         obj_list = [key for key in list(self.__dict__.keys()) if key != "_content" and key not in self._attrs]
         elem_list = [elem for elem in self._elems if elem in obj_list]
+        if self._group_of:
+            # the members of an interleaved group may appear in either order
+            obj_list = _collapse_groups(obj_list, self._group_of)
+            elem_list = _collapse_groups(elem_list, self._group_of)
         if obj_list != elem_list:
             report(OdmlibElementOrderError(
                 f"The order of elements in {self.__class__.__name__} should be "

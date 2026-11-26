@@ -7,6 +7,201 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+Planned for 0.3.0. These changes make the ODM v2.0 model load real CRF metadata strictly
+and faithfully, which `crfutils` (`crfrefs`, `crfmetrics`) depends on; they are items
+O1–O9 of §4A of the crfutils plan. Every ODM v2.0 file found locally — the
+DataExchange-ODM examples, the odmlib_examples data and a generated 14-form CRF, 24
+in all — now loads in strict mode, keeps its child order, and re-serializes to a
+document that validates against the bundled XSD. With 0.2.1, four of them failed to load.
+
+### Fixed — schema-valid ODM 2.0 documents that failed a strict load
+
+- **An empty `TranslatedText` loads.** `<TranslatedText xml:lang="en" Type="text/plain"/>`
+  raised `OdmlibRequiredAttributeError: Missing required keyword argument _content`, though
+  the XSD types the element as mixed content that may be empty. `Result_ODMv2.xml` alone
+  has 148 of them. `_content` is now optional on `TranslatedText`, and for the same reason
+  on `CheckValue`, `Code` and the fifteen text-only AdminData and signature elements
+  (`UserName`, `Prefix`, `Suffix`, `FullName`, `GivenName`, `FamilyName`, `StreetName`,
+  `HouseNumber`, `City`, `StateProv`, `Country`, `PostalCode`, `OtherText`, `Meaning`,
+  `LegalReason`).
+- **`AbsoluteTimingConstraint/@TimepointTarget` accepts the XSD's whole type.** The XSD
+  allows any full or partial date, time or datetime (`2021-01-01`, `2021-01`, `09:00`,
+  `2021-01-01T09:00:00Z`, or empty); odmlib accepted only the dash-placeholder form
+  (`2021---15T-:05:-`), rejecting 14 of 18 values in the examples, including
+  `SimpleTimingConstraints.xml`'s `2021-01-01`. It now uses the new `T.TimepointString`.
+- **Whitespace is a value in a text-only element.** The XML loader dropped whitespace-only
+  text, so `<CheckValue> </CheckValue>` lost its value (a space) and, with `_content`
+  required, failed to load. Whitespace-only text is now kept for a class that models
+  `_content` when the element has no child elements; before a child element it is still
+  treated as indentation. This applies to every model `XMLODMLoader` loads (ODM 1.3.2,
+  ODM 2.0, Dataset-XML and CT-XML).
+- **`xsi:schemaLocation` no longer breaks a load.** It raised
+  `OdmlibTypeError: ODM does not have a defined attribute schemaLocation`. The ODM 2.0
+  `ODM` class gains `schemaLocation`, as in the ODM 1.3.2, Define-XML, CT and Dataset-XML
+  models, so it round-trips (written as `xs:schemaLocation`). Any other `xsi:*` attribute
+  that a class does not model — `xsi:noNamespaceSchemaLocation`, `xsi:type` — is now
+  ignored on load in every model instead of raising; XML Schema allows them on any element.
+
+### Fixed — interleaved children kept their types but lost their order
+
+- **ODM 2.0 `ItemGroupDef` keeps the order of its `ItemGroupRef`/`ItemRef` children**, and
+  `StudyEventGroupDef` (`StudyEventGroupRef`/`StudyEventRef`) and `WorkflowDef`
+  (`Transition`/`Branching`) keep theirs. The XSD lets each pair alternate freely; odmlib
+  stored them as two lists and wrote every member of the first before the second. Nothing
+  was raised and the output stayed schema-valid, but for a form without OrderNumbers it
+  **changed the question order**: `Demographics_RACE_check_all_that_apply.xml`'s three
+  ItemRefs and nested race group reloaded group-first.
+
+  The two lists are now views onto one ordered sequence (new module `odmlib.interleave`).
+  A loaded element keeps its document order and writes it back unchanged; the per-type
+  lists read, iterate and compare exactly as before. Read the combined order with the new
+  `children()`:
+
+  ```python
+  igd.children("ItemRef", "ItemGroupRef")   # [ItemRef, ItemRef, ItemRef, ItemGroupRef, ItemRef]
+  ```
+
+  **Behaviour change for built documents:** a child appended to either list goes after
+  every existing child, so an `ItemGroupDef` built by alternating appends is now written in
+  that order. 0.2.x wrote all its ItemGroupRefs first. Both are XSD-valid. `insert()`
+  places a child before the next child of its own type; `sort()`/`reverse()` reorder one
+  type without changing the interleaving pattern. To reorder across types, clear both lists
+  and append in the order you want. `verify_order()` and `validate()` accept the members of
+  one group in either order. ODM 2.0 JSON keeps one array per type, so a JSON round trip
+  writes the group in model order. The members are declared with the new `group=`
+  argument of `ODMListObject`.
+
+### Fixed — four ODM 2.0 references were never checked
+
+- **`create_oid_checker("odm_2_0")` resolves `ItemRef/@UnitsItemOID` (→ `ItemDef`),
+  `Organization/@PartOfOrganizationOID` (→ `Organization`), `ItemGroupDef/@ArchiveLocationID`
+  and `SourceItem/@leafID` (→ `Leaf`).** The first two did not follow the naming convention
+  and had no override; the last two were wired only to Define-XML's lower-case `leaf`. A
+  dangling value in any of them was never reported. The ID-based pairs now list candidate
+  classes in preference order, so Define-XML still resolves to `leaf`.
+
+### Fixed — ODM 2.0 workflow and timing references were never checked
+
+- **The eight workflow and timing references are now checked.** They were in
+  `ODM_20_SKIP_ATTRS` because their targets were not known, so a dangling or mistyped
+  value passed silently. The allowed targets come from the ODM v2.0 specification, as
+  transcribed in the LinkML model of ODM v2.0 (cdisc-org/DataExchange-ODM-LinkML,
+  `ODM.yaml`):
+
+  | Attribute (element) | Must reference one of |
+  |---|---|
+  | `StartOID` (WorkflowStart), `EndOID` (WorkflowEnd) | StudyEventGroupDef, StudyEventDef, ItemGroupDef, ItemDef |
+  | `SourceOID`, `TargetOID` (Transition) | the same four, or Branching |
+  | `PredecessorOID`, `SuccessorOID` (RelativeTimingConstraint) | StudyEventGroupDef, StudyEventDef, ItemGroupDef, ItemDef |
+  | `StructuralElementOID` (DurationTimingConstraint) | Study, Epoch, StudyEventGroupDef, StudyEventDef, ItemGroupDef, ItemDef |
+  | `TargetTransitionOID` (TargetTransition, DefaultTransition) | Transition |
+
+  `TargetTransitionOID` is an ordinary entry in `checker.ref_def`. The seven multi-target
+  references are in a new `checker.ref_def_any_of` (`{attribute: (class, ...)}`), so
+  `ref_def` values stay strings; `def_ref` lists them under each class they allow. A
+  reference to the wrong kind of element reports "OID reference for attribute X must point
+  at one of ...". For ODM 2.0 only `FileOID` and `PriorFileOID` are still skipped.
+
+  **Behaviour change:** documents with bad workflow references now report errors. Among
+  the DataExchange-ODM examples that adds exactly four: a dangling `SourceOID` in
+  Columbia-Suicide_Severity_Scale_ODMv2.xml, dangling `EndOID`s in Timing_LZZT_Example_ODM.xml
+  and Inclusion_Exclusion_Simple_Workflow.xml, and in the latter a `DefaultTransition`
+  pointing at a StudyEventGroupDef instead of a Transition.
+
+### Added — XHTML in ODM 2.0 `TranslatedText`
+
+- **`TranslatedText.div` keeps an `xhtml:div` child instead of dropping it on load.** The
+  div — and any text after it — is held as one markup string; text before it stays in
+  `_content`. Both round-trip through XML and JSON:
+
+  ```python
+  TranslatedText(lang="en", Type="text/html",
+                 div='<div xmlns="http://www.w3.org/1999/xhtml"><p>Systolic <b>BP</b></p></div>')
+  ```
+
+  The string declares its own XHTML namespace and is written back as a real subtree, so it
+  does not depend on `NamespaceRegistry` state — the problem that withdrew the opaque `div`
+  class tried in 0.2.1. Markup written without a namespace is placed in XHTML; anything
+  that is not a single well-formed `div` raises `OdmlibValidationError`. Any other child
+  element a `TranslatedText` cannot hold now raises an `OdmlibWarning` on load rather than
+  vanishing silently. Implemented by the new `T.XHTMLDiv` descriptor and `odmlib.xhtml`.
+
+### Added — `ODMElement.children()`
+
+- **`children(*names)` returns an element's child elements in the order they are written to
+  XML**, optionally filtered by name. It is the way to read an interleaved group in order,
+  and works on every element of every model.
+
+### Changed — type checks follow the XSD lexical spaces
+
+These descriptors are shared by every model package, so the stricter checks apply to ODM
+1.3.2, Define-XML, ARM, CT, Dataset-XML and Dataset-JSON as well as ODM 2.0. Each was
+compared with xmlschema's validation of the matching XSD type over a generated corpus of
+several thousand values (`tests/test_xsd_lexical_types.py`); they now agree exactly. A
+value that now fails can still be loaded in permissive mode.
+
+- **`T.OID`, `T.OIDRef` and `T.Name` reject the empty string** (`minLength 1` in the
+  `oid`, `oidref` and `name` types). Three attributes the XSD types as free text, where
+  `""` is valid, now use `T.String`: ODM 1.3.2 `MeasurementUnit/@Name`, ARM
+  `ResultDisplay/@Name` and ODM 2.0 `Coding/@CommentOID`.
+- **`T.ID` and `T.IDRef` require an NCName**, as `xs:ID`/`xs:IDREF` do: no leading digit,
+  no spaces or colons. `AuditRecord(ID="1")` is now rejected.
+- **`T.DateTimeString` follows `xs:dateTime`**: days that do not exist (`2021-02-30`) and
+  the year 0000 are rejected; `24:00:00`, years beyond 9999 and surrounding whitespace are
+  accepted; time-zone offsets are limited to ±14:00.
+- **`T.Float` checks `xs:decimal`** before converting: `"1e3"`, `"nan"`, `"inf"` and
+  `"1_000"` (all accepted by `float()`) are rejected, as are non-finite floats. It is used
+  for `Rank` and ODM 2.0's `GeoPosition` coordinates, all `xs:decimal`.
+- **`T.IncompleteDateTimeString`, `T.IncompleteDateString` and `T.IncompleteTimeString`
+  accept their whole XSD unions** (`incompleteDatetime`, `incompleteDate`,
+  `incompleteTime`) instead of only the dash-placeholder member. No bundled model uses them
+  any longer.
+- **`T.DurationDateTimeString` accepts surrounding whitespace on the `xs:duration` form**
+  (`" P3D "`), which collapses whitespace.
+- **ODM 2.0 only:** `OrderNumber` on `StudyEventRef`, `ItemGroupRef` and
+  `StudyEventGroupRef` must be a positive integer (as on `ItemRef`), and
+  `TranslatedText.lang` must be an `xs:language` code (new `T.Language`).
+
+### Changed — upgrade notes
+
+- **Reading an unset child can now return an empty element where it returned `None`.**
+  With `_content` optional, `Code`, `UserName` and the other text-only classes can be
+  auto-created when an unset child is read (`FormalExpression().Code`), like every other
+  optional child. The empty element is not written to XML, JSON or `to_dict()`, so test
+  what will be written — `"Code" in fe.to_dict()` — rather than `fe.Code is None`.
+- **`ODM_XSD_ALIGNMENT.md`'s approximations for `StudyEventGroupDef` and `TranslatedText`
+  are closed.** `FormalExpression`'s `xs:choice` is the one that remains.
+- `tests/test_odm_2_0_xsd_alignment.py` also checks that every XSD element reachable from
+  `Study` is reachable in the model from `ODM` (98 elements; 124 classes in all) and that no
+  `_content` is required where the XSD allows empty text. New tests:
+  `test_odm_2_0_load_fixes.py`, `test_interleaved_children.py`, `test_xsd_lexical_types.py`.
+
+### Fixed — namespace prefixes left undeclared after `NamespaceRegistry.reset()`
+
+- **A prefixed name no longer loses its `xmlns:` declaration when the registry lacks the
+  prefix.** Declarations come from the registry (or a loaded document's snapshot), and a
+  prefix used in the tree but missing there was skipped silently, so the output could not
+  be re-parsed (`ParseError: unbound prefix`). Model packages register `xs` and `xlink` only
+  when first imported and no loader registers them again, so after a `reset()` — which the
+  README's build recipes and odmlib's own test fixture both call — these all wrote broken
+  XML, in every model package:
+  - `ODM.schemaLocation`;
+  - `xlink:href` on Define-XML `leaf`, including a Define file loaded with
+    `XMLDefineLoader` and written back;
+  - `DefineBuilder` output.
+
+  `set_odm_namespace_attributes()`, behind `to_xml_string()`, `to_element()` and
+  `write_xml()`, now declares a missing prefix from the new
+  `ns_registry.FIXED_PREFIX_URIS` when odmlib binds it to one URI in every model package:
+  `xs`, `xlink`, `nciodm`, `data`, `arm`. Any other missing prefix — `def`, whose URI depends
+  on the Define-XML version, or a custom extension prefix — is reported by an
+  `OdmlibInteroperabilityWarning` naming it, rather than raised as an error; the output
+  stays unparseable until it is registered. Output whose prefixes are all registered is
+  byte-for-byte unchanged, and `reset()` itself behaves as before.
+  `tests/test_namespace_fallback.py` covers each case and checks the table against every
+  model's registrations. `test_define_builder.py::test_roundtrip_write_xml`, which checked
+  only that the file was non-empty, now re-parses it.
+
 ## [0.2.1] - 2026-08-27
 
 ### Added — Claude Code skill

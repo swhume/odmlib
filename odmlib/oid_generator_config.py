@@ -74,27 +74,13 @@ DEFINE_21_SKIP_ELEMS: list[str] = [
 # ---------------------------------------------------------------------------
 # ODM 2.0
 # ---------------------------------------------------------------------------
-# Skip file-level identifiers plus certain workflow/timing OID attributes
-# whose targets are complex structural elements (can reference multiple
-# element types) and cannot be reliably resolved to a single definition class
-# via the naming convention.
+# Skip only the file-level identifiers. The workflow and timing references
+# (StartOID, SourceOID, TargetOID, EndOID, StructuralElementOID, PredecessorOID,
+# SuccessorOID) may point at several element types; they are checked against
+# oid_generator._REF_DEF_ANY_OF, and TargetTransitionOID against its override.
+# Before 0.3.0 all eight were skipped.
 
-ODM_20_SKIP_ATTRS: list[str] = [
-    "FileOID",
-    "PriorFileOID",
-    # Workflow transition OIDs: source/target can be any structural element
-    "StartOID",
-    "SourceOID",
-    "TargetOID",
-    "EndOID",
-    # Duration timing: StructuralElementOID can reference multiple types
-    "StructuralElementOID",
-    # Relative timing: predecessor/successor OIDs span multiple element types
-    "PredecessorOID",
-    "SuccessorOID",
-    # Target transition: references Transition (which itself has transitions)
-    "TargetTransitionOID",
-]
+ODM_20_SKIP_ATTRS: list[str] = ["FileOID", "PriorFileOID"]
 ODM_20_SKIP_ELEMS: list[str] = ["ODM"]
 
 # ---------------------------------------------------------------------------

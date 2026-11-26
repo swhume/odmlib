@@ -98,26 +98,40 @@ or ``Association`` child, and :class:`~odmlib.odm_2_0.model.Location` has no
 ``Query``. The 24 elements of that data layer are scoped to v0.3.0; see
 ``ROADMAP.md``.
 
-**Three deliberate approximations** remain, where the XSD says something
-odmlib's descriptor model cannot express. Each is documented in the class
-docstring, and each is caught by
-:class:`~odmlib.odm_parser.ODMSchemaValidator` rather than at build time:
+**One deliberate approximation** remains, where the XSD says something
+odmlib's descriptor model cannot express. It is documented in the class
+docstring, and caught by :class:`~odmlib.odm_parser.ODMSchemaValidator` rather
+than at build time:
 
 - :class:`~odmlib.odm_2_0.model.FormalExpression` -- the XSD requires exactly
   one of ``Code`` or ``ExternalCodeLib``. odmlib has no way to express an
   ``xs:choice``, so both children are declared optional; setting neither, or
   both, builds an object odmlib accepts and the schema rejects.
-- :class:`~odmlib.odm_2_0.model.StudyEventGroupDef` -- the XSD's repeating
-  ``(StudyEventGroupRef?, StudyEventRef?)`` group is approximated by two
-  parallel lists, which emit all groups then all events. Both forms are
-  schema-valid; only an interleaved ordering is lost.
-- :class:`~odmlib.odm_2_0.model.TranslatedText` -- the XSD types it
-  ``mixed="true"`` with an optional ``xhtml:div`` child, allowing XHTML
-  markup. odmlib models the text-only form; an ``xhtml:div`` present in a
-  source document is dropped on load. Plain-text TranslatedText round-trips
-  exactly. An opaque text-only ``div`` was tried in v0.2.1 and withdrawn: it
-  could not carry markup either, since element text is XML-escaped on write.
-  See ``ODM_XSD_ALIGNMENT.md`` for what real XHTML support would take.
+
+Two former approximations were closed in v0.3.0:
+
+- **Interleaved children keep their order.** Where the XSD lets two child
+  types alternate -- :class:`~odmlib.odm_2_0.model.ItemGroupDef`
+  (``ItemGroupRef``/``ItemRef``),
+  :class:`~odmlib.odm_2_0.model.StudyEventGroupDef`
+  (``StudyEventGroupRef``/``StudyEventRef``) and
+  :class:`~odmlib.odm_2_0.model.WorkflowDef` (``Transition``/``Branching``) --
+  the two per-type lists are views onto one ordered sequence. A loaded element
+  keeps its document order, a child appended to either list goes last, and
+  :meth:`~odmlib.odm_element.ODMElement.children` returns the combined order::
+
+      for child in igd.children("ItemRef", "ItemGroupRef"):
+          ...
+
+  ODM 2.0 JSON keeps one array per type, so a JSON round trip writes the group
+  in model order. See :mod:`odmlib.interleave`.
+- **XHTML in TranslatedText is kept.** The XSD types
+  :class:`~odmlib.odm_2_0.model.TranslatedText` ``mixed="true"`` with an
+  optional ``xhtml:div`` child. The div, and any text after it, is held as one
+  markup string in ``TranslatedText.div`` and written back as a real subtree
+  with its own XHTML namespace declaration; text before it stays in
+  ``_content``. odmlib does not model the XHTML elements inside the div.
+  See :mod:`odmlib.xhtml`.
 
 See ``ODM_XSD_ALIGNMENT.md`` for the full model/XSD comparison and the
 remaining work.

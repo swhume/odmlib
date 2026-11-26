@@ -105,7 +105,7 @@ class TestClinicalData(TestCase):
         self.assertEqual(subject.SubjectKey, "1000")
 
     def test_audit_record(self):
-        ar = ODM.AuditRecord(EditPoint="Monitoring", UsedImputationMethod="Yes", ID="1")
+        ar = ODM.AuditRecord(EditPoint="Monitoring", UsedImputationMethod="Yes", ID="AR.001")
         ar.UserRef = ODM.UserRef(UserOID="USER.001")
         ar.LocationRef = ODM.LocationRef(LocationOID="SITE.101")
         ar.DateTimeStamp = ODM.DateTimeStamp(_content="2020-12-01T10:28:16")
@@ -142,7 +142,7 @@ class TestClinicalData(TestCase):
         self.assertEqual(sig.SignatureRef.SignatureOID, "SIG.001")
 
     def test_audit_records(self):
-        ar = ODM.AuditRecord(EditPoint="Monitoring", UsedImputationMethod="Yes", ID="1")
+        ar = ODM.AuditRecord(EditPoint="Monitoring", UsedImputationMethod="Yes", ID="AR.001")
         ar.UserRef = ODM.UserRef(UserOID="USER.001")
         ar.LocationRef = ODM.LocationRef(LocationOID="SITE.101")
         ar.DateTimeStamp = ODM.DateTimeStamp(_content="2020-12-01T10:28:16")
@@ -150,7 +150,7 @@ class TestClinicalData(TestCase):
         ar.SourceID = ODM.SourceID(_content="RECID14327")
         ars = ODM.AuditRecords()
         ars.AuditRecord.append(ar)
-        self.assertEqual(ars.AuditRecord[0].ID, "1")
+        self.assertEqual(ars.AuditRecord[0].ID, "AR.001")
         self.assertEqual(ars.AuditRecord[0].LocationRef.LocationOID, "SITE.101")
 
     def test_signatures(self):

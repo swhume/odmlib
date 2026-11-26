@@ -568,14 +568,14 @@ NS.NamespaceRegistry(prefix="odm",
 # For Define-XML, add additional namespaces
 NS.NamespaceRegistry(prefix="def", uri="http://www.cdisc.org/ns/def/v2.1")
 NS.NamespaceRegistry(prefix="xs", uri="http://www.w3.org/2001/XMLSchema-instance")
-# xlink is required: def:leaf carries xlink:href, and without this the
-# xmlns:xlink declaration is omitted and the output cannot be re-parsed
 NS.NamespaceRegistry(prefix="xlink", uri="http://www.w3.org/1999/xlink")
 ```
 
 `is_reset=True` clears every prefix, including the ones each model package registers when
-it is imported — so register every prefix the document uses, not only the ones you set
-yourself.
+it is imported. Since 0.3.0, prefixes that have one URI in every odmlib model (`xs`, `xlink`)
+are declared automatically if you leave them out, but a version-dependent prefix must be
+registered: if `def` is missing, serialization emits an `OdmlibInteroperabilityWarning`
+and the output cannot be re-parsed.
 
 ## Running Tests
 
@@ -618,17 +618,17 @@ python -m pytest tests/test_odm_loader.py -v
   - **ClinicalData / ReferenceData are not modelled.** `ODM` has no `ClinicalData`,
     `ReferenceData` or `Association` child, and `Location` has no `Query`. The 24
     elements of that data layer are scoped to v0.3.0 — see `ROADMAP.md`.
-  - **Three deliberate approximations**, each documented in the class docstring, where
-    the XSD says something odmlib's descriptor model cannot express. Each is caught by
-    `ODMSchemaValidator` rather than at build time:
-    - `FormalExpression` — the XSD requires exactly one of `Code` or `ExternalCodeLib`;
-      odmlib cannot express an `xs:choice`, so both are optional.
-    - `StudyEventGroupDef` — the XSD's repeating `(StudyEventGroupRef?, StudyEventRef?)`
-      group is approximated by two parallel lists, so an interleaved ordering cannot be
-      reproduced. Both forms are schema-valid; only the ordering is lost.
-    - `TranslatedText` — the XSD allows XHTML markup via a mixed-content `xhtml:div`
-      child. odmlib models the text-only form; an `xhtml:div` in a source document is
-      dropped on load.
+  - **One deliberate approximation**, documented in the class docstring and caught by
+    `ODMSchemaValidator` rather than at build time: `FormalExpression` — the XSD requires
+    exactly one of `Code` or `ExternalCodeLib`; odmlib cannot express an `xs:choice`, so
+    both are optional.
+  - **Interleaved children keep their order (0.3.0).** Where the XSD lets two child types
+    alternate — `ItemGroupDef`'s `ItemGroupRef`/`ItemRef`, `StudyEventGroupDef`'s
+    `StudyEventGroupRef`/`StudyEventRef`, `WorkflowDef`'s `Transition`/`Branching` — the
+    two lists share one order. Read it with `igd.children("ItemRef", "ItemGroupRef")`.
+    ODM 2.0 JSON keeps one array per type, so a JSON round trip does not carry it.
+  - **XHTML text (0.3.0).** An `xhtml:div` inside `TranslatedText` is kept as a markup
+    string in `TranslatedText.div`; odmlib does not model the XHTML elements inside it.
 
 ## License
 

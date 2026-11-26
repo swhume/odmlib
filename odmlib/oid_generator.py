@@ -67,6 +67,13 @@ _REF_DEF_OVERRIDES: dict[str, str] = {
     "WorkflowOID": "WorkflowDef",
     "StudyEventGroupOID": "StudyEventGroupDef",
     "TransitionOID": "Transition",
+    # ItemRef/@UnitsItemOID names the ItemDef that carries the units of the
+    # referencing item (there is no UnitsItemDef / UnitsItem class).
+    "UnitsItemOID": "ItemDef",
+    # Organization/@PartOfOrganizationOID names the parent Organization.
+    "PartOfOrganizationOID": "Organization",
+    # TargetTransition and DefaultTransition both reference a Transition.
+    "TargetTransitionOID": "Transition",
 
     # RoleCodeListOID (found in ItemRef) references a CodeList but the
     # naming convention doesn't resolve (RoleCodeListDef / RoleCodeList
@@ -75,17 +82,37 @@ _REF_DEF_OVERRIDES: dict[str, str] = {
 }
 
 
-# Document references are ID-based rather than OID-named: leaf/@ID
-# (Define-XML) and Leaf/@ID (ODM 2.0) are the definitions, referenced by
-# DocumentRef/@leafID, DocumentRef/@LeafID and
-# ItemGroupDef/@def:ArchiveLocationID.  These pairs are surfaced by
-# ODMElement._init_oid_check alongside the OID-named attributes; they
-# are only wired up when the target class exists in the model package.
-_ID_REF_DEF_PAIRS: dict[str, str] = {
-    "leafID": "leaf",
-    "ArchiveLocationID": "leaf",
-    # ODM 2.0 spells the element Leaf and the reference LeafID.
-    "LeafID": "Leaf",
+# Document references are ID-based rather than OID-named. Define-XML's
+# def:leaf/@ID and ODM 2.0's Leaf/@ID are the definitions; they are referenced
+# by DocumentRef/@leafID (Define-XML), DocumentRef/@LeafID (ODM 2.0),
+# SourceItem/@leafID (ODM 2.0) and ItemGroupDef/@ArchiveLocationID (both).
+# Each reference lists its candidate definition classes in preference order;
+# the first one the model package has is used, so Define-XML resolves to leaf
+# and ODM 2.0 to Leaf. These pairs are surfaced by ODMElement._init_oid_check
+# alongside the OID-named attributes.
+_ID_REF_DEF_PAIRS: dict[str, tuple[str, ...]] = {
+    "leafID": ("leaf", "Leaf"),
+    "ArchiveLocationID": ("leaf", "Leaf"),
+    "LeafID": ("Leaf",),
+}
+_ID_DEF_CLASSES: frozenset[str] = frozenset(
+    name for names in _ID_REF_DEF_PAIRS.values() for name in names)
+
+
+# ODM 2.0 workflow and timing references that may point at any of several definition
+# types. Taken from the ODM v2.0 specification pages WorkflowStart, Transition,
+# WorkflowEnd, RelativeTimingConstraint and DurationTimingConstraint, as transcribed in
+# the LinkML model (cdisc-org/DataExchange-ODM-LinkML, ODM.yaml, any_of ranges). Like the
+# overrides, an entry only applies to the classes the model package actually has.
+_STRUCTURAL: tuple[str, ...] = ("StudyEventGroupDef", "StudyEventDef", "ItemGroupDef", "ItemDef")
+_REF_DEF_ANY_OF: dict[str, tuple[str, ...]] = {
+    "StartOID": _STRUCTURAL,
+    "EndOID": _STRUCTURAL,
+    "SourceOID": _STRUCTURAL + ("Branching",),
+    "TargetOID": _STRUCTURAL + ("Branching",),
+    "PredecessorOID": _STRUCTURAL,
+    "SuccessorOID": _STRUCTURAL,
+    "StructuralElementOID": ("Study", "Epoch") + _STRUCTURAL,
 }
 
 
@@ -137,7 +164,7 @@ def discover_oid_definitions(model_classes: dict[str, type]) -> list[str]:
         attrs = getattr(cls, "_attrs", {})
         if "OID" in attrs:
             oid_defs.append(name)
-        elif "ID" in attrs and name in _ID_REF_DEF_PAIRS.values():
+        elif "ID" in attrs and name in _ID_DEF_CLASSES:
             oid_defs.append(name)
     return oid_defs
 
@@ -199,11 +226,16 @@ def build_ref_def_mapping(
     oid_def_set = set(oid_defs)
 
     for attr_name in ref_attrs:
-        # --- Step 0: ID-based ref/def pairs (Define-XML leaf references) -------
+        # --- Step 0: ID-based ref/def pairs (leaf / Leaf references) -----------
         if attr_name in _ID_REF_DEF_PAIRS:
-            target = _ID_REF_DEF_PAIRS[attr_name]
-            if target in model_classes:
+            target = next((name for name in _ID_REF_DEF_PAIRS[attr_name]
+                           if name in model_classes), None)
+            if target is not None:
                 ref_def[attr_name] = target
+            continue
+
+        # --- multi-target references are mapped by build_ref_def_any_of_mapping
+        if attr_name in _REF_DEF_ANY_OF:
             continue
 
         # --- Step 1: check overrides ------------------------------------------
@@ -229,8 +261,38 @@ def build_ref_def_mapping(
     return ref_def
 
 
+def build_ref_def_any_of_mapping(
+    ref_attrs: dict[str, list[str]],
+    model_classes: dict[str, type],
+) -> dict[str, tuple[str, ...]]:
+    """Map the multi-target reference attributes to the definition classes they allow.
+
+    Covers the ODM 2.0 workflow and timing references in :data:`_REF_DEF_ANY_OF`
+    (``StartOID``, ``SourceOID``, ``StructuralElementOID``, ...). Only attributes the
+    model has are included, each with the candidate classes the model has, so the table
+    is inert for packages without them.
+
+    Args:
+        ref_attrs: Mapping returned by :func:`discover_oid_references`.
+        model_classes: Mapping returned by :func:`discover_model_classes`.
+
+    Returns:
+        Mapping of ``ref_attr_name → (definition_class_name, …)``.
+
+    .. versionadded:: 0.3.0
+    """
+    any_of: dict[str, tuple[str, ...]] = {}
+    for attr_name in ref_attrs:
+        if attr_name in _REF_DEF_ANY_OF:
+            present = tuple(name for name in _REF_DEF_ANY_OF[attr_name] if name in model_classes)
+            if present:
+                any_of[attr_name] = present
+    return any_of
+
+
 def build_def_ref_mapping(
     ref_def: dict[str, str],
+    ref_def_any_of: Optional[dict[str, tuple[str, ...]]] = None,
 ) -> dict[str, list[str]]:
     """Build the reverse mapping from definition classes to reference attributes.
 
@@ -239,12 +301,21 @@ def build_def_ref_mapping(
 
     Args:
         ref_def: Mapping returned by :func:`build_ref_def_mapping`.
+        ref_def_any_of: Optional mapping returned by
+            :func:`build_ref_def_any_of_mapping`; each attribute is listed under
+            every class it may reference.
 
     Returns:
         Mapping of ``definition_class_name → [ref_attr_names …]``.
+
+    .. versionchanged:: 0.3.0
+       Added ``ref_def_any_of``.
     """
+    pairs = list(ref_def.items())
+    for attr_name, def_classes in (ref_def_any_of or {}).items():
+        pairs.extend((attr_name, def_class) for def_class in def_classes)
     def_ref: dict[str, list[str]] = {}
-    for attr_name, def_class in ref_def.items():
+    for attr_name, def_class in pairs:
         if def_class not in def_ref:
             def_ref[def_class] = []
         if attr_name not in def_ref[def_class]:
@@ -273,6 +344,16 @@ class DynamicOIDRef(ErrorReporting):
     ``collect_errors=True`` reports *every* duplicate and every bad reference
     rather than only the first. The deprecated manual ``OIDRef`` classes do
     not, and contribute at most one error.
+
+    ``ref_def`` maps each single-target reference attribute to its definition
+    class. ``ref_def_any_of`` maps the references that may point at any of
+    several classes -- ODM 2.0's ``StartOID``, ``SourceOID``,
+    ``StructuralElementOID`` and the other workflow and timing references -- to
+    the tuple of classes they allow. Both are checked; ``skip_attr`` lists the
+    attributes that are not.
+
+    .. versionchanged:: 0.3.0
+       Added ``ref_def_any_of``.
 
     Note:
         A checker accumulates every OID it sees, so it is single-use per
@@ -316,7 +397,10 @@ class DynamicOIDRef(ErrorReporting):
         self.ref_def = build_ref_def_mapping(
             self.ref_attrs, self.oid_defs, self.model_classes
         )
-        self.def_ref = build_def_ref_mapping(self.ref_def)
+        # attributes that may reference any of several classes (ODM 2.0 workflow
+        # and timing references); kept apart so ref_def values stay strings
+        self.ref_def_any_of = build_ref_def_any_of_mapping(self.ref_attrs, self.model_classes)
+        self.def_ref = build_def_ref_mapping(self.ref_def, self.ref_def_any_of)
 
         # --- Runtime state (populated during verify_oids traversal) ---
         # self.oid: OID value → element class name (reference targets only;
@@ -327,7 +411,8 @@ class DynamicOIDRef(ErrorReporting):
         # element from reference-target checking, not from uniqueness
         self.unique_oids: dict[str, str] = {}
         # self.oid_ref: attr name → set of referenced OID values
-        self.oid_ref: dict[str, set] = {attr: set() for attr in self.ref_def}
+        self.oid_ref: dict[str, set] = {
+            attr: set() for attr in list(self.ref_def) + list(self.ref_def_any_of)}
         self.is_verified: bool = False
 
         # --- Skip lists ---
@@ -435,8 +520,21 @@ class DynamicOIDRef(ErrorReporting):
                         ),
                     ))
                     continue        # one error per bad ref, not two
-                expected_type = self.ref_def.get(attr)
                 actual_type = self.oid.get(oid)
+                allowed = self.ref_def_any_of.get(attr)
+                if allowed is not None:
+                    if actual_type and actual_type not in allowed:
+                        self.report(OdmlibOIDError(
+                            f"OID reference for attribute {attr} must point at one of "
+                            f"{', '.join(allowed)}; OID {oid} is defined on a {actual_type}",
+                            attribute=attr,
+                            hint=(
+                                f"Attribute '{attr}' may reference a {', '.join(allowed)}, "
+                                f"but OID '{oid}' is defined on a {actual_type}."
+                            ),
+                        ))
+                    continue
+                expected_type = self.ref_def.get(attr)
                 if expected_type and actual_type and expected_type != actual_type:
                     self.report(OdmlibOIDError(
                         f"OID reference for attribute {attr} element types do "
@@ -482,14 +580,22 @@ class DynamicOIDRef(ErrorReporting):
             if element_type in self.skip_elem:
                 continue
             if oid not in all_referenced:
-                # Look up which ref_attr is associated with this element type.
+                # Look up which ref_attr is associated with this element type,
+                # preferring a single-target attribute over a multi-target one.
                 ref_attr = next(
                     (
                         attr
                         for attr, def_class in self.ref_def.items()
                         if def_class == element_type
                     ),
-                    element_type,  # fallback: use class name itself
+                    next(
+                        (
+                            attr
+                            for attr, def_classes in self.ref_def_any_of.items()
+                            if element_type in def_classes
+                        ),
+                        element_type,  # fallback: use class name itself
+                    ),
                 )
                 orphans[oid] = ref_attr
         return orphans

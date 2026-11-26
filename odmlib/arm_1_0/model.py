@@ -494,7 +494,8 @@ class ResultDisplay(OE.ODMElement):
     """
     namespace = "arm"
     OID = T.OID(required=True)
-    Name = T.Name(required=True)
+    # the XSD types ResultDisplay/@Name as free text, not name, so "" is valid
+    Name = T.String(required=True)
     Description = T.ODMObject(element_class=Description)
     DocumentRef = T.ODMListObject(element_class=DocumentRef, namespace="def")
     AnalysisResult = T.ODMListObject(element_class=AnalysisResult, required=True, namespace="arm")

@@ -11,38 +11,37 @@ NS.NamespaceRegistry(prefix="xlink", uri="http://www.w3.org/1999/xlink")
 class TranslatedText(OE.ODMElement):
     """A piece of text in a specific language, used inside Description and similar elements.
 
-    .. note::
+    The XSD types TranslatedText as ``mixed="true"`` with an optional
+    ``xhtml:div`` child, so the text may be plain or marked up as XHTML. The
+    text before the div is ``_content``; the div, and any text after it, is
+    held as one markup string in ``div``. Both round-trip through XML and JSON::
 
-       **Known approximation.** The XSD types TranslatedText as
-       ``mixed="true"`` with an optional ``xhtml:div`` child, so a document
-       may mark the text up as XHTML. odmlib models the text-only form: an
-       ``xhtml:div`` present in a source document is dropped on load, and
-       cannot be written. Plain-text TranslatedText -- overwhelmingly the
-       common case -- round-trips exactly.
+        TranslatedText(lang="en", Type="text/html",
+                       div='<div xmlns="http://www.w3.org/1999/xhtml"><p>Weight</p></div>')
 
-       Two things stand behind this. Faithful XHTML would need a model class
-       for every element ``ODM-xhtml.xsd`` allows (``p``, ``b``, ``table``
-       and the rest, deeply recursive and themselves mixed), because the
-       loader resolves children by tag name against this module. And odmlib
-       never reads ElementTree's ``tail``, so text *following* a child
-       element is lost silently even where the child is modelled. An opaque
-       text-only ``div`` was tried in v0.2.1 and withdrawn: it could not
-       carry markup either -- text assigned to it is XML-escaped on write --
-       so it added a foreign-namespace dependency for no gain. Validate with
-       :class:`~odmlib.odm_parser.ODMSchemaValidator` if a source document
-       may contain markup.
+    ``div`` is stored in a canonical form that declares its own XHTML namespace,
+    so it is written correctly whatever namespaces are registered. Markup written
+    without a namespace (``"<div><p>Weight</p></div>"``) is placed in the XHTML
+    namespace.
+
+    .. versionchanged:: 0.3.0
+       ``_content`` is optional (``<TranslatedText/>`` is schema-valid), the
+       ``xhtml:div`` child is preserved in ``div`` instead of being dropped on
+       load, and ``lang`` must be an ``xs:language`` code.
 
     Attributes:
         lang (str): BCP 47 language tag (xml:lang attribute), e.g. "en".
         Type (str, required): Media-type qualifier for the text (XSD type
             ``text``, free-text, ``use="required"``), e.g. ``"text/plain"``.
             Required by the ODM 2.0 schema.
-        _content (str, required): The actual text content.
+        _content (str): The text content, or the text before ``div``.
+        div (str): The ``xhtml:div`` child as markup, plus any text after it.
     """
 
-    lang = T.String(namespace="xml")
+    lang = T.Language(namespace="xml")
     Type = T.String(required=True)
-    _content = T.String(required=True)
+    _content = T.String(required=False)
+    div = T.XHTMLDiv()
 
 
 class Description(OE.ODMElement):
@@ -148,7 +147,8 @@ class Coding(OE.ODMElement):
     Label = T.String()
     href = T.String()
     ref = T.String()
-    CommentOID = T.OIDRef(required=False)
+    # the XSD types Coding/@CommentOID as free text, not oidref, so "" is valid
+    CommentOID = T.String(required=False)
 
 
 class Alias(OE.ODMElement):
@@ -232,7 +232,7 @@ class StudyEventRef(OE.ODMElement):
 
     Attributes:
         StudyEventOID (str, required): OID of the referenced StudyEventDef.
-        OrderNumber (int): Position of this event in the sequence.
+        OrderNumber (int): Position of this event in the sequence (a positive integer).
         Mandatory (str, required): Whether collection of this event is
             mandatory ("Yes" or "No").
         CollectionExceptionConditionOID (str): OID of a ConditionDef that,
@@ -240,7 +240,7 @@ class StudyEventRef(OE.ODMElement):
     """
 
     StudyEventOID = T.OIDRef(required=True)
-    OrderNumber = T.Integer(required=False)
+    OrderNumber = T.PositiveInteger(required=False)
     Mandatory = T.ValueSetString(required=True)
     CollectionExceptionConditionOID = T.OIDRef()
 
@@ -308,7 +308,8 @@ class ItemGroupRef(OE.ODMElement):
 
     Attributes:
         ItemGroupOID (str, required): OID of the referenced ItemGroupDef.
-        OrderNumber (int): Position of this item group in the sequence.
+        OrderNumber (int): Position of this item group in the sequence (a positive
+            integer).
         Mandatory (str, required): Whether collection of this item group is
             mandatory ("Yes" or "No").
         CollectionExceptionConditionOID (str): OID of a ConditionDef that,
@@ -317,7 +318,7 @@ class ItemGroupRef(OE.ODMElement):
 
     ItemGroupOID = T.OIDRef(required=True)
     MethodOID = T.OIDRef()
-    OrderNumber = T.Integer(required=False)
+    OrderNumber = T.PositiveInteger(required=False)
     Mandatory = T.ValueSetString(required=True)
     CollectionExceptionConditionOID = T.OIDRef()
 
@@ -478,11 +479,16 @@ class WhereClauseRef(OE.ODMElement):
 class CheckValue(OE.ODMElement):
     """A single value used in a RangeCheck comparison.
 
+    .. versionchanged:: 0.3.0
+       ``_content`` is optional: the XSD types it as an unrestricted string, so
+       ``<CheckValue/>`` is valid, and whitespace such as ``<CheckValue> </CheckValue>``
+       is a real value that loads as ``" "``.
+
     Attributes:
-        _content (str, required): The check value as a string.
+        _content (str): The check value as a string.
     """
 
-    _content = T.String(required=True)
+    _content = T.String(required=False)
 
 
 class ErrorMessage(OE.ODMElement):
@@ -492,12 +498,16 @@ class ErrorMessage(OE.ODMElement):
 class Code(OE.ODMElement):
     """The inline source text of a FormalExpression.
 
+    .. versionchanged:: 0.3.0
+       ``_content`` is optional: the XSD types it as an unrestricted string, so
+       ``<Code/>`` is valid.
+
     Attributes:
-        _content (str, required): The expression source, written in the
+        _content (str): The expression source, written in the
             language named by the parent FormalExpression's Context.
     """
 
-    _content = T.String(required=True)
+    _content = T.String(required=False)
 
 
 class ExternalCodeLib(OE.ODMElement):
@@ -698,7 +708,20 @@ class Class(OE.ODMElement):
 
 
 class ItemGroupDef(OE.ODMElement):
-    """ represents ODM v2.0 ItemGroupDef and can serialize as JSON or XML"""
+    """ represents ODM v2.0 ItemGroupDef and can serialize as JSON or XML
+
+    The XSD lets ``ItemGroupRef`` and ``ItemRef`` children interleave in any order
+    (the repeating ``ItemGroupDefGroup``). The two lists are views onto one ordered
+    sequence: a loaded ItemGroupDef keeps its document order, a child appended to
+    either list goes after every existing child, and serialization writes that order.
+    Use ``igd.children("ItemRef", "ItemGroupRef")`` to read the combined sequence.
+    Iterating the ItemGroupDef itself still yields only its ItemRefs.
+
+    .. versionchanged:: 0.3.0
+       Interleaved ``ItemGroupRef``/``ItemRef`` order is preserved. Previously every
+       ItemGroupRef was written before every ItemRef, which could reorder the
+       questions of a form that has no OrderNumbers.
+    """
 
     OID = T.OID(required=True)
     Name = T.Name(required=True)
@@ -717,8 +740,8 @@ class ItemGroupDef(OE.ODMElement):
     CommentOID = T.OIDRef(required=False)
     Description = T.ODMObject(element_class=Description)
     Class = T.ODMObject(element_class=Class)
-    ItemGroupRef = T.ODMListObject(element_class=ItemGroupRef)
-    ItemRef = T.ODMListObject(element_class=ItemRef)
+    ItemGroupRef = T.ODMListObject(element_class=ItemGroupRef, group="ItemGroupDefGroup")
+    ItemRef = T.ODMListObject(element_class=ItemRef, group="ItemGroupDefGroup")
     Coding = T.ODMListObject(element_class=Coding)
     WorkflowRef = T.ODMObject(element_class=WorkflowRef)
     Origin = T.ODMListObject(element_class=Origin)
@@ -952,7 +975,8 @@ class StudyEventGroupRef(OE.ODMElement):
     Attributes:
         StudyEventGroupOID (str, required): OID of the referenced
             StudyEventGroupDef.
-        OrderNumber (int): Position of this reference in the sequence.
+        OrderNumber (int): Position of this reference in the sequence (a positive
+            integer).
         Mandatory (str, required): Whether this study event group is
             mandatory ("Yes" or "No").
         CollectionExceptionConditionOID (str): OID of a ConditionDef that,
@@ -961,7 +985,7 @@ class StudyEventGroupRef(OE.ODMElement):
     """
 
     StudyEventGroupOID = T.OIDRef(required=True)
-    OrderNumber = T.Integer()
+    OrderNumber = T.PositiveInteger()
     Mandatory = T.ValueSetString(required=True)
     CollectionExceptionConditionOID = T.OIDRef()
     Description = T.ODMObject(element_class=Description)
@@ -1069,6 +1093,12 @@ class WorkflowDef(OE.ODMElement):
     A workflow defines the possible paths through study events,
     including transitions, branching, and timing constraints.
 
+    .. versionchanged:: 0.3.0
+       ``Transition`` and ``Branching`` may interleave (the XSD's repeating
+       ``WorkflowTransitionGroupDefinition``). The two lists are views onto one
+       ordered sequence, so an interleaved order survives loading and is written
+       back; read it with ``wf.children("Transition", "Branching")``.
+
     Attributes:
         OID (str, required): Unique identifier.
         Name (str, required): Human-readable name.
@@ -1083,8 +1113,8 @@ class WorkflowDef(OE.ODMElement):
     Name = T.Name(required=True)
     Description = T.ODMObject(element_class=Description)
     WorkflowStart = T.ODMObject(element_class=WorkflowStart, required=True)
-    Transition = T.ODMListObject(element_class=Transition)
-    Branching = T.ODMListObject(element_class=Branching)
+    Transition = T.ODMListObject(element_class=Transition, group="WorkflowTransitionGroupDefinition")
+    Branching = T.ODMListObject(element_class=Branching, group="WorkflowTransitionGroupDefinition")
     WorkflowEnd = T.ODMListObject(element_class=WorkflowEnd, required=True)
 
 
@@ -1094,13 +1124,19 @@ class AbsoluteTimingConstraint(OE.ODMElement):
     Specifies when a study event should occur relative to an absolute
     date/time, with allowed pre- and post-windows.
 
+    .. versionchanged:: 0.3.0
+       ``TimepointTarget`` accepts the XSD's whole union of full and partial
+       dates, times and datetimes. It previously accepted only the
+       dash-placeholder form, rejecting values such as ``2021-01-01``.
+
     Attributes:
         OID (str, required): Unique identifier.
         Name (str, required): Human-readable name.
         StudyEventGroupOID (str): OID of the constrained study event group.
         StudyEventOID (str): OID of the constrained study event.
-        TimepointTarget (str, required): Incomplete datetime target for when
-            the event should occur.
+        TimepointTarget (str, required): Target date, time or datetime for
+            when the event should occur; each may be partial, e.g.
+            ``2021-01-01``, ``2021-01``, ``09:00`` or ``2021-01-01T09:00:00``.
         TimepointPreWindow (str): ISO 8601 duration for the allowable
             window before the target.
         TimepointPostWindow (str): ISO 8601 duration for the allowable
@@ -1112,7 +1148,7 @@ class AbsoluteTimingConstraint(OE.ODMElement):
     Name = T.Name(required=True)
     StudyEventGroupOID = T.OIDRef()
     StudyEventOID = T.OIDRef()
-    TimepointTarget = T.IncompleteDateTimeString(required=True)
+    TimepointTarget = T.TimepointString(required=True)
     TimepointPreWindow = T.DurationDateTimeString()
     TimepointPostWindow = T.DurationDateTimeString()
     Description = T.ODMObject(element_class=Description)
@@ -1700,19 +1736,14 @@ class StudyEventGroupDef(OE.ODMElement):
        relaxed from required to optional to match ``use="optional"`` in the
        XSD's StudyEventGroupDefAttributeDefinition group.
 
-    .. note::
-
-       **Known approximation.** The XSD models the children as a repeating
-       group, ``(StudyEventGroupRef?, StudyEventRef?)`` with
-       ``maxOccurs="unbounded"``, which permits the two to interleave.
-       odmlib has no repeating-group descriptor -- a descriptor maps to one
-       homogeneous list -- so this is approximated with two parallel lists.
-       Serialization emits every StudyEventGroupRef and then every
-       StudyEventRef, which is one valid instance of the XSD group but
-       cannot reproduce an interleaved ordering. Reading is affected too:
-       the loader collects children by tag name, so an interleaved source
-       document loads correctly but re-serializes grouped. Both forms are
-       schema-valid; only the original ordering is lost.
+    .. versionchanged:: 0.3.0
+       The XSD models the children as a repeating group,
+       ``(StudyEventGroupRef?, StudyEventRef?)`` with ``maxOccurs="unbounded"``,
+       which permits the two to interleave. The two lists are now views onto one
+       ordered sequence, so an interleaved order survives loading and is written
+       back; previously every StudyEventGroupRef was written before every
+       StudyEventRef. Read the combined order with
+       ``segd.children("StudyEventGroupRef", "StudyEventRef")``.
 
     Attributes:
         OID (str, required): Unique identifier.
@@ -1733,8 +1764,8 @@ class StudyEventGroupDef(OE.ODMElement):
     EpochOID = T.OIDRef(required=False)
     CommentOID = T.OIDRef(required=False)
     Description = T.ODMObject(element_class=Description)
-    StudyEventGroupRef = T.ODMListObject(element_class=StudyEventGroupRef)
-    StudyEventRef = T.ODMListObject(element_class=StudyEventRef)
+    StudyEventGroupRef = T.ODMListObject(element_class=StudyEventGroupRef, group="StudyEventDefGroup")
+    StudyEventRef = T.ODMListObject(element_class=StudyEventRef, group="StudyEventDefGroup")
     WorkflowRef = T.ODMObject(element_class=WorkflowRef)
     Coding = T.ODMListObject(element_class=Coding)
 
@@ -1805,10 +1836,10 @@ class UserName(OE.ODMElement):
     """The login name (username) used by a User to authenticate.
 
     Attributes:
-        _content (str, required): The login name string.
+        _content (str): The login name string.
     """
 
-    _content = T.String(required=True)
+    _content = T.String(required=False)
 
 
 class Prefix(OE.ODMElement):
@@ -1819,10 +1850,10 @@ class Prefix(OE.ODMElement):
        carried it as a User attribute.
 
     Attributes:
-        _content (str, required): The prefix string.
+        _content (str): The prefix string.
     """
 
-    _content = T.String(required=True)
+    _content = T.String(required=False)
 
 
 class Suffix(OE.ODMElement):
@@ -1833,100 +1864,100 @@ class Suffix(OE.ODMElement):
        carried it as a User attribute.
 
     Attributes:
-        _content (str, required): The suffix string.
+        _content (str): The suffix string.
     """
 
-    _content = T.String(required=True)
+    _content = T.String(required=False)
 
 
 class FullName(OE.ODMElement):
     """The full legal name of a User.
 
     Attributes:
-        _content (str, required): The full name string.
+        _content (str): The full name string.
     """
 
-    _content = T.String(required=True)
+    _content = T.String(required=False)
 
 
 class GivenName(OE.ODMElement):
     """The first (given) name of a User.
 
     Attributes:
-        _content (str, required): The first name string.
+        _content (str): The first name string.
     """
 
-    _content = T.String(required=True)
+    _content = T.String(required=False)
 
 
 class FamilyName(OE.ODMElement):
     """The last (family) name of a User.
 
     Attributes:
-        _content (str, required): The last name string.
+        _content (str): The last name string.
     """
 
-    _content = T.String(required=True)
+    _content = T.String(required=False)
 
 
 class StreetName(OE.ODMElement):
     """A line of a street address for a User's Address.
 
     Attributes:
-        _content (str, required): One street address line.
+        _content (str): One street address line.
     """
 
-    _content = T.String(required=True)
+    _content = T.String(required=False)
 
 
 class City(OE.ODMElement):
     """The city component of a User's Address.
 
     Attributes:
-        _content (str, required): The city name.
+        _content (str): The city name.
     """
 
-    _content = T.String(required=True)
+    _content = T.String(required=False)
 
 
 class StateProv(OE.ODMElement):
     """The state or province component of a User's Address.
 
     Attributes:
-        _content (str, required): The state or province name or code.
+        _content (str): The state or province name or code.
     """
 
-    _content = T.String(required=True)
+    _content = T.String(required=False)
 
 
 class Country(OE.ODMElement):
     """The country component of a User's Address.
 
     Attributes:
-        _content (str, required): ISO 3166-1 alpha-2 country code.
+        _content (str): ISO 3166-1 alpha-2 country code.
     """
 
-    _content = T.ValueSetString(required=True)
+    _content = T.ValueSetString(required=False)
 
 
 class PostalCode(OE.ODMElement):
     """The postal or ZIP code component of a User's Address.
 
     Attributes:
-        _content (str, required): The postal code string.
+        _content (str): The postal code string.
     """
 
-    _content = T.String(required=True)
+    _content = T.String(required=False)
 
 
 class OtherText(OE.ODMElement):
     """Additional free-form address text not captured by other Address children.
 
     Attributes:
-        _content (str, required): Free-form address text.
+        _content (str): Free-form address text.
     """
 
-    _content = T.String(required=True)
+    _content = T.String(required=False)
 
 
 class HouseNumber(OE.ODMElement):
@@ -1935,10 +1966,10 @@ class HouseNumber(OE.ODMElement):
     .. versionadded:: 0.2.1
 
     Attributes:
-        _content (str, required): The house number.
+        _content (str): The house number.
     """
 
-    _content = T.String(required=True)
+    _content = T.String(required=False)
 
 
 class GeoPosition(OE.ODMElement):
@@ -2142,22 +2173,22 @@ class Meaning(OE.ODMElement):
     """A human-readable description of the meaning of an electronic signature.
 
     Attributes:
-        _content (str, required): Text describing what the signature signifies,
+        _content (str): Text describing what the signature signifies,
             e.g. "Approval" or "Author".
     """
 
-    _content = T.String(required=True)
+    _content = T.String(required=False)
 
 
 class LegalReason(OE.ODMElement):
     """The legal basis or reason for an electronic signature.
 
     Attributes:
-        _content (str, required): Text describing the legal reason for the
+        _content (str): Text describing the legal reason for the
             signature, e.g. "I approve this document".
     """
 
-    _content = T.String(required=True)
+    _content = T.String(required=False)
 
 
 class SignatureDef(OE.ODMElement):
@@ -2245,9 +2276,16 @@ class ODM(OE.ODMElement):
         SourceSystem (str): Name of the software system that generated the
             file.
         SourceSystemVersion (str): Version of the source system.
+        schemaLocation (str): The ``xsi:schemaLocation`` hint, written with the
+            ``xs`` prefix as in the other ODM-family models. Other ``xsi:*``
+            attributes in a source document are ignored on load.
         Description (Description): Human-readable description of the file.
         Study (list): One or more Study elements.
         AdminData: Administrative data for the study.
+
+    .. versionchanged:: 0.3.0
+       Added ``schemaLocation``. A document carrying ``xsi:schemaLocation``
+       previously failed to load.
     """
     FileType = T.ValueSetString(required=True)
     Granularity = T.ValueSetString(required=False)
@@ -2260,6 +2298,7 @@ class ODM(OE.ODMElement):
     Originator = T.String(required=False)
     SourceSystem = T.String(required=False)
     SourceSystemVersion = T.String(required=False)
+    schemaLocation = T.String(required=False, namespace="xs")
     Description = T.ODMObject(required=False, element_class=Description)
     Study = T.ODMListObject(required=False, element_class=Study)
     AdminData = T.ODMListObject(required=False, element_class=AdminData)

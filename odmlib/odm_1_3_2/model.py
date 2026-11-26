@@ -117,7 +117,8 @@ class MeasurementUnit(OE.ODMElement):
     """
 
     OID = T.OID(required=True)
-    Name = T.Name(required=True)
+    # the XSD types MeasurementUnit/@Name as free text, not name, so "" is valid
+    Name = T.String(required=True)
     Symbol = T.ODMObject(required=True, element_class=Symbol)
     Alias = T.ODMListObject(element_class=Alias)
 

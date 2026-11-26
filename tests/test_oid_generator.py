@@ -12,6 +12,7 @@ import os
 import unittest
 
 import odmlib.ns_registry as NS
+from odmlib.exceptions import OdmlibOIDError
 
 DATA_DIR = os.path.join(os.path.dirname(os.path.realpath(__file__)), "data")
 
@@ -382,13 +383,64 @@ class TestDynamicOIDRefODM20(unittest.TestCase):
         self.assertIn("EpochOID", self.checker.ref_def)
         self.assertEqual(self.checker.ref_def["EpochOID"], "Epoch")
 
-    def test_skipped_attrs_not_in_oid_ref(self):
-        """Complex workflow OIDs in skip list should not appear in oid_ref."""
-        for attr in ("StartOID", "SourceOID", "TargetOID", "EndOID"):
-            # These are in skip_attr, so add_oid_ref should silently ignore.
-            self.checker.add_oid_ref("SOME.OID", attr)
-        # No exception on check.
+    def test_only_file_level_oids_are_skipped(self):
+        """Since 0.3.0 the workflow and timing references are checked (plan §4A, O8)."""
+        self.assertEqual(sorted(self.checker.skip_attr), ["FileOID", "PriorFileOID"])
+        for attr in ("StartOID", "SourceOID", "TargetOID", "EndOID", "StructuralElementOID",
+                     "PredecessorOID", "SuccessorOID", "TargetTransitionOID"):
+            self.assertIn(attr, self.checker.oid_ref)
+
+    def test_file_level_oids_are_still_ignored(self):
+        self.checker.add_oid_ref("F.OTHER", "PriorFileOID")
         self.assertTrue(self.checker.check_oid_refs())
+
+    def test_any_of_targets_match_the_specification(self):
+        """The ODM v2.0 spec (as transcribed in the DataExchange-ODM-LinkML model)."""
+        structural = ("StudyEventGroupDef", "StudyEventDef", "ItemGroupDef", "ItemDef")
+        self.assertEqual(self.checker.ref_def_any_of, {
+            "StartOID": structural,
+            "EndOID": structural,
+            "SourceOID": structural + ("Branching",),
+            "TargetOID": structural + ("Branching",),
+            "PredecessorOID": structural,
+            "SuccessorOID": structural,
+            "StructuralElementOID": ("Study", "Epoch") + structural,
+        })
+        self.assertEqual(self.checker.ref_def["TargetTransitionOID"], "Transition")
+        for attr in self.checker.ref_def_any_of:
+            self.assertNotIn(attr, self.checker.ref_def)
+
+    def test_any_of_reference_accepts_each_allowed_type(self):
+        self.checker.add_oid("BR.1", "Branching")
+        self.checker.add_oid("SE.1", "StudyEventDef")
+        self.checker.add_oid_ref("BR.1", "TargetOID")
+        self.checker.add_oid_ref("SE.1", "TargetOID")
+        self.assertTrue(self.checker.check_oid_refs())
+
+    def test_any_of_reference_rejects_another_type(self):
+        self.checker.add_oid("BR.1", "Branching")
+        self.checker.add_oid_ref("BR.1", "StartOID")
+        with self.assertRaises(OdmlibOIDError) as ctx:
+            self.checker.check_oid_refs()
+        self.assertIn("StartOID must point at one of StudyEventGroupDef", str(ctx.exception))
+        self.assertIn("defined on a Branching", str(ctx.exception))
+
+    def test_any_of_table_is_inert_for_other_models(self):
+        from odmlib.oid_generator import create_oid_checker
+        for package in ("odm_1_3_2", "define_2_0", "define_2_1", "arm_1_0"):
+            self.assertEqual(create_oid_checker(package).ref_def_any_of, {}, package)
+
+    def test_any_of_targets_are_listed_in_def_ref(self):
+        self.assertEqual(self.checker.def_ref["Branching"], ["SourceOID", "TargetOID"])
+        self.assertIn("StructuralElementOID", self.checker.def_ref["Epoch"])
+
+    def test_branching_reached_through_target_oid_is_not_an_orphan(self):
+        self.checker.add_oid("BR.1", "Branching")
+        self.checker.add_oid("BR.2", "Branching")
+        self.checker.add_oid_ref("BR.1", "TargetOID")
+        orphans = self.checker.check_unreferenced_oids()
+        self.assertNotIn("BR.1", orphans)
+        self.assertEqual(orphans["BR.2"], "SourceOID")
 
     def test_valid_workflow_ref(self):
         self.checker.add_oid("WF.001", "WorkflowDef")
@@ -852,6 +904,21 @@ class TestODM20ResolvedAndUnresolvedRefs(unittest.TestCase):
             self.assertEqual(self.checker.ref_def.get(attr), target,
                              f"{attr} should resolve to {target} in ODM 2.0")
 
+    def test_odm2_resolved_v030_refs(self):
+        """Refs that began resolving in v0.3.0 (crfutils plan §4A, O6).
+
+        ``UnitsItemOID`` and ``PartOfOrganizationOID`` need overrides because the
+        naming convention finds no ``UnitsItemDef``/``PartOfOrganization`` class.
+        ``ArchiveLocationID`` and ``SourceItem/@leafID`` were wired only to
+        Define-XML's lower-case ``leaf``; ODM 2.0 spells it ``Leaf``.
+        """
+        for attr, target in (("UnitsItemOID", "ItemDef"),
+                             ("PartOfOrganizationOID", "Organization"),
+                             ("ArchiveLocationID", "Leaf"),
+                             ("leafID", "Leaf")):
+            self.assertEqual(self.checker.ref_def.get(attr), target,
+                             f"{attr} should resolve to {target} in ODM 2.0")
+
     def test_odm2_unresolved_refs(self):
         """Refs that intentionally do NOT resolve (no matching Def class).
 
@@ -860,7 +927,7 @@ class TestODM20ResolvedAndUnresolvedRefs(unittest.TestCase):
         from unresolved to resolved.
         """
         expected_unresolved = [
-            "PresentationOID", "UnitsItemOID",
+            "PresentationOID",
         ]
         for attr in expected_unresolved:
             self.assertNotIn(attr, self.checker.ref_def,

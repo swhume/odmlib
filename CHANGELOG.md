@@ -385,6 +385,53 @@ loads it.
 - mypy's known-error baseline shrank from 128 to 113. `ODMElement` now declares the
   attributes `ODMMeta` builds, so type checkers see them.
 
+### Added — true JSON round-trip tests (0.3.0 plan, P3)
+
+- **`tests/test_json_roundtrip.py`** runs 25 documents through five legs, comparing for
+  exact equality: Define-XML 2.0/2.1, ARM, CT-XML, ODM 1.3.2, ODM 2.0, and the 13 vendored
+  ODM v2.0 metadata documents. The vendored ClinicalData documents join in P4.
+
+  | Leg | Path | Comparison |
+  |---|---|---|
+  | A | XML -> object -> XML | canonically equal, no reordering |
+  | B | XML -> object -> JSON file -> JSON loader -> object -> XML | canonically equal |
+  | C | JSON -> object -> JSON | equal dicts |
+  | D | the XML-loaded tree vs the JSON-loaded one | equal `to_dict()` |
+  | E | `to_dict()` vs the vendored ODM v2.0 JSON | equal |
+
+  Every leg starts from a reset namespace registry.
+- **`tests/_roundtrip.py`** holds the fixtures, the legs and the normalizer. The normalizer
+  is the complete list of differences the tests forgive:
+  - N1, comments and processing instructions;
+  - N2, indentation (also inside an element whose class models no text);
+  - N3, prefixes compared by namespace URI;
+  - N4, in leg B only, interleaved group members sorted into model order (the spec's
+    JSON cannot carry that order);
+  - N5, integer and decimal attributes compared by value.
+
+  Any other difference fails the test.
+- **`tests/data/ct-1-1-1-sample.xml`**, a small hand-written CT-XML 1.1.1 document. It
+  validates against the CT 1.1.1 XSD, and its terms are illustrative, not CDISC
+  terminology.
+
+### Fixed — found by the round-trip tests (0.3.0 plan, P3)
+
+- **CT-XML 1.1.1 terminology elements are written in the `nciodm` namespace.**
+  `CDISCSynonym`, `CDISCDefinition`, `CDISCSubmissionValue` and `PreferredTerm` were loaded
+  correctly but written in the ODM namespace, so every CT document odmlib wrote was
+  schema-invalid. A new test checks that, in every model, a child element is written in
+  the namespace it is read from.
+
+### Known limitation — Define-XML `def:ValueListRef` before `def:Origin`
+
+- The ODM 1.3.2 schema repeats Define-XML's ItemDef extension group without bound, so
+  `def:ValueListRef` may come before `def:Origin`. odmlib writes children in model order,
+  `Origin` first, as the Define-XML 2.1 examples do. The output is valid, but a document in
+  the other order is not written back byte-for-byte: `define-360i.xml` has 11 such ItemDefs.
+  The round-trip tests list it in `KNOWN_REORDERINGS`, which fails if the document stops
+  needing the entry. Preserving the order would mean extending the interleave mechanism to
+  single-valued members.
+
 ## [0.2.1] - 2026-08-27
 
 ### Added — Claude Code skill

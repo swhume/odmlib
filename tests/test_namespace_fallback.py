@@ -232,6 +232,11 @@ class TestXmlLoadersRegisterModelNamespaces(unittest.TestCase):
         text, caught = _write(codelist)
         self.assertIn('xmlns:nciodm="http://ncicb.nci.nih.gov/xml/odm/EVS/CDISC"', text)
         self.assertEqual(caught, [])
+        # the nciodm child elements are written in nciodm, not the ODM namespace (P3)
+        nciodm = "{http://ncicb.nci.nih.gov/xml/odm/EVS/CDISC}"
+        written = ET.fromstring(text)
+        self.assertEqual(written.find(nciodm + "CDISCSubmissionValue").text, "SEX")
+        self.assertIsNotNone(written.find(f"{{{ODM13}}}EnumeratedItem/{nciodm}PreferredTerm"))
 
     def test_define_loaded_through_the_odm_loader_resolves_def_children(self):
         import odmlib.odm_loader as OL

@@ -87,3 +87,32 @@ class TestBareDescriptorClassGuard(TestCase):
         self.assertEqual(ARM.ProgrammingCode(Context="SAS version 9.4").Context, "SAS version 9.4")
         with self.assertRaises(OdmlibTypeError):
             ARM.ProgrammingCode(Context=94)
+
+
+class TestChildNamespaces(TestCase):
+    """A child is found by its descriptor's namespace but written in its class's (P3).
+
+    The XML loaders look a child up with the *descriptor's* namespace, and ``to_xml``
+    writes it with the child *class's* ``namespace``. When the two disagree, a loaded
+    document is written back in the wrong namespace. CT-XML's ``nciodm:CDISCSynonym``,
+    ``CDISCDefinition``, ``CDISCSubmissionValue`` and ``PreferredTerm`` were all written
+    in the ODM namespace until the round-trip harness caught it.
+    """
+
+    def test_every_child_descriptor_matches_its_element_class(self):
+        names = sorted(m.name for m in pkgutil.walk_packages(odmlib.__path__, "odmlib.")
+                       if m.name.endswith(".model"))
+        mismatches = []
+        for name in names:
+            module = importlib.import_module(name)
+            for cls in vars(module).values():
+                if not (isinstance(cls, type) and issubclass(cls, OE.ODMElement)
+                        and cls.__module__ == name):
+                    continue
+                for field, descriptor in cls._elems.items():
+                    child = descriptor.element_class
+                    if isinstance(child, type) and descriptor.namespace != child.namespace:
+                        mismatches.append(f"{name}: {cls.__name__}.{field} is found as "
+                                          f"{descriptor.namespace}: but {child.__name__} "
+                                          f"is written as {child.namespace}:")
+        self.assertEqual(mismatches, [])

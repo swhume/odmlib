@@ -309,6 +309,11 @@ ODM requires specific element order in XML. odmlib enforces this:
 - `verify_order()`: Checks if elements match model declaration order
 - `reorder_object()`: Reorders instance dict to match model order
 - Order violations raise `OdmlibElementOrderError`
+- Model order is also the order odmlib *writes*. Where the XSD allows more than one order
+  without declaring an interleaved group, a loaded document can come back reordered (still
+  valid). The known case is Define-XML ItemDef's `def:ValueListRef` before `def:Origin`,
+  which ODM 1.3.2's repeatable extension group allows. It is pinned in
+  `tests/_roundtrip.py::KNOWN_REORDERINGS`.
 
 **Interleaved repeating groups** (`interleave.py`, 0.3.0). Where the XSD lets two child
 types alternate — ODM 2.0 `ItemGroupDef` (`ItemGroupRef`/`ItemRef`), `StudyEventGroupDef`
@@ -432,3 +437,9 @@ To create proprietary extensions:
 - Each major element type has a dedicated test file (e.g., `test_itemDef.py`)
 - Tests include: object creation, XML/JSON round-tripping, validation, conformance checks
 - Some tests use snapshot comparison (e.g., `tests/data/cdash_demo_v20.xml`)
+- **Round trips (`tests/test_json_roundtrip.py`, helpers in `tests/_roundtrip.py`).** Every
+  fixture in `CORE_FIXTURES`, plus the vendored ODM v2.0 documents, runs through five legs:
+  XML->XML, XML->JSON->XML, JSON->JSON, XML tree vs JSON tree, and vs the vendored JSON.
+  The normalizer (N1-N5) is the complete list of forgiven differences. A new difference is
+  a library bug: fix it in the library, never by widening the normalizer. To add a
+  document, append a `Fixture` to `CORE_FIXTURES`.

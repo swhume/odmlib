@@ -1,0 +1,900 @@
+{
+  "CreationDateTime": "2020-07-06T10:20:15+01:00",
+  "FileOID": "DEMOGRAPHICS_EXAMPLE",
+  "FileType": "Snapshot",
+  "Granularity": "Metadata",
+  "ODMVersion": "2.0",
+  "SourceSystem": "XML4Pharma CDISC ODM Study Designer",
+  "SourceSystemVersion": "2015-R1",
+  "Study": [
+    {
+      "OID": "ST.DEMOGRAPHICS_EXAMPLE",
+      "StudyName": "Study with Demographics example",
+      "ProtocolName": "MyStudy",
+      "Description": {
+        "TranslatedText": [
+          {
+            "lang": "en",
+            "Type": "text/plain",
+            "_content": "Demographics example with Race, with \"check all that apply\""
+          }
+        ]
+      },
+      "MetaDataVersion": [
+        {
+          "Name": "Version 1",
+          "OID": "MV.1.0",
+          "Description": {
+            "TranslatedText": [
+              {
+                "lang": "en",
+                "Type": "text/plain",
+                "_content": "Version 1"
+              }
+            ]
+          },
+          "StudyEventDef": [
+            {
+              "Name": "Screening visit with demographics",
+              "OID": "SE.SCREENING",
+              "Repeating": "No",
+              "Type": "Scheduled",
+              "ItemGroupRef": [
+                {
+                  "ItemGroupOID": "FO.DEMOGRAPHICS",
+                  "Mandatory": "Yes"
+                }
+              ]
+            }
+          ],
+          "ItemGroupDef": [
+            {
+              "Name": "Demographics form",
+              "OID": "FO.DEMOGRAPHICS",
+              "Type": "Form",
+              "Repeating": "No",
+              "ItemGroupRef": [
+                {
+                  "ItemGroupOID": "IG.DEMOGRAPHICS",
+                  "Mandatory": "Yes"
+                }
+              ]
+            },
+            {
+              "Name": "Demographics",
+              "OID": "IG.DEMOGRAPHICS",
+              "Type": "Section",
+              "Repeating": "No",
+              "ItemRef": [
+                {
+                  "ItemOID": "IT.DOB",
+                  "Mandatory": "Yes"
+                },
+                {
+                  "ItemOID": "IT.SEX",
+                  "Mandatory": "Yes"
+                },
+                {
+                  "ItemOID": "IT.ETHNIC",
+                  "Mandatory": "Yes"
+                }
+              ],
+              "ItemGroupRef": [
+                {
+                  "ItemGroupOID": "IG.RACE",
+                  "Mandatory": "Yes"
+                }
+              ]
+            },
+            {
+              "OID": "IG.RACE",
+              "Name": "Race",
+              "Repeating": "Static",
+              "Type": "Section",
+              "ItemRef": [
+                {
+                  "ItemOID": "IT.RACE_CODE",
+                  "Mandatory": "Yes",
+                  "Repeat": "Yes"
+                },
+                {
+                  "ItemOID": "IT.RACE_BOOLEAN",
+                  "Mandatory": "Yes"
+                },
+                {
+                  "ItemOID": "IT.RACEOTH",
+                  "Mandatory": "No",
+                  "Other": "Yes"
+                }
+              ]
+            }
+          ],
+          "ItemDef": [
+            {
+              "DataType": "date",
+              "Name": "Date of birth",
+              "OID": "IT.DOB",
+              "Question": {
+                "TranslatedText": [
+                  {
+                    "lang": "en",
+                    "Type": "text/plain",
+                    "_content": "Date of Birth"
+                  }
+                ]
+              }
+            },
+            {
+              "DataType": "integer",
+              "Length": 1,
+              "Name": "Sex",
+              "OID": "IT.SEX",
+              "Question": {
+                "TranslatedText": [
+                  {
+                    "lang": "en",
+                    "Type": "text/plain",
+                    "_content": "Sex"
+                  }
+                ]
+              },
+              "CodeListRef": {
+                "CodeListOID": "CL.SEX"
+              }
+            },
+            {
+              "DataType": "integer",
+              "Length": 1,
+              "Name": "Ethnicity",
+              "OID": "IT.ETHNIC",
+              "Question": {
+                "TranslatedText": [
+                  {
+                    "lang": "en",
+                    "Type": "text/plain",
+                    "_content": "Ethnicity"
+                  }
+                ]
+              },
+              "CodeListRef": {
+                "CodeListOID": "CL.ETHNIC"
+              }
+            },
+            {
+              "OID": "IT.RACE_CODE",
+              "Name": "Race code",
+              "DataType": "integer",
+              "Length": 1,
+              "CodeListRef": {
+                "CodeListOID": "CL.RACE"
+              }
+            },
+            {
+              "DataType": "boolean",
+              "Length": 1,
+              "Name": "Race",
+              "OID": "IT.RACE_BOOLEAN",
+              "Description": {
+                "TranslatedText": [
+                  {
+                    "lang": "en",
+                    "Type": "text/plain",
+                    "_content": "Race"
+                  }
+                ]
+              }
+            },
+            {
+              "DataType": "text",
+              "Length": 20,
+              "Name": "Other Race",
+              "OID": "IT.RACEOTH",
+              "Question": {
+                "TranslatedText": [
+                  {
+                    "lang": "en",
+                    "Type": "text/plain",
+                    "_content": "Other race - specify"
+                  }
+                ]
+              }
+            }
+          ],
+          "CodeList": [
+            {
+              "DataType": "integer",
+              "Name": "Sex",
+              "OID": "CL.SEX",
+              "CodeListItem": [
+                {
+                  "CodedValue": "1",
+                  "Decode": {
+                    "TranslatedText": [
+                      {
+                        "lang": "en",
+                        "Type": "text/plain",
+                        "_content": "Male"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "CodedValue": "2",
+                  "Decode": {
+                    "TranslatedText": [
+                      {
+                        "lang": "en",
+                        "Type": "text/plain",
+                        "_content": "Female"
+                      }
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "DataType": "integer",
+              "Name": "Ethnicity",
+              "OID": "CL.ETHNIC",
+              "CodeListItem": [
+                {
+                  "CodedValue": "1",
+                  "Decode": {
+                    "TranslatedText": [
+                      {
+                        "lang": "en",
+                        "Type": "text/plain",
+                        "_content": "Hispanic"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "CodedValue": "2",
+                  "Decode": {
+                    "TranslatedText": [
+                      {
+                        "lang": "en",
+                        "Type": "text/plain",
+                        "_content": "Non-hispanic"
+                      }
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "DataType": "integer",
+              "Name": "Race",
+              "OID": "CL.RACE",
+              "CodeListItem": [
+                {
+                  "CodedValue": "1",
+                  "Decode": {
+                    "TranslatedText": [
+                      {
+                        "lang": "en",
+                        "Type": "text/plain",
+                        "_content": "White"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "CodedValue": "2",
+                  "Decode": {
+                    "TranslatedText": [
+                      {
+                        "lang": "en",
+                        "Type": "text/plain",
+                        "_content": "Black/African American"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "CodedValue": "3",
+                  "Decode": {
+                    "TranslatedText": [
+                      {
+                        "lang": "en",
+                        "Type": "text/plain",
+                        "_content": "Asian"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "CodedValue": "4",
+                  "Decode": {
+                    "TranslatedText": [
+                      {
+                        "lang": "en",
+                        "Type": "text/plain",
+                        "_content": "Native Hawaiian/Other Pacific Islander"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "CodedValue": "5",
+                  "Decode": {
+                    "TranslatedText": [
+                      {
+                        "lang": "en",
+                        "Type": "text/plain",
+                        "_content": "American Indian/Alaska Native"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "CodedValue": "99",
+                  "Decode": {
+                    "TranslatedText": [
+                      {
+                        "lang": "en",
+                        "Type": "text/plain",
+                        "_content": "Other - specify"
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "ClinicalData": [
+    {
+      "StudyOID": "ST.DEMOGRAPHICS_EXAMPLE",
+      "MetaDataVersionOID": "MV.1.0",
+      "SubjectData": [
+        {
+          "SubjectKey": "001",
+          "StudyEventData": [
+            {
+              "StudyEventOID": "SE.SCREENING",
+              "ItemGroupData": [
+                {
+                  "ItemGroupOID": "FO.DEMOGRAPHICS",
+                  "ItemGroupData": [
+                    {
+                      "ItemGroupOID": "IG.DEMOGRAPHICS",
+                      "ItemData": [
+                        {
+                          "ItemOID": "IT.DOB",
+                          "Value": [
+                            {
+                              "_content": "1957-05-07"
+                            }
+                          ]
+                        },
+                        {
+                          "ItemOID": "IT.SEX",
+                          "Value": [
+                            {
+                              "_content": "1"
+                            }
+                          ]
+                        },
+                        {
+                          "ItemOID": "IT.ETHNIC",
+                          "Value": [
+                            {
+                              "_content": "2"
+                            }
+                          ]
+                        }
+                      ],
+                      "ItemGroupData": [
+                        {
+                          "ItemGroupOID": "IG.RACE",
+                          "ItemGroupRepeatKey": "1",
+                          "ItemData": [
+                            {
+                              "ItemOID": "IT.RACE_CODE",
+                              "Value": [
+                                {
+                                  "_content": "1"
+                                }
+                              ]
+                            },
+                            {
+                              "ItemOID": "IT.RACE_BOOLEAN",
+                              "Value": [
+                                {
+                                  "_content": "false"
+                                }
+                              ]
+                            }
+                          ]
+                        },
+                        {
+                          "ItemGroupOID": "IG.RACE",
+                          "ItemGroupRepeatKey": "2",
+                          "ItemData": [
+                            {
+                              "ItemOID": "IT.RACE_CODE",
+                              "Value": [
+                                {
+                                  "_content": "2"
+                                }
+                              ]
+                            },
+                            {
+                              "ItemOID": "IT.RACE_BOOLEAN",
+                              "Value": [
+                                {
+                                  "_content": "true"
+                                }
+                              ]
+                            }
+                          ]
+                        },
+                        {
+                          "ItemGroupOID": "IG.RACE",
+                          "ItemGroupRepeatKey": "3",
+                          "ItemData": [
+                            {
+                              "ItemOID": "IT.RACE_CODE",
+                              "Value": [
+                                {
+                                  "_content": "3"
+                                }
+                              ]
+                            },
+                            {
+                              "ItemOID": "IT.RACE_BOOLEAN",
+                              "Value": [
+                                {
+                                  "_content": "false"
+                                }
+                              ]
+                            }
+                          ]
+                        },
+                        {
+                          "ItemGroupOID": "IG.RACE",
+                          "ItemGroupRepeatKey": "4",
+                          "ItemData": [
+                            {
+                              "ItemOID": "IT.RACE_CODE",
+                              "Value": [
+                                {
+                                  "_content": "4"
+                                }
+                              ]
+                            },
+                            {
+                              "ItemOID": "IT.RACE_BOOLEAN",
+                              "Value": [
+                                {
+                                  "_content": "4"
+                                }
+                              ]
+                            }
+                          ]
+                        },
+                        {
+                          "ItemGroupOID": "IG.RACE",
+                          "ItemGroupRepeatKey": "5",
+                          "ItemData": [
+                            {
+                              "ItemOID": "IT.RACE_CODE",
+                              "Value": [
+                                {
+                                  "_content": "5"
+                                }
+                              ]
+                            },
+                            {
+                              "ItemOID": "IT.RACE_BOOLEAN",
+                              "Value": [
+                                {
+                                  "_content": "false"
+                                }
+                              ]
+                            }
+                          ]
+                        },
+                        {
+                          "ItemGroupOID": "IG.RACE",
+                          "ItemGroupRepeatKey": "6",
+                          "ItemData": [
+                            {
+                              "ItemOID": "IT.RACE_CODE",
+                              "Value": [
+                                {
+                                  "_content": "99"
+                                }
+                              ]
+                            },
+                            {
+                              "ItemOID": "IT.RACE_BOOLEAN",
+                              "Value": [
+                                {
+                                  "_content": "false"
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "SubjectKey": "002",
+          "StudyEventData": [
+            {
+              "StudyEventOID": "SE.SCREENING",
+              "ItemGroupData": [
+                {
+                  "ItemGroupOID": "FO.DEMOGRAPHICS",
+                  "ItemGroupData": [
+                    {
+                      "ItemGroupOID": "IG.DEMOGRAPHICS",
+                      "ItemData": [
+                        {
+                          "ItemOID": "IT.DOB",
+                          "Value": [
+                            {
+                              "_content": "1975-01-31>"
+                            }
+                          ]
+                        },
+                        {
+                          "ItemOID": "IT.SEX",
+                          "Value": [
+                            {
+                              "_content": "2"
+                            }
+                          ]
+                        },
+                        {
+                          "ItemOID": "IT.ETHNIC",
+                          "Value": [
+                            {
+                              "_content": "2"
+                            }
+                          ]
+                        }
+                      ],
+                      "ItemGroupData": [
+                        {
+                          "ItemGroupOID": "IG.RACE",
+                          "ItemGroupRepeatKey": "1",
+                          "ItemData": [
+                            {
+                              "ItemOID": "IT.RACE_CODE",
+                              "Value": [
+                                {
+                                  "_content": "1"
+                                }
+                              ]
+                            },
+                            {
+                              "ItemOID": "IT.RACE_BOOLEAN",
+                              "Value": [
+                                {
+                                  "_content": "1"
+                                }
+                              ]
+                            }
+                          ]
+                        },
+                        {
+                          "ItemGroupOID": "IG.RACE",
+                          "ItemGroupRepeatKey": "2",
+                          "ItemData": [
+                            {
+                              "ItemOID": "IT.RACE_CODE",
+                              "Value": [
+                                {
+                                  "_content": "2"
+                                }
+                              ]
+                            },
+                            {
+                              "ItemOID": "IT.RACE_BOOLEAN",
+                              "Value": [
+                                {
+                                  "_content": "false"
+                                }
+                              ]
+                            }
+                          ]
+                        },
+                        {
+                          "ItemGroupOID": "IG.RACE",
+                          "ItemGroupRepeatKey": "3",
+                          "ItemData": [
+                            {
+                              "ItemOID": "IT.RACE_CODE",
+                              "Value": [
+                                {
+                                  "_content": "3"
+                                }
+                              ]
+                            },
+                            {
+                              "ItemOID": "IT.RACE_BOOLEAN",
+                              "Value": [
+                                {
+                                  "_content": "true"
+                                }
+                              ]
+                            }
+                          ]
+                        },
+                        {
+                          "ItemGroupOID": "IG.RACE",
+                          "ItemGroupRepeatKey": "4",
+                          "ItemData": [
+                            {
+                              "ItemOID": "IT.RACE_CODE",
+                              "Value": [
+                                {
+                                  "_content": "4"
+                                }
+                              ]
+                            },
+                            {
+                              "ItemOID": "IT.RACE_BOOLEAN",
+                              "Value": [
+                                {
+                                  "_content": "false"
+                                }
+                              ]
+                            }
+                          ]
+                        },
+                        {
+                          "ItemGroupOID": "IG.RACE",
+                          "ItemGroupRepeatKey": "5",
+                          "ItemData": [
+                            {
+                              "ItemOID": "IT.RACE_CODE",
+                              "Value": [
+                                {
+                                  "_content": "5"
+                                }
+                              ]
+                            },
+                            {
+                              "ItemOID": "IT.RACE_BOOLEAN",
+                              "Value": [
+                                {
+                                  "_content": "false"
+                                }
+                              ]
+                            }
+                          ]
+                        },
+                        {
+                          "ItemGroupOID": "IG.RACE",
+                          "ItemGroupRepeatKey": "6",
+                          "ItemData": [
+                            {
+                              "ItemOID": "IT.RACE_CODE",
+                              "Value": [
+                                {
+                                  "_content": "99"
+                                }
+                              ]
+                            },
+                            {
+                              "ItemOID": "IT.RACE_BOOLEAN",
+                              "Value": [
+                                {
+                                  "_content": "false"
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "SubjectKey": "003",
+          "StudyEventData": [
+            {
+              "StudyEventOID": "SE.SCREENING",
+              "ItemGroupData": [
+                {
+                  "ItemGroupOID": "FO.DEMOGRAPHICS",
+                  "ItemGroupData": [
+                    {
+                      "ItemGroupOID": "IG.DEMOGRAPHICS",
+                      "ItemData": [
+                        {
+                          "ItemOID": "IT.DOB",
+                          "Value": [
+                            {
+                              "_content": "1961-06-09"
+                            }
+                          ]
+                        },
+                        {
+                          "ItemOID": "IT.SEX",
+                          "Value": [
+                            {
+                              "_content": "2"
+                            }
+                          ]
+                        },
+                        {
+                          "ItemOID": "IT.ETHNIC",
+                          "Value": [
+                            {
+                              "_content": "1"
+                            }
+                          ]
+                        }
+                      ],
+                      "ItemGroupData": [
+                        {
+                          "ItemGroupOID": "IG.RACE",
+                          "ItemGroupRepeatKey": "1",
+                          "ItemData": [
+                            {
+                              "ItemOID": "IT.RACE_CODE",
+                              "Value": [
+                                {
+                                  "_content": "1"
+                                }
+                              ]
+                            },
+                            {
+                              "ItemOID": "IT.RACE_BOOLEAN",
+                              "Value": [
+                                {
+                                  "_content": "false"
+                                }
+                              ]
+                            }
+                          ]
+                        },
+                        {
+                          "ItemGroupOID": "IG.RACE",
+                          "ItemGroupRepeatKey": "2",
+                          "ItemData": [
+                            {
+                              "ItemOID": "IT.RACE_CODE",
+                              "Value": [
+                                {
+                                  "_content": "2"
+                                }
+                              ]
+                            },
+                            {
+                              "ItemOID": "IT.RACE_BOOLEAN",
+                              "Value": [
+                                {
+                                  "_content": "false"
+                                }
+                              ]
+                            }
+                          ]
+                        },
+                        {
+                          "ItemGroupOID": "IG.RACE",
+                          "ItemGroupRepeatKey": "3",
+                          "ItemData": [
+                            {
+                              "ItemOID": "IT.RACE_CODE",
+                              "Value": [
+                                {
+                                  "_content": "3"
+                                }
+                              ]
+                            },
+                            {
+                              "ItemOID": "IT.RACE_BOOLEAN",
+                              "Value": [
+                                {
+                                  "_content": "false"
+                                }
+                              ]
+                            }
+                          ]
+                        },
+                        {
+                          "ItemGroupOID": "IG.RACE",
+                          "ItemGroupRepeatKey": "4",
+                          "ItemData": [
+                            {
+                              "ItemOID": "IT.RACE_CODE",
+                              "Value": [
+                                {
+                                  "_content": "4"
+                                }
+                              ]
+                            },
+                            {
+                              "ItemOID": "IT.RACE_BOOLEAN",
+                              "Value": [
+                                {
+                                  "_content": "false"
+                                }
+                              ]
+                            }
+                          ]
+                        },
+                        {
+                          "ItemGroupOID": "IG.RACE",
+                          "ItemGroupRepeatKey": "5",
+                          "ItemData": [
+                            {
+                              "ItemOID": "IT.RACE_CODE",
+                              "Value": [
+                                {
+                                  "_content": "5"
+                                }
+                              ]
+                            },
+                            {
+                              "ItemOID": "IT.RACE_BOOLEAN",
+                              "Value": [
+                                {
+                                  "_content": "false"
+                                }
+                              ]
+                            }
+                          ]
+                        },
+                        {
+                          "ItemGroupOID": "IG.RACE",
+                          "ItemGroupRepeatKey": "6",
+                          "ItemData": [
+                            {
+                              "ItemOID": "IT.RACE_CODE",
+                              "Value": [
+                                {
+                                  "_content": "99"
+                                }
+                              ]
+                            },
+                            {
+                              "ItemOID": "IT.RACE_BOOLEAN",
+                              "Value": [
+                                {
+                                  "_content": "true"
+                                }
+                              ]
+                            },
+                            {
+                              "ItemOID": "IT.RACEOTH",
+                              "Value": [
+                                {
+                                  "_content": "Native Amazonian"
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

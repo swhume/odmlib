@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- ODM v2.0 study metadata template (Non-normative). One visit, one Demographics form, items with
+     codelists, units, a range check, a skip condition and a derivation. Replace every OID, name and
+     code. The CDISC CT C-codes are examples: check them against the current CT package. -->
+<ODM xmlns="http://www.cdisc.org/ns/odm/v2.0"
+     FileType="Snapshot" Granularity="Metadata" Context="Exchange" ODMVersion="2.0"
+     FileOID="ODM.EXAMPLE.METADATA.1" CreationDateTime="2026-01-01T09:00:00"
+     Originator="Example Sponsor" SourceSystem="odmlib">
+  <Study OID="ST.EXAMPLE" StudyName="EXAMPLE-001" ProtocolName="EXAMPLE-001">
+    <Description>
+      <TranslatedText xml:lang="en" Type="text/plain">Example study</TranslatedText>
+    </Description>
+    <MetaDataVersion OID="MDV.EXAMPLE.1" Name="Metadata version 1">
+      <!-- The study's visits: Protocol -> StudyEventGroupDef -> StudyEventDef -> ItemGroupDef (form) -->
+      <Protocol>
+        <StudyEventGroupRef StudyEventGroupOID="SEG.ALL" Mandatory="Yes"/>
+      </Protocol>
+      <StudyEventGroupDef OID="SEG.ALL" Name="All visits">
+        <StudyEventRef StudyEventOID="SE.SCREENING" Mandatory="Yes" OrderNumber="1"/>
+      </StudyEventGroupDef>
+      <StudyEventDef OID="SE.SCREENING" Name="Screening" Repeating="No" Type="Scheduled">
+        <ItemGroupRef ItemGroupOID="IG.DM" Mandatory="Yes" OrderNumber="1"/>
+      </StudyEventDef>
+      <!-- A form is an ItemGroupDef with Type="Form" (there is no FormDef in v2.0) -->
+      <ItemGroupDef OID="IG.DM" Name="Demographics" Repeating="No" Type="Form" Domain="DM">
+        <Description>
+          <TranslatedText xml:lang="en" Type="text/plain">Demographics</TranslatedText>
+        </Description>
+        <ItemRef ItemOID="IT.DM.BRTHDAT" Mandatory="Yes" OrderNumber="1"/>
+        <ItemRef ItemOID="IT.DM.AGE" Mandatory="No" OrderNumber="2" MethodOID="MT.AGE" UnitsItemOID="IT.DM.AGEU"/>
+        <ItemRef ItemOID="IT.DM.AGEU" Mandatory="No" OrderNumber="3"/>
+        <ItemRef ItemOID="IT.DM.SEX" Mandatory="Yes" OrderNumber="4"/>
+        <ItemRef ItemOID="IT.DM.CHILDPOT" Mandatory="Yes" OrderNumber="5" CollectionExceptionConditionOID="CD.SEX.MALE"/>
+        <Alias Context="CDASH" Name="DM"/>
+      </ItemGroupDef>
+      <ItemDef OID="IT.DM.BRTHDAT" Name="BRTHDAT" DataType="date">
+        <Description>
+          <TranslatedText xml:lang="en" Type="text/plain">Date of birth</TranslatedText>
+        </Description>
+        <Question>
+          <TranslatedText xml:lang="en" Type="text/plain">What is the subject's date of birth?</TranslatedText>
+        </Question>
+        <Prompt>
+          <TranslatedText xml:lang="en" Type="text/plain">Birth Date</TranslatedText>
+        </Prompt>
+        <Alias Context="SDTM" Name="BRTHDTC"/>
+      </ItemDef>
+      <ItemDef OID="IT.DM.AGE" Name="AGE" DataType="integer" Length="3">
+        <Description>
+          <TranslatedText xml:lang="en" Type="text/plain">Age at informed consent, derived</TranslatedText>
+        </Description>
+        <RangeCheck Comparator="GE" SoftHard="Soft">
+          <CheckValue>18</CheckValue>
+          <ErrorMessage>
+            <TranslatedText xml:lang="en" Type="text/plain">Subjects must be 18 or older.</TranslatedText>
+          </ErrorMessage>
+        </RangeCheck>
+        <Alias Context="SDTM" Name="AGE"/>
+      </ItemDef>
+      <ItemDef OID="IT.DM.AGEU" Name="AGEU" DataType="text" Length="5">
+        <Description>
+          <TranslatedText xml:lang="en" Type="text/plain">Age unit</TranslatedText>
+        </Description>
+        <CodeListRef CodeListOID="CL.AGEU"/>
+      </ItemDef>
+      <ItemDef OID="IT.DM.SEX" Name="SEX" DataType="text" Length="1">
+        <Description>
+          <TranslatedText xml:lang="en" Type="text/plain">Sex</TranslatedText>
+        </Description>
+        <Question>
+          <TranslatedText xml:lang="en" Type="text/plain">What is the sex of the subject?</TranslatedText>
+        </Question>
+        <CodeListRef CodeListOID="CL.SEX"/>
+        <Alias Context="SDTM" Name="SEX"/>
+      </ItemDef>
+      <ItemDef OID="IT.DM.CHILDPOT" Name="CHILDPOT" DataType="text" Length="1">
+        <Question>
+          <TranslatedText xml:lang="en" Type="text/plain">Is the subject of childbearing potential?</TranslatedText>
+        </Question>
+        <CodeListRef CodeListOID="CL.NY"/>
+      </ItemDef>
+      <CodeList OID="CL.SEX" Name="Sex" DataType="text">
+        <CodeListItem CodedValue="F" OrderNumber="1">
+          <Decode>
+            <TranslatedText xml:lang="en" Type="text/plain">Female</TranslatedText>
+          </Decode>
+          <Coding Code="C16576" System="https://www.cdisc.org/standards/terminology" SystemName="CDISC/NCI CT"/>
+        </CodeListItem>
+        <CodeListItem CodedValue="M" OrderNumber="2">
+          <Decode>
+            <TranslatedText xml:lang="en" Type="text/plain">Male</TranslatedText>
+          </Decode>
+          <Coding Code="C20197" System="https://www.cdisc.org/standards/terminology" SystemName="CDISC/NCI CT"/>
+        </CodeListItem>
+        <Coding Code="C66731" System="https://www.cdisc.org/standards/terminology" SystemName="CDISC/NCI CT"/>
+      </CodeList>
+      <CodeList OID="CL.NY" Name="No Yes Response" DataType="text">
+        <CodeListItem CodedValue="N" OrderNumber="1">
+          <Decode>
+            <TranslatedText xml:lang="en" Type="text/plain">No</TranslatedText>
+          </Decode>
+        </CodeListItem>
+        <CodeListItem CodedValue="Y" OrderNumber="2">
+          <Decode>
+            <TranslatedText xml:lang="en" Type="text/plain">Yes</TranslatedText>
+          </Decode>
+        </CodeListItem>
+        <Coding Code="C66742" System="https://www.cdisc.org/standards/terminology" SystemName="CDISC/NCI CT"/>
+      </CodeList>
+      <!-- A codelist without Decodes replaces the 1.3.2 EnumeratedItem -->
+      <CodeList OID="CL.AGEU" Name="Age Unit" DataType="text">
+        <CodeListItem CodedValue="YEARS"/>
+      </CodeList>
+      <!-- Reasons for missing values, used by Annotation/Flag/FlagValue in clinical data -->
+      <CodeList OID="CL.NULLFLAVOR" Name="Null flavor subset" DataType="text">
+        <CodeListItem CodedValue="ASKU">
+          <Decode>
+            <TranslatedText xml:lang="en" Type="text/plain">Asked but unknown</TranslatedText>
+          </Decode>
+        </CodeListItem>
+        <CodeListItem CodedValue="NA">
+          <Decode>
+            <TranslatedText xml:lang="en" Type="text/plain">Not applicable</TranslatedText>
+          </Decode>
+        </CodeListItem>
+        <Coding Code="NullFlavor" System="http://terminology.hl7.org/CodeSystem/v3-NullFlavor" SystemName="HL7 v3 NullFlavor"/>
+      </CodeList>
+      <!-- ConditionDef requires Description and MethodSignature, in that order -->
+      <ConditionDef OID="CD.SEX.MALE" Name="Subject is male">
+        <Description>
+          <TranslatedText xml:lang="en" Type="text/plain">Skip childbearing potential when SEX is M.</TranslatedText>
+        </Description>
+        <MethodSignature>
+          <Parameter Name="SEX" DataType="text"/>
+          <ReturnValue Name="IS_MALE" DataType="boolean"/>
+        </MethodSignature>
+        <FormalExpression Context="Python 3">
+          <Code>IS_MALE = SEX == "M"</Code>
+        </FormalExpression>
+      </ConditionDef>
+      <MethodDef OID="MT.AGE" Name="Derive AGE" Type="Computation">
+        <Description>
+          <TranslatedText xml:lang="en" Type="text/plain">Age in completed years at the screening visit.</TranslatedText>
+        </Description>
+        <MethodSignature>
+          <Parameter Name="BRTHDAT" DataType="date" OrderNumber="1"/>
+          <Parameter Name="VISITDAT" DataType="date" OrderNumber="2"/>
+          <ReturnValue Name="AGE" DataType="integer"/>
+        </MethodSignature>
+        <FormalExpression Context="Python 3">
+          <Code>AGE = VISITDAT.year - BRTHDAT.year - ((VISITDAT.month, VISITDAT.day) &lt; (BRTHDAT.month, BRTHDAT.day))</Code>
+        </FormalExpression>
+      </MethodDef>
+    </MetaDataVersion>
+  </Study>
+</ODM>

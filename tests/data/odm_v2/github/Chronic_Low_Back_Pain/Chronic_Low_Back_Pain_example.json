@@ -1,0 +1,441 @@
+{
+  "CreationDateTime": "2022-10-10T18:05:00",
+  "FileOID": "NIH_CLBP",
+  "FileType": "Snapshot",
+  "Granularity": "Metadata",
+  "ODMVersion": "2.0",
+  "SourceSystem": "XML4Pharma CDISC ODM Study Designer",
+  "SourceSystemVersion": "2015-R1",
+  "Study": [
+    {
+      "OID": "xxx",
+      "StudyName": "NIH Chronic Low Back Pain example",
+      "ProtocolName": "NIH Chronic Low Back Pain example",
+      "MetaDataVersion": [
+        {
+          "OID": "yyy",
+          "Name": "Metadata version 1",
+          "StudyEventDef": [
+            {
+              "OID": "SE.CLBP",
+              "Name": "Chronic Low Back Pain Visit",
+              "Repeating": "Yes",
+              "Type": "Scheduled",
+              "ItemGroupRef": [
+                {
+                  "ItemGroupOID": "FO.CLBP",
+                  "Mandatory": "Yes"
+                }
+              ]
+            }
+          ],
+          "ItemGroupDef": [
+            {
+              "OID": "FO.CLBP",
+              "Name": "Chronic Low Back Pain Form",
+              "Repeating": "No",
+              "Type": "Form",
+              "ItemGroupRef": [
+                {
+                  "ItemGroupOID": "IG.QUESTIONNAIRE_REPEAT",
+                  "Mandatory": "Yes"
+                }
+              ]
+            },
+            {
+              "OID": "IG.QUESTIONNAIRE_CLASSIC",
+              "Name": "Questionnaire about low back pain in the last 7 days",
+              "Repeating": "No",
+              "Type": "Section",
+              "ItemRef": [
+                {
+                  "ItemOID": "IT.INTERFERE_DAY_TO_DAY",
+                  "Mandatory": "Yes",
+                  "OrderNumber": 1
+                },
+                {
+                  "ItemOID": "IT.INTERFERE_WORK_AROUND_HOME",
+                  "Mandatory": "Yes",
+                  "OrderNumber": 2
+                },
+                {
+                  "ItemOID": "IT.INTERFERE_SOCIAL_ACTIVITIES",
+                  "Mandatory": "Yes",
+                  "OrderNumber": 3
+                },
+                {
+                  "ItemOID": "IT.INTERFERE_HOUSEHOLD_CHORES",
+                  "Mandatory": "Yes",
+                  "OrderNumber": 4
+                }
+              ]
+            },
+            {
+              "OID": "IG.QUESTIONNAIRE_REPEAT",
+              "Name": "Questionnaire about low back pain in the last 7 days",
+              "Repeating": "Static",
+              "Type": "Section",
+              "ItemRef": [
+                {
+                  "ItemOID": "IT.QUESTION_REPEAT",
+                  "Mandatory": "Yes",
+                  "Repeat": "Yes"
+                },
+                {
+                  "ItemOID": "IT.QUESTION_ANSWER",
+                  "Mandatory": "Yes"
+                }
+              ]
+            }
+          ],
+          "ItemDef": [
+            {
+              "OID": "IT.QUESTION_REPEAT",
+              "Name": "Repeat question",
+              "DataType": "integer",
+              "Length": 1,
+              "Question": {
+                "TranslatedText": [
+                  {
+                    "lang": "en",
+                    "Type": "text/plain",
+                    "_content": "In the past 7\n                        days"
+                  }
+                ]
+              },
+              "CodeListRef": {
+                "CodeListOID": "CL.REPEAT"
+              }
+            },
+            {
+              "OID": "IT.QUESTION_ANSWER",
+              "Name": "Repeat question answer",
+              "DataType": "integer",
+              "Length": 1,
+              "CodeListRef": {
+                "CodeListOID": "CL.LOW_BACK_INTERFERENCE_SCALE"
+              }
+            },
+            {
+              "OID": "IT.INTERFERE_DAY_TO_DAY",
+              "Name": "Day to day interference of chronic low back pain",
+              "DataType": "integer",
+              "Length": 1,
+              "Question": {
+                "TranslatedText": [
+                  {
+                    "lang": "en",
+                    "Type": "text/plain",
+                    "_content": "How much did pain interfere with\n                        your day-to-day activities?"
+                  }
+                ]
+              },
+              "CodeListRef": {
+                "CodeListOID": "CL.LOW_BACK_INTERFERENCE_SCALE"
+              }
+            },
+            {
+              "OID": "IT.INTERFERE_WORK_AROUND_HOME",
+              "Name": "Day to day interference with work around home",
+              "DataType": "integer",
+              "Length": 1,
+              "Question": {
+                "TranslatedText": [
+                  {
+                    "lang": "en",
+                    "Type": "text/plain",
+                    "_content": "How much did pain interfere with\n                        work around the home?"
+                  }
+                ]
+              },
+              "CodeListRef": {
+                "CodeListOID": "CL.LOW_BACK_INTERFERENCE_SCALE"
+              }
+            },
+            {
+              "OID": "IT.INTERFERE_SOCIAL_ACTIVITIES",
+              "Name": "Day to day interference with participation in social activities",
+              "DataType": "integer",
+              "Length": 1,
+              "Question": {
+                "TranslatedText": [
+                  {
+                    "lang": "en",
+                    "Type": "text/plain",
+                    "_content": "How much did pain interfere with\n                        your ability to participate in social activities?"
+                  }
+                ]
+              },
+              "CodeListRef": {
+                "CodeListOID": "CL.LOW_BACK_INTERFERENCE_SCALE"
+              }
+            },
+            {
+              "OID": "IT.INTERFERE_HOUSEHOLD_CHORES",
+              "Name": "Day to day interference with household chores",
+              "DataType": "integer",
+              "Length": 1,
+              "Question": {
+                "TranslatedText": [
+                  {
+                    "lang": "en",
+                    "Type": "text/plain",
+                    "_content": "How much did pain interfere with\n                        your ability to participate in social activities?"
+                  }
+                ]
+              },
+              "CodeListRef": {
+                "CodeListOID": "CL.LOW_BACK_INTERFERENCE_SCALE"
+              }
+            }
+          ],
+          "CodeList": [
+            {
+              "OID": "CL.LOW_BACK_INTERFERENCE_SCALE",
+              "Name": "Low back pain interference scale Codelist",
+              "DataType": "text",
+              "CodeListItem": [
+                {
+                  "CodedValue": "1",
+                  "Rank": 1.0,
+                  "Decode": {
+                    "TranslatedText": [
+                      {
+                        "lang": "en",
+                        "Type": "text/plain",
+                        "_content": "Not at all"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "CodedValue": "2",
+                  "Rank": 2.0,
+                  "Decode": {
+                    "TranslatedText": [
+                      {
+                        "lang": "en",
+                        "Type": "text/plain",
+                        "_content": "A little\n                            bit"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "CodedValue": "3",
+                  "Rank": 3.0,
+                  "Decode": {
+                    "TranslatedText": [
+                      {
+                        "lang": "en",
+                        "Type": "text/plain",
+                        "_content": "Somewhat"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "CodedValue": "4",
+                  "Rank": 4.0,
+                  "Decode": {
+                    "TranslatedText": [
+                      {
+                        "lang": "en",
+                        "Type": "text/plain",
+                        "_content": "Quite a bit"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "CodedValue": "5",
+                  "Rank": 5.0,
+                  "Decode": {
+                    "TranslatedText": [
+                      {
+                        "lang": "en",
+                        "Type": "text/plain",
+                        "_content": "Very much"
+                      }
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "OID": "CL.REPEAT",
+              "Name": "Question repeat items",
+              "DataType": "text",
+              "CodeListItem": [
+                {
+                  "CodedValue": "1",
+                  "OrderNumber": 1,
+                  "Decode": {
+                    "TranslatedText": [
+                      {
+                        "lang": "en",
+                        "Type": "text/plain",
+                        "_content": "How much did pain interfere\n                            with your day-to-day activities?"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "CodedValue": "2",
+                  "OrderNumber": 2,
+                  "Decode": {
+                    "TranslatedText": [
+                      {
+                        "lang": "en",
+                        "Type": "text/plain",
+                        "_content": "How much did pain interfere\n                            with work around the home?"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "CodedValue": "3",
+                  "OrderNumber": 3,
+                  "Decode": {
+                    "TranslatedText": [
+                      {
+                        "lang": "en",
+                        "Type": "text/plain",
+                        "_content": "How much did pain interfere\n                            with your ability to participate in social activities?"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "CodedValue": "4",
+                  "OrderNumber": 4,
+                  "Decode": {
+                    "TranslatedText": [
+                      {
+                        "lang": "en",
+                        "Type": "text/plain",
+                        "_content": "How much did pain interfere\n                            with your household chores?"
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "ClinicalData": [
+    {
+      "StudyOID": "xxx",
+      "MetaDataVersionOID": "yyy",
+      "SubjectData": [
+        {
+          "SubjectKey": "001",
+          "StudyEventData": [
+            {
+              "StudyEventOID": "SE.CLBP",
+              "StudyEventRepeatKey": "1",
+              "ItemGroupData": [
+                {
+                  "ItemGroupOID": "FO.CLBP",
+                  "ItemGroupData": [
+                    {
+                      "ItemGroupOID": "IG.QUESTIONNAIRE_REPEAT",
+                      "ItemGroupRepeatKey": "1",
+                      "ItemData": [
+                        {
+                          "ItemOID": "IT.QUESTION_REPEAT",
+                          "Value": [
+                            {
+                              "_content": "1"
+                            }
+                          ]
+                        },
+                        {
+                          "ItemOID": "IT.QUESTION_ANSWER",
+                          "Value": [
+                            {
+                              "_content": "2"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "ItemGroupOID": "IG.QUESTIONNAIRE_REPEAT",
+                      "ItemGroupRepeatKey": "2",
+                      "ItemData": [
+                        {
+                          "ItemOID": "IT.QUESTION_REPEAT",
+                          "Value": [
+                            {
+                              "_content": "2"
+                            }
+                          ]
+                        },
+                        {
+                          "ItemOID": "IT.QUESTION_ANSWER",
+                          "Value": [
+                            {
+                              "_content": "3"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "ItemGroupOID": "IG.QUESTIONNAIRE_REPEAT",
+                      "ItemGroupRepeatKey": "3",
+                      "ItemData": [
+                        {
+                          "ItemOID": "IT.QUESTION_REPEAT",
+                          "Value": [
+                            {
+                              "_content": "3"
+                            }
+                          ]
+                        },
+                        {
+                          "ItemOID": "IT.QUESTION_ANSWER",
+                          "Value": [
+                            {
+                              "_content": "1"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "ItemGroupOID": "IG.QUESTIONNAIRE_REPEAT",
+                      "ItemGroupRepeatKey": "4",
+                      "ItemData": [
+                        {
+                          "ItemOID": "IT.QUESTION_REPEAT",
+                          "Value": [
+                            {
+                              "_content": "4"
+                            }
+                          ]
+                        },
+                        {
+                          "ItemOID": "IT.QUESTION_ANSWER",
+                          "Value": [
+                            {
+                              "_content": "4"
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

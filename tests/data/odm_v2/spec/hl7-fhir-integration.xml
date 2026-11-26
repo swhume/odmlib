@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ODM xmlns="http://www.cdisc.org/ns/odm/v2.0"
+    xmlns:xlink="http://www.w3.org/1999/xlink"
+    ODMVersion="2.0"
+    FileOID="FHIR-examples"
+    FileType="Snapshot"
+    CreationDateTime="2020-09-02T11:20:00">
+    <Study OID="fhir-odm-esource-study" StudyName="FHIR eSource" ProtocolName="FHIR-eSource-Demo-01">
+        <Description>
+            <TranslatedText xml:lang="en" Type="text/plain">FHIR eSource Demo Study</TranslatedText>
+        </Description>
+
+        <MetaDataVersion OID="MDV.fhir-odm" Name="FHIR eSource MDV">
+
+            <ItemGroupDef OID="ODM.IG.COMMON" Name="Common" Repeating="No" Type="Form">
+                <ItemRef ItemOID="ODM.IT.Common.StudyID" Mandatory="Yes"/>
+                <ItemRef ItemOID="ODM.IT.Common.SiteID" Mandatory="Yes"/>
+                <ItemRef ItemOID="ODM.IT.Common.SubjectID" Mandatory="Yes"/>
+                <ItemRef ItemOID="ODM.IT.Common.Visit"  Mandatory="Yes"/>
+            </ItemGroupDef>
+
+            <ItemGroupDef OID="ODM.IG.LB" Name="LAB Measurements" Repeating="No" Type="Form">
+                <ItemRef ItemOID="ODM.IT.LB.LBDTC" Mandatory="Yes"/>
+                <ItemGroupRef ItemGroupOID="ODM.IG.LB.WBC" Mandatory="Yes" MethodOID="ODM.MT.LB.LBORRES"/>
+                <ItemRef ItemOID="ODM.IT.LB.ALB.LBORRES" Mandatory="Yes"/>
+                <ItemRef ItemOID="ODM.IT.LB.ALB.LBORRESU" Mandatory="Yes"/>
+                <ItemRef ItemOID="ODM.IT.LB.GLUC.LBORRES" Mandatory="Yes"/>
+                <ItemRef ItemOID="ODM.IT.LB.GLUC.LBORRESU" Mandatory="Yes"/>
+            </ItemGroupDef>
+
+            <ItemGroupDef OID="ODM.IG.LB.WBC" Name="WBC Lab Results with Unit" Repeating="No" Type="Form">
+                <ItemRef ItemOID="ODM.IT.LB.WBC.LBORRES" UnitsItemOID="ODM.IT.LB.WBC.LBORRESU" Mandatory="Yes"/>
+                <ItemRef ItemOID="ODM.IT.LB.WBC.LBORRESU" Mandatory="Yes"/>
+
+                <Origin Type="EHR" Source="Investigator">
+                    <Description>
+                        <TranslatedText xml:lang="en" Type="text/plain">Lab values retrieved from EHR using FHIR</TranslatedText>
+                    </Description>
+                    <SourceItems>
+                        <SourceItem>
+                            <Resource Type="HL7-FHIR" Name="Observation" Attribute="valueQuantity.value" Label="value">
+                                <Selection Path="Resource/@Name='Observation' and Resource/@Attribute='valueQuantity.value"/>
+                            </Resource>
+                        </SourceItem>
+                        <SourceItem>
+                            <Resource Type="HL7-FHIR" Name="Observation" Attribute="valueQuantity.unit" Label="unit">
+                                <Selection Path="Resource/@Name='Observation' and Resource/@Attribute='valueQuantity.unit"/>
+                            </Resource>
+                        </SourceItem>
+                        <Coding Code="26464-8" System="http://loinc.org" SystemName="LOINC" SystemVersion="2.61" Label="loinc_code"/>
+                    </SourceItems>
+                </Origin>
+            </ItemGroupDef>
+
+            <ItemDef OID="ODM.IT.LB.WBC.LBORRES" Name="WBC" DataType="float" Length="3">
+                <Description>
+                    <TranslatedText xml:lang="en" Type="text/plain">Result of the measurement or finding as originally received or collected.</TranslatedText>
+                </Description>
+                <Question>
+                    <TranslatedText xml:lang="en" Type="text/plain">Result</TranslatedText>
+                </Question>
+                <Coding Code="26464-8" System="http://loinc.org" SystemName="LOINC" SystemVersion="2.61"/>
+                <Alias Context="SAS" Name="LBORRES"/>
+            </ItemDef>
+
+            <ItemDef OID="ODM.IT.LB.WBC.LBORRESU" Name="LBORRESU" DataType="text" Length="6">
+                <Description>
+                    <TranslatedText xml:lang="en" Type="text/plain">WBC</TranslatedText>
+                </Description>
+                <CodeListRef CodeListOID="CL.LBORRESU"/>
+                <Coding Code="26464-8" System="http://loinc.org" SystemName="LOINC" SystemVersion="2.61"/>
+                <Alias Context="SAS" Name="LBORRESU"/>
+            </ItemDef>
+
+            <CodeList OID="CL.LBORRESU" Name="Unit (LBRESU)" DataType="text">
+                <CodeListItem CodedValue="10^9/L">
+                    <Alias Name="C67255" Context="nci:ExtCodeID"/>
+                </CodeListItem>
+                <Alias Name="C71620" Context="nci:ExtCodeID"/>
+            </CodeList>
+
+            <MethodDef OID="ODM.MT.LB.LBORRES" Name="Retrieve Lab Result using FHIR" Type="Preload">
+                <Description><TranslatedText xml:lang="en" Type="text/plain">FHIR API call definition to retrieve lab result</TranslatedText></Description>
+                <MethodSignature>
+                    <Parameter Name="value" Definition="Lab Result" DataType="text"/>
+                    <Parameter Name="unit" Definition="Result Unit" DataType="text"/>
+                    <Parameter Name="loinc_code" Definition="LOINC Code" DataType="text"/>
+                    <ReturnValue Name="LBORRES" Definition="Lab result from the EHR system" DataType="text"/>
+                    <ReturnValue Name="LBORRESU" Definition="Lab result from the EHR system" DataType="text"/>
+                </MethodSignature>
+                <FormalExpression Context="Python 3.7">
+                    <!-- assumes have access to study state (e.g. subjectid, studyid, etc) and can retrieve patient_id using ResearchSubject -->
+                    <!-- assumes libraries have been imported: "from fhirclient import client" and "import fhirclient.models.observation as ob" -->
+                    <Code>
+                        smart = client.FHIRClient(settings={'app_id': 'rof_adapter', 'api_base': 'https://api.logicahealth.org/STU301withSynthea/open'})
+                        search_obs = ob.Observation.where(struct=dict(patient=patient_id, code=loinc_code))
+                        value = ""
+                        unit = ""
+                        if search_obs.perform_resources(smart.server):
+                        obs = search_obs.perform_resources(smart.server).pop().as_json()
+                        lborres = obs[value.split(".")[0]][value.split(".")[1]]
+                        lborresu = obs[unit.split(".")[0]][unit.split(".")[1]]
+                        return lborres, lborresu
+                    </Code>
+                </FormalExpression>
+            </MethodDef>
+        </MetaDataVersion>
+    </Study>
+</ODM>

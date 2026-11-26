@@ -1,0 +1,645 @@
+{
+  "MetaDataVersion": {
+    "OID": "MV.001",
+    "Name": "MetaDataVersion 1",
+    "Protocol": {
+      "StudyStructure": {
+        "Description": {
+          "TranslatedText": [
+            {
+              "lang": "en",
+              "Type": "text/plain",
+              "_content": "Study design example from the SDTM-IG 3.3: \n                    Example Trial 2: Crossover. The study design has 3 arms: \"P-L-H\" (placebo-low-high dose), \n                    \"L-P-H\" (low-placebo-high dose), \n                    and \"L-H-P\" (low-high-placebo dose"
+            }
+          ]
+        },
+        "Arm": [
+          {
+            "OID": "ARM.P-L-H",
+            "Name": "Crossover study arm P-L-H",
+            "Description": {
+              "TranslatedText": [
+                {
+                  "lang": "en",
+                  "Type": "text/plain",
+                  "_content": "Study arm with sequence placebo - low dose - high dose"
+                }
+              ]
+            }
+          },
+          {
+            "OID": "ARM.L-P-H",
+            "Name": "Crossover study arm L-P-H",
+            "Description": {
+              "TranslatedText": [
+                {
+                  "lang": "en",
+                  "Type": "text/plain",
+                  "_content": "Study arm with sequence low dose - placebo - high dose"
+                }
+              ]
+            }
+          },
+          {
+            "OID": "ARM.L-H-P",
+            "Name": "Crossover study arm L-H-P",
+            "Description": {
+              "TranslatedText": [
+                {
+                  "lang": "en",
+                  "Type": "text/plain",
+                  "_content": "Study arm with sequence low dose - high dose - placebo"
+                }
+              ]
+            }
+          }
+        ],
+        "Epoch": [
+          {
+            "OID": "EP.SCREEN",
+            "Name": "Screening epoch",
+            "SequenceNumber": 1,
+            "Description": {
+              "TranslatedText": [
+                {
+                  "lang": "en",
+                  "Type": "text/plain",
+                  "_content": "Screening epoch, the first epoch in the study"
+                }
+              ]
+            }
+          },
+          {
+            "OID": "EP.FIRST_TREATMENT",
+            "Name": "First treatment epoch",
+            "SequenceNumber": 2,
+            "Description": {
+              "TranslatedText": [
+                {
+                  "lang": "en",
+                  "Type": "text/plain",
+                  "_content": "First treatment epoch, the second epoch in the study"
+                }
+              ]
+            }
+          },
+          {
+            "OID": "EP.FIRST_REST",
+            "Name": "First rest epoch",
+            "SequenceNumber": 3,
+            "Description": {
+              "TranslatedText": [
+                {
+                  "lang": "en",
+                  "Type": "text/plain",
+                  "_content": "First rest epoch, comes after the first treatment epoch"
+                }
+              ]
+            }
+          },
+          {
+            "OID": "EP.SECOND_TREATMENT",
+            "Name": "Second treatment epoch",
+            "SequenceNumber": 4,
+            "Description": {
+              "TranslatedText": [
+                {
+                  "lang": "en",
+                  "Type": "text/plain",
+                  "_content": "Second treatment epoch, comes after first rest epoch"
+                }
+              ]
+            }
+          },
+          {
+            "OID": "EP.SECOND_REST",
+            "Name": "Second rest epoch",
+            "SequenceNumber": 5,
+            "Description": {
+              "TranslatedText": [
+                {
+                  "lang": "en",
+                  "Type": "text/plain",
+                  "_content": "Second rest epoch, comes after the second treatment epoch"
+                }
+              ]
+            }
+          },
+          {
+            "OID": "EP.THIRD_TREATMENT",
+            "Name": "Third treatment epoch",
+            "SequenceNumber": 6,
+            "Description": {
+              "TranslatedText": [
+                {
+                  "lang": "en",
+                  "Type": "text/plain",
+                  "_content": "Third treatment epoch, comes after second rest epoch"
+                }
+              ]
+            }
+          },
+          {
+            "OID": "EP.FOLLOWUP",
+            "Name": "Follow-up epoch",
+            "SequenceNumber": 7,
+            "Description": {
+              "TranslatedText": [
+                {
+                  "lang": "en",
+                  "Type": "text/plain",
+                  "_content": "Follow-up epoch, last epoch in the study"
+                }
+              ]
+            }
+          }
+        ]
+      }
+    },
+    "StudyEventGroupDef": [
+      {
+        "OID": "SE.SCREEN.P-L-H",
+        "Name": "P-L-H screening study cell",
+        "ArmOID": "ARM.P-L-H",
+        "EpochOID": "EP.SCREEN",
+        "Description": {
+          "TranslatedText": [
+            {
+              "lang": "en",
+              "Type": "text/plain",
+              "_content": "Screening cell in Placebo - low-dose - high-dose arm"
+            }
+          ]
+        },
+        "StudyEventGroupRef": [
+          {
+            "StudyEventGroupOID": "SEG.SCREEN",
+            "Mandatory": "Yes"
+          }
+        ]
+      },
+      {
+        "OID": "SE.SCREEN.L-P-H",
+        "Name": "L-P-H screening study cell",
+        "ArmOID": "ARM.L-P-H",
+        "EpochOID": "EP.SCREEN",
+        "Description": {
+          "TranslatedText": [
+            {
+              "lang": "en",
+              "Type": "text/plain",
+              "_content": "Screening cell in low-dose - placebo - high-dose arm"
+            }
+          ]
+        },
+        "StudyEventGroupRef": [
+          {
+            "StudyEventGroupOID": "SEG.SCREEN",
+            "Mandatory": "Yes"
+          }
+        ]
+      },
+      {
+        "OID": "SE.SCREEN.L-H-P",
+        "Name": "L-H-P screening study cell",
+        "ArmOID": "ARM.L-H-P",
+        "EpochOID": "EP.SCREEN",
+        "Description": {
+          "TranslatedText": [
+            {
+              "lang": "en",
+              "Type": "text/plain",
+              "_content": "Screening cell in low-dose - high-dose - placebo arm"
+            }
+          ]
+        },
+        "StudyEventGroupRef": [
+          {
+            "StudyEventGroupOID": "SEG.SCREEN",
+            "Mandatory": "Yes"
+          }
+        ]
+      },
+      {
+        "OID": "SE.FIRST_TREATMENT.P-L-H",
+        "Name": "P-L-H first treatment study cell",
+        "Description": {
+          "TranslatedText": [
+            {
+              "lang": "en",
+              "Type": "text/plain",
+              "_content": "First treatment cell in placebo - low-dose - high-dose arm"
+            }
+          ]
+        },
+        "StudyEventGroupRef": [
+          {
+            "StudyEventGroupOID": "SEG.PLACEBO",
+            "Mandatory": "Yes"
+          }
+        ]
+      },
+      {
+        "OID": "SE.FIRST_TREATMENT.L-P-H",
+        "Name": "L-P-H first treatment study cell",
+        "Description": {
+          "TranslatedText": [
+            {
+              "lang": "en",
+              "Type": "text/plain",
+              "_content": "First treatment cell in low-dose - placebo - high-dose arm"
+            }
+          ]
+        },
+        "StudyEventGroupRef": [
+          {
+            "StudyEventGroupOID": "SEG.LOWDOSE",
+            "Mandatory": "Yes"
+          }
+        ]
+      },
+      {
+        "OID": "SE.FIRST_TREATMENT.L-H-P",
+        "Name": "L-H-P first treatment study cell",
+        "Description": {
+          "TranslatedText": [
+            {
+              "lang": "en",
+              "Type": "text/plain",
+              "_content": "First treatment cell in low-dose - high-dose - placebo arm"
+            }
+          ]
+        },
+        "StudyEventGroupRef": [
+          {
+            "StudyEventGroupOID": "SEG.LOWDOSE",
+            "Mandatory": "Yes"
+          }
+        ]
+      },
+      {
+        "OID": "SE.FIRST_REST.P-L-H",
+        "Name": "P-L-H first rest study cell",
+        "Description": {
+          "TranslatedText": [
+            {
+              "lang": "en",
+              "Type": "text/plain",
+              "_content": "First rest cell in placebo - low-dose - high-dose arm"
+            }
+          ]
+        },
+        "StudyEventGroupRef": [
+          {
+            "StudyEventGroupOID": "SEG.REST",
+            "Mandatory": "Yes"
+          }
+        ]
+      },
+      {
+        "OID": "SE.FIRST_REST.L-P-H",
+        "Name": "L-P-H first rest study cell",
+        "Description": {
+          "TranslatedText": [
+            {
+              "lang": "en",
+              "Type": "text/plain",
+              "_content": "First rest cell in low-dose - placebo - high-dose arm"
+            }
+          ]
+        },
+        "StudyEventGroupRef": [
+          {
+            "StudyEventGroupOID": "SEG.REST",
+            "Mandatory": "Yes"
+          }
+        ]
+      },
+      {
+        "OID": "SE.FIRST_REST.L-H-P",
+        "Name": "L-H-P first rest study cell",
+        "Description": {
+          "TranslatedText": [
+            {
+              "lang": "en",
+              "Type": "text/plain",
+              "_content": "First rest cell in low-dose - high-dose - placebo"
+            }
+          ]
+        },
+        "StudyEventGroupRef": [
+          {
+            "StudyEventGroupOID": "SEG.REST",
+            "Mandatory": "Yes"
+          }
+        ]
+      },
+      {
+        "OID": "SE.SECOND_TREATMENT.P-L-H",
+        "Name": "P-L-H second treatment study cell",
+        "Description": {
+          "TranslatedText": [
+            {
+              "lang": "en",
+              "Type": "text/plain",
+              "_content": "Second treatment cell in placebo - low-dose - high-dose arm"
+            }
+          ]
+        },
+        "StudyEventGroupRef": [
+          {
+            "StudyEventGroupOID": "SEG.LOWDOSE",
+            "Mandatory": "Yes"
+          }
+        ]
+      },
+      {
+        "OID": "SE.SECOND_TREATMENT.L-P-H",
+        "Name": "L-P-H second treatment study cell",
+        "Description": {
+          "TranslatedText": [
+            {
+              "lang": "en",
+              "Type": "text/plain",
+              "_content": "Second treatment cell in low-dose - placebo - high-dose arm"
+            }
+          ]
+        },
+        "StudyEventGroupRef": [
+          {
+            "StudyEventGroupOID": "SEG.PLACEBO",
+            "Mandatory": "Yes"
+          }
+        ]
+      },
+      {
+        "OID": "SE.SECOND_TREATMENT.L-H-P",
+        "Name": "L-H-P second treatment study cell",
+        "Description": {
+          "TranslatedText": [
+            {
+              "lang": "en",
+              "Type": "text/plain",
+              "_content": "Second treatment cell in low-dose - high-dose - placebo arm"
+            }
+          ]
+        },
+        "StudyEventGroupRef": [
+          {
+            "StudyEventGroupOID": "SEG.HIGHDOSE",
+            "Mandatory": "Yes"
+          }
+        ]
+      },
+      {
+        "OID": "SE.SECOND_REST.P-L-H",
+        "Name": "P-L-H second rest study cell",
+        "Description": {
+          "TranslatedText": [
+            {
+              "lang": "en",
+              "Type": "text/plain",
+              "_content": "Second rest cell in placebo - low-dose - high-dose arm"
+            }
+          ]
+        },
+        "StudyEventGroupRef": [
+          {
+            "StudyEventGroupOID": "SEG.REST",
+            "Mandatory": "Yes"
+          }
+        ]
+      },
+      {
+        "OID": "SE.SECOND_REST.L-P-H",
+        "Name": "L-P-H second rest study cell",
+        "Description": {
+          "TranslatedText": [
+            {
+              "lang": "en",
+              "Type": "text/plain",
+              "_content": "Second rest cell in low-dose - placebo - high-dose arm"
+            }
+          ]
+        },
+        "StudyEventGroupRef": [
+          {
+            "StudyEventGroupOID": "SEG.REST",
+            "Mandatory": "Yes"
+          }
+        ]
+      },
+      {
+        "OID": "SE.SECOND_REST.L-H-P",
+        "Name": "L-H-P second rest study cell",
+        "Description": {
+          "TranslatedText": [
+            {
+              "lang": "en",
+              "Type": "text/plain",
+              "_content": "Second rest cell in low-dose - high-dose - placebo"
+            }
+          ]
+        },
+        "StudyEventGroupRef": [
+          {
+            "StudyEventGroupOID": "SEG.REST",
+            "Mandatory": "Yes"
+          }
+        ]
+      },
+      {
+        "OID": "SE.THIRD_TREATMENT.P-L-H",
+        "Name": "P-L-H third treatment study cell",
+        "Description": {
+          "TranslatedText": [
+            {
+              "lang": "en",
+              "Type": "text/plain",
+              "_content": "Third treatment cell in placebo - low-dose - high-dose arm"
+            }
+          ]
+        },
+        "StudyEventGroupRef": [
+          {
+            "StudyEventGroupOID": "SEG.HIGHDOSE",
+            "Mandatory": "Yes"
+          }
+        ]
+      },
+      {
+        "OID": "SE.THIRD_TREATMENT.L-P-H",
+        "Name": "L-P-H third treatment study cell",
+        "Description": {
+          "TranslatedText": [
+            {
+              "lang": "en",
+              "Type": "text/plain",
+              "_content": "Third treatment cell in low-dose - placebo - high-dose arm"
+            }
+          ]
+        },
+        "StudyEventGroupRef": [
+          {
+            "StudyEventGroupOID": "SEG.HIGHDOSE",
+            "Mandatory": "Yes"
+          }
+        ]
+      },
+      {
+        "OID": "SE.THIRD_TREATMENT.L-H-P",
+        "Name": "L-H-P third treatment study cell",
+        "Description": {
+          "TranslatedText": [
+            {
+              "lang": "en",
+              "Type": "text/plain",
+              "_content": "Third treatment cell in low-dose - high-dose - placebo arm"
+            }
+          ]
+        },
+        "StudyEventGroupRef": [
+          {
+            "StudyEventGroupOID": "SEG.PLACEBO",
+            "Mandatory": "Yes"
+          }
+        ]
+      },
+      {
+        "OID": "SE.FOLLOW_UP.P-L-H",
+        "Name": "P-L-H follow-up cell",
+        "Description": {
+          "TranslatedText": [
+            {
+              "lang": "en",
+              "Type": "text/plain",
+              "_content": "Follow-up cell in placebo - low-dose - high-dose arm"
+            }
+          ]
+        },
+        "StudyEventGroupRef": [
+          {
+            "StudyEventGroupOID": "SEG.FOLLOW-UP",
+            "Mandatory": "Yes"
+          }
+        ]
+      },
+      {
+        "OID": "SE.FOLLOW_UP.L-P-H",
+        "Name": "L-P-H follow-up cell",
+        "Description": {
+          "TranslatedText": [
+            {
+              "lang": "en",
+              "Type": "text/plain",
+              "_content": "Follow-up cell in low-dose - placebo - high-dose arm"
+            }
+          ]
+        },
+        "StudyEventGroupRef": [
+          {
+            "StudyEventGroupOID": "SEG.FOLLOW-UP",
+            "Mandatory": "Yes"
+          }
+        ]
+      },
+      {
+        "OID": "SE.FOLLOW_UP.L-H-P",
+        "Name": "L-H-P follow-up cell",
+        "Description": {
+          "TranslatedText": [
+            {
+              "lang": "en",
+              "Type": "text/plain",
+              "_content": "Follow-up cell in low-dose - high-dose - placebo arm"
+            }
+          ]
+        },
+        "StudyEventGroupRef": [
+          {
+            "StudyEventGroupOID": "SEG.FOLLOW-UP",
+            "Mandatory": "Yes"
+          }
+        ]
+      },
+      {
+        "OID": "SEG.SCREEN",
+        "Name": "Screening Segment",
+        "Description": {
+          "TranslatedText": [
+            {
+              "lang": "en",
+              "Type": "text/plain",
+              "_content": "Screening segment"
+            }
+          ]
+        }
+      },
+      {
+        "OID": "SEG.PLACEBO",
+        "Name": "Placebo segment",
+        "Description": {
+          "TranslatedText": [
+            {
+              "lang": "en",
+              "Type": "text/plain",
+              "_content": "Placebo treatment segment"
+            }
+          ]
+        }
+      },
+      {
+        "OID": "SEG.LOWDOSE",
+        "Name": "Low-dose segment",
+        "Description": {
+          "TranslatedText": [
+            {
+              "lang": "en",
+              "Type": "text/plain",
+              "_content": "Low-dose (5mg) treatment segment"
+            }
+          ]
+        }
+      },
+      {
+        "OID": "SEG.HIGHDOSE",
+        "Name": "High-dose treatment",
+        "Description": {
+          "TranslatedText": [
+            {
+              "lang": "en",
+              "Type": "text/plain",
+              "_content": "High-dose (10mg) treatment segment"
+            }
+          ]
+        }
+      },
+      {
+        "OID": "SEG.REST",
+        "Name": "Rest segment",
+        "Description": {
+          "TranslatedText": [
+            {
+              "lang": "en",
+              "Type": "text/plain",
+              "_content": "Rest segment - no treatment is provided to the subject"
+            }
+          ]
+        }
+      },
+      {
+        "OID": "SEG.FOLLOW-UP",
+        "Name": "Follow-up segment",
+        "Description": {
+          "TranslatedText": [
+            {
+              "lang": "en",
+              "Type": "text/plain",
+              "_content": "Follow-up segment"
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

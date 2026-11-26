@@ -1,0 +1,295 @@
+{
+  "FileOID": "MyStudy_1",
+  "FileType": "Snapshot",
+  "CreationDateTime": "2019-03-11T17:33:17",
+  "Study": [
+    {
+      "OID": "MyStudy",
+      "StudyName": "My Study",
+      "ProtocolName": "My Study",
+      "MetaDataVersion": [
+        {
+          "OID": "MDV.MyStudy.001",
+          "Name": "Study MyStudy 001, Data Definitions V-1",
+          "ItemGroupDef": [
+            {
+              "OID": "ODM.IG.DM",
+              "Name": "Demographics",
+              "Repeating": "No",
+              "Type": "Section",
+              "ItemRef": [
+                {
+                  "ItemOID": "IT.DM.BRTHYR",
+                  "Mandatory": "Yes"
+                },
+                {
+                  "ItemOID": "IT.DM.BRTHMO",
+                  "Mandatory": "Yes"
+                },
+                {
+                  "ItemOID": "IT.DM.BRTHDY",
+                  "Mandatory": "Yes"
+                },
+                {
+                  "ItemOID": "IT.DM.SEX",
+                  "Mandatory": "Yes"
+                },
+                {
+                  "ItemOID": "IT.DM.ETHNIC",
+                  "Mandatory": "Yes"
+                }
+              ],
+              "ItemGroupRef": [
+                {
+                  "ItemGroupOID": "ODM.IG.RACE",
+                  "Mandatory": "Yes"
+                },
+                {
+                  "ItemGroupOID": "ODM.IG.RACEOTH",
+                  "Mandatory": "No"
+                }
+              ]
+            },
+            {
+              "OID": "ODM.IG.RACE",
+              "Name": "Race",
+              "Repeating": "Static",
+              "Type": "Section",
+              "ItemRef": [
+                {
+                  "ItemOID": "IT.DM.RACE",
+                  "Mandatory": "Yes"
+                }
+              ]
+            },
+            {
+              "OID": "ODM.IG.RACEOTH",
+              "Name": "Race Other(s)",
+              "Repeating": "Simple",
+              "RepeatingLimit": 2,
+              "Type": "Section",
+              "ItemRef": [
+                {
+                  "ItemOID": "IT.DM.RACEOTH",
+                  "Mandatory": "No",
+                  "Repeat": "Yes"
+                }
+              ]
+            }
+          ],
+          "ItemDef": [
+            {
+              "OID": "IT.DM.RACE",
+              "Name": "RACE",
+              "DataType": "text",
+              "Length": 41,
+              "Description": {
+                "TranslatedText": [
+                  {
+                    "lang": "en",
+                    "Type": "text/plain",
+                    "_content": "Race"
+                  }
+                ]
+              },
+              "Question": {
+                "TranslatedText": [
+                  {
+                    "lang": "en",
+                    "Type": "text/plain",
+                    "_content": "Race (Select all that apply)"
+                  }
+                ]
+              },
+              "CodeListRef": {
+                "CodeListOID": "CL.RACE"
+              }
+            },
+            {
+              "OID": "IT.DM.RACEOTH",
+              "Name": "RACEOTH",
+              "DataType": "text",
+              "Length": 41,
+              "Description": {
+                "TranslatedText": [
+                  {
+                    "lang": "en",
+                    "Type": "text/plain",
+                    "_content": "Race Other"
+                  }
+                ]
+              },
+              "Question": {
+                "TranslatedText": [
+                  {
+                    "lang": "en",
+                    "Type": "text/plain",
+                    "_content": "Other Race (Include maximum two other values not\n                        listed under RACE)"
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "ClinicalData": [
+    {
+      "StudyOID": "MyStudy",
+      "MetaDataVersionOID": "MDV.MyStudy.001",
+      "ItemGroupData": [
+        {
+          "ItemGroupOID": "IG.DM",
+          "ItemGroupDataSeq": 2,
+          "ItemData": [
+            {
+              "ItemOID": "IT.STUDYID",
+              "Value": [
+                {
+                  "_content": "CDISC01"
+                }
+              ]
+            },
+            {
+              "ItemOID": "IT.DM.DOMAIN",
+              "Value": [
+                {
+                  "_content": "DM"
+                }
+              ]
+            },
+            {
+              "ItemOID": "IT.USUBJID",
+              "Value": [
+                {
+                  "_content": "CDISC01.100014"
+                }
+              ]
+            },
+            {
+              "ItemOID": "IT.DM.SUBJID",
+              "Value": [
+                {
+                  "_content": "100014"
+                }
+              ]
+            },
+            {
+              "ItemOID": "IT.DM.SITEID",
+              "Value": [
+                {
+                  "_content": "100"
+                }
+              ]
+            },
+            {
+              "ItemOID": "IT.DM.BRTHDTC",
+              "Value": [
+                {
+                  "_content": "1936-11-01"
+                }
+              ]
+            },
+            {
+              "ItemOID": "IT.DM.AGE",
+              "Value": [
+                {
+                  "_content": "66"
+                }
+              ]
+            },
+            {
+              "ItemOID": "IT.DM.AGEU",
+              "Value": [
+                {
+                  "_content": "YEARS"
+                }
+              ]
+            },
+            {
+              "ItemOID": "IT.DM.SEX",
+              "Value": [
+                {
+                  "_content": "F"
+                }
+              ]
+            }
+          ],
+          "ItemGroupData": [
+            {
+              "ItemGroupOID": "ODM.IG.RACE",
+              "ItemGroupRepeatKey": "1",
+              "ItemData": [
+                {
+                  "ItemOID": "IT.DM.RACE",
+                  "Value": [
+                    {
+                      "_content": "NATIVE HAWAIIAN"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "ItemGroupOID": "ODM.IG.RACE",
+              "ItemGroupRepeatKey": "2",
+              "ItemData": [
+                {
+                  "ItemOID": "IT.DM.RACE",
+                  "Value": [
+                    {
+                      "_content": "ASIAN"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "ItemGroupOID": "ODM.IG.RACE",
+              "ItemGroupRepeatKey": "3",
+              "ItemData": [
+                {
+                  "ItemOID": "IT.DM.RACE",
+                  "Value": [
+                    {
+                      "_content": "WHITE"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "ItemGroupOID": "ODM.IG.RACEOTH",
+              "ItemGroupRepeatKey": "1",
+              "ItemData": [
+                {
+                  "ItemOID": "IT.DM.RACEOTH",
+                  "Value": [
+                    {
+                      "_content": "Other free text Race value\""
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "ItemGroupOID": "ODM.IG.RACEOTH",
+              "ItemGroupRepeatKey": "2",
+              "ItemData": [
+                {
+                  "ItemOID": "IT.DM.RACEOTH",
+                  "Value": [
+                    {
+                      "_content": "Another free text Race value"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

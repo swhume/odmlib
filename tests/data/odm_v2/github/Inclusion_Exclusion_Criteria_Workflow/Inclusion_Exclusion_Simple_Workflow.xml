@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- We start here from MetaDataVersion -->
+<MetaDataVersion xmlns="http://www.cdisc.org/ns/odm/v2.0" OID="MV.001" Name="MetaDataVersion 1">
+    <!-- Example of an Inclusion/Exclusion workflow -->
+    <WorkflowDef OID="WF.INCLUSION_EXCLUSION" Name="Inclusion/Exclusion workflow">
+        <!-- the workflow can start with a "dummy anchor point", another activity (e.g. providing information), 
+        or directly with the first inclusion criterion. In this example, we use the latter -->
+        <WorkflowStart StartOID="IT.INCLUSION_1"/>
+        <Transition OID="TR.1" Name="Transition from inclusion question 1 to evaluation of inclusion question 1" 
+            SourceOID="IT.INCLUSION_1" TargetOID="BR.1"/>
+        <!-- if the first inclusion is not met, the workflow is terminated, and the subject goes to "study end" -->
+        <Branching OID="BR.1" Name="Evaluation of includion criterion 1" Type="Exclusive">
+            <TargetTransition TargetTransitionOID="TR.INCLUSION_1_TO_STUDYEND" ConditionOID="COND.INCL1.NOTMET"/>
+            <DefaultTransition TargetTransitionOID="TR.2"/>
+        </Branching>
+        <!-- up to the second inclusion criterion! -->
+        <Transition OID="TR.2" Name="Transition to inclusion criterion 2" SourceOID="BR.1" TargetOID="IT.INCLUSION_2"/>
+        <!-- continueing to evaluation of inclusion criterion 2 -->
+        <Transition OID="TR.3" Name="Transition to evaluation of inclusion criterion 2" SourceOID="IT.INCLUSION_2" TargetOID="BR.2"/>
+        <!-- evaluation of inclusion criterion 2 -->
+        <Branching OID="BR.2" Name="Evaluation of includion criterion 2" Type="Exclusive">
+            <TargetTransition TargetTransitionOID="TR.INCLUSION_2_TO_STUDYEND" ConditionOID="COND.INCL2.NOTMET"/>
+            <DefaultTransition TargetTransitionOID="TR.4"/>
+        </Branching>
+        <Transition OID="TR.4" Name="Transition to exlusion criterion 1" SourceOID="BR.2" TargetOID="IT.EXCLUSION_1"/>
+        <!-- continueing to evaluation of exclusion criterion 1 -->
+        <Transition OID="TR.5" Name="Transition to evaluation of exclusion criterion 1" SourceOID="IT.EXCLUSION_1" TargetOID="BR.3"/>
+        <!-- Evaluation of exclusion criterion 2 -->
+        <Branching OID="BR.3" Name="Evaluation of exclusion criterion 1" Type="Exclusive">
+            <TargetTransition TargetTransitionOID="TR.EXCLUSION_1_TO_STUDYEND" ConditionOID="COND.EXCL1.MET"/>
+            <DefaultTransition TargetTransitionOID="TR.5"/>
+        </Branching>
+        <!-- Transition to exclusion criterion 2 -->
+        <Transition OID="TR.5" Name="Transition to exlusion criterion 2" SourceOID="BR.3" TargetOID="IT.EXCLUSION_2"/>
+        <!-- Transition to evaluation of exclusion criterion 2 -->
+        <Transition OID="TR.6" Name="Transition to evaluation of exclusion criterion 2" SourceOID="IT.EXCLUSION_2" TargetOID="BR.4"/>
+        <!-- Evaluation of exclusion criterion 2 -->
+        <Branching OID="BR.4" Name="Evaluation of exclusion criterion 2" Type="Exclusive">
+            <TargetTransition TargetTransitionOID="TR.EXCLUSION_2_TO_STUDYEND" ConditionOID="COND.EXCL2.MET"/>
+            <DefaultTransition TargetTransitionOID="SEG.SCREENING"/>
+        </Branching>
+        <!-- Transitions that lead to "study end" -->
+        <Transition OID="TR.INCLUSION_1_TO_STUDYEND" Name="Subject excluded from study as not meeting inclusion criterion 1" SourceOID="BR.1" TargetOID="SEG.END"/>
+        <Transition OID="TR.INCLUSION_2_TO_STUDYEND" Name="Subject excluded from study as not meeting inclusion criterion 2" SourceOID="BR.2" TargetOID="SEG.END"/>
+        <Transition OID="TR.EXCLUSION_1_TO_STUDYEND" Name="Subject excluded from study due to meeting exclusion criterion 1" SourceOID="BR.3" TargetOID="SEG.END"/>
+        <Transition OID="TR.EXCLUSION_2_TO_STUDYEND" Name="Subject excluded from study due to meeting exclusion criterion 2" SourceOID="BR.4" TargetOID="SEG.END"/>
+        <WorkflowEnd EndOID="WF.END"/>
+    </WorkflowDef>
+    
+    <!-- Just for converience here, we create a "study start" StudyEventGroupDef and a "study end" StudyEventGroupDef. 
+    These could be part of the overall study workflow, of which the "Inclusion/Exclusion" workflow is a "sub-workflow" -->
+    <StudyEventGroupDef OID="SEG.START" Name="Study start">
+        <!-- more details here -->
+    </StudyEventGroupDef>
+    <StudyEventGroupDef OID="SEG.END" Name="Study end">
+        <!-- more details here -->
+    </StudyEventGroupDef>
+    <!-- and we define a StudyEventGroup as an "activity" stating that the "Inclusion/Exclusion workflow must be executed -->
+    <StudyEventGroupDef OID="SEG.INCLUSION_EXCLUSION" Name="Execute inclusion/exclusion criteria">
+        <WorkflowRef WorkflowOID="WF.INCLUSION_EXCLUSION"/>
+    </StudyEventGroupDef>
+    <!-- and a StudyEventGroup for the activities after Inclusion/Exclusion criteria (when the subject was included in the study), 
+        e.g. screening activities -->
+    <StudyEventGroupDef OID="SEG.SCREENING" Name="Screening activities">
+        <!-- the screening activities can also consist of a workflow, not further elucidated in this example -->
+    </StudyEventGroupDef>
+    <!-- The items themselves referenced/used in the workflow -->
+    <ItemGroupDef OID="IG.IE_CRITERIA" Name="Inclusion-Exclusion Criteria" Repeating="No" Type="Section">
+        <!-- We put all inclusion and exclusion criteria into a single ItemGroupDef.
+        We could also have created two ItemGroupDefs (one for inclusion, one for exclusion), 
+        but this would make the workflow definition more complicated, 
+        as it could mean we need two sub-workflows within a single main workflow -->
+        <ItemRef ItemOID="IT.INCLUSION_1" Mandatory="Yes"/>
+        <ItemRef ItemOID="IT.INCLUSION_2" Mandatory="Yes"/>
+        <ItemRef ItemOID="IT.EXCLUSION_1" Mandatory="Yes"/>
+        <ItemRef ItemOID="IT.EXCLUSION_2" Mandatory="Yes"/>
+    </ItemGroupDef>
+    <!-- ItemDefs represent the Yes/No questions on the IE form or other data capture medium -->
+    <!-- Instead of associating a "Yes-No" Codelist, one could also set the datatype to "boolean". 
+    This might however be less safe, as a boolean is usually associated with a single checkbox, 
+    and an uncrossed checkbox can either mean "no" as "forgotten to ask" -->
+    <ItemDef OID="IT.INCLUSION_1" Name="Inclusion Criterion 1" DataType="text" Length="1">
+        <Question>
+            <TranslatedText xml:lang="en" Type="text/plain">is there a diagnosis of the study disease indication (disease XYZ)?</TranslatedText>
+        </Question>
+        <CodeListRef CodeListOID="CL.YESNO"/>
+    </ItemDef>
+    <ItemDef OID="IT.INCLUSION_2" Name="Inclusion Criterion 2" DataType="text" Length="1">
+        <Question>
+            <TranslatedText xml:lang="en" Type="text/plain">Is the subject between 18 and 65 years old?</TranslatedText>
+        </Question>
+        <CodeListRef CodeListOID="CL.YESNO"/>
+    </ItemDef>
+    <ItemDef OID="IT.EXCLUSION_1" Name="Exclusion Criterion 1" DataType="text" Length="1">
+        <Question>
+            <TranslatedText xml:lang="en" Type="text/plain">Does the subject has a diagnosis of  diabetes type 1 or 2?</TranslatedText>
+        </Question>
+        <CodeListRef CodeListOID="CL.YESNO"/>
+    </ItemDef>
+    <ItemDef OID="IT.EXCLUSION_2" Name="Exclusion Criterion 2" DataType="text" Length="1">
+        <Question>
+            <TranslatedText xml:lang="en" Type="text/plain">Did the subject undergo a surgical procedure in the last 12 months?</TranslatedText>
+        </Question>
+        <CodeListRef CodeListOID="CL.YESNO"/>
+    </ItemDef>
+    <!-- The Yes-No CodeList -->
+    <CodeList OID="CL.YESNO" Name="Yes-No codelist" DataType="text">
+        <CodeListItem CodedValue="Y">
+            <Decode>
+                <TranslatedText xml:lang="en" Type="text/plain">Yes</TranslatedText>
+                <TranslatedText xml:lang="fr" Type="text/plain">Oui</TranslatedText>
+            </Decode>
+        </CodeListItem>
+        <CodeListItem CodedValue="N">
+            <Decode>
+                <TranslatedText xml:lang="en" Type="text/plain">No</TranslatedText>
+                <TranslatedText xml:lang="fr" Type="text/plain">Non</TranslatedText>
+            </Decode>
+        </CodeListItem>
+    </CodeList>
+    <!-- Conditions - must evaluate to "true" or "false" -->
+    <ConditionDef OID="COND.INCL1.NOTMET" Name="Inclusion criterion 1 not met">
+        <Description>
+            <TranslatedText xml:lang="en" Type="text/plain">Inclusion criterion 1 not met: there a no diagnosis of the study disease indication (disease XYZ)</TranslatedText>
+        </Description>
+        <!-- machine-readable expression - just an example assuming the data point has been stored, 
+            and is available as ODM -->
+        <MethodSignature/>
+        <FormalExpression Context="ODM">
+            <Code>ItemData[@ItemOID='IT.INCLUSION_1']/@Value='N'</Code>
+        </FormalExpression>
+    </ConditionDef>
+    <ConditionDef OID="COND.INCL2.NOTMET" Name="Inclusion criterion 1 not met">
+        <Description>
+            <TranslatedText xml:lang="en" Type="text/plain">Inclusion criterion 2 not met: the subject is not between 18 and 15 years old</TranslatedText>
+        </Description>
+        <!-- machine-readable expression - just an example assuming the data point has been stored, 
+            and is available as ODM -->
+        <MethodSignature/>
+        <FormalExpression Context="ODM">
+            <Code>ItemData[@ItemOID='IT.INCLUSION_2']/@Value='N'</Code></FormalExpression>
+    </ConditionDef>
+    <ConditionDef OID="COND.EXCL1.MET" Name="Exclusion criterion 1 is met">
+        <Description>
+            <TranslatedText xml:lang="en" Type="text/plain">Exclusion criterion 1 has been met: the subject has a diagnosis of  diabetes type 1 or 2</TranslatedText>
+        </Description>
+        <MethodSignature/>
+        <FormalExpression Context="ODM">
+            <Code>ItemData[@ItemOID='IT.EXCLUSION_1']/@Value='Y'</Code></FormalExpression>
+    </ConditionDef>
+    <ConditionDef OID="COND.EXCL2.MET" Name="Exclusion criterion 2 is met">
+        <Description>
+            <TranslatedText xml:lang="en" Type="text/plain">Exclusion criterion 2 has been met: the subject did undergo a surgical procedure in the last 12 months</TranslatedText>
+        </Description>
+        <MethodSignature/>
+        <FormalExpression Context="ODM">
+            <Code>ItemData[@ItemOID='IT.EXCLUSION_2']/@Value='Y'</Code></FormalExpression>
+    </ConditionDef>
+</MetaDataVersion>

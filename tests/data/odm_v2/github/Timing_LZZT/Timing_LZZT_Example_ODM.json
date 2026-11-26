@@ -1,0 +1,353 @@
+{
+  "MetaDataVersion": {
+    "OID": "MV.001",
+    "Name": "MetaDataVersion 1",
+    "Description": {
+      "TranslatedText": [
+        {
+          "lang": "en",
+          "Type": "text/plain",
+          "_content": "Visits 1 through 13 should be scheduled relative to Visit 3 (Week 0 - randomization).\nVisits 4, 5, 7, 8, and 13 should occur within 3 days of their scheduled date. Visits 9, 10,\n11, and 12 should occur within 4 days of their scheduled date."
+        }
+      ]
+    },
+    "Protocol": {
+      "StudyTimings": {
+        "StudyTiming": [
+          {
+            "OID": "ST.TIM1",
+            "Name": "Study Timing 1",
+            "RelativeTimingConstraint": [
+              {
+                "OID": "TIM.001",
+                "Name": "Relative timing constraint between visits week 0 and week 1",
+                "Type": "StartToStart",
+                "TimepointRelativeTarget": "P7D",
+                "PredecessorOID": "SE.VISIT2",
+                "SuccessorOID": "SE.VISIT3",
+                "Description": {
+                  "TranslatedText": [
+                    {
+                      "lang": "en",
+                      "Type": "text/plain",
+                      "_content": "Week 1 visit is scheduled to be 1 week after week 0 visit, no window"
+                    }
+                  ]
+                }
+              },
+              {
+                "OID": "TIM.002",
+                "Name": "Relative timing constraint between visits week 0 and week 2",
+                "PredecessorOID": "SE.VISIT2",
+                "SuccessorOID": "SE.VISIT4",
+                "Type": "StartToStart",
+                "TimepointRelativeTarget": "P14D",
+                "Description": {
+                  "TranslatedText": [
+                    {
+                      "lang": "en",
+                      "Type": "text/plain",
+                      "_content": "Example where we schedule the visit against the randomization visit (week 0)"
+                    }
+                  ]
+                }
+              },
+              {
+                "OID": "TIM.003",
+                "Name": "Relative timing constraint between visits week 2 and week 4",
+                "PredecessorOID": "SE.VISIT4",
+                "SuccessorOID": "SE.VISIT5",
+                "Type": "FinishToStart",
+                "TimepointRelativeTarget": "P14D",
+                "TimepointPreWindow": "P3D",
+                "TimepointPostWindow": "P3D",
+                "Description": {
+                  "TranslatedText": [
+                    {
+                      "lang": "en",
+                      "Type": "text/plain",
+                      "_content": "Example where we schedule the visit against the end of the last visit done, \n\t\t\t\t\t\ttime window of 3 days before and after"
+                    }
+                  ]
+                }
+              },
+              {
+                "OID": "TIM.004",
+                "Name": "Relative timing constraint between visits week 0 and week 6",
+                "PredecessorOID": "SE.VISIT2",
+                "SuccessorOID": "SE.VISIT7",
+                "Type": "StartToStart",
+                "TimepointRelativeTarget": "P42D",
+                "TimepointPreWindow": "P3D",
+                "TimepointPostWindow": "P3D",
+                "Description": {
+                  "TranslatedText": [
+                    {
+                      "lang": "en",
+                      "Type": "text/plain"
+                    }
+                  ]
+                }
+              },
+              {
+                "OID": "TIM.005",
+                "Name": "Relative timing constraint between visits week 0 and week 8",
+                "PredecessorOID": "SE.VISIT2",
+                "SuccessorOID": "SE.VISIT8",
+                "Type": "StartToStart",
+                "TimepointRelativeTarget": "P56D",
+                "TimepointPreWindow": "P3D",
+                "TimepointPostWindow": "P3D",
+                "Description": {
+                  "TranslatedText": [
+                    {
+                      "lang": "en",
+                      "Type": "text/plain",
+                      "_content": "Example where we schedule the visit against the randomization visit (week 0),\n\t\t\t\t\t\ttime window 3 days before and after"
+                    }
+                  ]
+                }
+              },
+              {
+                "OID": "TIM.006",
+                "Name": "Relative timing constraint between visits week 0 and week 12",
+                "PredecessorOID": "SE.VISIT2",
+                "SuccessorOID": "SE.VISIT9",
+                "Type": "StartToStart",
+                "TimepointRelativeTarget": "P84D",
+                "TimepointPreWindow": "P3D",
+                "TimepointPostWindow": "P3D",
+                "Description": {
+                  "TranslatedText": [
+                    {
+                      "lang": "en",
+                      "Type": "text/plain",
+                      "_content": "Example where we schedule the visit against the randomization visit (week 0),\n\t\t\t\t\t\tthis time with a time window 4 days before and after"
+                    }
+                  ]
+                }
+              }
+            ],
+            "TransitionTimingConstraint": [
+              {
+                "OID": "TIM.2-3",
+                "Name": "Transition Timing constraint between visit 2 (week 0) to visit 3 (week 1)",
+                "TransitionOID": "TR.2-3",
+                "TimepointTarget": "P7D"
+              },
+              {
+                "OID": "TIM.3-4",
+                "Name": "Transition Timing constraint between visit 3 (week 1) to visit 4 (week 2)",
+                "TransitionOID": "TR.3-4",
+                "TimepointTarget": "P7D"
+              },
+              {
+                "OID": "TIM.4-5",
+                "Name": "Transition Timing constraint between visit 4 (week 2) to visit 5 (week 4)",
+                "TransitionOID": "TR.4-5",
+                "TimepointTarget": "P14D",
+                "TimepointPreWindow": "P3D",
+                "TimepointPostWindow": "P3D"
+              },
+              {
+                "OID": "TIM.5-7",
+                "Name": "Transition Timing constraint between visit 5 (week 4) to visit 7 (week 6)",
+                "TransitionOID": "TR.5-7",
+                "TimepointTarget": "P14D",
+                "TimepointPreWindow": "P3D",
+                "TimepointPostWindow": "P3D"
+              },
+              {
+                "OID": "TIM.7-8",
+                "Name": "Transition Timing constraint between visit 7 (week 6) to visit 8 (week 8)",
+                "TransitionOID": "TR.7-8",
+                "TimepointTarget": "P14D",
+                "TimepointPreWindow": "P3D",
+                "TimepointPostWindow": "P3D"
+              },
+              {
+                "OID": "TIM.8-9",
+                "Name": "Transition Timing constraint between visit 8 (week 8) to visit 9 (week 12)",
+                "TransitionOID": "TR.8-9",
+                "TimepointTarget": "P28D",
+                "TimepointPreWindow": "P4D",
+                "TimepointPostWindow": "P4D"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "WorkflowDef": [
+      {
+        "OID": "WF.MAIN",
+        "Name": "Main workflow",
+        "Description": {
+          "TranslatedText": [
+            {
+              "lang": "en",
+              "Type": "text/plain",
+              "_content": "A very simple, linear workflow"
+            }
+          ]
+        },
+        "WorkflowStart": {
+          "StartOID": "SE.VISIT1"
+        },
+        "Transition": [
+          {
+            "OID": "TR.1-2",
+            "Name": "Transition from visit 1 to visit 2 (week 0)",
+            "SourceOID": "SE.VISIT1",
+            "TargetOID": "SE.VISIT2"
+          },
+          {
+            "OID": "TR.2-3",
+            "Name": "Transition from visit 2 (week 0) to visit 3",
+            "SourceOID": "SE.VISIT2",
+            "TargetOID": "SE.VISIT3"
+          },
+          {
+            "OID": "TR.3-4",
+            "Name": "Transition from visit 3 to visit 4 (week 2)",
+            "SourceOID": "SE.VISIT3",
+            "TargetOID": "SE.VISIT4"
+          },
+          {
+            "OID": "TR.4-5",
+            "Name": "Transition from visit 4 (week 2) to visit 5 (week 4)",
+            "SourceOID": "SE.VISIT4",
+            "TargetOID": "SE.VISIT5"
+          },
+          {
+            "OID": "TR.5-7",
+            "Name": "Transition from visit 5 (week 4) to visit 7 (week 6)",
+            "SourceOID": "SE.VISIT5",
+            "TargetOID": "SE.VISIT7"
+          },
+          {
+            "OID": "TR.7-8",
+            "Name": "Transition from visit 7 (week 6) to visit 8 (week 8)",
+            "SourceOID": "SE.VISIT7",
+            "TargetOID": "SE.VISIT8"
+          },
+          {
+            "OID": "TR.8-9",
+            "Name": "Transition from visit 8 (week 8) to visit 9 (week 12)",
+            "SourceOID": "SE.VISIT8",
+            "TargetOID": "SE.VISIT9"
+          }
+        ],
+        "WorkflowEnd": [
+          {
+            "EndOID": "SE.STUDYEND"
+          }
+        ]
+      }
+    ],
+    "StudyEventDef": [
+      {
+        "OID": "SE.VISIT1",
+        "Name": "Visit 1 - Enrollment",
+        "Repeating": "No",
+        "Type": "Scheduled"
+      },
+      {
+        "OID": "SE.VISIT2",
+        "Name": "Visit 2 - Week 0 Visit",
+        "Repeating": "No",
+        "Type": "Scheduled"
+      },
+      {
+        "OID": "SE.VISIT3",
+        "Name": "Visit 3 - Week 1 Visit",
+        "Repeating": "No",
+        "Type": "Scheduled",
+        "Description": {
+          "TranslatedText": [
+            {
+              "lang": "en",
+              "Type": "text/plain",
+              "_content": "Week 1 visit is scheduled to be 1 week after Visit 0"
+            }
+          ]
+        }
+      },
+      {
+        "OID": "SE.VISIT4",
+        "Name": "Visit 4 - Week 2 Visit",
+        "Repeating": "No",
+        "Type": "Scheduled",
+        "Description": {
+          "TranslatedText": [
+            {
+              "lang": "en",
+              "Type": "text/plain",
+              "_content": "Week 2 visit is scheduled 2 weeks after Visit 0, \n\t\tand should occur within 3 days of the scheduled date"
+            }
+          ]
+        }
+      },
+      {
+        "OID": "SE.VISIT5",
+        "Name": "Visit 5 - Week 4 Visit",
+        "Repeating": "No",
+        "Type": "Scheduled",
+        "Description": {
+          "TranslatedText": [
+            {
+              "lang": "en",
+              "Type": "text/plain",
+              "_content": "Week 4 visit is scheduled 4 weeks after Visit 0, \n\t\tand should occur within 3 days of the scheduled date"
+            }
+          ]
+        }
+      },
+      {
+        "OID": "SE.VISIT7",
+        "Name": "Visit 7 - Week 6 Visit",
+        "Repeating": "No",
+        "Type": "Scheduled",
+        "Description": {
+          "TranslatedText": [
+            {
+              "lang": "en",
+              "Type": "text/plain",
+              "_content": "Week 6 visit is scheduled 6 weeks after Visit 0, \n\t\tand should occur within 3 days of the scheduled date"
+            }
+          ]
+        }
+      },
+      {
+        "OID": "SE.VISIT8",
+        "Name": "Visit 8 - Week 8 Visit",
+        "Repeating": "No",
+        "Type": "Scheduled",
+        "Description": {
+          "TranslatedText": [
+            {
+              "lang": "en",
+              "Type": "text/plain",
+              "_content": "Week 8 visit is scheduled 8 weeks after Visit 0, \n\t\tand should occur within 3 days of the scheduled date"
+            }
+          ]
+        }
+      },
+      {
+        "OID": "SE.VISIT9",
+        "Name": "Visit 9 - Week 12 Visit",
+        "Repeating": "No",
+        "Type": "Scheduled",
+        "Description": {
+          "TranslatedText": [
+            {
+              "lang": "en",
+              "Type": "text/plain",
+              "_content": "Week 12 visit is scheduled 12 weeks after Visit 0, \n\t\tand should occur within 4 days of the scheduled date"
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

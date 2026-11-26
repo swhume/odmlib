@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ODM 
+	FileOID="ODM.1497516063497" 
+	FileType="Snapshot" 
+	CreationDateTime="2017-06-15T09:45:36+01:00" 
+	ODMVersion="2.0" 
+	Originator="DataExchangeStandardsTeam" 
+	SourceSystem="Origin Study Modeller" 
+	SourceSystemVersion="3.7.1" 
+	xmlns:xml="http://www.w3.org/XML/1998/namespace" 
+	xmlns="http://www.cdisc.org/ns/odm/v2.0" 
+	xmlns:ds="http://www.w3.org/2000/09/xmldsig#">
+	<Study OID="S.RPTIG.UC-D" StudyName="RPTIG-UC-D" ProtocolName="Repeating Item Groups Use Case D">
+		<Description>
+			<TranslatedText xml:lang="en" Type="text/plain">
+				Medical History form with a set of questions that repeat for each of a number of pre-defined histories, 
+				and allows additional histories to be collected. One entry in the repeating codelist represents an "other" 
+				body system, and for these repeats an additional field collects the "other" information.
+			</TranslatedText>
+		</Description>
+		<MetaDataVersion OID="MDV.RPTIG.UC-D" Name="Repeating Item Groups Use Case D - Codelist Repeat with 'other' field">
+			<StudyEventDef OID="SE.MEDHIS" Name="Visit with collection of Medical History" Repeating="No" Type="Scheduled">
+				<ItemGroupRef ItemGroupOID="IG.MEDHIST" Mandatory="Yes"/>
+			</StudyEventDef>
+			<!-- The Medical History form -->
+			<ItemGroupDef OID="F.MEDHIST" Name="Medical History" Repeating="No" Type="Form">
+				<ItemGroupRef ItemGroupOID="IG.MEDHIST" Mandatory="Yes" OrderNumber="1"/>
+			</ItemGroupDef>
+			<!-- changed values of repeating to Simple, Static, Dynamic, No -->
+			<!-- descriptions of Repeating values at https://wiki.cdisc.org/display/XMLT/Details+of+Repeating+IG+Use+Cases+A-E (outdated 2022-10-03) -->
+			<!-- JIRA issue: https://jira.cdisc.org/projects/ODM2DEV/issues/ODM2DEV-7 -->
+			<ItemGroupDef OID="IG.MEDHIST" Name="Medical History" Repeating="Static" Type="Section" Domain="MH">
+				<!-- Repeat is an ItemRef attribute defined as YesOnly to indicate that the IG repeats based on a codelist associated with this variable -->
+				<ItemRef ItemOID="I.MH.BODSYS" Mandatory="Yes" Repeat="Yes" OrderNumber="1"/>
+				<!-- Other is an ItemRef attribute defined as YesOnly used to capture a value when the "other" term from CL.MHSYSTEM is selected -->
+				<ItemRef ItemOID="I.MH.SYSOTH" Mandatory="No" Other="Yes" OrderNumber="2"/>
+				<ItemRef ItemOID="I.MH.TERM" Mandatory="No" OrderNumber="3"/>
+				<ItemRef ItemOID="I.MH.ACTIVE" Mandatory="No" OrderNumber="4"/>
+				<Origin Type="Collected">
+					<Description><TranslatedText xml:lang="en" Type="text/plain">Use as Case Report Form (CRF)</TranslatedText></Description>
+				</Origin>
+			</ItemGroupDef>
+			<!-- Single items -->
+			<ItemDef OID="I.MH.BODSYS" Name="Body System" DataType="integer" Length="8">
+				<!-- This is the item the group of questions is repeating over. See Repeat="Yes" on the corresponding ItemRef -->
+				<Question>
+					<TranslatedText xml:lang="en" Type="text/plain">Body System</TranslatedText>
+					<TranslatedText xml:lang="fr" Type="text/plain">Système De Corps</TranslatedText>
+				</Question>
+				<CodeListRef CodeListOID="CL.MHSYSTEM"/>
+				<Alias Context="SDTM" Name="MHBODSYS"/>
+			</ItemDef>
+			<ItemDef OID="I.MH.TERM" Name="MH Abnormality" DataType="text" Length="80">
+				<Question>
+					<TranslatedText xml:lang="en" Type="text/plain">Abnormality</TranslatedText>
+					<TranslatedText xml:lang="fr" Type="text/plain">Anomalie</TranslatedText>
+				</Question>
+				<Alias Context="SDTM" Name="MHTERM"/>
+			</ItemDef>
+			<ItemDef OID="I.MH.ACTIVE" Name="MH Active" DataType="integer" Length="8">
+				<Question>
+					<TranslatedText xml:lang="en" Type="text/plain">Currently Active</TranslatedText>
+					<TranslatedText xml:lang="fr" Type="text/plain">Actuellement Actif</TranslatedText>
+				</Question>
+				<CodeListRef CodeListOID="CL.ACTINACT"/>
+				<Alias Context="SDTM" Name="MHCONDC"/>
+			</ItemDef>
+			<ItemDef OID="I.MH.SYSOTH" Name="Body System Other" DataType="text" Length="40">
+				<Question>
+					<TranslatedText xml:lang="en" Type="text/plain">Other</TranslatedText>
+					<TranslatedText xml:lang="fr" Type="text/plain">Autre</TranslatedText>
+				</Question>
+				<Alias Context="SDTM" Name="MHSYSOTH"/>
+			</ItemDef>
+			<CodeList OID="CL.MHSYSTEM" Name="Body System" DataType="integer">
+				<CodeListItem CodedValue="1">
+					<Decode>
+						<TranslatedText xml:lang="en" Type="text/plain">Skin</TranslatedText>
+						<TranslatedText xml:lang="fr" Type="text/plain">Peau</TranslatedText>
+					</Decode>
+				</CodeListItem>
+				<CodeListItem CodedValue="2">
+					<Decode>
+						<TranslatedText xml:lang="en" Type="text/plain">Eyes</TranslatedText>
+						<TranslatedText xml:lang="fr" Type="text/plain">Yeux</TranslatedText>
+					</Decode>
+				</CodeListItem>
+				<CodeListItem CodedValue="3">
+					<Decode>
+						<TranslatedText xml:lang="en" Type="text/plain">Heart</TranslatedText>
+						<TranslatedText xml:lang="fr" Type="text/plain">Coeur</TranslatedText>
+					</Decode>
+				</CodeListItem>
+				<CodeListItem CodedValue="4">
+					<Decode>
+						<TranslatedText xml:lang="en" Type="text/plain">Abdomen</TranslatedText>
+						<TranslatedText xml:lang="fr" Type="text/plain">Abdomen</TranslatedText>
+					</Decode>
+				</CodeListItem>
+				<CodeListItem CodedValue="5">
+					<Decode>
+						<TranslatedText xml:lang="en" Type="text/plain">Neurological</TranslatedText>
+						<TranslatedText xml:lang="fr" Type="text/plain">Neurologique</TranslatedText>
+					</Decode>
+				</CodeListItem>
+				<!-- added an attribute to identify the "other" semantics associated with this code list item -->
+				<CodeListItem CodedValue="99" Other="Yes">
+					<Decode>
+						<TranslatedText xml:lang="en" Type="text/plain">Other</TranslatedText>
+						<TranslatedText xml:lang="fr" Type="text/plain">Autre</TranslatedText>
+					</Decode>
+				</CodeListItem>
+			</CodeList>
+			<CodeList OID="CL.ACTINACT" Name="Status (Active / Non-Active)" DataType="integer">
+				<CodeListItem CodedValue="1">
+					<Decode>
+						<TranslatedText xml:lang="en" Type="text/plain">Active</TranslatedText>
+						<TranslatedText xml:lang="fr" Type="text/plain">Actif</TranslatedText>
+					</Decode>
+				</CodeListItem>
+				<CodeListItem CodedValue="2">
+					<Decode>
+						<TranslatedText xml:lang="en" Type="text/plain">Inactive</TranslatedText>
+						<TranslatedText xml:lang="fr" Type="text/plain">Inactif</TranslatedText>
+					</Decode>
+				</CodeListItem>
+			</CodeList>
+		</MetaDataVersion>
+	</Study>
+	<ClinicalData StudyOID="S.RPTIG.UC-D" MetaDataVersionOID="MDV.RPTIG.UC-D">
+		<SubjectData SubjectKey="1">
+			<StudyEventData StudyEventOID="SE.MEDHIS">
+				<ItemGroupData ItemGroupOID="F.MEDHIST">
+					<ItemGroupData ItemGroupOID="IG.MEDHIST" ItemGroupRepeatKey="1">
+						<ItemData ItemOID="I.MH.BODSYS"><Value>1</Value></ItemData>
+						<ItemData ItemOID="I.MH.TERM"><Value>some problem</Value></ItemData>
+						<ItemData ItemOID="I.MH.ACTIVE"></ItemData>
+					</ItemGroupData>
+					<ItemGroupData ItemGroupOID="IG.MEDHIST" ItemGroupRepeatKey="2">
+						<ItemData ItemOID="I.MH.BODSYS"><Value>3</Value></ItemData>
+						<ItemData ItemOID="I.MH.TERM"><Value>some other problem</Value></ItemData>
+						<ItemData ItemOID="I.MH.ACTIVE"><Value>2</Value></ItemData>
+					</ItemGroupData>
+					<ItemGroupData ItemGroupOID="IG.MEDHIST" ItemGroupRepeatKey="3">
+						<ItemData ItemOID="I.MH.BODSYS"><Value>3</Value></ItemData>
+						<ItemData ItemOID="I.MH.TERM"><Value>another heart related problem</Value></ItemData>
+						<ItemData ItemOID="I.MH.ACTIVE"><Value>2</Value></ItemData>
+					</ItemGroupData>
+					<ItemGroupData ItemGroupOID="IG.MEDHIST" ItemGroupRepeatKey="4">
+						<ItemData ItemOID="I.MH.BODSYS"><Value>99</Value></ItemData>
+						<ItemData ItemOID="I.MH.SYSOTH"><Value>My Other Body System</Value></ItemData>
+						<ItemData ItemOID="I.MH.TERM"><Value>a final problem</Value></ItemData>
+						<ItemData ItemOID="I.MH.ACTIVE"><Value>2</Value></ItemData>
+					</ItemGroupData>
+				</ItemGroupData>
+			</StudyEventData>
+		</SubjectData>
+	</ClinicalData>
+</ODM>

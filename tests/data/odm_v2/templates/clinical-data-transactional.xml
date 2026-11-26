@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- ODM v2.0 transactional clinical data template (Non-normative). Changes for one subject, with
+     audit records, a signature, a null value with a reason, and a query. The top-level data element
+     (SubjectData) has an explicit TransactionType; children inherit it unless they set their own.
+     Every DateTimeStamp is earlier than the file's CreationDateTime, and AuditRecords and
+     Signatures for one entity appear in time order. -->
+<ODM xmlns="http://www.cdisc.org/ns/odm/v2.0"
+     FileType="Transactional" Context="Exchange" ODMVersion="2.0"
+     FileOID="ODM.EXAMPLE.CLINICAL.2" PriorFileOID="ODM.EXAMPLE.CLINICAL.1"
+     CreationDateTime="2026-02-15T08:00:00" AsOfDateTime="2026-02-15T07:55:00"
+     Originator="Example Sponsor" SourceSystem="Example EDC">
+  <AdminData StudyOID="ST.EXAMPLE">
+    <User OID="USR.CRC01" UserType="Other" LocationOID="LOC.SITE01">
+      <FullName>Sam Lee</FullName>
+    </User>
+    <Location OID="LOC.SITE01" Name="Site 01">
+      <MetaDataVersionRef StudyOID="ST.EXAMPLE" MetaDataVersionOID="MDV.EXAMPLE.1" EffectiveDate="2026-01-01"/>
+    </Location>
+    <SignatureDef OID="SD.PI" Methodology="Electronic">
+      <Meaning>Investigator approval of the form</Meaning>
+      <LegalReason>21 CFR Part 11</LegalReason>
+    </SignatureDef>
+  </AdminData>
+  <ClinicalData StudyOID="ST.EXAMPLE" MetaDataVersionOID="MDV.EXAMPLE.1">
+    <SubjectData SubjectKey="SITE01-002" TransactionType="Insert">
+      <SiteRef LocationOID="LOC.SITE01"/>
+      <StudyEventData StudyEventOID="SE.SCREENING">
+        <ItemGroupData ItemGroupOID="IG.DM">
+          <ItemData ItemOID="IT.DM.SEX">
+            <Value>M</Value>
+            <AuditRecord>
+              <UserRef UserOID="USR.CRC01"/>
+              <LocationRef LocationOID="LOC.SITE01"/>
+              <DateTimeStamp>2026-02-10T10:15:00</DateTimeStamp>
+            </AuditRecord>
+          </ItemData>
+          <!-- Missing value: IsNull="Yes" and no Value; the reason goes in an Annotation flag -->
+          <ItemData ItemOID="IT.DM.BRTHDAT" IsNull="Yes">
+            <AuditRecord>
+              <UserRef UserOID="USR.CRC01"/>
+              <LocationRef LocationOID="LOC.SITE01"/>
+              <DateTimeStamp>2026-02-10T10:16:00</DateTimeStamp>
+            </AuditRecord>
+            <Annotation SeqNum="1">
+              <Flag>
+                <FlagValue CodeListOID="CL.NULLFLAVOR">ASKU</FlagValue>
+              </Flag>
+            </Annotation>
+          </ItemData>
+          <Signature>
+            <UserRef UserOID="USR.CRC01"/>
+            <LocationRef LocationOID="LOC.SITE01"/>
+            <SignatureRef SignatureOID="SD.PI"/>
+            <DateTimeStamp>2026-02-12T16:00:00</DateTimeStamp>
+          </Signature>
+        </ItemGroupData>
+      </StudyEventData>
+    </SubjectData>
+    <SubjectData SubjectKey="SITE01-001" TransactionType="Update">
+      <StudyEventData StudyEventOID="SE.SCREENING">
+        <ItemGroupData ItemGroupOID="IG.DM">
+          <ItemData ItemOID="IT.DM.AGE">
+            <Value>51</Value>
+            <AuditRecord EditPoint="DataManagement" UsedMethod="No">
+              <UserRef UserOID="USR.CRC01"/>
+              <LocationRef LocationOID="LOC.SITE01"/>
+              <DateTimeStamp>2026-02-14T09:30:00</DateTimeStamp>
+              <ReasonForChange>Transcription error corrected</ReasonForChange>
+            </AuditRecord>
+            <Query OID="Q.0001" Source="Data Management" State="Closed" LastUpdateDatetime="2026-02-14T09:31:00" Type="Manual">
+              <Value>Age does not match the date of birth; please check.</Value>
+            </Query>
+          </ItemData>
+        </ItemGroupData>
+      </StudyEventData>
+    </SubjectData>
+  </ClinicalData>
+</ODM>

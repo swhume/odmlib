@@ -1,0 +1,497 @@
+{
+  "FileType": "Snapshot",
+  "Granularity": "Metadata",
+  "Context": "Exchange",
+  "ODMVersion": "2.0",
+  "FileOID": "ODM.EXAMPLE.METADATA.1",
+  "CreationDateTime": "2026-01-01T09:00:00",
+  "Originator": "Example Sponsor",
+  "SourceSystem": "odmlib",
+  "Study": [
+    {
+      "OID": "ST.EXAMPLE",
+      "StudyName": "EXAMPLE-001",
+      "ProtocolName": "EXAMPLE-001",
+      "Description": {
+        "TranslatedText": [
+          {
+            "lang": "en",
+            "Type": "text/plain",
+            "_content": "Example study"
+          }
+        ]
+      },
+      "MetaDataVersion": [
+        {
+          "OID": "MDV.EXAMPLE.1",
+          "Name": "Metadata version 1",
+          "Protocol": {
+            "StudyEventGroupRef": [
+              {
+                "StudyEventGroupOID": "SEG.ALL",
+                "Mandatory": "Yes"
+              }
+            ]
+          },
+          "StudyEventGroupDef": [
+            {
+              "OID": "SEG.ALL",
+              "Name": "All visits",
+              "StudyEventRef": [
+                {
+                  "StudyEventOID": "SE.SCREENING",
+                  "Mandatory": "Yes",
+                  "OrderNumber": 1
+                }
+              ]
+            }
+          ],
+          "StudyEventDef": [
+            {
+              "OID": "SE.SCREENING",
+              "Name": "Screening",
+              "Repeating": "No",
+              "Type": "Scheduled",
+              "ItemGroupRef": [
+                {
+                  "ItemGroupOID": "IG.DM",
+                  "Mandatory": "Yes",
+                  "OrderNumber": 1
+                }
+              ]
+            }
+          ],
+          "ItemGroupDef": [
+            {
+              "OID": "IG.DM",
+              "Name": "Demographics",
+              "Repeating": "No",
+              "Type": "Form",
+              "Domain": "DM",
+              "Description": {
+                "TranslatedText": [
+                  {
+                    "lang": "en",
+                    "Type": "text/plain",
+                    "_content": "Demographics"
+                  }
+                ]
+              },
+              "ItemRef": [
+                {
+                  "ItemOID": "IT.DM.BRTHDAT",
+                  "Mandatory": "Yes",
+                  "OrderNumber": 1
+                },
+                {
+                  "ItemOID": "IT.DM.AGE",
+                  "Mandatory": "No",
+                  "OrderNumber": 2,
+                  "MethodOID": "MT.AGE",
+                  "UnitsItemOID": "IT.DM.AGEU"
+                },
+                {
+                  "ItemOID": "IT.DM.AGEU",
+                  "Mandatory": "No",
+                  "OrderNumber": 3
+                },
+                {
+                  "ItemOID": "IT.DM.SEX",
+                  "Mandatory": "Yes",
+                  "OrderNumber": 4
+                },
+                {
+                  "ItemOID": "IT.DM.CHILDPOT",
+                  "Mandatory": "Yes",
+                  "OrderNumber": 5,
+                  "CollectionExceptionConditionOID": "CD.SEX.MALE"
+                }
+              ],
+              "Alias": [
+                {
+                  "Context": "CDASH",
+                  "Name": "DM"
+                }
+              ]
+            }
+          ],
+          "ItemDef": [
+            {
+              "OID": "IT.DM.BRTHDAT",
+              "Name": "BRTHDAT",
+              "DataType": "date",
+              "Description": {
+                "TranslatedText": [
+                  {
+                    "lang": "en",
+                    "Type": "text/plain",
+                    "_content": "Date of birth"
+                  }
+                ]
+              },
+              "Question": {
+                "TranslatedText": [
+                  {
+                    "lang": "en",
+                    "Type": "text/plain",
+                    "_content": "What is the subject's date of birth?"
+                  }
+                ]
+              },
+              "Prompt": {
+                "TranslatedText": [
+                  {
+                    "lang": "en",
+                    "Type": "text/plain",
+                    "_content": "Birth Date"
+                  }
+                ]
+              },
+              "Alias": [
+                {
+                  "Context": "SDTM",
+                  "Name": "BRTHDTC"
+                }
+              ]
+            },
+            {
+              "OID": "IT.DM.AGE",
+              "Name": "AGE",
+              "DataType": "integer",
+              "Length": 3,
+              "Description": {
+                "TranslatedText": [
+                  {
+                    "lang": "en",
+                    "Type": "text/plain",
+                    "_content": "Age at informed consent, derived"
+                  }
+                ]
+              },
+              "RangeCheck": [
+                {
+                  "Comparator": "GE",
+                  "SoftHard": "Soft",
+                  "CheckValue": [
+                    {
+                      "_content": "18"
+                    }
+                  ],
+                  "ErrorMessage": {
+                    "TranslatedText": [
+                      {
+                        "lang": "en",
+                        "Type": "text/plain",
+                        "_content": "Subjects must be 18 or older."
+                      }
+                    ]
+                  }
+                }
+              ],
+              "Alias": [
+                {
+                  "Context": "SDTM",
+                  "Name": "AGE"
+                }
+              ]
+            },
+            {
+              "OID": "IT.DM.AGEU",
+              "Name": "AGEU",
+              "DataType": "text",
+              "Length": 5,
+              "Description": {
+                "TranslatedText": [
+                  {
+                    "lang": "en",
+                    "Type": "text/plain",
+                    "_content": "Age unit"
+                  }
+                ]
+              },
+              "CodeListRef": {
+                "CodeListOID": "CL.AGEU"
+              }
+            },
+            {
+              "OID": "IT.DM.SEX",
+              "Name": "SEX",
+              "DataType": "text",
+              "Length": 1,
+              "Description": {
+                "TranslatedText": [
+                  {
+                    "lang": "en",
+                    "Type": "text/plain",
+                    "_content": "Sex"
+                  }
+                ]
+              },
+              "Question": {
+                "TranslatedText": [
+                  {
+                    "lang": "en",
+                    "Type": "text/plain",
+                    "_content": "What is the sex of the subject?"
+                  }
+                ]
+              },
+              "CodeListRef": {
+                "CodeListOID": "CL.SEX"
+              },
+              "Alias": [
+                {
+                  "Context": "SDTM",
+                  "Name": "SEX"
+                }
+              ]
+            },
+            {
+              "OID": "IT.DM.CHILDPOT",
+              "Name": "CHILDPOT",
+              "DataType": "text",
+              "Length": 1,
+              "Question": {
+                "TranslatedText": [
+                  {
+                    "lang": "en",
+                    "Type": "text/plain",
+                    "_content": "Is the subject of childbearing potential?"
+                  }
+                ]
+              },
+              "CodeListRef": {
+                "CodeListOID": "CL.NY"
+              }
+            }
+          ],
+          "CodeList": [
+            {
+              "OID": "CL.SEX",
+              "Name": "Sex",
+              "DataType": "text",
+              "CodeListItem": [
+                {
+                  "CodedValue": "F",
+                  "OrderNumber": 1,
+                  "Decode": {
+                    "TranslatedText": [
+                      {
+                        "lang": "en",
+                        "Type": "text/plain",
+                        "_content": "Female"
+                      }
+                    ]
+                  },
+                  "Coding": [
+                    {
+                      "Code": "C16576",
+                      "System": "https://www.cdisc.org/standards/terminology",
+                      "SystemName": "CDISC/NCI CT"
+                    }
+                  ]
+                },
+                {
+                  "CodedValue": "M",
+                  "OrderNumber": 2,
+                  "Decode": {
+                    "TranslatedText": [
+                      {
+                        "lang": "en",
+                        "Type": "text/plain",
+                        "_content": "Male"
+                      }
+                    ]
+                  },
+                  "Coding": [
+                    {
+                      "Code": "C20197",
+                      "System": "https://www.cdisc.org/standards/terminology",
+                      "SystemName": "CDISC/NCI CT"
+                    }
+                  ]
+                }
+              ],
+              "Coding": [
+                {
+                  "Code": "C66731",
+                  "System": "https://www.cdisc.org/standards/terminology",
+                  "SystemName": "CDISC/NCI CT"
+                }
+              ]
+            },
+            {
+              "OID": "CL.NY",
+              "Name": "No Yes Response",
+              "DataType": "text",
+              "CodeListItem": [
+                {
+                  "CodedValue": "N",
+                  "OrderNumber": 1,
+                  "Decode": {
+                    "TranslatedText": [
+                      {
+                        "lang": "en",
+                        "Type": "text/plain",
+                        "_content": "No"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "CodedValue": "Y",
+                  "OrderNumber": 2,
+                  "Decode": {
+                    "TranslatedText": [
+                      {
+                        "lang": "en",
+                        "Type": "text/plain",
+                        "_content": "Yes"
+                      }
+                    ]
+                  }
+                }
+              ],
+              "Coding": [
+                {
+                  "Code": "C66742",
+                  "System": "https://www.cdisc.org/standards/terminology",
+                  "SystemName": "CDISC/NCI CT"
+                }
+              ]
+            },
+            {
+              "OID": "CL.AGEU",
+              "Name": "Age Unit",
+              "DataType": "text",
+              "CodeListItem": [
+                {
+                  "CodedValue": "YEARS"
+                }
+              ]
+            },
+            {
+              "OID": "CL.NULLFLAVOR",
+              "Name": "Null flavor subset",
+              "DataType": "text",
+              "CodeListItem": [
+                {
+                  "CodedValue": "ASKU",
+                  "Decode": {
+                    "TranslatedText": [
+                      {
+                        "lang": "en",
+                        "Type": "text/plain",
+                        "_content": "Asked but unknown"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "CodedValue": "NA",
+                  "Decode": {
+                    "TranslatedText": [
+                      {
+                        "lang": "en",
+                        "Type": "text/plain",
+                        "_content": "Not applicable"
+                      }
+                    ]
+                  }
+                }
+              ],
+              "Coding": [
+                {
+                  "Code": "NullFlavor",
+                  "System": "http://terminology.hl7.org/CodeSystem/v3-NullFlavor",
+                  "SystemName": "HL7 v3 NullFlavor"
+                }
+              ]
+            }
+          ],
+          "ConditionDef": [
+            {
+              "OID": "CD.SEX.MALE",
+              "Name": "Subject is male",
+              "Description": {
+                "TranslatedText": [
+                  {
+                    "lang": "en",
+                    "Type": "text/plain",
+                    "_content": "Skip childbearing potential when SEX is M."
+                  }
+                ]
+              },
+              "MethodSignature": {
+                "Parameter": [
+                  {
+                    "Name": "SEX",
+                    "DataType": "text"
+                  }
+                ],
+                "ReturnValue": [
+                  {
+                    "Name": "IS_MALE",
+                    "DataType": "boolean"
+                  }
+                ]
+              },
+              "FormalExpression": [
+                {
+                  "Context": "Python 3",
+                  "Code": {
+                    "_content": "IS_MALE = SEX == \"M\""
+                  }
+                }
+              ]
+            }
+          ],
+          "MethodDef": [
+            {
+              "OID": "MT.AGE",
+              "Name": "Derive AGE",
+              "Type": "Computation",
+              "Description": {
+                "TranslatedText": [
+                  {
+                    "lang": "en",
+                    "Type": "text/plain",
+                    "_content": "Age in completed years at the screening visit."
+                  }
+                ]
+              },
+              "MethodSignature": {
+                "Parameter": [
+                  {
+                    "Name": "BRTHDAT",
+                    "DataType": "date",
+                    "OrderNumber": 1
+                  },
+                  {
+                    "Name": "VISITDAT",
+                    "DataType": "date",
+                    "OrderNumber": 2
+                  }
+                ],
+                "ReturnValue": [
+                  {
+                    "Name": "AGE",
+                    "DataType": "integer"
+                  }
+                ]
+              },
+              "FormalExpression": [
+                {
+                  "Context": "Python 3",
+                  "Code": {
+                    "_content": "AGE = VISITDAT.year - BRTHDAT.year - ((VISITDAT.month, VISITDAT.day) < (BRTHDAT.month, BRTHDAT.day))"
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

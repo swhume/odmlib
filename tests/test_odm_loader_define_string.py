@@ -3,6 +3,7 @@ import odmlib.define_loader as OL
 import odmlib.loader as LD
 import odmlib.ns_registry as NS
 import os
+import tempfile
 
 
 class TestDefineLoaderString(TestCase):
@@ -17,6 +18,10 @@ class TestDefineLoaderString(TestCase):
         with open(self.odm_file, "r", encoding="utf-8") as f:
             self.odm_string = f.read()
         self.loader = LD.ODMLoader(OL.XMLDefineLoader())
+        # Round-trip output goes to a throw-away directory, never into tracked tests/data/.
+        tmp_dir = tempfile.TemporaryDirectory()
+        self.addCleanup(tmp_dir.cleanup)
+        self.tmp_dir = tmp_dir.name
 
     def test_open_odm_document(self):
         root = self.loader.load_odm_string(self.odm_string)
@@ -50,13 +55,13 @@ class TestDefineLoaderString(TestCase):
         root = self.loader.load_odm_string(self.odm_string)
         odm = self.loader.create_odmlib(root)
         odm_json = odm.to_json()
-        odm_json_file = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'data', 'sdtm_define2_test.json')
+        odm_json_file = os.path.join(self.tmp_dir, 'sdtm_define2_test.json')
         with open(odm_json_file, "w") as odm_in:
             odm_in.write(odm_json)
         json_loader = LD.ODMLoader(OL.JSONDefineLoader())
         odm_dict = json_loader.open_odm_document(odm_json_file)
         rt_odm = json_loader.create_odmlib(odm_dict, "ODM")
-        def_xml_file = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'data', 'sdtm_def_test_roundtrip.xml')
+        def_xml_file = os.path.join(self.tmp_dir, 'sdtm_def_test_roundtrip.xml')
         rt_odm.write_xml(def_xml_file)
         root2 = self.loader.open_odm_document(def_xml_file)
         odm2 = self.loader.create_odmlib(root2)

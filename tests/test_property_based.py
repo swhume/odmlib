@@ -11,54 +11,45 @@ Requires hypothesis>=6.0 (installed via ``pip install odmlib[test]`` or
 import json
 import pytest
 
-try:
-    from hypothesis import given, strategies as st, assume, settings, HealthCheck
-    HYPOTHESIS_AVAILABLE = True
-except ImportError:
-    HYPOTHESIS_AVAILABLE = False
+# The class bodies below evaluate @given(...) and st.* at import time, so the
+# module must be skipped before they run. A try/except with a skipif marker is
+# not enough: without hypothesis, ``given`` is undefined and the module fails
+# to import, which is a collection error rather than a skip.
+pytest.importorskip(
+    "hypothesis", reason="hypothesis not installed — install with pip install odmlib[test]")
 
-pytestmark = pytest.mark.skipif(
-    not HYPOTHESIS_AVAILABLE,
-    reason="hypothesis not installed — install with pip install odmlib[test]",
-)
+from hypothesis import given, strategies as st, assume, settings, HealthCheck  # noqa: E402
 
-import odmlib.odm_1_3_2.model as ODM
-from odmlib.exceptions import OdmlibTypeError, OdmlibValidationError
-import odmlib.ns_registry as NS
+import odmlib.odm_1_3_2.model as ODM  # noqa: E402
+from odmlib.exceptions import OdmlibTypeError, OdmlibValidationError  # noqa: E402
+import odmlib.ns_registry as NS  # noqa: E402
 
 
 # ---------------------------------------------------------------------------
-# Reusable strategies (only defined when hypothesis is available)
+# Reusable strategies
 # ---------------------------------------------------------------------------
 
-if HYPOTHESIS_AVAILABLE:
-    # Valid OID: starts with a letter, then alphanumeric / dot / underscore
-    oid_strategy = st.from_regex(r"[A-Za-z][A-Za-z0-9._]{0,63}", fullmatch=True)
+# Valid OID: starts with a letter, then alphanumeric / dot / underscore
+oid_strategy = st.from_regex(r"[A-Za-z][A-Za-z0-9._]{0,63}", fullmatch=True)
 
-    # Valid Name: non-empty printable text, stripped of leading/trailing whitespace
-    name_strategy = st.text(
-        alphabet=st.characters(whitelist_categories=("L", "N", "Pd", "Pc")),
-        min_size=1,
-        max_size=64,
-    ).filter(lambda s: s.strip() == s and len(s) > 0)
+# Valid Name: non-empty printable text, stripped of leading/trailing whitespace
+name_strategy = st.text(
+    alphabet=st.characters(whitelist_categories=("L", "N", "Pd", "Pc")),
+    min_size=1,
+    max_size=64,
+).filter(lambda s: s.strip() == s and len(s) > 0)
 
-    # Valid DataType values for ItemDef in ODM 1.3.2
-    data_type_strategy = st.sampled_from([
-        "text", "integer", "float", "date", "time", "datetime",
-        "string", "boolean",
-    ])
-else:
-    # Placeholder sentinels so that class-body annotations resolve at import time
-    oid_strategy = None
-    name_strategy = None
-    data_type_strategy = None
+# Valid DataType values for ItemDef in ODM 1.3.2
+data_type_strategy = st.sampled_from([
+    "text", "integer", "float", "date", "time", "datetime",
+    "string", "boolean",
+])
 
 
 # ---------------------------------------------------------------------------
 # OID round-trips
 # ---------------------------------------------------------------------------
 
-@pytest.mark.skipif(not HYPOTHESIS_AVAILABLE, reason="hypothesis not installed")
 class TestOIDRoundTrips:
     """OID values must survive serialisation round-trips without mutation."""
 
@@ -115,7 +106,6 @@ class TestOIDRoundTrips:
 # Integer descriptor
 # ---------------------------------------------------------------------------
 
-@pytest.mark.skipif(not HYPOTHESIS_AVAILABLE, reason="hypothesis not installed")
 class TestIntegerDescriptor:
     """The Integer descriptor should accept ints and int-convertible strings."""
 
@@ -161,7 +151,6 @@ class TestIntegerDescriptor:
 # ValueSetString descriptor
 # ---------------------------------------------------------------------------
 
-@pytest.mark.skipif(not HYPOTHESIS_AVAILABLE, reason="hypothesis not installed")
 class TestValueSetStringDescriptor:
     """ValueSetString rejects values not in the declared valueset."""
 
@@ -212,7 +201,6 @@ class TestValueSetStringDescriptor:
 # String descriptor
 # ---------------------------------------------------------------------------
 
-@pytest.mark.skipif(not HYPOTHESIS_AVAILABLE, reason="hypothesis not installed")
 class TestStringDescriptor:
     """String descriptors accept any str and reject non-str values."""
 
@@ -235,7 +223,6 @@ class TestStringDescriptor:
 # Structural invariants
 # ---------------------------------------------------------------------------
 
-@pytest.mark.skipif(not HYPOTHESIS_AVAILABLE, reason="hypothesis not installed")
 class TestStructuralInvariants:
     """Structural properties that must hold for any valid odmlib object."""
 

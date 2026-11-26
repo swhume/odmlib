@@ -1,0 +1,205 @@
+{
+  "MetaDataVersion": {
+    "OID": "MV.001",
+    "Name": "MetaDataVersion 1",
+    "Protocol": {
+      "StudyTimings": {
+        "StudyTiming": [
+          {
+            "OID": "Timings",
+            "Name": "Study timings",
+            "AbsoluteTimingConstraint": [
+              {
+                "OID": "TIM.STUDYSTART",
+                "Name": "Study start absolute timing constraint",
+                "StudyEventOID": "SE.STUDYSTART",
+                "TimepointTarget": "2021-01-01",
+                "TimepointPostWindow": "P6M",
+                "Description": {
+                  "TranslatedText": [
+                    {
+                      "lang": "en",
+                      "Type": "text/plain",
+                      "_content": "The study must start between January 2021 and June\n                            30 2021"
+                    },
+                    {
+                      "lang": "nl",
+                      "Type": "text/plain",
+                      "_content": "The studie moet tussen 1 januari 2021 en 30 juni\n                            2021 aangevangen worden worden"
+                    }
+                  ]
+                }
+              }
+            ],
+            "RelativeTimingConstraint": [
+              {
+                "OID": "TIM.STUDYEND",
+                "Name": "Study end relative timing constraint",
+                "PredecessorOID": "SE.STUDYSTART",
+                "SuccessorOID": "SE.STUDYEND",
+                "TimepointRelativeTarget": "P1Y",
+                "TimepointPostWindow": "P1M",
+                "Description": {
+                  "TranslatedText": [
+                    {
+                      "lang": "en",
+                      "Type": "text/plain",
+                      "_content": "The study must be completed within one year after\n                            study start, with a pardon period of one month"
+                    },
+                    {
+                      "lang": "nl",
+                      "Type": "text/plain",
+                      "_content": "De studie moet binnen een jaar na studie aanvang,\n                            met een uitloopperiode van 1 maand"
+                    }
+                  ]
+                }
+              }
+            ],
+            "TransitionTimingConstraint": [
+              {
+                "OID": "TIM.TR.START-VISIT1",
+                "Name": "Timing between study start and visit 1",
+                "TransitionOID": "TR.START-VISIT1",
+                "TimepointTarget": "P2M",
+                "TimepointPreWindow": "P7D",
+                "TimepointPostWindow": "P7D",
+                "Description": {
+                  "TranslatedText": [
+                    {
+                      "lang": "en",
+                      "Type": "text/plain",
+                      "_content": "Visit 1 must be within two months after study\n                            start for the subject, with a window of +/- 7 days"
+                    },
+                    {
+                      "lang": "nl",
+                      "Type": "text/plain",
+                      "_content": "Visite 1 moet binnen twee maanden na aanvang van\n                            de studie zijn, met een venster van +/- 7 dagen"
+                    }
+                  ]
+                }
+              },
+              {
+                "OID": "TIM.TR.VISIT1-VISIT2",
+                "Name": "Timing between visit 1 and visit 2",
+                "TransitionOID": "TR.VISIT1-VISIT2",
+                "TimepointTarget": "P3M",
+                "TimepointPreWindow": "P14D",
+                "TimepointPostWindow": "P14D",
+                "Description": {
+                  "TranslatedText": [
+                    {
+                      "lang": "en",
+                      "Type": "text/plain",
+                      "_content": "Visit 2 must be within three months after visit 1\n                            for the subject, with a window of +/- 14 days"
+                    },
+                    {
+                      "lang": "nl",
+                      "Type": "text/plain",
+                      "_content": "Visite 2 moet binnen drie maanden na aanvang van\n                            visite 1 zijn, met een venster van +/- 14 dagen"
+                    }
+                  ]
+                }
+              },
+              {
+                "OID": "TIM.TR.VISIT2-END",
+                "Name": "Timing between visit 2 and study end",
+                "TransitionOID": "TR.VISIT2-END",
+                "TimepointTarget": "P1M",
+                "TimepointPreWindow": "P7D",
+                "TimepointPostWindow": "P7D",
+                "Description": {
+                  "TranslatedText": [
+                    {
+                      "lang": "en",
+                      "Type": "text/plain",
+                      "_content": "Study end must be within one month after visit 2\n                            for the subject, with a window of +/- 7 days"
+                    },
+                    {
+                      "lang": "nl",
+                      "Type": "text/plain",
+                      "_content": "Einde van de studie moet binnen een maand na\n                            visite 2 zijn, met een venster van +/- 7 dagen"
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "WorkflowDef": [
+      {
+        "OID": "WF.SIMPLE",
+        "Name": "Simple linear workflow",
+        "Description": {
+          "TranslatedText": [
+            {
+              "lang": "en",
+              "Type": "text/plain",
+              "_content": "Simple linear workflow\n                example"
+            },
+            {
+              "lang": "nl",
+              "Type": "text/plain",
+              "_content": "Eenvoudige rechtlijnige\n                workflow"
+            }
+          ]
+        },
+        "WorkflowStart": {
+          "StartOID": "SE.STUDYSTART"
+        },
+        "Transition": [
+          {
+            "OID": "TR.START-VISIT1",
+            "Name": "Transition from study start to visit 1",
+            "SourceOID": "SE.STUDYSTART",
+            "TargetOID": "SE.1"
+          },
+          {
+            "OID": "TR.VISIT1-VISIT2",
+            "Name": "Transition from visit 1 to visit 2",
+            "SourceOID": "SE.1",
+            "TargetOID": "SE.2"
+          },
+          {
+            "OID": "TR.VISIT2-END",
+            "Name": "Transition from visit 2 to study end",
+            "SourceOID": "SE.2",
+            "TargetOID": "SE.STUDYEND"
+          }
+        ],
+        "WorkflowEnd": [
+          {
+            "EndOID": "SE.STUDYEND"
+          }
+        ]
+      }
+    ],
+    "StudyEventDef": [
+      {
+        "OID": "SE.STUDYSTART",
+        "Name": "Start of Study",
+        "Repeating": "No",
+        "Type": "Scheduled"
+      },
+      {
+        "OID": "SE.1",
+        "Name": "Visit 1",
+        "Repeating": "No",
+        "Type": "Scheduled"
+      },
+      {
+        "OID": "SE.2",
+        "Name": "Visit 2",
+        "Repeating": "No",
+        "Type": "Scheduled"
+      },
+      {
+        "OID": "SE.STUDYEND",
+        "Name": "End of Study",
+        "Repeating": "No",
+        "Type": "Scheduled"
+      }
+    ]
+  }
+}

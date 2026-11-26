@@ -1,0 +1,225 @@
+
+    <!-- ODMv2 prototype implementation of Vojtech Huser's "Low back pain" questionnaire.
+    See: https://docs.google.com/forms/d/e/1FAIpQLSf1IWu_C6uggKY7gkF4AJKyqxJaTdXAB4PysmYBBSKsGclYGQ/viewform 
+    and https://www.painconsortium.nih.gov/sites/default/files/cLBP_RTF_MinimalDataset.pdf
+
+    Author: Jozef Aerts
+    Latest update: 2022-10-11  -->
+    
+    <!-- IMPORTANT REMARK: There are different methods possible of describing/defining this questionnaire in ODMv2.
+        We will try to provide several of them.
+    -->
+    
+<ODM xmlns="http://www.cdisc.org/ns/odm/v2.0" xmlns:xlink="http://www.w3.org/1999/xlink"
+    xmlns:xs="http://www.w3.org/2001/XMLSchema" CreationDateTime="2022-10-10T18:05:00"
+    FileOID="NIH_CLBP" FileType="Snapshot" Granularity="Metadata" ODMVersion="2.0"
+    SourceSystem="XML4Pharma CDISC ODM Study Designer" SourceSystemVersion="2015-R1">
+    <Study OID="xxx" StudyName="NIH Chronic Low Back Pain example" ProtocolName="NIH Chronic Low Back Pain example">
+
+        <MetaDataVersion OID="yyy" Name="Metadata version 1"
+            xmlns="http://www.cdisc.org/ns/odm/v2.0">
+            <!-- Visit definition -->
+            <StudyEventDef OID="SE.CLBP" Name="Chronic Low Back Pain Visit" Repeating="Yes"
+                Type="Scheduled">
+                <ItemGroupRef ItemGroupOID="FO.CLBP" Mandatory="Yes"/>
+            </StudyEventDef>
+            <!-- Form definition -->
+            <ItemGroupDef OID="FO.CLBP" Name="Chronic Low Back Pain Form" Repeating="No" Type="Form">
+                <ItemGroupRef ItemGroupOID="IG.QUESTIONNAIRE_REPEAT" Mandatory="Yes"/>
+            </ItemGroupDef>
+
+            <!-- "Classic" method as would have been implemented in ODM versions 1.3.x -->
+            <ItemGroupDef OID="IG.QUESTIONNAIRE_CLASSIC"
+                Name="Questionnaire about low back pain in the last 7 days" Repeating="No"
+                Type="Section">
+                <!-- In the classic method, the "Description" is used/abused to have a "title" on the group of questions -->
+                <!-- This classic method does NOT solve the PRESENTATION as a matrix -->
+                <!-- Remark that OrderNumber is about order of presentation, not about any ranking of e.g. importance -->
+                <ItemRef ItemOID="IT.INTERFERE_DAY_TO_DAY" Mandatory="Yes" OrderNumber="1"/>
+                <ItemRef ItemOID="IT.INTERFERE_WORK_AROUND_HOME" Mandatory="Yes" OrderNumber="2"/>
+                <ItemRef ItemOID="IT.INTERFERE_SOCIAL_ACTIVITIES" Mandatory="Yes" OrderNumber="3"/>
+                <ItemRef ItemOID="IT.INTERFERE_HOUSEHOLD_CHORES" Mandatory="Yes" OrderNumber="4"/>
+            </ItemGroupDef>
+
+            <!-- New possible method, using a "Repeat" -->
+            <!-- Each "row" consists of 2 items, one for "what" is measured, one for the result -->
+            <ItemGroupDef OID="IG.QUESTIONNAIRE_REPEAT"
+                Name="Questionnaire about low back pain in the last 7 days" Repeating="Static"
+                Type="Section">
+                <!-- Item over which the question is repeated -->
+                <ItemRef ItemOID="IT.QUESTION_REPEAT" Mandatory="Yes" Repeat="Yes"/>
+                <!-- we set that the question must always be answered.
+			     if this is not the case, we would need a ValueList 
+			     defining mandatory or not depending on the value of IT.QUESTION_REPEAT -->
+                <ItemRef ItemOID="IT.QUESTION_ANSWER" Mandatory="Yes"/>
+            </ItemGroupDef>
+
+            <!-- Single ItemDef for "repeat". The RepeatItem="Yes" indicates that this question is repeating, 
+                with (sub)quesions governed by a CodeList -->
+            <ItemDef OID="IT.QUESTION_REPEAT" Name="Repeat question" DataType="integer" Length="1">
+                <Question>
+                    <TranslatedText xml:lang="en" Type="text/plain">In the past 7
+                        days</TranslatedText>
+                </Question>
+                <!-- The "question" for each "detail item" (row in the matrix) itself is governed by a CodeList -->
+                <CodeListRef CodeListOID="CL.REPEAT"/>
+            </ItemDef>
+            <ItemDef OID="IT.QUESTION_ANSWER" Name="Repeat question answer" DataType="integer"
+                Length="1">
+                <!-- We do not set a "Question" here, as it is governed by the "repeat" -->
+                <!-- The answer is a number on the "scale" -->
+                <CodeListRef CodeListOID="CL.LOW_BACK_INTERFERENCE_SCALE"/>
+            </ItemDef>
+
+            <!-- "Classic" case -->
+            <!-- Individual ItemDef, reusable -->
+            <ItemDef OID="IT.INTERFERE_DAY_TO_DAY"
+                Name="Day to day interference of chronic low back pain" DataType="integer"
+                Length="1">
+                <Question>
+                    <TranslatedText xml:lang="en" Type="text/plain">How much did pain interfere with
+                        your day-to-day activities?</TranslatedText>
+                </Question>
+                <CodeListRef CodeListOID="CL.LOW_BACK_INTERFERENCE_SCALE"/>
+            </ItemDef>
+            <ItemDef OID="IT.INTERFERE_WORK_AROUND_HOME"
+                Name="Day to day interference with work around home" DataType="integer" Length="1">
+                <Question>
+                    <TranslatedText xml:lang="en" Type="text/plain">How much did pain interfere with
+                        work around the home?</TranslatedText>
+                </Question>
+                <CodeListRef CodeListOID="CL.LOW_BACK_INTERFERENCE_SCALE"/>
+            </ItemDef>
+            <ItemDef OID="IT.INTERFERE_SOCIAL_ACTIVITIES"
+                Name="Day to day interference with participation in social activities"
+                DataType="integer" Length="1">
+                <Question>
+                    <TranslatedText xml:lang="en" Type="text/plain">How much did pain interfere with
+                        your ability to participate in social activities?</TranslatedText>
+                </Question>
+                <CodeListRef CodeListOID="CL.LOW_BACK_INTERFERENCE_SCALE"/>
+            </ItemDef>
+            <ItemDef OID="IT.INTERFERE_HOUSEHOLD_CHORES"
+                Name="Day to day interference with household chores" DataType="integer" Length="1">
+                <Question>
+                    <TranslatedText xml:lang="en" Type="text/plain">How much did pain interfere with
+                        your ability to participate in social activities?</TranslatedText>
+                </Question>
+                <CodeListRef CodeListOID="CL.LOW_BACK_INTERFERENCE_SCALE"/>
+            </ItemDef>
+            <!-- CodeLists -->
+            <!-- CodeList for the answer to the question(s) -->
+            <CodeList OID="CL.LOW_BACK_INTERFERENCE_SCALE"
+                Name="Low back pain interference scale Codelist" DataType="text">
+                <CodeListItem CodedValue="1" Rank="1">
+                    <!--  would we need "OrderNumber" here? -->
+                    <Decode>
+                        <TranslatedText xml:lang="en" Type="text/plain">Not at all</TranslatedText>
+                    </Decode>
+                </CodeListItem>
+                <CodeListItem CodedValue="2" Rank="2">
+                    <!--  would we need "OrderNumber" here? -->
+                    <Decode>
+                        <TranslatedText xml:lang="en" Type="text/plain">A little
+                            bit</TranslatedText>
+                    </Decode>
+                </CodeListItem>
+                <CodeListItem CodedValue="3" Rank="3">
+                    <!--  would we need "OrderNumber" here? -->
+                    <Decode>
+                        <TranslatedText xml:lang="en" Type="text/plain">Somewhat</TranslatedText>
+                    </Decode>
+                </CodeListItem>
+                <CodeListItem CodedValue="4" Rank="4">
+                    <!--  would we need "OrderNumber" here? -->
+                    <Decode>
+                        <TranslatedText xml:lang="en" Type="text/plain">Quite a bit</TranslatedText>
+                    </Decode>
+                </CodeListItem>
+                <CodeListItem CodedValue="5" Rank="5">
+                    <!--  would we need "OrderNumber" here? -->
+                    <Decode>
+                        <TranslatedText xml:lang="en" Type="text/plain">Very much</TranslatedText>
+                    </Decode>
+                </CodeListItem>
+            </CodeList>
+            <!-- CodeList for the "repeating" question text -->
+            <CodeList OID="CL.REPEAT" Name="Question repeat items" DataType="text">
+                <CodeListItem CodedValue="1" OrderNumber="1">
+                    <Decode>
+                        <TranslatedText xml:lang="en" Type="text/plain">How much did pain interfere
+                            with your day-to-day activities?</TranslatedText>
+                    </Decode>
+                </CodeListItem>
+                <CodeListItem CodedValue="2" OrderNumber="2">
+                    <Decode>
+                        <TranslatedText xml:lang="en" Type="text/plain">How much did pain interfere
+                            with work around the home?</TranslatedText>
+                    </Decode>
+                </CodeListItem>
+                <CodeListItem CodedValue="3" OrderNumber="3">
+                    <Decode>
+                        <TranslatedText xml:lang="en" Type="text/plain">How much did pain interfere
+                            with your ability to participate in social activities?</TranslatedText>
+                    </Decode>
+                </CodeListItem>
+                <CodeListItem CodedValue="4" OrderNumber="4">
+                    <Decode>
+                        <TranslatedText xml:lang="en" Type="text/plain">How much did pain interfere
+                            with your household chores?</TranslatedText>
+                    </Decode>
+                </CodeListItem>
+            </CodeList>
+        </MetaDataVersion>
+    </Study>
+    <!-- Example captured clinical data for the "repeat" (non-classic) case -->
+    <ClinicalData StudyOID="xxx" MetaDataVersionOID="yyy">
+        <SubjectData SubjectKey="001">
+            <StudyEventData StudyEventOID="SE.CLBP" StudyEventRepeatKey="1">
+                <ItemGroupData ItemGroupOID="FO.CLBP">
+                    <!-- The values for the 4 questions -->
+                    <ItemGroupData ItemGroupOID="IG.QUESTIONNAIRE_REPEAT" ItemGroupRepeatKey="1">
+                        <ItemData ItemOID="IT.QUESTION_REPEAT">
+                            <Value>1</Value>
+                        </ItemData>
+                        <!-- interfere with day-to-day activities -->
+                        <ItemData ItemOID="IT.QUESTION_ANSWER">
+                            <Value>2</Value>
+                        </ItemData>
+                        <!-- a little bit -->
+                    </ItemGroupData>
+                    <ItemGroupData ItemGroupOID="IG.QUESTIONNAIRE_REPEAT" ItemGroupRepeatKey="2">
+                        <ItemData ItemOID="IT.QUESTION_REPEAT">
+                            <Value>2</Value>
+                        </ItemData>
+                        <!-- interfere with work around the home -->
+                        <ItemData ItemOID="IT.QUESTION_ANSWER">
+                            <Value>3</Value>
+                        </ItemData>
+                        <!-- somewhat -->
+                    </ItemGroupData>
+                    <ItemGroupData ItemGroupOID="IG.QUESTIONNAIRE_REPEAT" ItemGroupRepeatKey="3">
+                        <ItemData ItemOID="IT.QUESTION_REPEAT">
+                            <Value>3</Value>
+                        </ItemData>
+                        <!-- interfere with ability to participate in social activities -->
+                        <ItemData ItemOID="IT.QUESTION_ANSWER">
+                            <Value>1</Value>
+                        </ItemData>
+                        <!-- not at all -->
+                    </ItemGroupData>
+                    <ItemGroupData ItemGroupOID="IG.QUESTIONNAIRE_REPEAT" ItemGroupRepeatKey="4">
+                        <ItemData ItemOID="IT.QUESTION_REPEAT">
+                            <Value>4</Value>
+                        </ItemData>
+                        <!-- interfere with household chores -->
+                        <ItemData ItemOID="IT.QUESTION_ANSWER">
+                            <Value>4</Value>
+                        </ItemData>
+                        <!-- quite a bit -->
+                    </ItemGroupData>
+                </ItemGroupData>
+            </StudyEventData>
+        </SubjectData>
+    </ClinicalData>
+</ODM>

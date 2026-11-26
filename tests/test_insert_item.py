@@ -3,12 +3,16 @@ import odmlib.odm_1_3_2.model as ODM
 import odmlib.odm_loader as OL
 import odmlib.loader as LD
 import os
+import tempfile
 
 
 class TestInsertItem(unittest.TestCase):
     def setUp(self):
         self.odm_file = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'data', 'cdash-odm-test.xml')
-        self.odm_file_out = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'data', 'cdash-odm-test-insert.xml')
+        # Generated output goes to a throw-away directory, never into tracked tests/data/.
+        tmp_dir = tempfile.TemporaryDirectory()
+        self.addCleanup(tmp_dir.cleanup)
+        self.odm_file_out = os.path.join(tmp_dir.name, 'cdash-odm-test-insert.xml')
         self.loader = LD.ODMLoader(OL.XMLODMLoader())
 
     def test_insert_item_with_none_element(self):

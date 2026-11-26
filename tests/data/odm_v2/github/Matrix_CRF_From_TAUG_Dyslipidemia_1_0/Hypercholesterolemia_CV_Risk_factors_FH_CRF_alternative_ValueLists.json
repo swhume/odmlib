@@ -1,0 +1,1164 @@
+{
+  "CreationDateTime": "2020-07-15T18:05:00+01:00",
+  "FileOID": "CRF_MATRIX_EXAMPLE",
+  "FileType": "Snapshot",
+  "Granularity": "Metadata",
+  "ODMVersion": "2.0",
+  "SourceSystem": "XML4Pharma CDISC ODM Study Designer",
+  "SourceSystemVersion": "2018-R1",
+  "Study": [
+    {
+      "OID": "MATRIX EXAMPLE",
+      "StudyName": "Example of Matrix-CRF",
+      "ProtocolName": "Example of Matrix-CRF protocol",
+      "Description": {
+        "TranslatedText": [
+          {
+            "lang": "en",
+            "Type": "text/plain",
+            "_content": "Example of Matrix-CRF"
+          }
+        ]
+      },
+      "MetaDataVersion": [
+        {
+          "Name": "Version 1",
+          "OID": "MV.1.0",
+          "Description": {
+            "TranslatedText": [
+              {
+                "lang": "en",
+                "Type": "text/plain",
+                "_content": "Version 1"
+              }
+            ]
+          },
+          "ValueListDef": [
+            {
+              "OID": "VL.MH_TERM_FAMILY_RELATIONSHIP",
+              "ItemRef": [
+                {
+                  "ItemOID": "IT.PRESENCE_1",
+                  "Mandatory": "Yes",
+                  "WhereClauseRef": [
+                    {
+                      "WhereClauseOID": "WC.FATHER_MOTHER"
+                    }
+                  ]
+                },
+                {
+                  "ItemOID": "IT.PRESENCE_2",
+                  "Mandatory": "Yes",
+                  "WhereClauseRef": [
+                    {
+                      "WhereClauseOID": "WC.NOT_FATHER_MOTHER"
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "WhereClauseDef": [
+            {
+              "OID": "WC.FATHER_MOTHER",
+              "RangeCheck": [
+                {
+                  "Comparator": "IN",
+                  "SoftHard": "Hard",
+                  "ItemOID": "IT.FAM_RELATION",
+                  "CheckValue": [
+                    {
+                      "_content": "1"
+                    },
+                    {
+                      "_content": "2"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "OID": "WC.NOT_FATHER_MOTHER",
+              "RangeCheck": [
+                {
+                  "Comparator": "NOTIN",
+                  "SoftHard": "Hard",
+                  "ItemOID": "IT.FAM_RELATION",
+                  "CheckValue": [
+                    {
+                      "_content": "1"
+                    },
+                    {
+                      "_content": "2"
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "StudyEventDef": [
+            {
+              "Name": "Medical History - Family History",
+              "OID": "SE.MH",
+              "Repeating": "No",
+              "Type": "Scheduled",
+              "ItemGroupRef": [
+                {
+                  "ItemGroupOID": "FO.HYPERCHOLESTEROLEMIA_FAMILY_RISK_FACTORS",
+                  "Mandatory": "Yes"
+                }
+              ]
+            }
+          ],
+          "ItemGroupDef": [
+            {
+              "Name": "Hypercholesterolemia Family Risk Factors",
+              "Type": "Form",
+              "OID": "FO.HYPERCHOLESTEROLEMIA_FAMILY_RISK_FACTORS",
+              "Repeating": "No",
+              "ItemGroupRef": [
+                {
+                  "ItemGroupOID": "IG.MH_TERM_FAMILY_RELATIONSHIP",
+                  "Mandatory": "Yes"
+                }
+              ]
+            },
+            {
+              "OID": "IG.MH_TERM_FAMILY_RELATIONSHIP",
+              "Name": "MH term / Family Relationship matrix",
+              "Type": "Section",
+              "Repeating": "Static",
+              "ItemRef": [
+                {
+                  "ItemOID": "IT.MHTERM",
+                  "Mandatory": "Yes",
+                  "Repeat": "Yes"
+                },
+                {
+                  "ItemOID": "IT.FAM_RELATION",
+                  "Mandatory": "Yes"
+                },
+                {
+                  "ItemOID": "IT.MH_TERM_FAMILY_RELATIONSHIP",
+                  "Mandatory": "Yes",
+                  "Repeat": "Yes"
+                }
+              ]
+            }
+          ],
+          "ItemDef": [
+            {
+              "OID": "IT.MH_TERM_FAMILY_RELATIONSHIP",
+              "Name": "Medical History for Family Relationship",
+              "DataType": "integer",
+              "ValueListRef": {
+                "ValueListOID": "VL.MH_TERM_FAMILY_RELATIONSHIP"
+              }
+            },
+            {
+              "DataType": "integer",
+              "Length": 1,
+              "Name": "Medical History Term",
+              "OID": "IT.MHTERM",
+              "CodeListRef": {
+                "CodeListOID": "CL.MHTERM"
+              },
+              "Alias": [
+                {
+                  "Context": "SDTM",
+                  "Name": "MHTERM"
+                }
+              ]
+            },
+            {
+              "DataType": "integer",
+              "Length": 1,
+              "Name": "Family Relationship",
+              "OID": "IT.FAM_RELATION",
+              "CodeListRef": {
+                "CodeListOID": "CL.FAMILY_RELATIONSHIP"
+              },
+              "Alias": [
+                {
+                  "Context": "SDTM",
+                  "Name": "SREL"
+                }
+              ]
+            },
+            {
+              "DataType": "integer",
+              "Length": 1,
+              "Name": "Presence of Family History 1",
+              "OID": "IT.PRESENCE_1",
+              "CodeListRef": {
+                "CodeListOID": "CL.Y_N_UNK"
+              }
+            },
+            {
+              "DataType": "integer",
+              "Length": 1,
+              "Name": "Presence of Family History 2",
+              "OID": "IT.PRESENCE_2",
+              "CodeListRef": {
+                "CodeListOID": "CL.Y_N_UNK_NA"
+              }
+            }
+          ],
+          "CodeList": [
+            {
+              "DataType": "text",
+              "Name": "Yes-No-Unknown codelist",
+              "OID": "CL.Y_N_UNK",
+              "CodeListItem": [
+                {
+                  "CodedValue": "Y",
+                  "Decode": {
+                    "TranslatedText": [
+                      {
+                        "lang": "en",
+                        "Type": "text/plain",
+                        "_content": "Yes"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "CodedValue": "N",
+                  "Decode": {
+                    "TranslatedText": [
+                      {
+                        "lang": "en",
+                        "Type": "text/plain",
+                        "_content": "No"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "CodedValue": "UNK",
+                  "Decode": {
+                    "TranslatedText": [
+                      {
+                        "lang": "en",
+                        "Type": "text/plain",
+                        "_content": "Unknown"
+                      }
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "DataType": "text",
+              "Name": "Yes-No-Unknown-NotApplicable codelist",
+              "OID": "CL.Y_N_UNK_NA",
+              "CodeListItem": [
+                {
+                  "CodedValue": "Y",
+                  "Decode": {
+                    "TranslatedText": [
+                      {
+                        "lang": "en",
+                        "Type": "text/plain",
+                        "_content": "Yes"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "CodedValue": "N",
+                  "Decode": {
+                    "TranslatedText": [
+                      {
+                        "lang": "en",
+                        "Type": "text/plain",
+                        "_content": "No"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "CodedValue": "UNK",
+                  "Decode": {
+                    "TranslatedText": [
+                      {
+                        "lang": "en",
+                        "Type": "text/plain",
+                        "_content": "Unknown"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "CodedValue": "NA",
+                  "Decode": {
+                    "TranslatedText": [
+                      {
+                        "lang": "en",
+                        "Type": "text/plain",
+                        "_content": "Not Applicable"
+                      }
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "DataType": "integer",
+              "Name": "Medical History term (pre-defined)",
+              "OID": "CL.MHTERM",
+              "CodeListItem": [
+                {
+                  "CodedValue": "1",
+                  "Decode": {
+                    "TranslatedText": [
+                      {
+                        "lang": "en",
+                        "Type": "text/plain",
+                        "_content": "History of Hypercholesterolemia"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "CodedValue": "2",
+                  "Decode": {
+                    "TranslatedText": [
+                      {
+                        "lang": "en",
+                        "Type": "text/plain",
+                        "_content": "History of Premature (*) Cardiovascular Disease (CVF, Fatal or non-Fatal).\n* Premature: For males: if diagnosed or event occurred at <55 years of age.\nFor females: if diagnosed or event occurred at <65 year of age."
+                      }
+                    ]
+                  }
+                },
+                {
+                  "CodedValue": "3",
+                  "Decode": {
+                    "TranslatedText": [
+                      {
+                        "lang": "en",
+                        "Type": "text/plain",
+                        "_content": "History of Premature (*) Mycardial Infarction (MI, Fatal or non-Fatal)\n* Premature: For males: if diagnosed or event occurred at <55 years of age.\nFor females: if diagnosed or event occurred at <65 year of age."
+                      }
+                    ]
+                  }
+                },
+                {
+                  "CodedValue": "4",
+                  "Decode": {
+                    "TranslatedText": [
+                      {
+                        "lang": "en",
+                        "Type": "text/plain",
+                        "_content": "History of premature (*) Stroke (Non-Fatal or Fatal) or Transient Ischemic Attack (TIA).\n* Premature: For males: if diagnosed or event occurred at <55 years of age.\nFor females: if diagnosed or event occurred at <65 year of age."
+                      }
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "DataType": "integer",
+              "Name": "Family Relationship",
+              "OID": "CL.FAMILY_RELATIONSHIP",
+              "CodeListItem": [
+                {
+                  "CodedValue": "1",
+                  "Decode": {
+                    "TranslatedText": [
+                      {
+                        "lang": "en",
+                        "Type": "text/plain",
+                        "_content": "Father (Biological)"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "CodedValue": "2",
+                  "Decode": {
+                    "TranslatedText": [
+                      {
+                        "lang": "en",
+                        "Type": "text/plain",
+                        "_content": "Mother (Biological)"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "CodedValue": "3",
+                  "Decode": {
+                    "TranslatedText": [
+                      {
+                        "lang": "en",
+                        "Type": "text/plain",
+                        "_content": "Brothers (Biologiocal)"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "CodedValue": "4",
+                  "Decode": {
+                    "TranslatedText": [
+                      {
+                        "lang": "en",
+                        "Type": "text/plain",
+                        "_content": "Sisters (Biological)"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "CodedValue": "5",
+                  "Decode": {
+                    "TranslatedText": [
+                      {
+                        "lang": "en",
+                        "Type": "text/plain",
+                        "_content": "Sons (Biological)"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "CodedValue": "6",
+                  "Decode": {
+                    "TranslatedText": [
+                      {
+                        "lang": "en",
+                        "Type": "text/plain",
+                        "_content": "Daughters (Biological)"
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "ClinicalData": [
+    {
+      "StudyOID": "MATRIX EXAMPLE",
+      "MetaDataVersionOID": "MV.1.0",
+      "SubjectData": [
+        {
+          "SubjectKey": "001",
+          "StudyEventData": [
+            {
+              "StudyEventOID": "SE.MH",
+              "ItemGroupData": [
+                {
+                  "ItemGroupOID": "FO.HYPERCHOLESTEROLEMIA_FAMILY_RISK_FACTORS",
+                  "ItemGroupData": [
+                    {
+                      "ItemGroupOID": "IG.MH_TERM_FAMILY_RELATIONSHIP",
+                      "ItemData": [
+                        {
+                          "ItemOID": "IT.MHTERM",
+                          "Value": [
+                            {
+                              "_content": "1"
+                            }
+                          ]
+                        },
+                        {
+                          "ItemOID": "IT.FAMILY_RELATIONSHIP",
+                          "Value": [
+                            {
+                              "_content": "1"
+                            }
+                          ]
+                        },
+                        {
+                          "ItemOID": "IT.MH_TERM_FAMILY_RELATIONSHIP",
+                          "Value": [
+                            {
+                              "_content": "1"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "ItemGroupOID": "IG.MH_TERM_FAMILY_RELATIONSHIP",
+                      "ItemData": [
+                        {
+                          "ItemOID": "IT.MHTERM",
+                          "Value": [
+                            {
+                              "_content": "1"
+                            }
+                          ]
+                        },
+                        {
+                          "ItemOID": "IT.FAMILY_RELATIONSHIP",
+                          "Value": [
+                            {
+                              "_content": "2"
+                            }
+                          ]
+                        },
+                        {
+                          "ItemOID": "IT.MH_TERM_FAMILY_RELATIONSHIP",
+                          "Value": [
+                            {
+                              "_content": "2"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "ItemGroupOID": "IG.MH_TERM_FAMILY_RELATIONSHIP",
+                      "ItemData": [
+                        {
+                          "ItemOID": "IT.MHTERM",
+                          "Value": [
+                            {
+                              "_content": "1"
+                            }
+                          ]
+                        },
+                        {
+                          "ItemOID": "IT.FAMILY_RELATIONSHIP",
+                          "Value": [
+                            {
+                              "_content": "3"
+                            }
+                          ]
+                        },
+                        {
+                          "ItemOID": "IT.MH_TERM_FAMILY_RELATIONSHIP",
+                          "Value": [
+                            {
+                              "_content": "4"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "ItemGroupOID": "IG.MH_TERM_FAMILY_RELATIONSHIP",
+                      "ItemData": [
+                        {
+                          "ItemOID": "IT.MHTERM",
+                          "Value": [
+                            {
+                              "_content": "1"
+                            }
+                          ]
+                        },
+                        {
+                          "ItemOID": "IT.FAMILY_RELATIONSHIP",
+                          "Value": [
+                            {
+                              "_content": "4"
+                            }
+                          ]
+                        },
+                        {
+                          "ItemOID": "IT.MH_TERM_FAMILY_RELATIONSHIP",
+                          "Value": [
+                            {
+                              "_content": "3"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "ItemGroupOID": "IG.MH_TERM_FAMILY_RELATIONSHIP",
+                      "ItemData": [
+                        {
+                          "ItemOID": "IT.MHTERM",
+                          "Value": [
+                            {
+                              "_content": "1"
+                            }
+                          ]
+                        },
+                        {
+                          "ItemOID": "IT.FAMILY_RELATIONSHIP",
+                          "Value": [
+                            {
+                              "_content": "5"
+                            }
+                          ]
+                        },
+                        {
+                          "ItemOID": "IT.MH_TERM_FAMILY_RELATIONSHIP",
+                          "Value": [
+                            {
+                              "_content": "2"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "ItemGroupOID": "IG.MH_TERM_FAMILY_RELATIONSHIP",
+                      "ItemData": [
+                        {
+                          "ItemOID": "IT.MHTERM",
+                          "Value": [
+                            {
+                              "_content": "1"
+                            }
+                          ]
+                        },
+                        {
+                          "ItemOID": "IT.FAMILY_RELATIONSHIP",
+                          "Value": [
+                            {
+                              "_content": "6"
+                            }
+                          ]
+                        },
+                        {
+                          "ItemOID": "IT.MH_TERM_FAMILY_RELATIONSHIP",
+                          "Value": [
+                            {
+                              "_content": "2"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "ItemGroupOID": "IG.MH_TERM_FAMILY_RELATIONSHIP",
+                      "ItemData": [
+                        {
+                          "ItemOID": "IT.MHTERM",
+                          "Value": [
+                            {
+                              "_content": "2"
+                            }
+                          ]
+                        },
+                        {
+                          "ItemOID": "IT.FAMILY_RELATIONSHIP",
+                          "Value": [
+                            {
+                              "_content": "1"
+                            }
+                          ]
+                        },
+                        {
+                          "ItemOID": "IT.MH_TERM_FAMILY_RELATIONSHIP",
+                          "Value": [
+                            {
+                              "_content": "1"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "ItemGroupOID": "IG.MH_TERM_FAMILY_RELATIONSHIP",
+                      "ItemData": [
+                        {
+                          "ItemOID": "IT.MHTERM",
+                          "Value": [
+                            {
+                              "_content": "2"
+                            }
+                          ]
+                        },
+                        {
+                          "ItemOID": "IT.FAMILY_RELATIONSHIP",
+                          "Value": [
+                            {
+                              "_content": "2"
+                            }
+                          ]
+                        },
+                        {
+                          "ItemOID": "IT.MH_TERM_FAMILY_RELATIONSHIP",
+                          "Value": [
+                            {
+                              "_content": "3"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "ItemGroupOID": "IG.MH_TERM_FAMILY_RELATIONSHIP",
+                      "ItemData": [
+                        {
+                          "ItemOID": "IT.MHTERM",
+                          "Value": [
+                            {
+                              "_content": "2"
+                            }
+                          ]
+                        },
+                        {
+                          "ItemOID": "IT.FAMILY_RELATIONSHIP",
+                          "Value": [
+                            {
+                              "_content": "3"
+                            }
+                          ]
+                        },
+                        {
+                          "ItemOID": "IT.MH_TERM_FAMILY_RELATIONSHIP",
+                          "Value": [
+                            {
+                              "_content": "4"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "ItemGroupOID": "IG.MH_TERM_FAMILY_RELATIONSHIP",
+                      "ItemData": [
+                        {
+                          "ItemOID": "IT.MHTERM",
+                          "Value": [
+                            {
+                              "_content": "2"
+                            }
+                          ]
+                        },
+                        {
+                          "ItemOID": "IT.FAMILY_RELATIONSHIP",
+                          "Value": [
+                            {
+                              "_content": "4"
+                            }
+                          ]
+                        },
+                        {
+                          "ItemOID": "IT.MH_TERM_FAMILY_RELATIONSHIP",
+                          "Value": [
+                            {
+                              "_content": "2"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "ItemGroupOID": "IG.MH_TERM_FAMILY_RELATIONSHIP",
+                      "ItemData": [
+                        {
+                          "ItemOID": "IT.MHTERM",
+                          "Value": [
+                            {
+                              "_content": "2"
+                            }
+                          ]
+                        },
+                        {
+                          "ItemOID": "IT.FAMILY_RELATIONSHIP",
+                          "Value": [
+                            {
+                              "_content": "5"
+                            }
+                          ]
+                        },
+                        {
+                          "ItemOID": "IT.MH_TERM_FAMILY_RELATIONSHIP",
+                          "Value": [
+                            {
+                              "_content": "3"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "ItemGroupOID": "IG.MH_TERM_FAMILY_RELATIONSHIP",
+                      "ItemData": [
+                        {
+                          "ItemOID": "IT.MHTERM",
+                          "Value": [
+                            {
+                              "_content": "2"
+                            }
+                          ]
+                        },
+                        {
+                          "ItemOID": "IT.FAMILY_RELATIONSHIP",
+                          "Value": [
+                            {
+                              "_content": "6"
+                            }
+                          ]
+                        },
+                        {
+                          "ItemOID": "IT.MH_TERM_FAMILY_RELATIONSHIP",
+                          "Value": [
+                            {
+                              "_content": "6"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "ItemGroupOID": "IG.MH_TERM_FAMILY_RELATIONSHIP",
+                      "ItemData": [
+                        {
+                          "ItemOID": "IT.MHTERM",
+                          "Value": [
+                            {
+                              "_content": "3"
+                            }
+                          ]
+                        },
+                        {
+                          "ItemOID": "IT.FAMILY_RELATIONSHIP",
+                          "Value": [
+                            {
+                              "_content": "1"
+                            }
+                          ]
+                        },
+                        {
+                          "ItemOID": "IT.MH_TERM_FAMILY_RELATIONSHIP",
+                          "Value": [
+                            {
+                              "_content": "2"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "ItemGroupOID": "IG.MH_TERM_FAMILY_RELATIONSHIP",
+                      "ItemData": [
+                        {
+                          "ItemOID": "IT.MHTERM",
+                          "Value": [
+                            {
+                              "_content": "3"
+                            }
+                          ]
+                        },
+                        {
+                          "ItemOID": "IT.FAMILY_RELATIONSHIP",
+                          "Value": [
+                            {
+                              "_content": "2"
+                            }
+                          ]
+                        },
+                        {
+                          "ItemOID": "IT.MH_TERM_FAMILY_RELATIONSHIP",
+                          "Value": [
+                            {
+                              "_content": "2"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "ItemGroupOID": "IG.MH_TERM_FAMILY_RELATIONSHIP",
+                      "ItemData": [
+                        {
+                          "ItemOID": "IT.MHTERM",
+                          "Value": [
+                            {
+                              "_content": "3"
+                            }
+                          ]
+                        },
+                        {
+                          "ItemOID": "IT.FAMILY_RELATIONSHIP",
+                          "Value": [
+                            {
+                              "_content": "3"
+                            }
+                          ]
+                        },
+                        {
+                          "ItemOID": "IT.MH_TERM_FAMILY_RELATIONSHIP",
+                          "Value": [
+                            {
+                              "_content": "4"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "ItemGroupOID": "IG.MH_TERM_FAMILY_RELATIONSHIP",
+                      "ItemData": [
+                        {
+                          "ItemOID": "IT.MHTERM",
+                          "Value": [
+                            {
+                              "_content": "3"
+                            }
+                          ]
+                        },
+                        {
+                          "ItemOID": "IT.FAMILY_RELATIONSHIP",
+                          "Value": [
+                            {
+                              "_content": "4"
+                            }
+                          ]
+                        },
+                        {
+                          "ItemOID": "IT.MH_TERM_FAMILY_RELATIONSHIP",
+                          "Value": [
+                            {
+                              "_content": "3"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "ItemGroupOID": "IG.MH_TERM_FAMILY_RELATIONSHIP",
+                      "ItemData": [
+                        {
+                          "ItemOID": "IT.MHTERM",
+                          "Value": [
+                            {
+                              "_content": "3"
+                            }
+                          ]
+                        },
+                        {
+                          "ItemOID": "IT.FAMILY_RELATIONSHIP",
+                          "Value": [
+                            {
+                              "_content": "5"
+                            }
+                          ]
+                        },
+                        {
+                          "ItemOID": "IT.MH_TERM_FAMILY_RELATIONSHIP",
+                          "Value": [
+                            {
+                              "_content": "2"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "ItemGroupOID": "IG.MH_TERM_FAMILY_RELATIONSHIP",
+                      "ItemData": [
+                        {
+                          "ItemOID": "IT.MHTERM",
+                          "Value": [
+                            {
+                              "_content": "3"
+                            }
+                          ]
+                        },
+                        {
+                          "ItemOID": "IT.FAMILY_RELATIONSHIP",
+                          "Value": [
+                            {
+                              "_content": "6"
+                            }
+                          ]
+                        },
+                        {
+                          "ItemOID": "IT.MH_TERM_FAMILY_RELATIONSHIP",
+                          "Value": [
+                            {
+                              "_content": "2"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "ItemGroupOID": "IG.MH_TERM_FAMILY_RELATIONSHIP",
+                      "ItemData": [
+                        {
+                          "ItemOID": "IT.MHTERM",
+                          "Value": [
+                            {
+                              "_content": "4"
+                            }
+                          ]
+                        },
+                        {
+                          "ItemOID": "IT.FAMILY_RELATIONSHIP",
+                          "Value": [
+                            {
+                              "_content": "1"
+                            }
+                          ]
+                        },
+                        {
+                          "ItemOID": "IT.MH_TERM_FAMILY_RELATIONSHIP",
+                          "Value": [
+                            {
+                              "_content": "3"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "ItemGroupOID": "IG.MH_TERM_FAMILY_RELATIONSHIP",
+                      "ItemData": [
+                        {
+                          "ItemOID": "IT.MHTERM",
+                          "Value": [
+                            {
+                              "_content": "4"
+                            }
+                          ]
+                        },
+                        {
+                          "ItemOID": "IT.FAMILY_RELATIONSHIP",
+                          "Value": [
+                            {
+                              "_content": "2"
+                            }
+                          ]
+                        },
+                        {
+                          "ItemOID": "IT.MH_TERM_FAMILY_RELATIONSHIP",
+                          "Value": [
+                            {
+                              "_content": "2"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "ItemGroupOID": "IG.MH_TERM_FAMILY_RELATIONSHIP",
+                      "ItemData": [
+                        {
+                          "ItemOID": "IT.MHTERM",
+                          "Value": [
+                            {
+                              "_content": "4"
+                            }
+                          ]
+                        },
+                        {
+                          "ItemOID": "IT.FAMILY_RELATIONSHIP",
+                          "Value": [
+                            {
+                              "_content": "3"
+                            }
+                          ]
+                        },
+                        {
+                          "ItemOID": "IT.MH_TERM_FAMILY_RELATIONSHIP",
+                          "Value": [
+                            {
+                              "_content": "4"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "ItemGroupOID": "IG.MH_TERM_FAMILY_RELATIONSHIP",
+                      "ItemData": [
+                        {
+                          "ItemOID": "IT.MHTERM",
+                          "Value": [
+                            {
+                              "_content": "4"
+                            }
+                          ]
+                        },
+                        {
+                          "ItemOID": "IT.FAMILY_RELATIONSHIP",
+                          "Value": [
+                            {
+                              "_content": "4"
+                            }
+                          ]
+                        },
+                        {
+                          "ItemOID": "IT.MH_TERM_FAMILY_RELATIONSHIP",
+                          "Value": [
+                            {
+                              "_content": "2"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "ItemGroupOID": "IG.MH_TERM_FAMILY_RELATIONSHIP",
+                      "ItemData": [
+                        {
+                          "ItemOID": "IT.MHTERM",
+                          "Value": [
+                            {
+                              "_content": "4"
+                            }
+                          ]
+                        },
+                        {
+                          "ItemOID": "IT.FAMILY_RELATIONSHIP",
+                          "Value": [
+                            {
+                              "_content": "5"
+                            }
+                          ]
+                        },
+                        {
+                          "ItemOID": "IT.MH_TERM_FAMILY_RELATIONSHIP",
+                          "Value": [
+                            {
+                              "_content": "2"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "ItemGroupOID": "IG.MH_TERM_FAMILY_RELATIONSHIP",
+                      "ItemData": [
+                        {
+                          "ItemOID": "IT.MHTERM",
+                          "Value": [
+                            {
+                              "_content": "4"
+                            }
+                          ]
+                        },
+                        {
+                          "ItemOID": "IT.FAMILY_RELATIONSHIP",
+                          "Value": [
+                            {
+                              "_content": "6"
+                            }
+                          ]
+                        },
+                        {
+                          "ItemOID": "IT.MH_TERM_FAMILY_RELATIONSHIP",
+                          "Value": [
+                            {
+                              "_content": "1"
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

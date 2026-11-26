@@ -1,0 +1,1921 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Author: Jozef Aerts -->
+<ODM xmlns="http://www.cdisc.org/ns/odm/v2.0" FileOID="SDY_1" FileType="Snapshot" CreationDateTime="2021-03-11T17:33:17">
+    <!-- Source: https://suicidepreventionlifeline.org/wp-content/uploads/2016/09/Suicide-Risk-Assessment-C-SSRS-Lifeline-Version-2014.pdf (NOT AVAILABLE ANYMORE) -->
+    <!-- Also see: https://zerosuicide.edc.org/resources/resource-database/columbia-suicide-severity-rating-scale-c-ssrs -->
+    <!-- TODO: score calculation -->
+    <Study OID="STUDY.CSSRS" StudyName="Columbia Suicid Severity Rating Scale Example" ProtocolName="Protocol: Columbia Suicid Severity Rating Scale Example">
+        <MetaDataVersion OID="MV.CSSRS.001" Name="MetaDataVersion 1">
+            <Protocol>
+                <StudyEventGroupRef StudyEventGroupOID="SEG.CSSRS" Mandatory="Yes"/>
+            </Protocol>
+            <!-- Workflow part: limited to the section "Suicidal Ideation",
+                as the other parts do not have a workflow that is non-linear -->
+            <!-- TODO 2021-03-11: adapt for new, improved mechanism for repeats: transitions must go to ItemGroups -->
+            <WorkflowDef OID="WF.CSSRS_SUICIDAL_IDEATION"
+                Name="Workflow Columbia Suicid Severity Rating Scale questionnaire, part Suicidal Ideation">
+                <Description>
+                    <TranslatedText xml:lang="en" Type="text/plain">Workflow Columbia Suicid Severity Rating Scale
+                        questionnaire, section "Suicidal Ideation"</TranslatedText>
+                </Description>
+                <WorkflowStart StartOID="IT.1.Wish_to_be_Dead"/>
+                <!-- Workflow starts with question "Whish to be dead" in section "SUICIDAL IDEATION" -->
+                <!-- Section "SUICIDAL IDEATION" -->
+                <!-- Transitions from first question 'Whish to be dead', including "description" -->
+                <Transition OID="TR.1-BRANCH"
+                    Name="Transition from 'Whish to be dead question' to  branching for 'Non-Specific Active Suicidal Thoughts' question and 'If yes, describe' question"
+                    SourceOID="IT.1.Wish_to_be_Dead" TargetOID="BR.1"/>
+                <Branching OID="BR.1"
+                    Name="Branching on conditional 'Non-Specific Active Suicidal Thoughts' question"
+                    Type="Exclusive">
+                    <TargetTransition TargetTransitionOID="TR.1-BRANCH-DESC"
+                        ConditionOID="COND.Wish_to_be_dead_yes"/>
+                    <DefaultTransition
+                        TargetTransitionOID="TR.1-BRANCH-2"/>
+                </Branching>
+                <Transition OID="TR.1-BRANCH-DESC"
+                    Name="Transition to question 'Wish to be Dead - Description'" SourceOID="BR.1"
+                    TargetOID="IT.1.Wish_to_be_Dead_Description"/>
+                <Transition OID="TR.1-BRANCH-2"
+                    Name="Default transition to question 'Non-Specific Active Suicidal Thoughts'"
+                    SourceOID="BR.1" TargetOID="IT.2.Non-Specific_Active_Suicidal_Thoughts"/>
+                <Transition OID="TR.1-DESC-2"
+                    Name="Transition from 'Wish to be Dead - Description' question to 'Non-Specific Active Suicidal Thoughts' question"
+                    SourceOID="IT.1.Wish_to_be_Dead_Description"
+                    TargetOID="IT.2.Non-Specific_Active_Suicidal_Thoughts"/>
+                <!-- Transitions from second question 'Non-Specific Active Suicidal Thoughts', including 'description' -->
+                <Transition OID="TR.2-BRANCH"
+                    Name="Transition from 'Non-Specific Active Suicidal Thoughts' question to branching for 'Active Suicidal Ideation with Any Methods' question and If yes, describe' question"
+                    SourceOID="IT.2.Non-Specific_Active_Suicidal_Thoughts" TargetOID="BR.2"/>
+                <Branching OID="BR.2"
+                    Name="Branching on conditional 'Non-Specific Active Suicidal Thoughts' question"
+                    Type="Exclusive">
+                    <!--  -->
+                    <TargetTransition
+                        TargetTransitionOID="TR.2-BRANCH-DESC"
+                        ConditionOID="COND.Non-Specific_Active_Suicidal_Thoughts_Yes"/>
+                    <DefaultTransition
+                        TargetTransitionOID="TR.2-BRANCH-BRANCH"/>
+                </Branching>
+                <!-- Answer to question 2 is 'Y', then provide description -->
+                <Transition OID="TR.2-BRANCH-DESC"
+                    Name="Transition to question 'Non-Specific Active Suicidal Thoughts - Description'"
+                    SourceOID="BR.2"
+                    TargetOID="IT.2.Non-Specific_Active_Suicidal_Thoughts_Description"/>
+                <!-- After question 2, there is a branching point that can lead out of the workflow -->
+                <Transition OID="TR.2-DESC-BRANCH" Name="Non-Specific Active Suicidal Thoughts - Description' to next branching" 
+                    SourceOID="IT.2.Non-Specific_Active_Suicidal_Thoughts_Description" TargetOID="BR.2_OUT" />
+                <!-- Transitions to branching point that can lead out of the current workflow -->
+                <Transition OID="TR.2-BRANCH-BRANCH"
+                    Name="Default transition to branching point where one one can get out of the current workflow"
+                    SourceOID="BR.2" TargetOID="BR.2_OUT"/>
+                <!-- Branching after question 2, also when "description" was added for question 2 -->
+                <Branching OID="BR.2_OUT" Name="Branching after question 2, different ways to leave the workflow for 'Suicidal Ideation'" 
+                    Type="Exclusive">
+                    <TargetTransition TargetTransitionOID="TR.Go_To_Suicidal_Behavior" ConditionOID="COND.1_and_2_negative"/>
+                    <TargetTransition TargetTransitionOID="TR.Go_To_Intensity_of_Ideation" ConditionOID="COND.2_negative"></TargetTransition>
+                    <DefaultTransition TargetTransitionOID="TR.2-BRANCH-BRANCH-3"></DefaultTransition>
+                </Branching>
+                <!-- Transition out of the workflow when questions 1 and 2 are negative: go to section "Suicidal Behavior" -->
+                <Transition OID="TR.Go_To_Suicidal_Behavior" Name="Transition after questions 1 and 2, to group 'Suicidal Behavior'" 
+                    SourceOID="BR.2_OUT" TargetOID="IG.SUICIDAL_BEHAVIOR"></Transition>
+                <!-- Transition out of the workflow when question 2 was negative -->
+                <Transition OID="TR.Go_To_Intensity_of_Ideation" Name="Transition after questions 1 and 2, to group 'Intensity of Ideation'" 
+                    SourceOID="BR.2_OUT" TargetOID="IG.Intensity_of_Ideation"/>
+                <!-- Transition from branching point after "2. Non-specific Active Suicidal Thoughts" to "3. Active Suicidal Ideation with Any Methods", 
+                i.e. from question 2 to 3 -->
+                <Transition OID="TR.2-BRANCH-BRANCH-3" Name="Transition after branching point after question 2 'Non-specific Active Suicidal Thoughts' to question 3 'Active Suicidal Ideation with Any Methods'"
+                    SourceOID="BR.2_OUT" TargetOID="IT.3.Active_Suicidal_Ideation_with_Any_Methods" />
+                <!-- Transitions from third question 'Active Suicidal Ideation with Any Methods' -->
+                <Transition OID="TR.3-BRANCH-DESC"
+                    Name="Transition from 'Non-Specific Active Suicidal Thoughts' to branching for 'Active suicidation with some intent to act' and 'If yes, describe' question"
+                    SourceOID="IT.2.Non-Specific_Active_Suicidal_Thoughts" TargetOID="BR.3"/>
+                <!-- Braching for description for question 3 -->
+                <Branching OID="BR.3"
+                    Name="Branching on conditional 'Active Suicidal Ideation with Any Methods' question"
+                    Type="Exclusive">
+                    <TargetTransition
+                        TargetTransitionOID="TR.3-BRANCH-DESC"
+                        ConditionOID="COND.Active_Suicidal_Ideation_with_Any_Methods_Yes"/>
+                    <DefaultTransition
+                        TargetTransitionOID="TR.3-BRANCH-4"/>
+                </Branching>
+                <Transition OID="TR.3-BRANCH-DESC"
+                    Name="Transition to question 'Active Suicidal Ideation with Any Methods - Description'"
+                    SourceOID="BR.3"
+                    TargetOID="IT.3.Active_Suicidal_Ideation_with_Any_Methods_Description"/>
+                <!-- Default transition from question 3 to 4 -->
+                <Transition OID="TR.3-BRANCH-4"
+                    Name="Transition from 'Active suicidal ideation with any methods' to 'Active suicidal ideation with some intent'"
+                    SourceOID="BR.3"
+                    TargetOID="IT.4.Active_Suicidal_Ideation_with_Some_Intent"/>
+                <Transition OID="TR.3-DESC-4"
+                    Name="Transition from 'Active suicidal ideation with any methods - description' to 'Active suicidal ideation with some intent'"
+                    SourceOID="IT.3.Active_Suicidal_Ideation_with_Any_Methods_Description"
+                    TargetOID="IT.4.Active_Suicidal_Ideation_with_Some_Intent"/>
+                <!-- Transitions from fourth question 'Active Suicidal Ideation with Some Intent to Act' -->
+                <Transition OID="TR.4-BRANCH"
+                    Name="Transition from 'Active Suicidal Ideation with Some Intent to Act' to branching for 'Active Suicidal Ideation with Specific Plan and Intent' and 'If yes, describe' question"
+                    SourceOID="IT.4.Active_Suicidal_Ideation_with_Some_Intent" TargetOID="BR.4"/>
+                <Branching OID="BR.4"
+                    Name="Branching on conditional 'Active Suicidal Ideation with Some Intent to Act' question"
+                    Type="Exclusive">
+                    <TargetTransition
+                        TargetTransitionOID="TR.4-BRANCH-DESC"
+                        ConditionOID="Active_Suicidal_Ideation_with_Some_Intent_Yes"/>
+                    <DefaultTransition
+                        TargetTransitionOID="TR.4-BRANCH-5" />
+                </Branching>
+                <Transition OID="TR.4-BRANCH-DESC"
+                    Name="Transition to question 'Active suicidal ideation with some intent - description"
+                    SourceOID="BR.4"
+                    TargetOID="IT.4.Active_Suicidal_Ideation_with_Some_Intent_Description"/>
+                <Transition OID="TR.4-DESC-5"
+                    Name="Transition from 'Active Suicidal Ideation with Some Intent to Act - Description' to 'Active Suicidal Ideation with Specific Plan and Intent'"
+                    SourceOID="IT.4.Active_Suicidal_Ideation_with_Some_Intent_Description"
+                    TargetOID="IT.5.Active_Suicidal_Ideation_with_Specific_Plan_and_Intent"/>
+                <Transition OID="TR.4-BRANCH-5"
+                    Name="Deault transition from question 'Active Suicidal Ideation with Some Intent to Act' to question 'Active Suicidal Ideation with Specific Plan and Intent'"
+                    SourceOID="IT.BR4"
+                    TargetOID="IT.5.Active_Suicidal_Ideation_with_Specific_Plan_and_Intent"/>
+                <!-- Transitions from fifth question 'Active Suicidal Ideation with Specific Plan and Intent' -->
+                <Transition OID="TR.5-BRANCH"
+                    Name="Transition from 'Active Suicidal Ideation with specific plan' to branching for 'Itensity of Ideation section' and 'If yes, describe'"
+                    SourceOID="IT.5.Active_Suicidal_Ideation_with_Specific_Plan_and_Intent"
+                    TargetOID="BR.5"/>
+                <Branching OID="BR.5"
+                    Name="Branching on conditional 'Active suicidal ideation with some intent'"
+                    Type="Exclusive">
+                    <TargetTransition
+                        TargetTransitionOID="TR.5-BRANCH-DESC"
+                        ConditionOID="COND.Active_Suicidal_Ideation_with_Specific_Plan_and_Intent_Yes"/>
+                    <DefaultTransition TargetTransitionOID="TR.5-BRANCH-END" />
+                </Branching>
+                <Transition OID="TR.5-BRANCH-END"
+                    Name="Transition from branching to question 'Intensity of ideation'"
+                    SourceOID="BR.5" TargetOID="IG.Intensity_of_Ideation"/>
+                <Transition
+                    OID="TR.5-BRANCH-DESC"
+                    Name="Transition to question 'Active Suicidation with specific plan - description'"
+                    SourceOID="BR.5"
+                    TargetOID="IT.5.Active_Suicidal_Ideation_with_Specific_Plan_and_Intent_Description"/>
+                <Transition
+                    OID="TR.5-DESC-END"
+                    Name="Transition from 'Active suicidal ideation with specific plan - descrition' to section ''Intensity of ideation"
+                    SourceOID="IT.5.Active_Suicidal_Ideation_with_Specific_Plan_and_Intent_Description"
+                    TargetOID="IG.Intensity_of_Ideation"/>
+                <!-- Synthetic workflow end -->
+                <WorkflowEnd EndOID="IG.Intensity_of_Ideation"/>
+                <!-- Workflow ends when entering group "Intensity of Ideation -->
+            </WorkflowDef>
+
+            <!-- StudyEventGroup and StudyEvent -->
+            <StudyEventGroupDef OID="SEG.CSSRS" Name="Columbia Suicid Severity Rating Scale">
+                <StudyEventRef StudyEventOID="SE.CSSRS" Mandatory="Yes"/>
+            </StudyEventGroupDef>
+            <StudyEventDef OID="SE.CSSRS" Name="Columbia Suicid Severity Rating Scale Visit" Repeating="No" Type="Scheduled">
+                <ItemGroupRef ItemGroupOID="FO.C-SSRS_Form" Mandatory="Yes"/>
+            </StudyEventDef>
+            <!-- The whole form -->
+            <ItemGroupDef OID="FO.C-SSRS_Form" Name="Columbia-Suicide Severity Rating Scale Form" Repeating="No" Type="Form">
+                <ItemGroupRef ItemGroupOID="IG.Risk_assessment" Mandatory="Yes"/>
+                <ItemGroupRef ItemGroupOID="IG.Suicidal_Ideation" Mandatory="Yes"/>
+                <ItemGroupRef ItemGroupOID="IG.Intensity_of_Ideation" Mandatory="Yes"/>
+            </ItemGroupDef>
+
+            <!-- 2021-03-11: Risk assessment part "Check all risk and protective factors that apply" -->
+            <ItemGroupDef OID="IG.Risk_assessment" Name="Risk Assessment" Repeating="No" Type="Section">
+                <Description>
+                    <TranslatedText xml:lang="en" Type="text/plain">RISK ASSESSMENT VERSION</TranslatedText>
+                </Description>
+                <!-- List of sub-sections -->
+                <ItemGroupRef ItemGroupOID="IG.Suicidal_and_Self-Injury_Behavior" Mandatory="No"/>
+                <ItemGroupRef ItemGroupOID="IG.Suicide_Ideation" Mandatory="No"/>
+                <ItemGroupRef ItemGroupOID="IG.Activating_Events_Recent" Mandatory="No"/>
+                <ItemGroupRef ItemGroupOID="IG.Treatment_History" Mandatory="No"/>
+                <ItemGroupRef ItemGroupOID="IG.Other_Risk_Factors" Mandatory="No"/>
+                <ItemGroupRef ItemGroupOID="IG.Clinical_Status_Recent" Mandatory="No"/>
+                <ItemGroupRef ItemGroupOID="IG.Protective_factors" Mandatory="No"/>
+                <ItemGroupRef ItemGroupOID="IG.Other_Protective_Factors" Mandatory="No"/>
+            </ItemGroupDef>
+            <!-- Section Suicidal and Self-Injury Behavior -->
+            <ItemGroupDef OID="IG.Suicidal_and_Self-Injury_Behavior"
+                Name="Section Suicidal and Self-Injury Behavior" Repeating="No" Type="Section">
+                <Description>
+                    <TranslatedText xml:lang="en" Type="text/plain">Section Suicidal and Self-Injury
+                        Behavior</TranslatedText>
+                </Description>
+                <!-- This section has 5 questions that each repeat over "Past week" and "Lifetime" -->
+                <ItemGroupRef ItemGroupOID="IG.Actual_suicide_attempt_with_Lifetime" Mandatory="No"/>
+                <ItemGroupRef ItemGroupOID="IG.Interrupted_attempt_with_Lifetime" Mandatory="No"/>
+                <ItemGroupRef ItemGroupOID="IG.Aborted_attempt_with_Lifetime" Mandatory="No"/>
+                <ItemGroupRef ItemGroupOID="IG.Other_preparatory_acts" Mandatory="No"/>
+                <ItemGroupRef ItemGroupOID="IG.Self-injury_behavior" Mandatory="No"/>
+            </ItemGroupDef>
+            <!-- Suicidal and Self-Injury Behavior - repeats over "Past week" and "Lifetime". 
+            Page 1 of the Columbia-Suicide Severity Rating Scale 'Risk Assessment Version' -->
+            <ItemGroupDef OID="IG.Actual_suicide_attempt_with_Lifetime"
+                Name="Actual suicide attempt with Lifetime additional checkbox" Repeating="Static" Type="Section">
+                <ItemRef ItemOID="IT.Actual_suicide_attempt" Mandatory="No"/>
+                <!-- Item to repeat over the values in the associated codelist -->
+                <ItemRef ItemOID="IT.PAST_WEEK_LIFETIME" Mandatory="No" Repeat="Yes"/>
+            </ItemGroupDef>
+            <!-- Interrupted attempt - repeats over "Past week" and "Lifetime" -->
+            <ItemGroupDef OID="IG.Interrupted_attempt_with_Lifetime"
+                Name="Interrupted attempt with Lifetime additional checkbox" Repeating="Static" Type="Section">
+                <ItemRef ItemOID="IT.Interrupted_attempt" Mandatory="No"/>
+                <!-- Item to repeat over the values in the associated codelist -->
+                <ItemRef ItemOID="IT.PAST_WEEK_LIFETIME" Mandatory="No" Repeat="Yes"/>
+            </ItemGroupDef>
+            <!-- Interrupted attempt - repeats over "Past week" and "Lifetime" -->
+            <!--ItemGroupDef OID="IG.Aborted_attempt_with_Lifetime"
+                Name="Aborted attempt with Lifetime additional checkbox" Repeating="Static">
+                <ItemRef ItemOID="IT.Aborted_attempt" Mandatory="No"/>
+                <ItemRef ItemOID="IT.PAST_WEEK_LIFETIME" Mandatory="No" Repeat="Yes"/>
+            </ItemGroupDef-->
+            <!-- Aborted attempt - repeats over "Past week" and "Lifetime" -->
+            <ItemGroupDef OID="IG.Aborted_attempt_with_Lifetime"
+                Name="Aborted attempt with Lifetime additional checkbox" Repeating="Static" Type="Section">
+                <ItemRef ItemOID="IT.Aborted_attempt" Mandatory="No"/>
+                <!-- Item to repeat over the values in the associated codelist -->
+                <ItemRef ItemOID="IT.PAST_WEEK_LIFETIME" Mandatory="No" Repeat="Yes"/>
+            </ItemGroupDef>
+            <!-- Other preparatory acts to kill self - repeats over "Past week" and "Lifetime" -->
+            <ItemGroupDef OID="IG.Other_preparatory_acts"
+                Name="Other preparatory acts to kill self with Lifetime additional Checkbox" Repeating="Static" Type="Section">
+                <ItemRef ItemOID="IT.Other_preparatory_acts" Mandatory="No"/>
+                <!-- Item to repeat over the values in the associated codelist -->
+                <ItemRef ItemOID="IT.PAST_WEEK_LIFETIME" Mandatory="No" Repeat="Yes"/>
+            </ItemGroupDef>
+            <!-- Self-injury behavior w/o suicide intent - repeats over "Past week" and "Lifetime" -->
+            <ItemGroupDef OID="IG.Self-injury_behavior"
+                Name="Self-injury behavior with Lifetime additional Checkbox" Repeating="Static" Type="Section">
+                <ItemRef ItemOID="IT.Self-injury_behavior" Mandatory="No"/>
+                <!-- Item to repeat over the values in the associated codelist -->
+                <ItemRef ItemOID="IT.PAST_WEEK_LIFETIME" Mandatory="No" Repeat="Yes"/>
+            </ItemGroupDef>
+            <!-- Section "Suicide Ideation (Most Severe in Past Week)" -->
+            <ItemGroupDef OID="IG.Suicide_Ideation"
+                Name="Suicide Ideation" Repeating="No" Type="Section">
+                <!-- Items can either be modeled using a "YesOnly" codelist, or using "boolean" as datatype -->
+                <ItemRef ItemOID="IT.Wish_to_be_dead_assessment" Mandatory="No"/>
+                <ItemRef ItemOID="IT.Suicidal_thoughts" Mandatory="No"/>
+                <ItemRef ItemOID="IT.Suicidal_thoughts_with_method" Mandatory="No"/>
+                <ItemRef ItemOID="IT.Suicidal_intent" Mandatory="No"/>
+                <ItemRef ItemOID="IT.Suicidal_intent_with_specific_plan" Mandatory="No"/>
+            </ItemGroupDef> 
+            <!-- Section Activating Events (Recent) -->
+            <ItemGroupDef OID="IG.Activating_Events_Recent" Name="Activating Events (Recent)"
+                Repeating="No" Type="Section">
+                <Description>
+                    <TranslatedText xml:lang="en" Type="text/plain">Activating Events (Recent)</TranslatedText>
+                </Description>
+                <ItemRef ItemOID="IT.Recent_loss_or_other_significant_negative_event" Mandatory="No"/>
+                <!-- TODO: add the corresponding ConditionDef. Alternative: mini-workflow -->
+                <ItemRef ItemOID="IT.Recent_loss_or_other_significant_negative_event_Description" Mandatory="No"
+                    CollectionExceptionConditionOID="COND.Recent_loss_or_other_significant_negative_event_Description"/>
+                <ItemRef ItemOID="IT.Pending_incarceration_or_homelessness" Mandatory="No"/>
+                <ItemRef ItemOID="IT.Current_or_pending_isolation_or_feeling_alone" Mandatory="No"/>
+            </ItemGroupDef>
+            <!-- Section Treatment History -->
+            <ItemGroupDef OID="IG.Treatment_History" Name="Treatment History" Repeating="No" Type="Section">
+                <Description>
+                    <TranslatedText xml:lang="en" Type="text/plain">Treatment History</TranslatedText>
+                </Description>
+                <ItemRef ItemOID="IT.Previous_psychiatric_diagnoses_and_treatments" Mandatory="No"/>
+                <ItemRef ItemOID="IT.Hopeless_or_dissatisfied_with_treatment" Mandatory="No"/>
+                <ItemRef ItemOID="IT.Noncompliant_with_treatment" Mandatory="No"/>
+                <ItemRef ItemOID="IT.Not_receiving_treatment" Mandatory="No"/>
+            </ItemGroupDef>
+            <!-- Other Risk Factors -->
+            <ItemGroupDef OID="IG.Other_Risk_Factors" Name="Other Risk Factors" Repeating="No" Type="Section">
+                <Description>
+                    <TranslatedText xml:lang="en" Type="text/plain">Other Risk Factors</TranslatedText>
+                </Description>
+                <ItemRef ItemOID="IT.Other_Risk_Factors" Mandatory="No"/>
+                <!-- TODO: add the Condition Def for COND.Other_Risk_Factors -->
+                <ItemRef ItemOID="IT.Other_Risk_Factors_Description" Mandatory="No"
+                    CollectionExceptionConditionOID="COND.Other_Risk_Factors"/>
+            </ItemGroupDef>
+            <!-- Section Clinical Status (Recent) -->
+            <ItemGroupDef OID="IG.Clinical_Status_Recent" Name="Clinical Status (Recent)"
+                Repeating="No" Type="Section">
+                <Description>
+                    <TranslatedText xml:lang="en" Type="text/plain">Clinical Status (Recent)</TranslatedText>
+                </Description>
+                <ItemRef ItemOID="IT.Hopelessness" Mandatory="No"/>
+                <ItemRef ItemOID="IT.Helplessness" Mandatory="No"/>
+                <ItemRef ItemOID="IT.Feeling_Trapped" Mandatory="No"/>
+                <ItemRef ItemOID="IT.Major_depressive_episode" Mandatory="No"/>
+                <ItemRef ItemOID="IT.Mixed_affective_episode" Mandatory="No"/>
+                <ItemRef ItemOID="IT.Command_hallucinations_to_hurt_self" Mandatory="No"/>
+                <ItemRef ItemOID="IT.Highly_impulsive_behavior" Mandatory="No"/>
+                <ItemRef ItemOID="IT.Substance_abuse_or_dependence" Mandatory="No"/>
+                <ItemRef ItemOID="IT.Agitation_or_severe_anxiety" Mandatory="No"/>
+                <ItemRef ItemOID="IT.Perceived_burden_on_family_or_others" Mandatory="No"/>
+                <ItemRef ItemOID="IT.Chronic_physical_pain" Mandatory="No"/>
+                <ItemRef ItemOID="IT.Homicidal_ideation" Mandatory="No"/>
+                <ItemRef ItemOID="IT.Aggressive_behavior_towards_others" Mandatory="No"/>
+                <ItemRef ItemOID="IT.Method_for_suicide_available" Mandatory="No"/>
+                <ItemRef ItemOID="IT.Refuses_or_feels_unable_to_agree_to_safety_plan" Mandatory="No"/>
+                <ItemRef ItemOID="IT.Sexual_abuse_lifetime" Mandatory="No"/>
+                <ItemRef ItemOID="IT.Family_history_of_suicide" Mandatory="No"/>
+            </ItemGroupDef>
+            <!-- Section Protective factors -->
+            <ItemGroupDef OID="IG.Protective_factors" Name="Protective factors" Repeating="No" Type="Section">
+                <Description>
+                    <TranslatedText xml:lang="en" Type="text/plain">Protective Factors (Recent)</TranslatedText>
+                </Description>
+                <ItemRef ItemOID="IT.Identifies_reasons_for_living" Mandatory="No"/>
+                <ItemRef ItemOID="IT.Responsibility_to_family_or_others" Mandatory="No"/>
+                <ItemRef ItemOID="IT.Supportive_social_network_or_family" Mandatory="No"/>
+                <ItemRef ItemOID="IT.Fear_of_death" Mandatory="No"/>
+                <ItemRef ItemOID="IT.Belief_that_suicide_is_immoral" Mandatory="No"/>
+                <ItemRef ItemOID="IT.Engaged_in_work_or_school" Mandatory="No"/>
+                <ItemRef ItemOID="IT.Engaged_with_Phone_Worker" Mandatory="No"/>
+            </ItemGroupDef>
+            <!-- Other Protective Factors -->
+            <ItemGroupDef OID="IG.Other_Protective_Factors" Name="Other Protective Factors"
+                Repeating="No" Type="Section">
+                <Description>
+                    <TranslatedText xml:lang="en" Type="text/plain">Other Protective Factors</TranslatedText>
+                </Description>
+                <ItemRef ItemOID="IT.Other_Protective_Factors" Mandatory="No"/>
+                <!-- TODO: ConditionDef for CL.Other_Protective_Factors -->
+                <ItemRef ItemOID="IT.Other_Protective_Factors_Description" Mandatory="No"
+                    CollectionExceptionConditionOID="CL.Other_Protective_Factors"/>
+            </ItemGroupDef>
+
+
+            <!-- Suicidal Ideation, upper level -->
+            <!-- We have 5 rows in the table -->
+            <ItemGroupDef OID="IG.Suicidal_Ideation" Name="SUICIDAL IDEATION" Repeating="No" Type="Section">
+                <Description>
+                    <TranslatedText xml:lang="en" Type="text/plain">Ask questions 1 and 2. If both are negative,
+                        proceed to "Suicidal Behavior" section. If the answer to question 2 is
+                        "yes", ask questions 3, 4 and 5. If the answer to question 1 and/or 2 is
+                        "yes", complete "Intensity of Ideation" section below.</TranslatedText>
+                </Description>
+                <ItemGroupRef ItemGroupOID="IG.Wish_to_bed_Dead_Group_with_Description"
+                    Mandatory="Yes"/>
+                <ItemGroupRef
+                    ItemGroupOID="IG_Non-Specific_Active_Suicidal_Thoughts_with_Description"
+                    Mandatory="Yes"/>
+                <ItemGroupRef
+                    ItemGroupOID="IG.Active_Suicidal_Ideation_with_Any_Methods_with_Description"
+                    Mandatory="Yes"/>
+                <ItemGroupRef
+                    ItemGroupOID="IG.Active_Suicidal_Ideation_with_Some_Intent_to_Act_with_Description"
+                    Mandatory="Yes"/>
+                <ItemGroupRef
+                    ItemGroupOID="IG.Active_Suicidal_Ideation_with_Specific_Plan_and_Intent_with_Description"
+                    Mandatory="Yes"/>
+            </ItemGroupDef>
+
+            <!-- FIRST ATTEMPT TO make the group "Suicidal Ideation" matrix -->
+            <!-- "Description" is not repeated over "Lifetime" and "Past 1 months", so we need to separate this out -->
+            <!-- We can however not use a CodeList for repeating over the rows, as each of them has a different "question" -->
+            <!-- "Wish to be dead" question group -->
+            <!-- TODO: is the ItemGroup IG.Wish_to_be_Dead really necessary? It only has one Item. -->
+            <ItemGroupDef OID="IG.Wish_to_bed_Dead_Group_with_Description"
+                Name="'Wish to be dead group', with 'If yes: describe'" Repeating="No" Type="Section">
+                <ItemGroupRef ItemGroupOID="IG.Wish_to_be_Dead" Mandatory="No"/>
+                <!-- has 2 columns -->
+                <ItemRef ItemOID="IT.1.Wish_to_be_Dead_Description" Mandatory="No"/>
+                <!-- only 1 column -->
+            </ItemGroupDef>
+            <!-- Repeats over "Lifetime / Past 1 month", but display is in columns, not in rows as by default  -->
+            <ItemGroupDef OID="IG.Wish_to_be_Dead"
+                Name="'Wish to be dead group', repeating over 'Lifetime' and 'Past 1 month'" Repeating="Static" Type="Section">
+                <ItemRef ItemOID="IT.1.Wish_to_be_Dead" Mandatory="No"/>
+                <!-- Item to repeat over the values in the associated codelist -->
+                <ItemRef ItemOID="IT.Lifetime_Past_1_Month" Repeat="Yes" Mandatory="No"/>
+            </ItemGroupDef>
+            <!-- "Non-Specific Active Suicidal Thoughts" group -->
+            <ItemGroupDef OID="IG_Non-Specific_Active_Suicidal_Thoughts_with_Description"
+                Name="'Non-Specific Active Suicidal Thoughts' group, with 'If yes: describe'"
+                Repeating="No" Type="Section">
+                <ItemGroupRef ItemGroupOID="IG_Non-Specific_Active_Suicidal_Thoughts" Mandatory="No"/>
+                <!-- has 2 columns -->
+                <ItemRef ItemOID="IT.2.Non-Specific_Active_Suicidal_Thoughts_Description"
+                    Mandatory="No"/>
+            </ItemGroupDef>
+            <ItemGroupDef OID="IG_Non-Specific_Active_Suicidal_Thoughts"
+                Name="'Non-Specific Active Suicidal Thoughts' group, repeating over 'Lifetime' and 'Past 1 month'"
+                Repeating="Static" Type="Section">
+                <ItemRef ItemOID="IT.2.Non-Specific_Active_Suicidal_Thoughts" Mandatory="No"/>
+                <!-- Item to repeat over the values in the associated codelist -->
+                <ItemRef ItemOID="IT.Lifetime_Past_1_Month" Repeat="Yes" Mandatory="No"/>
+            </ItemGroupDef>
+            <!-- "Active Suicidal Ideation with Any Methods (Not Plan) without Intent to Act" group -->
+            <ItemGroupDef OID="IG.Active_Suicidal_Ideation_with_Any_Methods_with_Description"
+                Name="'Active Suicidal Ideation with Any Methods ...' group, with 'If yes: descripbe'"
+                Repeating="No" Type="Section">
+                <ItemGroupRef ItemGroupOID="IG.Active_Suicidal_Ideation_with_Any_Methods"
+                    Mandatory="No"/>
+                <ItemRef ItemOID="IT.3.Active_Suicidal_Ideation_with_Any_Methods_Description"
+                    Mandatory="No"/>
+            </ItemGroupDef>
+            <ItemGroupDef OID="IG.Active_Suicidal_Ideation_with_Any_Methods"
+                Name="Active Suicidal Ideation with Any Methods ...' group, repeating over 'Lifetime' and 'Past 1 month'"
+                Repeating="Static" Type="Section">
+                <ItemRef ItemOID="IT.3.Active_Suicidal_Ideation_with_Any_Methods" Mandatory="No"/>
+                <!-- Item to repeat over the values in the associated codelist -->
+                <ItemRef ItemOID="IT.Lifetime_Past_1_Month" Repeat="Yes" Mandatory="No"/>
+            </ItemGroupDef>
+            <!-- "Active Suicidal Ideation with Some Intent to Act, without Specific Plan" group -->
+            <ItemGroupDef OID="IG.Active_Suicidal_Ideation_with_Some_Intent_to_Act_with_Description"
+                Name="'Active Suicidal Ideation with Some Intent to Act, ...', with 'If yes: describe'"
+                Repeating="No" Type="Section">
+                <ItemGroupRef ItemGroupOID="IG.Active_Suicidal_Ideation_with_Some_Intent_to_Act"
+                    Mandatory="No"/>
+                <ItemRef ItemOID="IT.4.Active_Suicidal_Ideation_with_Some_Intent_Description"
+                    Mandatory="No"/>
+            </ItemGroupDef>
+            <ItemGroupDef OID="IG.Active_Suicidal_Ideation_with_Some_Intent_to_Act"
+                Name="'Active Suicidal Ideation with Some Intent to Act, ...', repeating over 'Lifetime' and 'Past 1 month'"
+                Repeating="Static" Type="Section">
+                <ItemRef ItemOID="IT.4.Active_Suicidal_Ideation_with_Some_Intent" Mandatory="Yes"/>
+                <!-- Item to repeat over the values in the associated codelist -->
+                <ItemRef ItemOID="IT.Lifetime_Past_1_Month" Repeat="Yes" Mandatory="No"/>
+            </ItemGroupDef>
+            <!-- "Active Suicidal Ideation with Specific Plan and Intent" group -->
+            <ItemGroupDef
+                OID="IG.Active_Suicidal_Ideation_with_Specific_Plan_and_Intent_with_Description"
+                Name="'Active Suicidal Ideation with Specific Plan and Intent' group, with 'If yes: describe'"
+                Repeating="No" Type="Section">
+                <ItemGroupRef
+                    ItemGroupOID="IG.Active_Suicidal_Ideation_with_Specific_Plan_and_Intent"
+                    Mandatory="No"/>
+                <ItemRef
+                    ItemOID="IT.5.Active_Suicidal_Ideation_with_Specific_Plan_and_Intent_Description"
+                    Mandatory="No"/>
+            </ItemGroupDef>
+            <ItemGroupDef OID="IG.Active_Suicidal_Ideation_with_Specific_Plan_and_Intent"
+                Name="'Active Suicidal Ideation with Specific Plan and Intent' group, repeating over 'Lifetime' and 'Past 1 month'"
+                Repeating="Static" Type="Section">
+                <ItemRef ItemOID="IT.5.Active_Suicidal_Ideation_with_Specific_Plan_and_Intent"
+                    Mandatory="No"/>
+                <!-- Item to repeat over the values in the associated codelist -->
+                <ItemRef ItemOID="IT.Lifetime_Past_1_Month" Repeat="Yes" Mandatory="No"/>
+            </ItemGroupDef>
+
+            <!-- Intensity of Ideation part -->
+            <!-- There are no repeats here, and no table, although the original publication suggests so -->
+            <ItemGroupDef OID="IG.Intensity_of_Ideation" Name="Intensity of Ideation" Repeating="No" Type="Section">
+                <!-- Remark that no specific workflow is defined here, as the questions are treaded in a linear order -->
+                <Description>
+                    <TranslatedText xml:lang="en" Type="text/plain">Intensity of Ideation</TranslatedText>
+                </Description>
+                <!-- TODO? make this a separate (nested) ItemGroup for reasons of layout as section -->
+                <ItemRef ItemOID="IT.Most_Severe_Ideation_Lifetime" Mandatory="No"/>
+                <ItemRef ItemOID="IT.Most_Severe_Ideation_Lifetime_Description" Mandatory="No"/>
+                <ItemRef ItemOID="IT.Most_Severe_Ideation_Recent" Mandatory="No"/>
+                <ItemRef ItemOID="IT.Most_Severe_Ideation_Recent_Description" Mandatory="No"/>
+                <!-- TODO? make each of the following a separate (nested) ItemGroup for reasons of layout as section -->
+                <ItemRef ItemOID="IT.Intensity_of_Ideation_Frequency" Mandatory="No"/>
+                <ItemRef ItemOID="IT.Intensity_Ideation_Duration" Mandatory="No"/>
+                <ItemRef ItemOID="IT.Controllability" Mandatory="No"/>
+                <ItemRef ItemOID="IT.Deterrents" Mandatory="No"/>
+                <ItemRef ItemOID="IT.Reasons_for_Ideation" Mandatory="No"/>
+            </ItemGroupDef>
+
+            <!-- Suicidal behavior -->
+            <ItemGroupDef OID="IG.SUICIDAL_BEHAVIOR" Name="Suicidal Behavior" Repeating="No" Type="Section">
+                <!-- 2022-04-05: starting making this a "matrix" section, with columns "Lifetime" and "Past 3 months" -->
+                <!-- For "If yes, describe", we use the simple "CollectionExceptionCondition" method here, 
+            without generating an explicit workflow. 
+            For more complicated branching however, we STRONGLY recommend to use "WorkflowDef" -->
+                <Description>
+                    <TranslatedText xml:lang="en" Type="text/plain">Suicidal Behavior</TranslatedText>
+                </Description>
+                <!-- Suicidial Behavior, containing groups "Actual Attemp", "Interrupted Attempt", "Aborted or self-interrupted Attempt", 
+                and "Preparatory Acts or Behavior" -->
+                <ItemGroupRef ItemGroupOID="IG.Suicidal_attempts" Mandatory="No"/>
+                <!-- Actual Lethality and Potential Lethality groups -->
+                <ItemGroupRef ItemGroupOID="IG.Lethality" Mandatory="No"/>
+            </ItemGroupDef>
+            <ItemGroupDef OID="IG.Suicidal_attempts" Name="Suicidal Behavior" Repeating="No" Type="Section">
+                <!-- 2022-04-05 subsections, so that we can make this a "matrix" group -->
+                <!-- We assume here that every question has a Yes/No for both "Lifetime" and "Past 3 months.
+                This is not entirely clear from the paper form -->
+                <!-- Section "Actual Attempt" -->
+                <ItemGroupRef ItemGroupOID="IG.Made_a_suicide_attempt_lifetime_3months" Mandatory="No"/>
+                <ItemGroupRef ItemGroupOID="IG.Done_anything_to_harm_yourself_lifetime_3months" Mandatory="No"/>
+                <ItemGroupRef ItemGroupOID="IG.Done_anything_dangerous_lifetime_3months" Mandatory="No"/>
+                <ItemGroupRef ItemGroupOID="IG.Number_of_attempts_lifetime_3months" Mandatory="No"/>
+                <!-- we make the following a normally repeating group, i.e. there is no limitation over the number of repeats -->
+                <ItemGroupRef ItemGroupOID="IG.Dangerous_behavior" Mandatory="No"/>
+                <!-- Subject engaged in non-suicidal self-injurious behavior.
+                This is again a repeat over "Lifetime" and "Past 3 months" -->
+                <ItemGroupRef ItemGroupOID="IG.Non-Suicidal_Self-injurous_Behavior_lifetime_3months" Mandatory="No"/>
+                <!-- Section "Interrupted Attempt" -->
+                <ItemGroupRef ItemGroupOID="IG.Interrupted_Attempt" Mandatory="No"/>
+                <!-- Section "Aborted or Self-Interrupted Attempt" -->
+                <ItemGroupRef ItemGroupOID="IG.Aborted_or_Self-Interrupted_Attempt" Mandatory="No"/>
+                <!-- Section "Preparatory Acts or Behavior -->    
+                <ItemGroupRef ItemGroupOID="IG.Preparatory_Acts_or_Behavior" Mandatory="No"/>
+            </ItemGroupDef>
+            
+            <!-- Section "Actual Attempt" -->
+            <ItemGroupDef OID="IG.Made_a_suicide_attempt_lifetime_3months" Name="Made a suicide attempt lifetime or 3 months" Repeating="Static" Type="Section">
+                <ItemRef ItemOID="IT.Made_a_suicide_attempt" Mandatory="No"/>
+                <!-- Item to repeat over the values in the associated codelist -->
+                <ItemRef ItemOID="IT.Lifetime_Past_3_Months" Mandatory="No" Repeat="Yes"/>
+            </ItemGroupDef>
+            <ItemGroupDef OID="IG.Done_anything_to_harm_yourself_lifetime_3months" Name="Done anything to harm yourself lifetime or 3 months" Repeating="Static" Type="Section">
+                <ItemRef ItemOID="IT.Done_anything_to_harm_yourself" Mandatory="No"/>
+                <!-- Item to repeat over the values in the associated codelist -->
+                <ItemRef ItemOID="IT.Lifetime_Past_3_Months" Mandatory="No" Repeat="Yes"/>
+            </ItemGroupDef>
+            <ItemGroupDef OID="IG.Done_anything_dangerous_lifetime_3months" Name="Done anything dangerous lifetime or 3 months" Repeating="Static" Type="Section">
+                <ItemRef ItemOID="IT.Done_anything_dangerous" Mandatory="No"/>
+                <!-- Item to repeat over the values in the associated codelist -->
+                <ItemRef ItemOID="IT.Lifetime_Past_3_Months" Mandatory="No" Repeat="Yes"/>
+            </ItemGroupDef>
+            <ItemGroupDef OID="IG.Number_of_attempts_lifetime_3months" Name="Number of attempts lifetime or 3 months" Repeating="Static" Type="Section">
+                <ItemRef ItemOID="IT.Number_of_attempts" Mandatory="No"/>
+                <!-- Item to repeat over the values in the associated codelist -->
+                <ItemRef ItemOID="IT.Lifetime_Past_3_Months" Mandatory="No" Repeat="Yes"/>
+            </ItemGroupDef>
+            <!-- Normal repeating ItemGroup: there is no restriction on the repeat itself -->
+            <ItemGroupDef OID="IG.Dangerous_behavior" Name="Dangerous behavior" Repeating="Simple" Type="Section">
+                <ItemRef ItemOID="IT.What_did_you_do" Mandatory="No"/>
+                <ItemRef ItemOID="IT.Way_to_end_your_life_1" Mandatory="No"/>
+                <ItemRef ItemOID="IT.Way_to_end_your_life_2" Mandatory="No"/>
+                <ItemRef ItemOID="IT.Way_to_end_your_life_3" Mandatory="No"/>
+                <ItemRef ItemOID="IT.Way_to_end_your_life_4" Mandatory="No"/>
+                <ItemRef ItemOID="IT.Way_to_end_your_life_5" Mandatory="No"/>
+                <ItemRef ItemOID="IT.Way_to_end_your_life_5_Description" Mandatory="No"
+                    CollectionExceptionConditionOID="COND.Way_to_end_your_life_5_Description"/>
+            </ItemGroupDef>
+            <!-- Subject engaged in non-suicidal self-injurious behavior.
+                This is again a repeat over "Lifetime" and "Past 3 months" -->
+            <ItemGroupDef OID="IG.Non-Suicidal_Self-injurous_Behavior_lifetime_3months" Name="Non-Suicidal Self-injurous Behavior lifetime or 3 months" Repeating="Static" Type="Section">
+                <ItemRef ItemOID="IT.Subject_engaged_in_Non-Suicidal_Self-Injurious_Behavior"
+                    Mandatory="No"/>
+                <!-- Item to repeat over the values in the associated codelist -->
+                <ItemRef ItemOID="IT.Lifetime_Past_3_Months" Mandatory="No" Repeat="Yes"/>
+            </ItemGroupDef>
+            
+            <!-- Section "Interrupted Attempt" -->
+            <ItemGroupDef OID="IG.Interrupted_Attempt" Name="Interrupted Attempt" Repeating="Static" Type="Section">
+                <ItemRef ItemOID="IT.Time_starting_something_to_end_life" Mandatory="No"/>
+                <!--ItemRef ItemOID="IT.Time_starting_something_to_end_life" Mandatory="No"/-->
+                <ItemRef ItemOID="IT.Time_starting_something_to_end_life_description" Mandatory="No"
+                    CollectionExceptionConditionOID="COND.Time_starting_something_to_end_life_description"/>
+                <ItemRef ItemOID="IT.Interrupted_attemps_number" Mandatory="No"/>
+                <!-- the 3 above items are repeated over "Lifetime" and "Past 3 months" -->
+                <ItemRef ItemOID="IT.Lifetime_Past_3_Months" Mandatory="No" Repeat="Yes"/>
+            </ItemGroupDef>
+            
+            <!-- Section "Aborted or Self-Interrupted Attempt" -->
+            <ItemGroupDef OID="IG.Aborted_or_Self-Interrupted_Attempt" Name="Aborted or Self-Interrupted Attempt" Repeating="Static" Type="Section">
+                <ItemRef ItemOID="IT.Aborted_attempt" Mandatory="No"/>
+                <ItemRef ItemOID="IT.Aborted_attempt_description" Mandatory="No"
+                    CollectionExceptionConditionOID="COND.Aborted_attempt_description"/>
+                <ItemRef ItemOID="IT.Self_interrupted_attemps_number" Mandatory="No"/>
+                <!-- the 3 above items are repeated over "Lifetime" and "Past 3 months" -->
+                <ItemRef ItemOID="IT.Lifetime_Past_3_Months" Mandatory="No" Repeat="Yes"/>
+            </ItemGroupDef>
+            
+            <!-- Section "Preparatory Acts or Behavior" -->    
+            <ItemGroupDef OID="IG.Preparatory_Acts_or_Behavior" Name="Preparatory Acts or Behavior" Repeating="Static" Type="Section">
+                <ItemRef ItemOID="IT.Steps_towards_making_suicide_attempt" Mandatory="No"/>
+                <ItemRef ItemOID="IT.Steps_towards_making_suicide_attempt_description"
+                    Mandatory="No" CollectionExceptionConditionOID="COND.Steps_towards_making_suicide_attempt_description"/>
+                <ItemRef ItemOID="IT.Steps_towards_making_suicide_attempt_total_number"
+                    Mandatory="No"/>
+                <!-- the 3 above items are repeated over "Lifetime" and "Past 3 months" -->
+                <ItemRef ItemOID="IT.Lifetime_Past_3_Months" Mandatory="No" Repeat="Yes"/>
+            </ItemGroupDef>
+            
+            <!-- Sections "Actual Lethality" and "Potential Lethality" -->
+            <ItemGroupDef OID="IG.Lethality" Name="Lethality" Repeating="No" Type="Section">
+                <!-- Actual Lethality -->
+                <ItemGroupRef ItemGroupOID="IG.Actual_Lethality" Mandatory="No"/>
+                <!-- Potential Lethality, only to be answered when Actual Lethality = 0 -->
+                <ItemGroupRef ItemGroupOID="IG.Potential_Lethality" Mandatory="No" CollectionExceptionConditionOID="COND.Potential_Lethality"/>
+                
+            </ItemGroupDef>
+            
+            <ItemGroupDef OID="IG.Actual_Lethality" Name="Actual Lethality/Medical Damage" Repeating="Static" Type="Section">
+                <ItemRef ItemOID="IT.Actual_Lethality" Mandatory="No"/>
+                <ItemRef ItemOID="IT.Actual_Lethality_Date" Mandatory="No"/>
+                <!-- The questions repeats over "Most Recent Attempt", "Most Lethal Attempt", and "Initial/First Attempt" -->
+                <ItemRef ItemOID="IT.Lethality_Type" Mandatory="No" Repeat="Yes"/>
+            </ItemGroupDef>
+            <ItemGroupDef OID="IG.Potential_Lethality" Name="Potential Lethality" Repeating="Static" Type="Section">
+                <Description><TranslatedText xml:lang="en" Type="text/plain">Potential Lethality: Only Answer if Actual Lethality=0</TranslatedText></Description>
+                <ItemRef ItemOID="IT.Potential_Lethality" Mandatory="No"/>
+                <ItemRef ItemOID="IT.Potential_Lethality_Date" Mandatory="No"/>
+                <!-- The questions repeats over "Most Recent Attempt", "Most Lethal Attempt", and "Initial/First Attempt" -->
+                <ItemRef ItemOID="IT.Lethality_Type" Mandatory="No" Repeat="Yes"/>
+            </ItemGroupDef>
+
+            <!-- Individual questions - ItemDef-s -->
+
+            <!-- Repeat over "Past week" and "Lifetime" -->
+            <ItemDef OID="IT.PAST_WEEK_LIFETIME" Name="Past week versus Lifetime" DataType="text">
+                <CodeListRef CodeListOID="CL.Past_week_Lifetime"/>
+            </ItemDef>
+
+            <!-- Repeat over "Lifetime" and "Past 1 Month" -->
+            <ItemDef OID="IT.Lifetime_Past_1_Month" Name="Lifetime versus Past 1 Month" DataType="text">
+                <CodeListRef CodeListOID="CL.Lifetime_Past_1_Month"/>
+            </ItemDef>
+
+            <!-- Repeat over "Lifetime" and "Past 3 Month" -->
+            <ItemDef OID="IT.Lifetime_Past_3_Months" Name="Lifetime versus Past 3 Months" DataType="text">
+                <CodeListRef CodeListOID="CL.Lifetime_Past_3_Months"/>
+            </ItemDef>
+
+            <!-- Risk Assessment part -->
+            <!-- Suicidal and Self-Injury Behavior -->
+            <ItemDef OID="IT.Actual_suicide_attempt" Name="Actual suicide attempt" DataType="text">
+                <Question>
+                    <TranslatedText xml:lang="en" Type="text/plain">Actual suicide attempt</TranslatedText>
+                </Question>
+                <!-- TODO: discuss with the team whether this should be a boolean -->
+                <CodeListRef CodeListOID="CL.YesOnly"/>
+            </ItemDef>
+            <ItemDef OID="IT.Interrupted_attempt" Name="Interrupted attempt" DataType="text">
+                <Question>
+                    <TranslatedText xml:lang="en" Type="text/plain">Interrupted attempt</TranslatedText>
+                </Question>
+                <!-- TODO: discuss with the team whether this should be a boolean -->
+                <CodeListRef CodeListOID="CL.YesOnly"/>
+            </ItemDef>
+            <ItemDef OID="IT.Aborted_attempt" Name="Aborted attempt" DataType="text">
+                <Question>
+                    <TranslatedText xml:lang="en" Type="text/plain">Aborted attempt</TranslatedText>
+                </Question>
+                <!-- TODO: discuss with the team whether this should be a boolean -->
+                <CodeListRef CodeListOID="CL.YesOnly"/>
+            </ItemDef>
+            <ItemDef OID="IT.Other_preparatory_acts" Name="Other preparatory acts to kill self"
+                DataType="text">
+                <Question>
+                    <TranslatedText xml:lang="en" Type="text/plain">Other preparatory acts to kill
+                        self</TranslatedText>
+                </Question>
+                <!-- TODO: discuss with the team whether this should be a boolean -->
+                <CodeListRef CodeListOID="CL.YesOnly"/>
+            </ItemDef>
+            <ItemDef OID="IT.Self-injury_behavior_without_suicide_intent"
+                Name="Self-injury behavior w/o suicide intent" DataType="text">
+                <Question>
+                    <TranslatedText xml:lang="en" Type="text/plain">Self-injury behavior w/o suicide
+                        intent</TranslatedText>
+                </Question>
+                <!-- TODO: discuss with the team whether this should be a boolean -->
+                <CodeListRef CodeListOID="CL.YesOnly"/>
+            </ItemDef>
+            <!-- Suicide Ideation (Most Severe in Past Week) -->
+            <ItemDef OID="IT.Wish_to_be_dead_assessment" Name="Wish to be dead" DataType="text">
+                <Question>
+                    <TranslatedText xml:lang="en" Type="text/plain">Wish to be dead</TranslatedText>
+                </Question>
+                <!-- TODO: discuss with the team whether this should be a boolean -->
+                <CodeListRef CodeListOID="CL.YesOnly"/>
+            </ItemDef>
+            <ItemDef OID="IT.Suicidal_thoughts" Name="Suicidal thoughts" DataType="text">
+                <Question>
+                    <TranslatedText xml:lang="en" Type="text/plain">Suicidal thoughts</TranslatedText>
+                </Question>
+                <!-- TODO: discuss with the team whether this should be a boolean -->
+                <CodeListRef CodeListOID="CL.YesOnly"/>
+            </ItemDef>
+            <ItemDef OID="IT.Suicidal_thoughts_with_method"
+                Name="Suicidal thoughts with method (but without specific
+        plan or intent to act)"
+                DataType="text">
+                <Question>
+                    <TranslatedText xml:lang="en" Type="text/plain">Suicidal thoughts with method (but without
+                        specific plan or intent to act)</TranslatedText>
+                </Question>
+                <!-- TODO: discuss with the team whether this should be a boolean -->
+                <CodeListRef CodeListOID="CL.YesOnly"/>
+            </ItemDef>
+            <ItemDef OID="IT.Suicidal_intent" Name="Suicidal intent" DataType="text">
+                <Question>
+                    <TranslatedText xml:lang="en" Type="text/plain">Suicidal intent</TranslatedText>
+                </Question>
+                <!-- TODO: discuss with the team whether this should be a boolean -->
+                <CodeListRef CodeListOID="CL.YesOnly"/>
+            </ItemDef>
+            <ItemDef OID="IT.Suicidal_intent_with_specific_plan"
+                Name="Suicidal intent with specific plan" DataType="text">
+                <Question>
+                    <TranslatedText xml:lang="en" Type="text/plain">Suicidal intent with specific
+                        plan</TranslatedText>
+                </Question>
+                <!-- TODO: discuss with the team whether this should be a boolean -->
+                <CodeListRef CodeListOID="CL.YesOnly"/>
+            </ItemDef>
+            <!--ItemDef OID="IT.Suicidal_intent_with_specific_plan"
+                Name="Suicidal intent with specific plan" DataType="text">
+                <Question>
+                    <TranslatedText xml:lang="en" Type="text/plain">Suicidal intent with specific
+                        plan</TranslatedText>
+                </Question>
+                <CodeListRef CodeListOID="CL.YesOnly"/>
+            </ItemDef-->
+            <!-- Activating Events (Recent) -->
+            <ItemDef OID="IT.Recent_loss_or_other_significant_negative_event"
+                Name="Recent loss or other significant negative event" DataType="text">
+                <Question>
+                    <TranslatedText xml:lang="en" Type="text/plain">Recent loss or other significant negative
+                        event</TranslatedText>
+                </Question>
+                <!-- TODO: discuss with the team whether this should be a boolean -->
+                <CodeListRef CodeListOID="CL.YesOnly"/>
+            </ItemDef>
+            <ItemDef OID="IT.Recent_loss_or_other_significant_negative_event_Description"
+                Name="Recent loss or other significant negative event description" DataType="text">
+                <!-- This is a free text field, to be skipped when checkbox "Recent loss or other significant negative event" is NOT checked -->
+                <Question>
+                    <TranslatedText xml:lang="en" Type="text/plain">Describe: </TranslatedText>
+                </Question>
+            </ItemDef>
+            <ItemDef OID="IT.Pending_incarceration_or_homelessness"
+                Name="Pending incarceration or homelessness" DataType="text">
+                <Question>
+                    <TranslatedText xml:lang="en" Type="text/plain">Pending incarceration or
+                        homelessness</TranslatedText>
+                </Question>
+                <!-- TODO: discuss with the team whether this should be a boolean -->
+                <CodeListRef CodeListOID="CL.YesOnly"/>
+            </ItemDef>
+            <ItemDef OID="IT.Current_or_pending_isolation_or_feeling_alone"
+                Name="Pending incarceration or homelessness" DataType="text">
+                <Question>
+                    <TranslatedText xml:lang="en" Type="text/plain">Pending incarceration or
+                        homelessness</TranslatedText>
+                </Question>
+                <!-- TODO: discuss with the team whether this should be a boolean -->
+                <CodeListRef CodeListOID="CL.YesOnly"/>
+            </ItemDef>
+            <!-- Treatment history -->
+            <ItemDef OID="IT.Previous_psychiatric_diagnoses_and_treatments"
+                Name="Previous psychiatric diagnoses and treatments" DataType="text">
+                <Question>
+                    <TranslatedText xml:lang="en" Type="text/plain">Previous psychiatric diagnoses and
+                        treatments</TranslatedText>
+                </Question>
+                <CodeListRef CodeListOID="CL.YesOnly"/>
+            </ItemDef>
+            <ItemDef OID="IT.Hopeless_or_dissatisfied_with_treatment"
+                Name="Hopeless or dissatisfied with treatment" DataType="text">
+                <Question>
+                    <TranslatedText xml:lang="en" Type="text/plain">Hopeless or dissatisfied with
+                        treatment</TranslatedText>
+                </Question>
+                <CodeListRef CodeListOID="CL.YesOnly"/>
+            </ItemDef>
+            <ItemDef OID="IT.Noncompliant_with_treatment" Name="Noncompliant with treatment"
+                DataType="text">
+                <Question>
+                    <TranslatedText xml:lang="en" Type="text/plain">Noncompliant with treatment</TranslatedText>
+                </Question>
+                <CodeListRef CodeListOID="CL.YesOnly"/>
+            </ItemDef>
+            <ItemDef OID="IT.Not_receiving_treatment" Name="Not receiving treatment" DataType="text">
+                <Question>
+                    <TranslatedText xml:lang="en" Type="text/plain">Not receiving treatment</TranslatedText>
+                </Question>
+                <CodeListRef CodeListOID="CL.YesOnly"/>
+            </ItemDef>
+            <!-- Other Risk factors -->
+            <ItemDef OID="IT.Other_Risk_Factors" Name="Other Risk Factors" DataType="text">
+                <Question>
+                    <TranslatedText xml:lang="en" Type="text/plain">Other Risk Factors</TranslatedText>
+                </Question>
+                <CodeListRef CodeListOID="CL.YesOnly"/>
+            </ItemDef>
+            <!-- TODO: this is a repeating field. Are repeated ItemData allowed in ODMv2? Or is this done using several "Value" child elements.
+    See discussion at https://wiki.cdisc.org/display/ODM2/ItemDef -->
+            <ItemDef OID="IT.Other_Risk_Factors_Description" Name="Other Risk Factors Description"
+                DataType="text">
+                <Question>
+                    <TranslatedText xml:lang="en" Type="text/plain">Describe:</TranslatedText>
+                </Question>
+            </ItemDef>
+            <!-- Clinical Status (Recent) -->
+            <ItemDef OID="IT.Hopelessness" Name="Hopelessness" DataType="text">
+                <Question>
+                    <TranslatedText xml:lang="en" Type="text/plain">Hopelessness</TranslatedText>
+                </Question>
+                <CodeListRef CodeListOID="CL.YesOnly"/>
+            </ItemDef>
+            <ItemDef OID="IT.Helplessness" Name="Helplessness" DataType="text">
+                <Question>
+                    <TranslatedText xml:lang="en" Type="text/plain">Helplessness</TranslatedText>
+                </Question>
+                <CodeListRef CodeListOID="CL.YesOnly"/>
+            </ItemDef>
+            <ItemDef OID="IT.Feeling_Trapped" Name="Feeling Trapped" DataType="text">
+                <Question>
+                    <TranslatedText xml:lang="en" Type="text/plain">Feeling Trapped</TranslatedText>
+                </Question>
+                <CodeListRef CodeListOID="CL.YesOnly"/>
+            </ItemDef>
+            <ItemDef OID="IT.Major_depressive_episode" Name="Major depressive episode"
+                DataType="text">
+                <Question>
+                    <TranslatedText xml:lang="en" Type="text/plain">Major depressive episode</TranslatedText>
+                </Question>
+                <CodeListRef CodeListOID="CL.YesOnly"/>
+            </ItemDef>
+            <ItemDef OID="IT.Mixed_affective_episode" Name="Mixed affective episode" DataType="text">
+                <Question>
+                    <TranslatedText xml:lang="en" Type="text/plain">Mixed affective episode</TranslatedText>
+                </Question>
+                <CodeListRef CodeListOID="CL.YesOnly"/>
+            </ItemDef>
+            <ItemDef OID="IT.Command_hallucinations_to_hurt_self"
+                Name="Command hallucinations to hurt self" DataType="text">
+                <Question>
+                    <TranslatedText xml:lang="en" Type="text/plain">Command hallucinations to hurt
+                        self</TranslatedText>
+                </Question>
+                <CodeListRef CodeListOID="CL.YesOnly"/>
+            </ItemDef>
+            <ItemDef OID="IT.Highly_impulsive_behavior" Name="Highly impulsive behavior"
+                DataType="text">
+                <Question>
+                    <TranslatedText xml:lang="en" Type="text/plain">Highly impulsive behavior</TranslatedText>
+                </Question>
+                <CodeListRef CodeListOID="CL.YesOnly"/>
+            </ItemDef>
+            <ItemDef OID="IT.Substance_abuse_or_dependence" Name="Substance abuse or dependence"
+                DataType="text">
+                <Question>
+                    <TranslatedText xml:lang="en" Type="text/plain">Substance abuse or dependence</TranslatedText>
+                </Question>
+                <CodeListRef CodeListOID="CL.YesOnly"/>
+            </ItemDef>
+            <ItemDef OID="IT.Agitation_or_severe_anxiety" Name="Agitation or severe anxiety"
+                DataType="text">
+                <Question>
+                    <TranslatedText xml:lang="en" Type="text/plain">Agitation or severe anxiety</TranslatedText>
+                </Question>
+                <CodeListRef CodeListOID="CL.YesOnly"/>
+            </ItemDef>
+            <ItemDef OID="IT.Perceived_burden_on_family_or_others"
+                Name="Perceived burden on family or others" DataType="text">
+                <Question>
+                    <TranslatedText xml:lang="en" Type="text/plain">Perceived burden on family or
+                        others</TranslatedText>
+                </Question>
+                <CodeListRef CodeListOID="CL.YesOnly"/>
+            </ItemDef>
+            <ItemDef OID="IT.Chronic_physical_pain" Name="Chronic physical pain" DataType="text">
+                <Question>
+                    <TranslatedText xml:lang="en" Type="text/plain">Chronic physical pain or other acute medical
+                        problem (AIDS, COPD, cancer, etc.)</TranslatedText>
+                </Question>
+                <CodeListRef CodeListOID="CL.YesOnly"/>
+            </ItemDef>
+            <ItemDef OID="IT.Homicidal_ideation" Name="Homicidal ideation" DataType="text">
+                <Question>
+                    <TranslatedText xml:lang="en" Type="text/plain">Homicidal ideation</TranslatedText>
+                </Question>
+                <CodeListRef CodeListOID="CL.YesOnly"/>
+            </ItemDef>
+            <ItemDef OID="IT.Aggressive_behavior_towards_others"
+                Name="Aggressive behavior towards others" DataType="text">
+                <Question>
+                    <TranslatedText xml:lang="en" Type="text/plain">Aggressive behavior towards
+                        others</TranslatedText>
+                </Question>
+                <CodeListRef CodeListOID="CL.YesOnly"/>
+            </ItemDef>
+            <ItemDef OID="IT.Method_for_suicide_available"
+                Name="Method for suicide available (gun, pills, etc.)" DataType="text">
+                <Question>
+                    <TranslatedText xml:lang="en" Type="text/plain">Method for suicide available (gun, pills,
+                        etc.)</TranslatedText>
+                </Question>
+                <CodeListRef CodeListOID="CL.YesOnly"/>
+            </ItemDef>
+            <ItemDef OID="IT.Refuses_or_feels_unable_to_agree_to_safety_plan"
+                Name="Refuses or feels unable to agree to safety plan" DataType="text">
+                <Question>
+                    <TranslatedText xml:lang="en" Type="text/plain">Refuses or feels unable to agree to safety
+                        plan</TranslatedText>
+                </Question>
+                <CodeListRef CodeListOID="CL.YesOnly"/>
+            </ItemDef>
+            <ItemDef OID="IT.Sexual_abuse_lifetime" Name="Sexual abuse (lifetime)" DataType="text">
+                <Question>
+                    <TranslatedText xml:lang="en" Type="text/plain">Sexual abuse (lifetime)</TranslatedText>
+                </Question>
+                <CodeListRef CodeListOID="CL.YesOnly"/>
+            </ItemDef>
+            <ItemDef OID="IT.Family_history_of_suicide" Name="Family history of suicide (lifetime)"
+                DataType="text">
+                <Question>
+                    <TranslatedText xml:lang="en" Type="text/plain">Family history of suicide
+                        (lifetime)</TranslatedText>
+                </Question>
+                <CodeListRef CodeListOID="CL.YesOnly"/>
+            </ItemDef>
+            <!-- Protective Factors (Recent) -->
+            <ItemDef OID="IT.Identifies_reasons_for_living" Name="Identifies reasons for living"
+                DataType="text">
+                <Question>
+                    <TranslatedText xml:lang="en" Type="text/plain">Identifies reasons for living</TranslatedText>
+                </Question>
+                <CodeListRef CodeListOID="CL.YesOnly"/>
+            </ItemDef>
+            <ItemDef OID="IT.Responsibility_to_family_or_others"
+                Name="Responsibility to family or others" DataType="text">
+                <Question>
+                    <TranslatedText xml:lang="en" Type="text/plain">Responsibility to family or others; living with
+                        family</TranslatedText>
+                </Question>
+                <CodeListRef CodeListOID="CL.YesOnly"/>
+            </ItemDef>
+            <ItemDef OID="IT.Supportive_social_network_or_family"
+                Name="Supportive social network or family" DataType="text">
+                <Question>
+                    <TranslatedText xml:lang="en" Type="text/plain">Supportive social network or
+                        family</TranslatedText>
+                </Question>
+                <CodeListRef CodeListOID="CL.YesOnly"/>
+            </ItemDef>
+            <ItemDef OID="IT.Fear_of_death" Name="Fear of death or dying due to pain and suffering"
+                DataType="text">
+                <Question>
+                    <TranslatedText xml:lang="en" Type="text/plain">Fear of death or dying due to pain and
+                        suffering</TranslatedText>
+                </Question>
+                <CodeListRef CodeListOID="CL.YesOnly"/>
+            </ItemDef>
+            <ItemDef OID="IT.Belief_that_suicide_is_immoral"
+                Name="Belief that suicide is immoral, high spirituality" DataType="text">
+                <Question>
+                    <TranslatedText xml:lang="en" Type="text/plain">Belief that suicide is immoral, high
+                        spirituality</TranslatedText>
+                </Question>
+                <CodeListRef CodeListOID="CL.YesOnly"/>
+            </ItemDef>
+            <ItemDef OID="IT.Engaged_in_work_or_school" Name="Engaged in work or school"
+                DataType="text">
+                <Question>
+                    <TranslatedText xml:lang="en" Type="text/plain">Engaged in work or school</TranslatedText>
+                </Question>
+                <CodeListRef CodeListOID="CL.YesOnly"/>
+            </ItemDef>
+            <ItemDef OID="IT.Engaged_with_Phone_Worker" Name="Engaged with Phone Worker"
+                DataType="text">
+                <Question>
+                    <TranslatedText xml:lang="en" Type="text/plain">Engaged with Phone Worker</TranslatedText>
+                </Question>
+                <CodeListRef CodeListOID="CL.YesOnly"/>
+            </ItemDef>
+            <!-- Other protective factors -->
+            <ItemDef OID="IT.Other_Protective_Factors" Name="Other Protective Factors"
+                DataType="text">
+                <Question>
+                    <TranslatedText xml:lang="en" Type="text/plain">Other Protective Factors</TranslatedText>
+                </Question>
+                <CodeListRef CodeListOID="CL.YesOnly"/>
+            </ItemDef>
+            <ItemDef OID="IT.Other_Protective_Factors_Description"
+                Name="Other Protective Factors Description" DataType="text">
+                <Question>
+                    <TranslatedText xml:lang="en" Type="text/plain">Describe:</TranslatedText>
+                </Question>
+            </ItemDef>
+            <!-- Describe any suicidal, self-injury or aggressive behavior (include dates) -->
+            <ItemDef OID="IT.Any_suicidal_self-injury_or_aggressive_behavior"
+                Name="Any suicida self-injury or aggressive behavior" 
+                DataType="text">
+                <Question>
+                    <TranslatedText xml:lang="en" Type="text/plain">Describe any suicidal, self-injury or aggressive
+                        behavior (include dates):</TranslatedText>
+                </Question>
+            </ItemDef>
+
+            <!-- Suicidal Ideation part -->
+            <!-- "Wish to be Dead" questions -->
+            <ItemDef OID="IT.1.Wish_to_be_Dead" Name="1. Wish to be Dead" DataType="text">
+                <Description>
+                    <TranslatedText xml:lang="en" Type="text/plain">Subject endorses thoughts about a wish to be dead
+                        or not alive anymore, or wish to fall asleep and not wake
+                        up.</TranslatedText>
+                </Description>
+                <Question>
+                    <TranslatedText xml:lang="en" Type="text/plain">Have you wished you were dead or wished you could
+                        go to sleep and not wake up?</TranslatedText>
+                </Question>
+                <CodeListRef CodeListOID="CL.YesNo"/>
+            </ItemDef>
+            <ItemDef OID="IT.1.Wish_to_be_Dead_Description" Name="1. Wish to be Dead - Description"
+                DataType="text">
+                <Question>
+                    <TranslatedText xml:lang="en" Type="text/plain">If yes, describe:</TranslatedText>
+                </Question>
+            </ItemDef>
+            <!-- "Non-Specific Active Suicidal Thoughts" -->
+            <ItemDef OID="IT.2.Non-Specific_Active_Suicidal_Thoughts"
+                Name="2. Non-Specific Active Suicidal Thoughts" DataType="text">
+                <Description>
+                    <TranslatedText xml:lang="en" Type="text/plain">General non-specific thoughts of wanting to end
+                        one’s life/commit suicide (e.g., “I’ve thought about killing myself”)
+                        without thoughts of ways to kill oneself/associated methods, intent, or plan
+                        during the assessment period.</TranslatedText>
+                </Description>
+                <Question>
+                    <TranslatedText xml:lang="en" Type="text/plain">Have you actually had any thoughts of killing
+                        yourself?</TranslatedText>
+                </Question>
+                <CodeListRef CodeListOID="CL.YesNo"/>
+            </ItemDef>
+            <ItemDef OID="IT.2.Non-Specific_Active_Suicidal_Thoughts_Description"
+                Name="2. Non-Specific Active Suicidal Thoughts - Description" DataType="text">
+                <Question>
+                    <TranslatedText xml:lang="en" Type="text/plain">If yes, describe:</TranslatedText>
+                </Question>
+            </ItemDef>
+            <!-- "Active Suicidal Ideation with Any Methods (Not Plan) without Intent to Act" questions -->
+            <ItemDef OID="IT.3.Active_Suicidal_Ideation_with_Any_Methods"
+                Name="3. Active Suicidal Ideation with Any Methods (Not Plan) without Intent to Act"
+                DataType="text">
+                <Description>
+                    <TranslatedText xml:lang="en" Type="text/plain">Subject endorses thoughts of suicide and has
+                        thought of at least one method during the assessment period. This is
+                        different than a specific plan with time, place or method details worked out
+                        (e.g., thought of method to kill self but not a specific plan). Includes
+                        person who would say, “I thought about taking an overdose but I never made a
+                        specific plan as to when, where or how I would actually do it…and I would
+                        never go through with it.”</TranslatedText>
+                </Description>
+                <Question>
+                    <TranslatedText xml:lang="en" Type="text/plain">Have you been thinking about how you might do
+                        this?</TranslatedText>
+                </Question>
+                <CodeListRef CodeListOID="CL.YesNo"/>
+            </ItemDef>
+            <ItemDef OID="IT.3.Active_Suicidal_Ideation_with_Any_Methods_Description"
+                Name="3. Active Suicidal Ideation with Any Methods (Not Plan) without Intent to Act - Description"
+                DataType="text">
+                <Question>
+                    <TranslatedText xml:lang="en" Type="text/plain">If yes, describe:</TranslatedText>
+                </Question>
+            </ItemDef>
+            <!-- "Active Suicidal Ideation with Some Intent to Act, without Specific Plan" questions -->
+            <ItemDef OID="IT.4.Active_Suicidal_Ideation_with_Some_Intent"
+                Name="4. Active Suicidal Ideation with Some Intent to Act, without Specific Plan"
+                DataType="text">
+                <Description>
+                    <TranslatedText xml:lang="en" Type="text/plain">Active suicidal thoughts of killing oneself and
+                        subject reports having some intent to act on such thoughts, as opposed to 'I
+                        have the thoughts but I definitely will not do anything about
+                        them.'</TranslatedText>
+                </Description>
+                <Question>
+                    <TranslatedText xml:lang="en" Type="text/plain">Have you had these thoughts and had some intention
+                        of acting on them?</TranslatedText>
+                </Question>
+            </ItemDef>
+            <ItemDef OID="IT.4.Active_Suicidal_Ideation_with_Some_Intent_Description"
+                Name="4. Active Suicidal Ideation with Some Intent to Act, without Specific Plan - Description"
+                DataType="text">
+                <Question>
+                    <TranslatedText xml:lang="en" Type="text/plain">If yes, describe:</TranslatedText>
+                </Question>
+            </ItemDef>
+            <!-- "Active Suicidal Ideation with Specific Plan and Intent" questions -->
+            <ItemDef OID="IT.5.Active_Suicidal_Ideation_with_Specific_Plan_and_Intent"
+                Name="5. Active Suicidal Ideation with Specific Plan and Intent" DataType="text">
+                <Description>
+                    <TranslatedText xml:lang="en" Type="text/plain">Thoughts of killing oneself with details of plan
+                        fully or partially worked out and subject has some intent to carry it
+                        out.</TranslatedText>
+                </Description>
+                <Question>
+                    <TranslatedText xml:lang="en" Type="text/plain">Have you started to work out or worked out the
+                        details of how to kill yourself? Do you intend to carry out this
+                        plan?</TranslatedText>
+                </Question>
+            </ItemDef>
+            <ItemDef OID="IT.5.Active_Suicidal_Ideation_with_Specific_Plan_and_Intent_Description"
+                Name="5. Active Suicidal Ideation with Specific Plan and Intent - Description"
+                DataType="text">
+                <Question>
+                    <TranslatedText xml:lang="en" Type="text/plain">If yes, describe:</TranslatedText>
+                </Question>
+            </ItemDef>
+
+            <!-- "INTENSITY OF IDEATION" -->
+            <!-- Remark that the text "The following features should be rated ..." goes into ItemGroupDef/Description -->
+            <ItemDef OID="IT.Most_Severe_Ideation_Lifetime" Name="Most Severe Ideation - Lifetime"
+                DataType="integer">
+                <Question>
+                    <TranslatedText xml:lang="en" Type="text/plain">Most Severe Ideation:</TranslatedText>
+                </Question>
+                <!-- Integer value must be between 1 and 5 -->
+                <RangeCheck Comparator="GE" SoftHard="Hard">
+                    <CheckValue>1</CheckValue>
+                </RangeCheck>
+                <RangeCheck Comparator="LE" SoftHard="Hard">
+                    <CheckValue>5</CheckValue>
+                </RangeCheck>
+            </ItemDef>
+            <ItemDef OID="IT.Most_Severe_Ideation_Lifetime_Description"
+                Name="Most Severe Ideation - Description" DataType="text">
+                <Question>
+                    <TranslatedText xml:lang="en" Type="text/plain">Description of Ideation</TranslatedText>
+                </Question>
+            </ItemDef>
+            <ItemDef OID="IT.Most_Severe_Ideation_Recent" Name="Most Severe Ideation - Recent"
+                DataType="integer">
+                <Question>
+                    <TranslatedText xml:lang="en" Type="text/plain">Recent - Most Severe Ideation:</TranslatedText>
+                </Question>
+                <!-- Integer value must be between 1 and 5 -->
+                <RangeCheck Comparator="GE" SoftHard="Hard">
+                    <CheckValue>1</CheckValue>
+                </RangeCheck>
+                <RangeCheck Comparator="LE" SoftHard="Hard">
+                    <CheckValue>5</CheckValue>
+                </RangeCheck>
+            </ItemDef>
+            <ItemDef OID="IT.Most_Severe_Ideation_Recent_Description"
+                Name="Most Severe Ideation - Recent - Description" DataType="text">
+                <Question>
+                    <TranslatedText xml:lang="en" Type="text/plain">Description of Ideation</TranslatedText>
+                </Question>
+            </ItemDef>
+            <!-- "INTENSITY OF IDEATION frequency" questions -->
+            <ItemDef OID="IT.Intensity_of_Ideation_Frequency" Name="Intensity of Ideation Frequency" DataType="integer">
+                <Description>
+                    <TranslatedText xml:lang="en" Type="text/plain">Frequency</TranslatedText>
+                </Description>
+                <Question>
+                    <TranslatedText xml:lang="en" Type="text/plain">How many times have you had these
+                        thoughts?</TranslatedText>
+                </Question>
+                <CodeListRef CodeListOID="CL.Thoughts_Frequency"/>
+            </ItemDef>
+            <!-- "INTENSITY OF IDEATION: Duration" questions -->
+            <ItemDef OID="IT.Intensity_Ideation_Duration" Name="Ideation duration"
+                DataType="integer">
+                <Description>
+                    <TranslatedText xml:lang="en" Type="text/plain">Duration</TranslatedText>
+                </Description>
+                <Question>
+                    <TranslatedText xml:lang="en" Type="text/plain">When you have the thoughts how long do they
+                        last?</TranslatedText>
+                </Question>
+                <CodeListRef CodeListOID="CL.Thoughts_Duration"/>
+            </ItemDef>
+            <!-- "INTENSITY OF IDEATION - Controllability" question -->
+            <ItemDef OID="IT.Controllability" Name="Controllability" DataType="integer">
+                <Description>
+                    <TranslatedText xml:lang="en" Type="text/plain">Controllability</TranslatedText>
+                </Description>
+                <Question>
+                    <TranslatedText xml:lang="en" Type="text/plain">Could/can you stop thinking about killing
+                        yourself or wanting to die if you want to?</TranslatedText>
+                </Question>
+                <CodeListRef CodeListOID="CL.Controllability"/>
+            </ItemDef>
+            <!-- "INTENSITY OF IDEATION - Deterrents" question -->
+            <ItemDef OID="IT.Deterrents" Name="Deterrents" DataType="integer">
+                <Description>
+                    <TranslatedText xml:lang="en" Type="text/plain">Deterrents</TranslatedText>
+                </Description>
+                <Question>
+                    <TranslatedText xml:lang="en" Type="text/plain">Are there things - anyone or anything (e.g.,
+                        family, religion, pain of death) - that stopped you from wanting to die or
+                        acting on thoughts of committing suicide?</TranslatedText>
+                </Question>
+                <CodeListRef CodeListOID="CL.Deterrents"/>
+            </ItemDef>
+            <!-- "Reasons for Ideation" questions -->
+            <ItemDef OID="IT.Reasons_for_Ideation" Name="Reasons for Ideation" DataType="integer">
+                <Description>
+                    <TranslatedText xml:lang="en" Type="text/plain">Reasons for Ideation</TranslatedText>
+                </Description>
+                <Question>
+                    <TranslatedText xml:lang="en" Type="text/plain">What sort of reasons did you have for thinking
+                        about wanting to die or killing yourself? Was it to end the pain or stop the
+                        way you were feeling (in other words you couldn’t go on living with this
+                        pain or how you were feeling) or was it to get attention, revenge or a
+                        reaction from others? Or both?</TranslatedText>
+                </Question>
+                <CodeListRef CodeListOID="CL.Reasons_for_Ideation"/>
+            </ItemDef>
+            <!-- "SUICIDAL BEHAVIOR" questions.
+    Remark that organization of these is done at the ItemGroupDef level, 
+    so is the explanation of "Actual Attempt" -->
+            <!-- TODO, at the ItemGroup level, matrix style? Same questions for "in the past 3 months" -->
+            <ItemDef OID="IT.Made_a_suicide_attempt" Name="Have you made a suicide attempt"
+                DataType="text">
+                <Question>
+                    <TranslatedText xml:lang="en" Type="text/plain">Have you made a suicide attempt?</TranslatedText>
+                </Question>
+                <CodeListRef CodeListOID="CL.YesNo"/>
+            </ItemDef>
+            <ItemDef OID="IT.Done_anything_to_harm_yourself"
+                Name="Have you done anything to harm yourself" DataType="text">
+                <Question>
+                    <TranslatedText xml:lang="en" Type="text/plain">Have you done anything to harm
+                        yourself?</TranslatedText>
+                </Question>
+                <CodeListRef CodeListOID="CL.YesNo"/>
+            </ItemDef>
+            <ItemDef OID="IT.Done_anything_dangerous"
+                Name="Have you done anything dangerous where you could have died" DataType="text">
+                <Question>
+                    <TranslatedText xml:lang="en" Type="text/plain">Have you done anything dangerous where you could
+                        have died?</TranslatedText>
+                </Question>
+                <CodeListRef CodeListOID="CL.YesNo"/>
+            </ItemDef>
+            <ItemDef OID="IT.Number_of_attempts" Name="Number of attempts"
+                DataType="integer">
+                <Question>
+                    <TranslatedText xml:lang="en" Type="text/plain">Total # of Attempts</TranslatedText>
+                </Question>
+            </ItemDef>
+            <ItemDef OID="IT.What_did_you_do" Name="What did you do" DataType="text">
+                <!-- free text -->
+                <Question>
+                    <TranslatedText xml:lang="en" Type="text/plain">What did you do?</TranslatedText>
+                </Question>
+            </ItemDef>
+            <ItemDef OID="IT.Way_to_end_your_life_1" Name="Did you xxx as a way to end your life" DataType="text">
+                <Question>
+                    <!-- The following is an interesting one: the user (researcher) would need to fill in a part (here given by xxx) of the question -->
+                    <TranslatedText xml:lang="en" Type="text/plain">Did you xxx as a way to end your life?</TranslatedText>
+                </Question>
+                <CodeListRef CodeListOID="CL.YesNo"/>
+            </ItemDef>
+            <ItemDef OID="IT.Way_to_end_your_life_2" Name="Did you want to die (even a little) when you xxx"  DataType="text">
+                <Question>
+                    <!-- The following is an interesting one: the user (researcher) would need to fill in a part (here given by xxx) of the question -->
+                    <TranslatedText xml:lang="en" Type="text/plain">Did you want to die (even a little) when you
+                        xxx?</TranslatedText>
+                </Question>
+                <CodeListRef CodeListOID="CL.YesNo"/>
+            </ItemDef>
+            <ItemDef OID="IT.Way_to_end_your_life_3"
+                Name="Were you trying to end your life when you xxx"
+                DataType="text">
+                <Question>
+                    <!-- The following is an interesting one: the user (researcher) would need to fill in a part (here given by xxx) of the question -->
+                    <TranslatedText xml:lang="en" Type="text/plain">Were you trying to end your life when you
+                        xxx?</TranslatedText>
+                </Question>
+                <CodeListRef CodeListOID="CL.YesNo"/>
+            </ItemDef>
+            <ItemDef OID="IT.Way_to_end_your_life_4"
+                Name="Or Did you think it was possible you could have died from xxx" DataType="text">
+                <Question>
+                    <!-- The following is an interesting one: the user (researcher) would need to fill in a part (here given by xxx) of the question -->
+                    <TranslatedText xml:lang="en" Type="text/plain">Or Did you think it was possible you could have
+                        died from xxx?</TranslatedText>
+                </Question>
+                <CodeListRef CodeListOID="CL.YesNo"/>
+            </ItemDef>
+            <ItemDef OID="IT.Way_to_end_your_life_5"
+                Name="Or did you do it purely for other reasons" DataType="text">
+                <Question>
+                    <!-- The following is an interesting one: the user (researcher) would need to fill in a part (here given by xxx) of the question -->
+                    <TranslatedText xml:lang="en" Type="text/plain">Or did you do it purely for other reasons /
+                        without ANY intention of killing yourself (like to relieve stress, feel
+                        better, get sympathy, or get something else to happen)??</TranslatedText>
+                </Question>
+                <CodeListRef CodeListOID="CL.YesNo"/>
+            </ItemDef>
+            <ItemDef OID="IT.Way_to_end_your_life_5_Description"
+                Name="Way to end your life description" DataType="text">
+                <Question>
+                    <TranslatedText xml:lang="en" Type="text/plain">If yes, describe</TranslatedText>
+                </Question>
+            </ItemDef>
+            <ItemDef OID="IT.Subject_engaged_in_Non-Suicidal_Self-Injurious_Behavior"
+                Name="subject engaged in Non-Suicidal Self-Injurious Behavior" DataType="text">
+                <Question>
+                    <TranslatedText xml:lang="en" Type="text/plain">Has subject engaged in Non-Suicidal Self-Injurious
+                        Behavior?</TranslatedText>
+                </Question>
+                <CodeListRef CodeListOID="CL.YesNo"/>
+            </ItemDef>
+            <!-- "Interrupted Attempt" questions -->
+            <ItemDef OID="IT.Time_starting_something_to_end_life"
+                Name="Time when you started to do something to end your life" DataType="text">
+                <Question>
+                    <TranslatedText xml:lang="en" Type="text/plain">Has there been a time when you started to do
+                        something to end your life but someone or something stopped you before you
+                        actually did anything?</TranslatedText>
+                </Question>
+                <CodeListRef CodeListOID="CL.YesNo"/>
+            </ItemDef>
+            <ItemDef OID="IT.Time_starting_something_to_end_life_description"
+                Name="Description of Time when you started to do something to end your life"
+                DataType="text">
+                <Question>
+                    <TranslatedText xml:lang="en" Type="text/plain">If yes, describe:</TranslatedText>
+                </Question>
+            </ItemDef>
+            <ItemDef OID="IT.Interrupted_attemps_number" Name="Total # of interrupted"
+                DataType="integer">
+                <Question>
+                    <TranslatedText xml:lang="en" Type="text/plain">Total # of interrupted</TranslatedText>
+                </Question>
+            </ItemDef>
+            <!-- "Aborted or Self-Interrupted Attempt" questions -->
+            <!-- TODO: find ItemGroup where this needs to be referenced -->
+            <!-- Is used twice: once in section "Interrupted Attempt:" and once in section "Aborted or Self-Interrupted Attempt:" -->
+            <ItemDef OID="IT.Aborted_or_self-interrupted_attempt" Name="Aborted or Self-Interrupted Attempt"
+                DataType="text">
+                <Question>
+                    <TranslatedText xml:lang="en" Type="text/plain">Has there been a time when you started to do
+                        something to try to end your life but you stopped yourself before you
+                        actually did anything?</TranslatedText>
+                </Question>
+                <CodeListRef CodeListOID="CL.YesNo"/>
+            </ItemDef>
+            <ItemDef OID="IT.Aborted_attempt_description"
+                Name="Description Aborted or Self-Interrupted Attempt" DataType="text">
+                <Question>
+                    <TranslatedText xml:lang="en" Type="text/plain">If yes, describe:</TranslatedText>
+                </Question>
+            </ItemDef>
+            <ItemDef OID="IT.Self_interrupted_attemps_number"
+                Name="Total # of aborted or selfinterrupted" DataType="integer">
+                <Question>
+                    <TranslatedText xml:lang="en" Type="text/plain">Total # of aborted or
+                        selfinterrupted</TranslatedText>
+                </Question>
+            </ItemDef>
+            <!-- "Preparatory Acts or Behavior" questions -->
+            <ItemDef OID="IT.Steps_towards_making_suicide_attempt"
+                Name="Steps towards making a suicide attempt" DataType="text">
+                <Question>
+                    <TranslatedText xml:lang="en" Type="text/plain">Have you taken any steps towards making a suicide
+                        attempt or preparing to kill yourself (such as collecting pills, getting a
+                        gun, giving valuables away or writing a suicide note)?</TranslatedText>
+                </Question>
+                <CodeListRef CodeListOID="CL.YesNo"/>
+            </ItemDef>
+            <ItemDef OID="IT.Steps_towards_making_suicide_attempt_description"
+                Name="Description of Steps towards making a suicide attempt" DataType="text">
+                <Question>
+                    <TranslatedText xml:lang="en" Type="text/plain">If yes, describe:</TranslatedText>
+                </Question>
+            </ItemDef>
+            <ItemDef OID="IT.Steps_towards_making_suicide_attempt_total_number"
+                Name="Total number of Steps towards making a suicide attempt"
+                DataType="integer">
+                <Question>
+                    <TranslatedText xml:lang="en" Type="text/plain">Total # of preparatory acts</TranslatedText>
+                </Question>
+            </ItemDef>
+            <!-- "Actual Lethality/Medical Damage" questions -->
+            <!-- TODO: implement as "matrix" for "most recent attempt", "most lethal attempt", and "Initial/first attempt" -->
+            <ItemDef OID="IT.Attempt_date" Name="Attempt date" DataType="date">
+                <Question>
+                    <TranslatedText xml:lang="en" Type="text/plain">Date:</TranslatedText>
+                </Question>
+            </ItemDef>
+            <ItemDef OID="IT.Actual_Lethality" Name="Actual Lethality/Medical Damage"
+                DataType="integer">
+                <Question>
+                    <TranslatedText xml:lang="en" Type="text/plain">Enter Code</TranslatedText>
+                </Question>
+                <CodeListRef CodeListOID="CL.Actual_Damage"/>
+            </ItemDef>
+            <ItemDef OID="IT.Actual_Lethality_Date" Name="Date" DataType="date">
+                <Question>
+                    <TranslatedText xml:lang="en" Type="text/plain">Date</TranslatedText>
+                </Question>
+            </ItemDef>
+            <!-- "Potential Lethality" questions -->
+            <!-- TODO: CollectionExceptionCondition: should only be used when "Actual Lethality" = 0 -->
+            <ItemDef OID="IT.Potential_Lethality" Name="Potential Lethality" DataType="text">
+                <Question>
+                    <TranslatedText xml:lang="en" Type="text/plain">Enter Code</TranslatedText>
+                </Question>
+                <CodeListRef CodeListOID="CL.Potential_Lethality"/>
+            </ItemDef>
+            <ItemDef OID="IT.Potential_Lethality_Date" Name="Date" DataType="date">
+                <Question>
+                    <TranslatedText xml:lang="en" Type="text/plain">Date</TranslatedText>
+                </Question>
+            </ItemDef>
+            <!-- Used for repeat over "Most Recent Attempt", "Most Lethal Attempt", "Initial/First Attempt" -->
+            <ItemDef OID="IT.Lethality_Type" Name="Lethality Attempt Type" DataType="text">
+                <CodeListRef CodeListOID="CL.Lethality_Type"/>
+            </ItemDef>
+            <!-- CodeLists -->
+
+            <!-- Yes-No CodeList -->
+            <CodeList OID="CL.YesNo" Name="Yes-No CodeList" DataType="text">
+                <CodeListItem CodedValue="Y">
+                    <Decode>
+                        <TranslatedText xml:lang="en" Type="text/plain">Yes</TranslatedText>
+                        <TranslatedText xml:lang="de" Type="text/plain">Ja</TranslatedText>
+                        <TranslatedText xml:lang="fr" Type="text/plain">Oui</TranslatedText>
+                    </Decode>
+                </CodeListItem>
+                <CodeListItem CodedValue="N">
+                    <Decode>
+                        <TranslatedText xml:lang="en" Type="text/plain">No</TranslatedText>
+                        <TranslatedText xml:lang="de" Type="text/plain">Nein</TranslatedText>
+                        <TranslatedText xml:lang="fr" Type="text/plain">Non</TranslatedText>
+                    </Decode>
+                </CodeListItem>
+            </CodeList>
+
+            <!-- Yes-Only codelist: used by "Risk Assessment" part: could also be replaced by boolean datatype -->
+            <CodeList OID="CL.YesOnly" Name="Yes only" DataType="text">
+                <CodeListItem CodedValue="Y">
+                    <Decode>
+                        <TranslatedText xml:lang="en" Type="text/plain">Yes</TranslatedText>
+                        <TranslatedText xml:lang="de" Type="text/plain">Ja</TranslatedText>
+                        <TranslatedText xml:lang="fr" Type="text/plain">Oui</TranslatedText>
+                    </Decode>
+                </CodeListItem>
+            </CodeList>
+
+            <!-- Repeat over "Past week" and "Lifetime": used by "Risk Assessment" part -->
+            <CodeList OID="CL.Past_week_Lifetime" Name="Codelist for 'Lifetime' and 'Past 1 Week'" DataType="text">
+                <CodeListItem CodedValue="PAST_WEEK">
+                    <Decode>
+                        <TranslatedText xml:lang="en" Type="text/plain">Past week</TranslatedText>
+                    </Decode>
+                </CodeListItem>
+                <CodeListItem CodedValue="LIFETIME">
+                    <Decode>
+                        <TranslatedText xml:lang="en" Type="text/plain">Lifetime</TranslatedText>
+                    </Decode>
+                </CodeListItem>
+            </CodeList>
+
+            <!-- Codelist for repeat over "Lifetime" and "Past 1 Month" -->
+            <CodeList OID="CL.Lifetime_Past_1_Month"
+                Name="Codelist for 'Lifetime' and 'Past 1 Month'" DataType="text">
+                <CodeListItem CodedValue="LIFETIME">
+                    <Decode>
+                        <TranslatedText xml:lang="en" Type="text/plain">Lifetime: Time He/She Felt Most
+                            Suicidal</TranslatedText>
+                    </Decode>
+                </CodeListItem>
+                <CodeListItem CodedValue="PAST_1_MONTH">
+                    <Decode>
+                        <TranslatedText xml:lang="en" Type="text/plain">Past 1 month</TranslatedText>
+                    </Decode>
+                </CodeListItem>
+            </CodeList>
+
+            <!-- Codelist for repeat over "Lifetime" and "Past 3 Months" -->
+            <CodeList OID="CL.Lifetime_Past_3_Months"
+                Name="Codelist for 'Lifetime' and 'Past 1 Month'" DataType="text">
+                <CodeListItem CodedValue="LIFETIME">
+                    <Decode>
+                        <TranslatedText xml:lang="en" Type="text/plain">Lifetime</TranslatedText>
+                    </Decode>
+                </CodeListItem>
+                <CodeListItem CodedValue="PAST_3_MONTHS">
+                    <Decode>
+                        <TranslatedText xml:lang="en" Type="text/plain">Past 3 months</TranslatedText>
+                    </Decode>
+                </CodeListItem>
+            </CodeList>
+
+            <!-- CodeList for frequence of thougths -->
+            <CodeList OID="CL.Thoughts_Frequency" Name="Frequency of thoughts" DataType="integer">
+                <Description>
+                    <TranslatedText xml:lang="en" Type="text/plain">Frequency of thoughts</TranslatedText>
+                </Description>
+                <CodeListItem CodedValue="1">
+                    <Decode>
+                        <TranslatedText xml:lang="en" Type="text/plain">Less than once a week</TranslatedText>
+                    </Decode>
+                </CodeListItem>
+                <CodeListItem CodedValue="2">
+                    <Decode>
+                        <TranslatedText xml:lang="en" Type="text/plain">Once a week</TranslatedText>
+                    </Decode>
+                </CodeListItem>
+                <CodeListItem CodedValue="3">
+                    <Decode>
+                        <TranslatedText xml:lang="en" Type="text/plain">2-5 times in week</TranslatedText>
+                    </Decode>
+                </CodeListItem>
+                <CodeListItem CodedValue="4">
+                    <Decode>
+                        <TranslatedText xml:lang="en" Type="text/plain">Daily or almost daily</TranslatedText>
+                    </Decode>
+                </CodeListItem>
+                <CodeListItem CodedValue="5">
+                    <Decode>
+                        <TranslatedText xml:lang="en" Type="text/plain">Many times each day</TranslatedText>
+                    </Decode>
+                </CodeListItem>
+            </CodeList>
+            <!-- CodeList for duration of thoughts -->
+            <CodeList OID="CL.Thoughts_Duration" Name="Duration of thoughts" DataType="integer">
+                <Description>
+                    <TranslatedText xml:lang="en" Type="text/plain">Duration of thoughts</TranslatedText>
+                </Description>
+                <CodeListItem CodedValue="1">
+                    <Decode>
+                        <TranslatedText xml:lang="en" Type="text/plain">Fleeting - few seconds or
+                            minutes</TranslatedText>
+                    </Decode>
+                </CodeListItem>
+                <CodeListItem CodedValue="2">
+                    <Decode>
+                        <TranslatedText xml:lang="en" Type="text/plain">Less than 1 hour/some of the
+                            time</TranslatedText>
+                    </Decode>
+                </CodeListItem>
+                <CodeListItem CodedValue="3">
+                    <Decode>
+                        <TranslatedText xml:lang="en" Type="text/plain">1-4 hours/a lot of time</TranslatedText>
+                    </Decode>
+                </CodeListItem>
+                <CodeListItem CodedValue="4">
+                    <Decode>
+                        <TranslatedText xml:lang="en" Type="text/plain">4-8 hours/most of day</TranslatedText>
+                    </Decode>
+                </CodeListItem>
+                <CodeListItem CodedValue="5">
+                    <Decode>
+                        <TranslatedText xml:lang="en" Type="text/plain">More than 8 hours/persistent or
+                            continuous</TranslatedText>
+                    </Decode>
+                </CodeListItem>
+            </CodeList>
+            <!-- Codelist for controllability of suicidal thoughts -->
+            <CodeList OID="CL.Controllability" DataType="integer" Name="Controllability of thoughts">
+                <Description>
+                    <TranslatedText xml:lang="en" Type="text/plain">Controllability of thoughts</TranslatedText>
+                </Description>
+                <CodeListItem CodedValue="1">
+                    <Decode>
+                        <TranslatedText xml:lang="en" Type="text/plain">Easily able to control thoughts</TranslatedText>
+                    </Decode>
+                </CodeListItem>
+                <CodeListItem CodedValue="2">
+                    <Decode>
+                        <TranslatedText xml:lang="en" Type="text/plain">Can control thoughts with little difficulty</TranslatedText>
+                    </Decode>
+                </CodeListItem>
+                <CodeListItem CodedValue="3">
+                    <Decode>
+                        <TranslatedText xml:lang="en" Type="text/plain">Can control thoughts with some difficulty</TranslatedText>
+                    </Decode>
+                </CodeListItem>
+                <CodeListItem CodedValue="4">
+                    <Decode>
+                        <TranslatedText xml:lang="en" Type="text/plain">Can control thoughts with a lot of difficulty</TranslatedText>
+                    </Decode>
+                </CodeListItem>
+                <CodeListItem CodedValue="5">
+                    <Decode>
+                        <TranslatedText xml:lang="en" Type="text/plain">Unable to control thoughts</TranslatedText>
+                    </Decode>
+                </CodeListItem>
+                <CodeListItem CodedValue="0">
+                    <Decode>
+                        <TranslatedText xml:lang="en" Type="text/plain">Does not attempt to control
+                            thoughts</TranslatedText>
+                    </Decode>
+                </CodeListItem>
+            </CodeList>
+            <!-- Codelist for Deterrents -->
+            <CodeList OID="CL.Deterrents" Name="Deterrents" DataType="integer">
+                <Description>
+                    <TranslatedText xml:lang="en" Type="text/plain">Deterrents</TranslatedText>
+                </Description>
+                <CodeListItem CodedValue="1">
+                    <Decode>
+                        <TranslatedText xml:lang="en" Type="text/plain">Deterrents definitely stopped you from
+                            attempting suicide</TranslatedText>
+                    </Decode>
+                </CodeListItem>
+                <CodeListItem CodedValue="2">
+                    <Decode>
+                        <TranslatedText xml:lang="en" Type="text/plain">Deterrents probably stopped
+                            you</TranslatedText>
+                    </Decode>
+                </CodeListItem>
+                <CodeListItem CodedValue="3">
+                    <Decode>
+                        <TranslatedText xml:lang="en" Type="text/plain">Uncertain that deterrents stopped
+                            you</TranslatedText>
+                    </Decode>
+                </CodeListItem>
+                <CodeListItem CodedValue="4">
+                    <Decode>
+                        <TranslatedText xml:lang="en" Type="text/plain">Deterrents most likely did not stop
+                            you</TranslatedText>
+                    </Decode>
+                </CodeListItem>
+                <CodeListItem CodedValue="5">
+                    <Decode>
+                        <TranslatedText xml:lang="en" Type="text/plain">Deterrents definitely did not stop
+                            you</TranslatedText>
+                    </Decode>
+                </CodeListItem>
+                <CodeListItem CodedValue="0">
+                    <Decode>
+                        <TranslatedText xml:lang="en" Type="text/plain">Does not apply</TranslatedText>
+                    </Decode>
+                </CodeListItem>
+            </CodeList>
+            <!-- Codelist for Reasons for Ideation -->
+            <CodeList OID="CL.Reasons_for_Ideation" Name="Reasons for Ideation" DataType="integer">
+                <Description>
+                    <TranslatedText xml:lang="en" Type="text/plain">Reasons for Ideation</TranslatedText>
+                </Description>
+                <CodeListItem CodedValue="1">
+                    <Decode>
+                        <TranslatedText xml:lang="en" Type="text/plain">Completely to get attention, revenge or a
+                            reaction from others</TranslatedText>
+                    </Decode>
+                </CodeListItem>
+                <CodeListItem CodedValue="2">
+                    <Decode>
+                        <TranslatedText xml:lang="en" Type="text/plain">Mostly to get attention, revenge or a reaction
+                            from others</TranslatedText>
+                    </Decode>
+                </CodeListItem>
+                <CodeListItem CodedValue="3">
+                    <Decode>
+                        <TranslatedText xml:lang="en" Type="text/plain">Equally to get attention, revenge or a
+                            reaction from others</TranslatedText>
+                    </Decode>
+                </CodeListItem>
+                <CodeListItem CodedValue="4">
+                    <Decode>
+                        <TranslatedText xml:lang="en" Type="text/plain">Mostly to end or stop the pain (you couldn’t
+                            go on with the pain or how you were feeling)</TranslatedText>
+                    </Decode>
+                </CodeListItem>
+                <CodeListItem CodedValue="5">
+                    <Decode>
+                        <TranslatedText xml:lang="en" Type="text/plain">Completely to end or stop the pain (you
+                            couldn’t go on living with the pain or how you were
+                            feeling)</TranslatedText>
+                    </Decode>
+                </CodeListItem>
+                <CodeListItem CodedValue="0">
+                    <Decode>
+                        <TranslatedText xml:lang="en" Type="text/plain">Does not apply</TranslatedText>
+                    </Decode>
+                </CodeListItem>
+            </CodeList>
+            <!-- Actual Lethality/Medical Damage -->
+            <CodeList OID="CL.Actual_Damage" Name="Actual Lethality/Medical Damage" DataType="integer">
+                <Description>
+                    <TranslatedText xml:lang="en" Type="text/plain">Actual Lethality/Medical Damage</TranslatedText>
+                </Description>
+                <CodeListItem CodedValue="0">
+                    <Decode>
+                        <TranslatedText xml:lang="en" Type="text/plain">No physical damage or very minor physical
+                            damage (e.g., surface scratches)</TranslatedText>
+                    </Decode>
+                </CodeListItem>
+                <CodeListItem CodedValue="1">
+                    <Decode>
+                        <TranslatedText xml:lang="en" Type="text/plain">Minor physical damage (e.g., lethargic speech;
+                            first-degree burns; mild bleeding; sprains)</TranslatedText>
+                    </Decode>
+                </CodeListItem>
+                <CodeListItem CodedValue="2">
+                    <Decode>
+                        <TranslatedText xml:lang="en" Type="text/plain">Moderate physical damage; medical attention
+                            needed (e.g., conscious but sleepy, somewhat responsive; second-degree
+                            burns; bleeding of major vessel)</TranslatedText>
+                    </Decode>
+                </CodeListItem>
+                <CodeListItem CodedValue="3">
+                    <Decode>
+                        <TranslatedText xml:lang="en" Type="text/plain">Moderately severe physical damage; medical
+                            hospitalization and likely intensive care required (e.g., comatose with
+                            reflexes intact; third-degree burns less than 20% of body; extensive
+                            blood loss but can recover; major fractures)</TranslatedText>
+                    </Decode>
+                </CodeListItem>
+                <CodeListItem CodedValue="4">
+                    <Decode>
+                        <TranslatedText xml:lang="en" Type="text/plain">Severe physical damage; medical
+                            hospitalization with intensive care required (e.g., comatose without
+                            reflexes; third-degree burns over 20% of body; extensive blood loss with
+                            unstable vital signs; major damage to a vital area)</TranslatedText>
+                    </Decode>
+                </CodeListItem>
+                <CodeListItem CodedValue="5">
+                    <Decode>
+                        <TranslatedText xml:lang="en" Type="text/plain">Death</TranslatedText>
+                    </Decode>
+                </CodeListItem>
+            </CodeList>
+            <!-- Actual/Potential Lethality Type - used for repeat -->
+            <CodeList OID="CL.Lethality_Type" Name="Lethality Type" DataType="text">
+                <CodeListItem CodedValue="Most Recent Attempt"/>
+                <CodeListItem CodedValue="Most Lethal Attempt"/>
+                <CodeListItem CodedValue="Initial/First Attempt"/>
+            </CodeList>
+            <!-- Potential Lethality CodeList -->
+            <CodeList OID="CL.Potential_Lethality" Name="Potential Lethality" DataType="text">
+                <Description>
+                    <TranslatedText xml:lang="en" Type="text/plain">Potential Lethality</TranslatedText>
+                </Description>
+                <CodeListItem CodedValue="0">
+                    <Decode>
+                        <TranslatedText xml:lang="en" Type="text/plain">Behavior not likely to result in
+                            injury</TranslatedText>
+                    </Decode>
+                </CodeListItem>
+                <CodeListItem CodedValue="1">
+                    <Decode>
+                        <TranslatedText xml:lang="en" Type="text/plain">Behavior likely to result in injury but not
+                            likely to cause death</TranslatedText>
+                    </Decode>
+                </CodeListItem>
+                <CodeListItem CodedValue="2">
+                    <Decode>
+                        <TranslatedText xml:lang="en" Type="text/plain">Behavior likely to result in death despite
+                            available medical care</TranslatedText>
+                    </Decode>
+                </CodeListItem>
+            </CodeList>
+
+            <!-- Conditions -->
+            <ConditionDef OID="COND.Wish_to_be_dead_yes" Name="Condition for moving to question 'Description of whishing to be dead'">
+                <Description>
+                    <TranslatedText xml:lang="en" Type="text/plain">If question 'Wish to be dead' is answered with 'Yes', go to question 'Description of wishing to be dead'</TranslatedText>
+                </Description>
+                <!-- MethodSignature content: TODO -->
+                <MethodSignature></MethodSignature>
+                <FormalExpression Context="ODMPath"><Code>ItemGroupData.where(ItemGroupOID='IG.Wish_to_bed_Dead_Group_with_Description').ItemGroupData.where(ItemGroupOID='IG.Wish_to_be_Dead').ItemData.where(ItemOID='ItemOID='IT.1.Wish_to_be_Dead' and Value='Y')</Code></FormalExpression>
+                <FormalExpression Context="XPath"><Code>../ItemData[@ItemOID='IT.1.Wish_to_be_Dead']/@Value='Y'</Code></FormalExpression>
+            </ConditionDef>
+            <ConditionDef OID="COND.Questions_1_and_2_negative" Name="Condition for moving to page/section 'Suicidal Behavior' after questions 1 and 2 of 'Suicidal Iedation'">
+                <Description>
+                    <TranslatedText xml:lang="en" Type="text/plain">If both questions 1 and 2 of section 'Suicidal Ideation' are negative, proceed to section/page 'Suicidal behavior'</TranslatedText>
+                </Description>
+                <!-- MethodSignature content: TODO -->
+                <MethodSignature></MethodSignature>
+                <FormalExpression Context="XPath"><Code>../ItemData[@ItemOID='IT.1.Wish_to_be_Dead']/@Value='N' and ../ItemData[@ItemOID='IT.2.Non-Specific_Active_Suicidal_Thoughts']/@Value='N'</Code></FormalExpression>
+            </ConditionDef>
+            <ConditionDef OID="COND.Way_to_end_your_life_5_Description"
+                Name="Condition for skipping the question 'If yes, describe', after question 'Or did you do it purely for other reasons / without ANY intention of killing yourself ...'">
+                <Description>
+                    <TranslatedText xml:lang="en" Type="text/plain">Do not collect when the question 'Or did you do it
+                        purely for other reasons / without ANY intention of killing yourself ...'
+                        was answered with "No"</TranslatedText>
+                </Description>
+                <!-- MethodSignature content: TODO -->
+                <MethodSignature></MethodSignature>
+                <!-- We use XPath here for the machine-readable expression, but one can of course use any other query or expression language -->
+                <FormalExpression Context="XPath"
+                    ><Code>../ItemData[@ItemOID='IT.Way_to_end_your_life_5']/@Value='N'</Code></FormalExpression>
+            </ConditionDef>
+            <ConditionDef OID="COND.Time_starting_something_to_end_life_description"
+                Name="Condition for skipping the question 'If yes, describe', after question 'Has there been a time when you started to do something to end your life but someone stopped you ...'">
+                <Description>
+                    <TranslatedText xml:lang="en" Type="text/plain">Do not collect when the question 'Has there been a
+                        time when you started to do something to end your life but someone or
+                        something stopped you ...' was answered with "No"</TranslatedText>
+                </Description>
+                <MethodSignature></MethodSignature>
+                <!-- We use XPath here for the machine-readable expression, but one can of course use any other query or expression language -->
+                <FormalExpression Context="XPath"><Code>../ItemData[@ItemOID='IT.Time_starting_something_to_end_life']/@Value='N'</Code></FormalExpression>
+            </ConditionDef>
+            <ConditionDef OID="COND.Aborted_attempt_description"
+                Name="Condition for skipping the question 'If yes, describe', after question 'Has there been a time when you started to do something to try to end your life but you stopped yourself ...'">
+                <Description>
+                    <TranslatedText xml:lang="en" Type="text/plain">Do not collect when the question 'Has there been a
+                        time when you started to do something to try to end your life but you
+                        stopped yourself ...' was answered with "No"</TranslatedText>
+                </Description>
+                <!-- MethodSignature content: TODO -->
+                <MethodSignature></MethodSignature>
+                <!-- We use XPath here for the machine-readable expression, but one can of course use any other query or expression language -->
+                <FormalExpression Context="XPath"><Code>../ItemData[@ItemOID='IT.Aborted_attempt']/@Value='N'</Code></FormalExpression>
+            </ConditionDef>
+            <ConditionDef OID="COND.Steps_towards_making_suicide_attempt_description"
+                Name="Condition for skipping the question 'If yes, describe', after question 'Have you taken any steps towards making a suicide attempt or preparing to kill yourself ...'">
+                <Description>
+                    <TranslatedText xml:lang="en" Type="text/plain">Do not collect when the question 'Have you taken
+                        any steps towards making a suicide attempt or preparing to kill yourself
+                        ...' was answered with "No"</TranslatedText>
+                </Description>
+                <!-- MethodSignature content: TODO -->
+                <MethodSignature></MethodSignature>
+                <!-- We use XPath here for the machine-readable expression, but one can of course use any other query or expression language -->
+                <FormalExpression Context="XPath"><Code>../ItemData[@ItemOID='Steps_towards_making_suicide_attempt']/@Value='N'</Code></FormalExpression>
+            </ConditionDef>
+            <!-- Lethality -->
+            <ConditionDef OID="COND.Potential_Lethality"
+                Name="Condition for skipping question group 'Potential Lethality: Only Answer if Actual Lethality=0'">
+                <Description>
+                    <TranslatedText xml:lang="en" Type="text/plain">Do not collect when the collected value for the
+                        question 'Actual Lethality/Medical Damage' is 0</TranslatedText>
+                </Description>
+                <!-- MethodSignature content: TODO -->
+                <MethodSignature></MethodSignature>
+                <FormalExpression Context="XPath"><Code>../../ItemGroupData[@ItemGroupOID='IG.Actual_Lethality']/ItemData[@ItemOID='IT.Actual_Lethality']/@Value=0</Code></FormalExpression>
+            </ConditionDef>
+        </MetaDataVersion>
+    </Study>
+    <ClinicalData StudyOID="STUDY.CSSRS" MetaDataVersionOID="MV.CSSRS.001">
+        <SubjectData SubjectKey="001">
+            <!-- TODO: add StudyEventGroupData level -->
+            <StudyEventData StudyEventOID="SE.CSSRS">
+                <!-- we start from the form level here -->
+                <ItemGroupData ItemGroupOID="FO.C-SSRS_Form">
+                    <ItemGroupData ItemGroupOID="IG.Risk_assessment">
+                        <!-- "Risk Assessment" section -->
+                        <!-- 1. Section "Suicidal and Self-Injury Behavior (Past week)":
+                        each row has 2 checkboxes -->
+                        <ItemGroupData ItemGroupOID="IG.Suicidal_and_Self-Injury_Behavior">
+                            <!-- First checkbox checked is "Actual Side attempt" with "Past week" -->
+                            <ItemGroupData ItemGroupOID="IG.Actual_suicide_attempt_with_Lifetime">
+                                <ItemData ItemOID="IT.Actual_suicide_attempt"><Value>Y</Value></ItemData>
+                                <!-- And the repeat value -->
+                                <ItemData ItemOID="IT.PAST_WEEK_LIFETIME"><Value>PAST_WEEK</Value></ItemData><!-- governed by codelist with values "PAST_WEEK" and "LIFETIME" -->
+                            </ItemGroupData>
+                            <!-- Second checkbox checked is "Aborted Attempt" with "Lifetime" -->
+                            <ItemGroupData ItemGroupOID="IG.Aborted_attempt_with_Lifetime">
+                                <ItemData ItemOID="IT.Aborted_attempt"><Value>Y</Value></ItemData>
+                                <!-- And the repeat value -->
+                                <ItemData ItemOID="IT.PAST_WEEK_LIFETIME"><Value>LIFETIME</Value></ItemData><!-- governed by codelist with values "PAST_WEEK" and "LIFETIME" -->
+                            </ItemGroupData>
+                            <!-- Third checkbox checked is "Self-injury behavior" with BOTH checkboxes "Past week" and "Lifetime" checked.
+                            TODO: discuss with team whether the following is the correct approach -->
+                            <ItemGroupData ItemGroupOID="IG.Self-injury_behavior">
+                                <ItemData ItemOID="IT.Self-injury_behavior"><Value>Y</Value></ItemData>
+                                <ItemData ItemOID="IT.PAST_WEEK_LIFETIME"><Value>LIFETIME</Value></ItemData>
+                            </ItemGroupData>
+                        </ItemGroupData><!-- end of section "Suicidal and Self-Injury Behavior (Past week)" -->
+                        <!-- Section "Suicide Ideation (Most Severe in Past Week)" -->
+                        <ItemGroupData ItemGroupOID="IG.Suicidal_Ideation">
+                            <!-- Section "Suicide Ideation (Most Severe in Past Week)": only 1 checkbox per row, no repeat -->
+                            <!-- Checkboxes "Suicidal thoughts" and "Suicidal intent with specific plan" have been checked -->
+                            <!-- TODO: there are subsections -->
+                            <ItemData ItemOID="IT.Suicidal_thoughts"><Value>Y</Value></ItemData>                
+                            <ItemData ItemOID="IT.Suicidal_intent_with_specific_plan"><Value>Y</Value></ItemData>
+                        </ItemGroupData>
+                        <!-- Section "Activating Events (Recent)" -->
+                        <ItemGroupData ItemGroupOID="IG.Activating_Events_Recent">
+                            <!-- "Recent loss or other significant negative event" has been checked -->
+                            <ItemData ItemOID="IT.Recent_loss_or_other_significant_negative_event"><Value>1</Value></ItemData>
+                            
+                            <!-- with additional description "dog died" -->
+                            <ItemData ItemOID="IT.Recent_loss_or_other_significant_negative_event_Description"><Value>Dog died</Value></ItemData>
+                            <!-- Checkbox "Current or pending isolation or feeling alone" has been checked -->
+                            <ItemData ItemOID="IT.Current_or_pending_isolation_or_feeling_alone"><Value>Y</Value></ItemData>                        
+                        </ItemGroupData>
+                        <!-- Section "Treatment History" -->
+                        <ItemGroupData ItemGroupOID="IG.Treatment_History">
+                            <!-- Only checkbox "noncompliant with treatment has been checked -->
+                            <ItemData ItemOID="IT.Noncompliant_with_treatment"><Value>Y</Value></ItemData>                        
+                        </ItemGroupData>
+                        <!-- Section "Other Risk factors" -->
+                        <ItemGroupData ItemGroupOID="IT.Other_Risk_Factors">
+                            <!-- The checkbox "Other Risk Factors" has been checked, 
+                            and two entries (2 rows) were provided: "Mountaineering" and "Skiing" -->
+                            <ItemData ItemOID="IT.Other_Risk_Factors"><Value>Y</Value></ItemData>
+                            <!-- TODO?: shouldn't this be a repeating ItemGroup -->
+                            <ItemData ItemOID="IT.Other_Risk_Factors_Description"><Value>Mountaineering and skiing</Value></ItemData>
+                        </ItemGroupData>
+                        <!-- Section "Clinical Status" -->
+                        <ItemGroupData ItemGroupOID="IG.Clinical_Status_Recent">
+                            <!-- Only "Highly impulsive behavior" and "Aggressive behavior towards others" are checked -->
+                            <ItemData ItemOID="IT.Highly_impulsive_behavior"><Value>Y</Value></ItemData>                        
+                            <ItemData ItemOID="IT.Any_suicidal_self-injury_or_aggressive_behavior"><Value>Y</Value></ItemData>                        
+                        </ItemGroupData>
+                        <!-- Section "Protective factors" -->
+                        <ItemGroupData ItemGroupOID="IG.Protective_factors">
+                            <ItemData ItemOID="IT.Fear_of_death"><Value>Y</Value></ItemData>                        
+                        </ItemGroupData>
+                        <!-- Section "Other protective factors -->
+                        <ItemGroupData ItemGroupOID="IG.Other_Protective_Factors">
+                            <!-- "Other protective factors" checkbox is checked, 
+                            with additional text "wears protector when skiing" -->
+                            <ItemData ItemOID="IT.Other_Protective_Factors"><Value>Y</Value></ItemData>
+                            <ItemData ItemOID="IT.Other_Protective_Factors_Description"><Value>wearing protector when skiing</Value></ItemData>
+                        </ItemGroupData>
+                    </ItemGroupData><!-- End of page 1: "Risk Assessment" -->                
+                    <!-- Page "SUICIDAL IDEATION" -->
+                    <!-- The 5 first questions in this form (section Suicidal and Self-Injury Behavior (Past week)), 
+                    has two checkboxes, one for "Lifetime: Time Most Suicidal Lifetime: Time He/She Felt Most Suicidal", 
+                    and one for "Past 1 month" -->
+                </ItemGroupData><!-- End of complete form -->
+            </StudyEventData>
+        </SubjectData>
+    </ClinicalData>
+</ODM>

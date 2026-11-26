@@ -1,0 +1,422 @@
+{
+  "label": "ODM v2.0, CDISC wiki export 2026-10-16/18",
+  "namespace": "http://www.cdisc.org/ns/odm/v2.0",
+  "source_path": "../model/odm-v2.0.json",
+  "note": "Per element, each OID-reference attribute and the element types the ODM v2.0 spec lets it point at. An empty list means the attribute names no element in the document (FileOID, PriorFileOID).",
+  "elements": {
+    "AbsoluteTimingConstraint": {
+      "StudyEventGroupOID": [
+        "StudyEventGroupDef"
+      ],
+      "StudyEventOID": [
+        "StudyEventDef"
+      ]
+    },
+    "AdminData": {
+      "StudyOID": [
+        "Study"
+      ]
+    },
+    "Association": {
+      "MetaDataVersionOID": [
+        "MetaDataVersion"
+      ],
+      "StudyOID": [
+        "Study"
+      ]
+    },
+    "ClinicalData": {
+      "MetaDataVersionOID": [
+        "MetaDataVersion"
+      ],
+      "StudyOID": [
+        "Study"
+      ]
+    },
+    "CodeList": {
+      "CommentOID": [
+        "CommentDef"
+      ],
+      "StandardOID": [
+        "Standard"
+      ]
+    },
+    "CodeListItem": {
+      "CommentOID": [
+        "CommentDef"
+      ]
+    },
+    "CodeListRef": {
+      "CodeListOID": [
+        "CodeList"
+      ]
+    },
+    "Coding": {
+      "CommentOID": [
+        "CommentDef"
+      ]
+    },
+    "ConditionDef": {
+      "CommentOID": [
+        "CommentDef"
+      ]
+    },
+    "Criterion": {
+      "ConditionOID": [
+        "ConditionDef"
+      ]
+    },
+    "DefaultTransition": {
+      "TargetTransitionOID": [
+        "Transition"
+      ]
+    },
+    "DocumentRef": {
+      "LeafID": [
+        "Leaf"
+      ]
+    },
+    "DurationTimingConstraint": {
+      "StructuralElementOID": [
+        "Epoch",
+        "ItemDef",
+        "ItemGroupDef",
+        "Study",
+        "StudyEventDef",
+        "StudyEventGroupDef"
+      ]
+    },
+    "FlagType": {
+      "CodeListOID": [
+        "CodeList"
+      ]
+    },
+    "FlagValue": {
+      "CodeListOID": [
+        "CodeList"
+      ]
+    },
+    "Include": {
+      "MetaDataVersionOID": [
+        "MetaDataVersion"
+      ],
+      "StudyOID": [
+        "Study"
+      ]
+    },
+    "InvestigatorRef": {
+      "UserOID": [
+        "User"
+      ]
+    },
+    "ItemData": {
+      "ItemOID": [
+        "ItemDef"
+      ]
+    },
+    "ItemDef": {
+      "CommentOID": [
+        "CommentDef"
+      ]
+    },
+    "ItemGroupData": {
+      "ItemGroupOID": [
+        "ItemGroupDef"
+      ]
+    },
+    "ItemGroupDef": {
+      "ArchiveLocationID": [
+        "Leaf"
+      ],
+      "CommentOID": [
+        "CommentDef"
+      ],
+      "StandardOID": [
+        "Standard"
+      ]
+    },
+    "ItemGroupRef": {
+      "CollectionExceptionConditionOID": [
+        "ConditionDef"
+      ],
+      "ItemGroupOID": [
+        "ItemGroupDef"
+      ],
+      "MethodOID": [
+        "MethodDef"
+      ]
+    },
+    "ItemRef": {
+      "CollectionExceptionConditionOID": [
+        "ConditionDef"
+      ],
+      "ItemOID": [
+        "ItemDef"
+      ],
+      "MethodOID": [
+        "MethodDef"
+      ],
+      "RoleCodeListOID": [
+        "CodeList"
+      ],
+      "UnitsItemOID": [
+        "ItemDef"
+      ]
+    },
+    "KeySet": {
+      "ItemGroupOID": [
+        "ItemGroupDef"
+      ],
+      "ItemOID": [
+        "ItemDef"
+      ],
+      "MetaDataVersionOID": [
+        "MetaDataVersion"
+      ],
+      "StudyEventOID": [
+        "StudyEventDef"
+      ],
+      "StudyOID": [
+        "Study"
+      ]
+    },
+    "Location": {
+      "OrganizationOID": [
+        "Organization"
+      ]
+    },
+    "LocationRef": {
+      "LocationOID": [
+        "Location"
+      ]
+    },
+    "MetaDataVersion": {
+      "CommentOID": [
+        "CommentDef"
+      ]
+    },
+    "MetaDataVersionRef": {
+      "MetaDataVersionOID": [
+        "MetaDataVersion"
+      ],
+      "StudyOID": [
+        "Study"
+      ]
+    },
+    "MethodDef": {
+      "CommentOID": [
+        "CommentDef"
+      ]
+    },
+    "ODM": {
+      "FileOID": [],
+      "PriorFileOID": []
+    },
+    "Organization": {
+      "LocationOID": [
+        "Location"
+      ],
+      "PartOfOrganizationOID": [
+        "Organization"
+      ]
+    },
+    "RangeCheck": {
+      "ItemOID": [
+        "ItemDef"
+      ]
+    },
+    "ReferenceData": {
+      "MetaDataVersionOID": [
+        "MetaDataVersion"
+      ],
+      "StudyOID": [
+        "Study"
+      ]
+    },
+    "RelativeTimingConstraint": {
+      "PredecessorOID": [
+        "ItemDef",
+        "ItemGroupDef",
+        "StudyEventDef",
+        "StudyEventGroupDef"
+      ],
+      "SuccessorOID": [
+        "ItemDef",
+        "ItemGroupDef",
+        "StudyEventDef",
+        "StudyEventGroupDef"
+      ]
+    },
+    "SignatureRef": {
+      "SignatureOID": [
+        "SignatureDef"
+      ]
+    },
+    "SiteRef": {
+      "LocationOID": [
+        "Location"
+      ]
+    },
+    "SourceItem": {
+      "ItemGroupOID": [
+        "ItemGroupDef"
+      ],
+      "ItemOID": [
+        "ItemDef"
+      ],
+      "MetaDataVersionOID": [
+        "MetaDataVersion"
+      ],
+      "StudyOID": [
+        "Study"
+      ],
+      "leafID": [
+        "Leaf"
+      ]
+    },
+    "Standard": {
+      "CommentOID": [
+        "CommentDef"
+      ]
+    },
+    "StudyEndPointRef": {
+      "StudyEndPointOID": [
+        "StudyEndPoint"
+      ]
+    },
+    "StudyEventData": {
+      "StudyEventOID": [
+        "StudyEventDef"
+      ]
+    },
+    "StudyEventDef": {
+      "CommentOID": [
+        "CommentDef"
+      ]
+    },
+    "StudyEventGroupDef": {
+      "ArmOID": [
+        "Arm"
+      ],
+      "CommentOID": [
+        "CommentDef"
+      ],
+      "EpochOID": [
+        "Epoch"
+      ]
+    },
+    "StudyEventGroupRef": {
+      "CollectionExceptionConditionOID": [
+        "ConditionDef"
+      ],
+      "StudyEventGroupOID": [
+        "StudyEventGroupDef"
+      ]
+    },
+    "StudyEventRef": {
+      "CollectionExceptionConditionOID": [
+        "ConditionDef"
+      ],
+      "StudyEventOID": [
+        "StudyEventDef"
+      ]
+    },
+    "StudyInterventionRef": {
+      "StudyInterventionOID": [
+        "StudyIntervention"
+      ]
+    },
+    "StudyTargetPopulationRef": {
+      "StudyTargetPopulationOID": [
+        "StudyTargetPopulation"
+      ]
+    },
+    "TargetTransition": {
+      "ConditionOID": [
+        "ConditionDef"
+      ],
+      "TargetTransitionOID": [
+        "Transition"
+      ]
+    },
+    "Transition": {
+      "EndConditionOID": [
+        "ConditionDef"
+      ],
+      "SourceOID": [
+        "Branching",
+        "ItemDef",
+        "ItemGroupDef",
+        "StudyEventDef",
+        "StudyEventGroupDef"
+      ],
+      "StartConditionOID": [
+        "ConditionDef"
+      ],
+      "TargetOID": [
+        "Branching",
+        "ItemDef",
+        "ItemGroupDef",
+        "StudyEventDef",
+        "StudyEventGroupDef"
+      ]
+    },
+    "TransitionTimingConstraint": {
+      "MethodOID": [
+        "MethodDef"
+      ],
+      "TransitionOID": [
+        "Transition"
+      ]
+    },
+    "User": {
+      "LocationOID": [
+        "Location"
+      ],
+      "OrganizationOID": [
+        "Organization"
+      ]
+    },
+    "UserRef": {
+      "UserOID": [
+        "User"
+      ]
+    },
+    "ValueListRef": {
+      "ValueListOID": [
+        "ValueListDef"
+      ]
+    },
+    "WhereClauseDef": {
+      "CommentOID": [
+        "CommentDef"
+      ]
+    },
+    "WhereClauseRef": {
+      "WhereClauseOID": [
+        "WhereClauseDef"
+      ]
+    },
+    "WorkflowEnd": {
+      "EndOID": [
+        "ItemDef",
+        "ItemGroupDef",
+        "StudyEventDef",
+        "StudyEventGroupDef"
+      ]
+    },
+    "WorkflowRef": {
+      "WorkflowOID": [
+        "WorkflowDef"
+      ]
+    },
+    "WorkflowStart": {
+      "StartOID": [
+        "ItemDef",
+        "ItemGroupDef",
+        "StudyEventDef",
+        "StudyEventGroupDef"
+      ]
+    }
+  }
+}

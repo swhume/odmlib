@@ -1,0 +1,806 @@
+{
+  "CreationDateTime": "2020-07-15T18:05:00",
+  "FileOID": "CDASH_MH",
+  "FileType": "Snapshot",
+  "Granularity": "Metadata",
+  "ODMVersion": "2.0",
+  "SourceSystem": "XML4Pharma CDISC ODM Study Designer",
+  "SourceSystemVersion": "2015-R1",
+  "Study": [
+    {
+      "OID": "ODV2_Example_MH_1",
+      "StudyName": "ODM Example Medical History Stroke / Lung disease / IBD / Cancer History - CDASH User Guide v.1.1.1",
+      "ProtocolName": "ODM_Example_Repeating",
+      "MetaDataVersion": [
+        {
+          "Name": "Version 1.0",
+          "OID": "MDV.1.0",
+          "Description": {
+            "TranslatedText": [
+              {
+                "lang": "en",
+                "Type": "text/plain",
+                "_content": "Version 1.0"
+              }
+            ]
+          },
+          "ValueListDef": [
+            {
+              "OID": "VL.IT.CONDITION_TYPE",
+              "Description": {
+                "TranslatedText": [
+                  {
+                    "lang": "en",
+                    "Type": "text/plain",
+                    "_content": "ValueList for \"condition type\""
+                  }
+                ]
+              },
+              "ItemRef": [
+                {
+                  "ItemOID": "IT.CONDITION_TYPE.STROKE",
+                  "Mandatory": "No",
+                  "WhereClauseRef": [
+                    {
+                      "WhereClauseOID": "WC.CONDITION_TYPE.STROKE"
+                    }
+                  ]
+                },
+                {
+                  "ItemOID": "IT.CONDITION_TYPE.CHRONIC_LUNG_DISEASE",
+                  "Mandatory": "No",
+                  "WhereClauseRef": [
+                    {
+                      "WhereClauseOID": "WC.CONDITION_TYPE.CHRONIC_LUNG_DISEASE"
+                    }
+                  ]
+                },
+                {
+                  "ItemOID": "IT.CONDITION_TYPE.INFLAMMATORY_BOWEL_DISEASE",
+                  "Mandatory": "No",
+                  "WhereClauseRef": [
+                    {
+                      "WhereClauseOID": "WC.CONDITION_TYPE.INFLAMMATORY_BOWEL_DISEASE"
+                    }
+                  ]
+                },
+                {
+                  "ItemOID": "IT.CONDITION_TYPE.FAMILY_HISTORY_OF_CANCER",
+                  "Mandatory": "No",
+                  "WhereClauseRef": [
+                    {
+                      "WhereClauseOID": "WC.CONDITION_TYPE.FAMILY_HISTORY_OF_CANCER"
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "WhereClauseDef": [
+            {
+              "OID": "WC.CONDITION_TYPE.STROKE",
+              "RangeCheck": [
+                {
+                  "Comparator": "EQ",
+                  "SoftHard": "Hard",
+                  "ItemOID": "IT.CONDITION_PROCEDURE_NAME",
+                  "CheckValue": [
+                    {
+                      "_content": "Stroke"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "OID": "WC.CONDITION_TYPE.CHRONIC_LUNG_DISEASE",
+              "RangeCheck": [
+                {
+                  "Comparator": "EQ",
+                  "SoftHard": "Hard",
+                  "ItemOID": "IT.CONDITION_PROCEDURE_NAME",
+                  "CheckValue": [
+                    {
+                      "_content": "Chronic lung disease"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "OID": "WC.CONDITION_TYPE.INFLAMMATORY_BOWEL_DISEASE",
+              "RangeCheck": [
+                {
+                  "Comparator": "EQ",
+                  "SoftHard": "Hard",
+                  "ItemOID": "IT.CONDITION_PROCEDURE_NAME",
+                  "CheckValue": [
+                    {
+                      "_content": "Inflammatory bowel disease"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "OID": "WC.CONDITION_TYPE.FAMILY_HISTORY_OF_CANCER",
+              "RangeCheck": [
+                {
+                  "Comparator": "EQ",
+                  "SoftHard": "Hard",
+                  "ItemOID": "IT.CONDITION_PROCEDURE_NAME",
+                  "CheckValue": [
+                    {
+                      "_content": "Family history of cancer"
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "ItemGroupDef": [
+            {
+              "OID": "FO.MEDICAL_HISTORY",
+              "Name": "Medical History of Stroke / Lung disease / IBD / Cancer Family History",
+              "Type": "Form",
+              "Repeating": "No",
+              "Description": {
+                "TranslatedText": [
+                  {
+                    "lang": "en",
+                    "Type": "text/plain",
+                    "_content": "Medical History of Stroke / Lung disease / IBD / Cancer Family History"
+                  }
+                ]
+              },
+              "ItemGroupRef": [
+                {
+                  "ItemGroupOID": "IG.HEADER",
+                  "Mandatory": "Yes"
+                },
+                {
+                  "ItemGroupOID": "IG.SINGLE_CONDITION_PROCEDURE",
+                  "Mandatory": "Yes"
+                }
+              ]
+            },
+            {
+              "OID": "IG.HEADER",
+              "Name": "Header",
+              "Repeating": "No",
+              "Type": "Section",
+              "Description": {
+                "TranslatedText": [
+                  {
+                    "lang": "en",
+                    "Type": "text/plain",
+                    "_content": "Header"
+                  }
+                ]
+              },
+              "ItemRef": [
+                {
+                  "ItemOID": "IT.SUBJECT_ID",
+                  "Mandatory": "Yes"
+                },
+                {
+                  "ItemOID": "IT.VISIT_DATE_TIME",
+                  "Mandatory": "Yes"
+                }
+              ]
+            },
+            {
+              "Name": "Single condition Line",
+              "OID": "IG.SINGLE_CONDITION_PROCEDURE",
+              "Type": "Section",
+              "Repeating": "Static",
+              "ItemRef": [
+                {
+                  "ItemOID": "IT.LINE_NUMBER",
+                  "Mandatory": "Yes",
+                  "MethodOID": "METH.LINE_NUMBER"
+                },
+                {
+                  "ItemOID": "IT.CONDITION_PROCEDURE_NAME",
+                  "Mandatory": "Yes",
+                  "Repeat": "Yes"
+                },
+                {
+                  "ItemOID": "IT.CONDITION_PROCEDURE_YES_NO",
+                  "Mandatory": "Yes"
+                },
+                {
+                  "ItemOID": "IT.CONDITION_TYPE",
+                  "Mandatory": "No",
+                  "CollectionExceptionConditionOID": "COND.CONDITION_PROCEDURE_NOT_PRESENT"
+                },
+                {
+                  "ItemOID": "IT.TYPE_OTHER",
+                  "Mandatory": "No",
+                  "CollectionExceptionConditionOID": "COND.CONDITION_PROCEDURE_NOT_PRESENT"
+                }
+              ]
+            }
+          ],
+          "ItemDef": [
+            {
+              "DataType": "text",
+              "Length": 10,
+              "Name": "Subject ID",
+              "OID": "IT.SUBJECT_ID",
+              "Question": {
+                "TranslatedText": [
+                  {
+                    "lang": "en",
+                    "Type": "text/plain",
+                    "_content": "Subject ID"
+                  }
+                ]
+              }
+            },
+            {
+              "DataType": "partialDatetime",
+              "Name": "Visit Date/Time",
+              "OID": "IT.VISIT_DATE_TIME",
+              "Question": {
+                "TranslatedText": [
+                  {
+                    "lang": "en",
+                    "Type": "text/plain",
+                    "_content": "Visit date/time"
+                  }
+                ]
+              }
+            },
+            {
+              "DataType": "integer",
+              "Length": 2,
+              "Name": "Line number",
+              "OID": "IT.LINE_NUMBER",
+              "Description": {
+                "TranslatedText": [
+                  {
+                    "lang": "en",
+                    "Type": "text/plain",
+                    "_content": "#"
+                  }
+                ]
+              }
+            },
+            {
+              "DataType": "text",
+              "Length": 40,
+              "Name": "Condition/Procedure Name",
+              "OID": "IT.CONDITION_PROCEDURE_NAME",
+              "Description": {
+                "TranslatedText": [
+                  {
+                    "lang": "en",
+                    "Type": "text/plain",
+                    "_content": "Condition/Procedure"
+                  }
+                ]
+              },
+              "CodeListRef": {
+                "CodeListOID": "CL.CONDITION_PROCEDURE"
+              }
+            },
+            {
+              "DataType": "text",
+              "Name": "Condition/Procedure Presence",
+              "OID": "IT.CONDITION_PROCEDURE_YES_NO",
+              "Question": {
+                "TranslatedText": [
+                  {
+                    "lang": "en",
+                    "Type": "text/plain",
+                    "_content": "Condition/Procedure"
+                  }
+                ]
+              },
+              "CodeListRef": {
+                "CodeListOID": "CL.NY"
+              }
+            },
+            {
+              "OID": "IT.CONDITION_TYPE",
+              "Name": "Condition Type",
+              "DataType": "text",
+              "Length": 40,
+              "Question": {
+                "TranslatedText": [
+                  {
+                    "lang": "en",
+                    "Type": "text/plain",
+                    "_content": "Type"
+                  }
+                ]
+              },
+              "ValueListRef": {
+                "ValueListOID": "VL.IT.CONDITION_TYPE"
+              }
+            },
+            {
+              "DataType": "text",
+              "Length": 100,
+              "Name": "Other type specification",
+              "OID": "IT.TYPE_OTHER",
+              "Question": {
+                "TranslatedText": [
+                  {
+                    "lang": "en",
+                    "Type": "text/plain",
+                    "_content": "Other type, specify"
+                  }
+                ]
+              }
+            },
+            {
+              "OID": "IT.CONDITION_TYPE.STROKE",
+              "Name": "Condition type for stroke",
+              "DataType": "text",
+              "Length": 15,
+              "CodeListRef": {
+                "CodeListOID": "CL.STROKE_TYPE"
+              }
+            },
+            {
+              "OID": "IT.CONDITION_TYPE.CHRONIC_LUNG_DISEASE",
+              "Name": "Condition type for chronic lung disease",
+              "DataType": "text",
+              "Length": 25,
+              "CodeListRef": {
+                "CodeListOID": "CL.CHRONIC_LUNG_DISEASE_TYPE"
+              }
+            },
+            {
+              "OID": "IT.CONDITION_TYPE.INFLAMMATORY_BOWEL_DISEASE",
+              "Name": "Condition type for inflammatory bowel disease",
+              "DataType": "text",
+              "Length": 18,
+              "CodeListRef": {
+                "CodeListOID": "CL.INFLAMMATORY_BOWEL_DISEASE_TYPE"
+              }
+            },
+            {
+              "OID": "IT.CONDITION_TYPE.FAMILY_HISTORY_OF_CANCER",
+              "Name": "Condition type for family history of cancer",
+              "DataType": "text",
+              "Length": 7,
+              "CodeListRef": {
+                "CodeListOID": "CL.FAMILY_HISTORY_OF_CANCER_TYPE"
+              }
+            }
+          ],
+          "CodeList": [
+            {
+              "OID": "CL.CONDITION_PROCEDURE",
+              "Name": "Condition/Procedure name",
+              "DataType": "text",
+              "CodeListItem": [
+                {
+                  "CodedValue": "Stroke",
+                  "Coding": [
+                    {
+                      "Code": "366609000",
+                      "System": "http://snomed.info/sct",
+                      "SystemName": "SNOMED-CT",
+                      "SystemVersion": "2019.10.03"
+                    }
+                  ]
+                },
+                {
+                  "CodedValue": "Chronic lung disease",
+                  "Coding": [
+                    {
+                      "Code": "413839001",
+                      "System": "http://snomed.info/sct",
+                      "SystemName": "SNOMED-CT",
+                      "SystemVersion": "2019.10.03"
+                    }
+                  ]
+                },
+                {
+                  "CodedValue": "Inflammatory bowel disease",
+                  "Coding": [
+                    {
+                      "Code": "24526004",
+                      "System": "http://snomed.info/sct",
+                      "SystemName": "SNOMED-CT",
+                      "SystemVersion": "2019.10.03"
+                    }
+                  ]
+                },
+                {
+                  "CodedValue": "Family history of cancer",
+                  "Coding": [
+                    {
+                      "Code": "275937001",
+                      "System": "http://snomed.info/sct",
+                      "SystemName": "SNOMED-CT",
+                      "SystemVersion": "2019.10.03"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "DataType": "text",
+              "Name": "Stroke Type",
+              "OID": "CL.STROKE_TYPE",
+              "Description": {
+                "TranslatedText": [
+                  {
+                    "lang": "en",
+                    "Type": "text/plain",
+                    "_content": "Stroke type"
+                  }
+                ]
+              },
+              "CodeListItem": [
+                {
+                  "CodedValue": "Hemorrhagic"
+                },
+                {
+                  "CodedValue": "Non-hemorrhagic"
+                },
+                {
+                  "CodedValue": "Other"
+                },
+                {
+                  "CodedValue": "Unknown"
+                }
+              ]
+            },
+            {
+              "DataType": "text",
+              "Name": "Chronic Lund Disease Type",
+              "OID": "CL.CHRONIC_LUNG_DISEASE_TYPE",
+              "Description": {
+                "TranslatedText": [
+                  {
+                    "lang": "en",
+                    "Type": "text/plain",
+                    "_content": "Chronic lung disease type"
+                  }
+                ]
+              },
+              "CodeListItem": [
+                {
+                  "CodedValue": "Interstitial lung disease"
+                },
+                {
+                  "CodedValue": "Obstructive lung disease"
+                },
+                {
+                  "CodedValue": "Other"
+                }
+              ]
+            },
+            {
+              "DataType": "text",
+              "Name": "Inflammatory Bowel Disease Type",
+              "OID": "CL.INFLAMMATORY_BOWEL_DISEASE_TYPE",
+              "Description": {
+                "TranslatedText": [
+                  {
+                    "lang": "en",
+                    "Type": "text/plain",
+                    "_content": "Inflammatory bowel disease"
+                  }
+                ]
+              },
+              "CodeListItem": [
+                {
+                  "CodedValue": "Chron's disease"
+                },
+                {
+                  "CodedValue": "Other"
+                },
+                {
+                  "CodedValue": "Ulcerative Colitis"
+                }
+              ]
+            },
+            {
+              "DataType": "text",
+              "Name": "Family History of Cancer Type",
+              "OID": "CL.FAMILY_HISTORY_OF_CANCER_TYPE",
+              "Description": {
+                "TranslatedText": [
+                  {
+                    "lang": "en",
+                    "Type": "text/plain",
+                    "_content": "Family History of Cancer Type"
+                  }
+                ]
+              },
+              "CodeListItem": [
+                {
+                  "CodedValue": "Breast"
+                },
+                {
+                  "CodedValue": "Colon"
+                },
+                {
+                  "CodedValue": "Lung"
+                },
+                {
+                  "CodedValue": "Other"
+                },
+                {
+                  "CodedValue": "Ovarian"
+                },
+                {
+                  "CodedValue": "Skin"
+                },
+                {
+                  "CodedValue": "Unknown"
+                }
+              ]
+            },
+            {
+              "DataType": "text",
+              "Name": "Yes-No",
+              "OID": "CL.NY",
+              "CodeListItem": [
+                {
+                  "CodedValue": "Y",
+                  "Decode": {
+                    "TranslatedText": [
+                      {
+                        "lang": "en",
+                        "Type": "text/plain",
+                        "_content": "Yes"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "CodedValue": "N",
+                  "Decode": {
+                    "TranslatedText": [
+                      {
+                        "lang": "en",
+                        "Type": "text/plain",
+                        "_content": "No"
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+          ],
+          "ConditionDef": [
+            {
+              "OID": "COND.CONDITION_PROCEDURE_NOT_PRESENT",
+              "Name": "Condition/Procedure is not present",
+              "Description": {
+                "TranslatedText": [
+                  {
+                    "lang": "en",
+                    "Type": "text/plain",
+                    "_content": "Condition/Procedure \"No\" was checked in Yes/No"
+                  }
+                ]
+              },
+              "MethodSignature": {},
+              "FormalExpression": [
+                {
+                  "Context": "XPath",
+                  "Code": {
+                    "_content": "../ItemData[@ItemOID='IT.CONDITION_PROCEDURE_YES_NO']='N'"
+                  }
+                }
+              ]
+            }
+          ],
+          "MethodDef": [
+            {
+              "OID": "METH.LINE_NUMBER",
+              "Name": "Line number assignment",
+              "Description": {
+                "TranslatedText": [
+                  {
+                    "lang": "en",
+                    "Type": "text/plain",
+                    "_content": "Position of ItemGroup with OID IG.SINGLE_CONDITION_PROCEDURE in Form with OID FO.MEDICAL_HISTORY"
+                  }
+                ]
+              },
+              "MethodSignature": {},
+              "FormalExpression": [
+                {
+                  "Context": "XPath",
+                  "Code": {
+                    "_content": "position()"
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "ClinicalData": [
+    {
+      "StudyOID": "ODV2_Example_MH_1",
+      "MetaDataVersionOID": "MDV.1.0",
+      "SubjectData": [
+        {
+          "SubjectKey": "001",
+          "StudyEventData": [
+            {
+              "StudyEventOID": "SE.001",
+              "ItemGroupData": [
+                {
+                  "ItemGroupOID": "FO.MEDICAL_HISTORY",
+                  "ItemGroupData": [
+                    {
+                      "ItemGroupOID": "IG.HEADER",
+                      "ItemData": [
+                        {
+                          "ItemOID": "IT.SUBJECT_ID",
+                          "Value": [
+                            {
+                              "_content": "001"
+                            }
+                          ]
+                        },
+                        {
+                          "ItemOID": "IT.VISIT_DATE_TIME",
+                          "Value": [
+                            {
+                              "_content": "2020-07-06T09:11"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "ItemGroupOID": "IG.SINGLE_CONDITION_PROCEDURE",
+                      "ItemGroupRepeatKey": "1",
+                      "ItemData": [
+                        {
+                          "ItemOID": "IT.LINE_NUMBER",
+                          "Value": [
+                            {
+                              "_content": "1"
+                            }
+                          ]
+                        },
+                        {
+                          "ItemOID": "IT.CONDITION_PROCEDURE_NAME",
+                          "Value": [
+                            {
+                              "_content": "Stroke"
+                            }
+                          ]
+                        },
+                        {
+                          "ItemOID": "IT.CONDITION_PROCEDURE_YES_NO",
+                          "Value": [
+                            {
+                              "_content": "No"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "ItemGroupOID": "IG.SINGLE_CONDITION_PROCEDURE",
+                      "ItemGroupRepeatKey": "2",
+                      "ItemData": [
+                        {
+                          "ItemOID": "IT.LINE_NUMBER",
+                          "Value": [
+                            {
+                              "_content": "2"
+                            }
+                          ]
+                        },
+                        {
+                          "ItemOID": "IT.CONDITION_PROCEDURE_NAME",
+                          "Value": [
+                            {
+                              "_content": "2"
+                            }
+                          ]
+                        },
+                        {
+                          "ItemOID": "IT.CONDITION_PROCEDURE_YES_NO",
+                          "Value": [
+                            {
+                              "_content": "Yes"
+                            }
+                          ]
+                        },
+                        {
+                          "ItemOID": "IT.CONDITION_TYPE",
+                          "Value": [
+                            {
+                              "_content": "Interstitial lung disease"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "ItemGroupOID": "IG.SINGLE_CONDITION_PROCEDURE",
+                      "ItemGroupRepeatKey": "3",
+                      "ItemData": [
+                        {
+                          "ItemOID": "IT.LINE_NUMBER",
+                          "Value": [
+                            {
+                              "_content": "3"
+                            }
+                          ]
+                        },
+                        {
+                          "ItemOID": "IT.CONDITION_PROCEDURE_NAME",
+                          "Value": [
+                            {
+                              "_content": "Inflammatory bowel disease"
+                            }
+                          ]
+                        },
+                        {
+                          "ItemOID": "IT.CONDITION_PROCEDURE_YES_NO",
+                          "Value": [
+                            {
+                              "_content": "Yes"
+                            }
+                          ]
+                        },
+                        {
+                          "ItemOID": "IT.TYPE_OTHER",
+                          "Value": [
+                            {
+                              "_content": "could not be determined"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "ItemGroupOID": "IG.SINGLE_CONDITION_PROCEDURE",
+                      "ItemGroupRepeatKey": "4",
+                      "ItemData": [
+                        {
+                          "ItemOID": "IT.LINE_NUMBER",
+                          "Value": [
+                            {
+                              "_content": "4"
+                            }
+                          ]
+                        },
+                        {
+                          "ItemOID": "IT.CONDITION_PROCEDURE_NAME",
+                          "Value": [
+                            {
+                              "_content": "Family history of cancer"
+                            }
+                          ]
+                        },
+                        {
+                          "ItemOID": "IT.CONDITION_PROCEDURE_YES_NO",
+                          "Value": [
+                            {
+                              "_content": "No"
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

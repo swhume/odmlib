@@ -49,12 +49,14 @@ Run ``python tests/test_odm_2_0_xsd_alignment.py`` to print the current
 divergences as ready-to-paste literals when updating the allowlists.
 """
 import ast
+import functools
 import glob
 import json
 import os
-import re
 import xml.etree.ElementTree as ET
 from unittest import TestCase
+
+import xmlschema
 
 import odmlib.odm_element as OE
 import odmlib.odm_2_0.model as ODM2
@@ -117,8 +119,29 @@ def _xsd_attributes(node, seen=None):
     return out
 
 
+def _merge_adjacent_repeats(children):
+    """Fold consecutive refs to the same element into one list entry.
+
+    ``Association`` is ``(KeySet, KeySet, Annotation)``: two refs to the same
+    element, which odmlib models as a single ``KeySet`` list. Unmerged, the
+    first comparison sees two singles (``elem-list``) and an extra slot in the
+    sequence (``elem-order``). The merged entry is required if either ref is.
+    Only adjacent refs merge; ``A, B, A`` stays as three entries.
+    """
+    merged = []
+    for name, is_list, required in children:
+        if merged and merged[-1][0] == name:
+            merged[-1] = (name, True, merged[-1][2] or required)
+        else:
+            merged.append((name, is_list, required))
+    return merged
+
+
 def _xsd_children(node, seen=None):
-    """Return [(name, is_list, required)] in XSD sequence order, expanding groups."""
+    """Return [(name, is_list, required)] in XSD sequence order, expanding groups.
+
+    Adjacent refs to the same element are merged into one list entry.
+    """
     seen = set() if seen is None else seen
     out = []
     for child in node:
@@ -144,7 +167,7 @@ def _xsd_children(node, seen=None):
                 # odmlib cannot express xs:choice; every arm is optional to it.
                 inner = [(n, is_list, False) for (n, is_list, _) in inner]
             out.extend(inner)
-    return out
+    return _merge_adjacent_repeats(out)
 
 
 def _xsd_element(name):
@@ -407,23 +430,29 @@ def model_reachable_from(root):
     return seen
 
 
+@functools.lru_cache(maxsize=None)
+def _compiled_schema():
+    """The bundled ODM 2.0 XSD compiled by xmlschema, for lexical-space checks."""
+    return xmlschema.XMLSchema(os.path.join(SCHEMA_DIR, "ODM.xsd"))
+
+
 def content_allows_empty(name):
     """True when the XSD text content of element *name* may be empty.
 
-    Returns None for an element with no text content.
+    Returns None for an element with no text content. The answer comes from
+    xmlschema: is ``""`` in the content type's lexical space? Reading only
+    enumerations and patterns (``_classify``) treats a restriction of a
+    built-in such as ``xs:dateTime`` or ``xs:NMTOKEN`` as free text, and so
+    wrongly allows ``<DateTimeStamp/>``, ``<FlagValue/>`` and ``<FlagType/>``.
     """
-    ctype = CTYPES[ELEM_TYPE[name]]
-    if ctype.get("mixed") == "true":
+    xsd_type = _compiled_schema().elements[name].type
+    if xsd_type.is_simple():
+        return xsd_type.is_valid("")
+    if xsd_type.mixed:
         return True
-    simple = ctype.find(f"{XS}simpleContent")
-    if simple is None:
-        return None
-    kind, payload = _classify(simple[0].get("base"))
-    if kind == "pattern":
-        return re.fullmatch(payload, "") is not None
-    if kind == "closed":
-        return "" in payload
-    return True                                     # free text, or an extensible union
+    if xsd_type.has_simple_content():
+        return xsd_type.content.is_valid("")
+    return None
 
 
 def required_content_that_may_be_empty():
@@ -431,6 +460,13 @@ def required_content_that_may_be_empty():
     return {name for name, cls in MODEL.items()
             if "_content" in cls._attrs and cls._attrs["_content"].required
             and name in ELEM_TYPE and content_allows_empty(name)}
+
+
+def content_that_must_not_be_empty_but_may_be():
+    """Classes whose ``_content`` is optional (or absent) although the XSD forbids empty text."""
+    return {name for name, cls in MODEL.items()
+            if name in ELEM_TYPE and content_allows_empty(name) is False
+            and not ("_content" in cls._attrs and cls._attrs["_content"].required)}
 
 
 # ---------------------------------------------------------------------------
@@ -658,6 +694,38 @@ class TestModelCoversTheXSD(TestCase):
         text-only elements raised "Missing required keyword argument _content".
         """
         self.assertEqual(sorted(required_content_that_may_be_empty()), [])
+
+    def test_text_content_is_required_where_the_xsd_forbids_empty(self):
+        """The converse: an empty element the XSD rejects must not load strictly.
+
+        No modelled class has such content yet. ``DateTimeStamp``, ``FlagValue``
+        and ``FlagType`` arrive with the ClinicalData layer (P4) and must declare
+        ``_content`` required.
+        """
+        self.assertEqual(sorted(content_that_must_not_be_empty_but_may_be()), [])
+
+
+class TestGuardMachinery(TestCase):
+    """Self-tests for comparison helpers whose effect only shows once P4 lands."""
+
+    def test_repeated_refs_merge_into_a_list(self):
+        """Association's two KeySet refs become one required list, not two singles."""
+        self.assertEqual(_xsd_children(CTYPES[ELEM_TYPE["Association"]]),
+                         [("KeySet", True, True), ("Annotation", False, True)])
+        self.assertEqual(
+            _merge_adjacent_repeats([("A", False, False), ("A", False, True),
+                                     ("B", False, True), ("A", False, False)]),
+            [("A", True, True), ("B", False, True), ("A", False, False)])
+
+    def test_content_check_uses_lexical_space(self):
+        """Restrictions of xs:dateTime and xs:NMTOKEN forbid "", which a pattern/enum reader misses."""
+        for name in ("DateTimeStamp", "FlagValue", "FlagType"):
+            with self.subTest(element=name):
+                self.assertIs(content_allows_empty(name), False)
+        for name in ("TranslatedText", "CheckValue", "Value", "WorkflowEnd"):
+            with self.subTest(element=name):
+                self.assertIs(content_allows_empty(name), True)
+        self.assertIsNone(content_allows_empty("ItemGroupDef"))
 
 
 # ---------------------------------------------------------------------------

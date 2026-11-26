@@ -207,6 +207,9 @@ does instead, and that XSD validation is the backstop — the pattern already us
    Cerberus schema to enforce it in.
 2. **Repeating groups** — `StudyEventGroupDef`'s `(StudyEventGroupRef?, StudyEventRef?)+`
    modelled as two parallel lists; cannot reproduce an interleaved ordering.
+   *Resolved in 0.3.0:* `odmlib/interleave.py` keeps the members of a repeating group in
+   one shared order (`ODMListObject(group=...)`), for `StudyEventGroupDef`,
+   `ItemGroupDef`, `WorkflowDef` and ClinicalData's `ItemGroupData`.
 3. **`TranslatedText` mixed content and `xhtml:div`** — narrower than it first appears.
 
    **Tried and withdrawn.** An opaque `_content`-only `div` was added and then removed:
@@ -371,9 +374,11 @@ allowlist makes partial progress honest rather than invisible.
 - `ClinicalData` / `ReferenceData` and their 24 elements — `ROADMAP.md:186-196`, v0.3.0.
   This is also where the repeating-group problem actually bites: `ItemGroupDataGroup`
   (`ODM-clinicaldata.xsd:78-92`, referenced `maxOccurs="unbounded"`) interleaves
-  `ItemGroupData` and `ItemData`, and odmlib can neither emit nor recover that ordering.
-  It is the one construct in ODM 2.0 that genuinely needs new core machinery, and it can
-  be decided when v0.3.0 is planned.
+  `ItemGroupData` and `ItemData`.
+  *Done in 0.3.0 (plan P4):* all 24 elements are modelled, `ItemGroupData` nests itself
+  through `T.SELF`, and its `ItemGroupData`/`ItemData` children share one order through
+  `odmlib/interleave.py`, so a loaded document is written back in its own order. Every
+  allowlist in `tests/test_odm_2_0_xsd_alignment.py` is empty.
 - Core changes to `typed.py` / `odm_element.py` (the sole exception is the `_DURATION_PAT`
   widening in Phase 1, confined to ODM 2.0 usage).
 - ODM 1.3.2, Define-XML 2.0/2.1, ARM 1.0, CT 1.1.1, Dataset-XML, Dataset-JSON.

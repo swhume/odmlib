@@ -87,19 +87,17 @@ ODM 2.0 uses a flatter structure and adds workflow support:
 ODM 2.0 Known Limitations
 -------------------------
 
-The ODM 2.0 model is a draft, but every **metadata** element the ODM 2.0 XSD
-defines is now modelled. ``tests/test_odm_2_0_xsd_alignment.py`` compares the
-model against the bundled schema and asserts the divergence set equals a
-declared allowlist, so drift cannot be introduced silently. Two areas remain.
+The ODM 2.0 model is a draft, but every element the ODM 2.0 XSD defines is
+modelled: metadata, AdminData and, since 0.3.0, ClinicalData, ReferenceData
+and Association. Load the data layer with
+:meth:`~odmlib.loader.ODMLoader.ClinicalData` and
+:meth:`~odmlib.loader.ODMLoader.ReferenceData`.
+``tests/test_odm_2_0_xsd_alignment.py`` compares the model against the bundled
+schema and asserts that every element is modelled and reachable from ``ODM``,
+so drift cannot be introduced silently.
 
-**ClinicalData and ReferenceData are not modelled.**
-:class:`~odmlib.odm_2_0.model.ODM` has no ``ClinicalData``, ``ReferenceData``
-or ``Association`` child, and :class:`~odmlib.odm_2_0.model.Location` has no
-``Query``. The 24 elements of that data layer are scoped to v0.3.0; see
-``ROADMAP.md``.
-
-**One deliberate approximation** remains, where the XSD says something
-odmlib's descriptor model cannot express. It is documented in the class
+**Two deliberate approximations** remain, where the XSD says something
+odmlib's descriptor model cannot express. Each is documented in its class
 docstring, and caught by :class:`~odmlib.odm_parser.ODMSchemaValidator` rather
 than at build time:
 
@@ -107,6 +105,9 @@ than at build time:
   one of ``Code`` or ``ExternalCodeLib``. odmlib has no way to express an
   ``xs:choice``, so both children are declared optional; setting neither, or
   both, builds an object odmlib accepts and the schema rejects.
+- :class:`~odmlib.odm_2_0.model.Association` -- the XSD requires exactly two
+  ``KeySet`` children. odmlib holds them in one list and does not enforce the
+  count.
 
 Two former approximations were closed in v0.3.0:
 

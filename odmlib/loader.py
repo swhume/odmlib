@@ -159,6 +159,69 @@ class ODMLoader:
         study = self.loader.load_study(idx)
         return self._bind_namespaces(study)
 
+    def ClinicalData(self, idx: int = 0) -> Any:
+        """Return the ClinicalData at the specified index.
+
+        Must be called after :meth:`open_odm_document` or :meth:`load_odm_string`.
+        Supported by :class:`~odmlib.odm_loader.XMLODMLoader` and
+        :class:`~odmlib.odm_loader.JSONODMLoader`, for ODM 1.3.2, ODM 2.0 and
+        Dataset-XML 1.0.1.
+
+        Example::
+
+            loader = LD.ODMLoader(OL.XMLODMLoader(model_package="odm_2_0"))
+            loader.open_odm_document("data.xml")
+            for subject in loader.ClinicalData():
+                print(subject.SubjectKey)
+
+        Args:
+            idx (int): Zero-based index of the ClinicalData (default: 0).
+
+        Returns:
+            A ``ClinicalData`` odmlib object, bound to the document's namespaces.
+
+        Raises:
+            OdmlibTypeError: If the wrapped loader cannot load ClinicalData (the
+                Define-XML and ARM loaders).
+            IndexError: If the document has no ClinicalData at ``idx``.
+
+        .. versionadded:: 0.3.0
+        """
+        return self._bind_namespaces(self._data_loader("load_clinicaldata")(idx))
+
+    def ReferenceData(self, idx: int = 0) -> Any:
+        """Return the ReferenceData at the specified index.
+
+        Must be called after :meth:`open_odm_document` or :meth:`load_odm_string`.
+        Supported by the same loaders as :meth:`ClinicalData`.
+
+        Args:
+            idx (int): Zero-based index of the ReferenceData (default: 0).
+
+        Returns:
+            A ``ReferenceData`` odmlib object, bound to the document's namespaces.
+
+        Raises:
+            OdmlibTypeError: If the wrapped loader cannot load ReferenceData.
+            IndexError: If the document has no ReferenceData at ``idx``.
+
+        .. versionadded:: 0.3.0
+        """
+        return self._bind_namespaces(self._data_loader("load_referencedata")(idx))
+
+    def _data_loader(self, method: str) -> Any:
+        """The wrapped loader's *method*, which the DocumentLoader ABC does not require."""
+        load = getattr(self.loader, method, None)
+        if not callable(load):
+            raise OdmlibTypeError(
+                f"{type(self.loader).__name__} cannot load clinical or reference data",
+                expected_type="XMLODMLoader or JSONODMLoader",
+                actual_value=type(self.loader).__name__,
+                hint="Load ODM documents with XMLODMLoader or JSONODMLoader; Define-XML "
+                     "and ARM documents carry no ClinicalData",
+            )
+        return load
+
     def __getattr__(self, attr: str) -> Any:
         """Delegate unknown method calls to the wrapped loader.
 

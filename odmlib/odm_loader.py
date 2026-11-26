@@ -34,6 +34,21 @@ _DEFAULT_ODM_NS_URI = {
 _element_content = DL.element_content
 
 
+def _nth(items: Any, idx: int, name: str) -> Any:
+    """Return ``items[idx]``, with an IndexError that says how many there are.
+
+    Dataset-XML 1.0.1 holds a single ClinicalData, which its JSON writes as an object
+    rather than a list; it counts as a list of one.
+    """
+    if isinstance(items, dict):
+        items = [items]
+    try:
+        return items[idx]
+    except IndexError:
+        raise IndexError(f"the document has {len(items)} {name} element(s); "
+                         f"there is no index {idx}") from None
+
+
 class JSONODMLoader(DL.DocumentLoader):
     """Loads ODM-JSON documents into the odmlib object model.
 
@@ -205,6 +220,52 @@ class JSONODMLoader(DL.DocumentLoader):
         study_dict = self.odm_dict["Study"][idx]
         study_odmlib = self.load_document(study_dict, "Study")
         return study_odmlib
+
+    def load_clinicaldata(self, idx: int = 0) -> Any:
+        """Return the ClinicalData at index ``idx`` from the stored document.
+
+        Works for every model that has ClinicalData (ODM 1.3.2, ODM 2.0 and
+        Dataset-XML 1.0.1). Not part of the
+        :class:`~odmlib.document_loader.DocumentLoader` interface.
+
+        Args:
+            idx (int): Zero-based index of the ClinicalData (default: 0).
+
+        Returns:
+            A ``ClinicalData`` odmlib object.
+
+        Raises:
+            OdmlibLoaderStateError: If no document has been loaded yet.
+            IndexError: If the document has no ClinicalData at ``idx``.
+
+        .. versionadded:: 0.3.0
+        """
+        return self._load_top_level("ClinicalData", idx, "load_clinicaldata")
+
+    def load_referencedata(self, idx: int = 0) -> Any:
+        """Return the ReferenceData at index ``idx`` from the stored document.
+
+        Args:
+            idx (int): Zero-based index of the ReferenceData (default: 0).
+
+        Returns:
+            A ``ReferenceData`` odmlib object.
+
+        Raises:
+            OdmlibLoaderStateError: If no document has been loaded yet.
+            IndexError: If the document has no ReferenceData at ``idx``.
+
+        .. versionadded:: 0.3.0
+        """
+        return self._load_top_level("ReferenceData", idx, "load_referencedata")
+
+    def _load_top_level(self, name: str, idx: int, caller: str) -> Any:
+        if not self.odm_dict:
+            raise OdmlibLoaderStateError(
+                f"create_document must be used to create the document before executing {caller}",
+                hint="Call loader.open_odm_document(filename) or loader.load_odm_string(json_string) first",
+            )
+        return self.load_document(_nth(self.odm_dict.get(name, []), idx, name), name)
 
 
 class DictODMLoader(JSONODMLoader):
@@ -467,3 +528,51 @@ class XMLODMLoader(DL.DocumentLoader):
         study = self.parser.Study()
         study_odmlib = self.load_document(study[idx])
         return study_odmlib
+
+    def load_clinicaldata(self, idx: int = 0) -> Any:
+        """Return the ClinicalData at index ``idx`` from the stored document.
+
+        Works for every model that has ClinicalData (ODM 1.3.2, ODM 2.0 and
+        Dataset-XML 1.0.1). Not part of the
+        :class:`~odmlib.document_loader.DocumentLoader` interface.
+
+        Args:
+            idx (int): Zero-based index of the ClinicalData (default: 0).
+
+        Returns:
+            A ``ClinicalData`` odmlib object.
+
+        Raises:
+            OdmlibLoaderStateError: If no document has been loaded yet.
+            IndexError: If the document has no ClinicalData at ``idx``.
+
+        .. versionadded:: 0.3.0
+        """
+        return self._load_top_level("ClinicalData", idx, "load_clinicaldata")
+
+    def load_referencedata(self, idx: int = 0) -> Any:
+        """Return the ReferenceData at index ``idx`` from the stored document.
+
+        Args:
+            idx (int): Zero-based index of the ReferenceData (default: 0).
+
+        Returns:
+            A ``ReferenceData`` odmlib object.
+
+        Raises:
+            OdmlibLoaderStateError: If no document has been loaded yet.
+            IndexError: If the document has no ReferenceData at ``idx``.
+
+        .. versionadded:: 0.3.0
+        """
+        return self._load_top_level("ReferenceData", idx, "load_referencedata")
+
+    def _load_top_level(self, name: str, idx: int, caller: str) -> Any:
+        if self.parser is None:
+            raise OdmlibLoaderStateError(
+                f"create_document must be used to create the document before executing {caller}",
+                hint="Call loader.open_odm_document(filename) or loader.load_odm_string(xml_string) first",
+            )
+        self.parser.set_namespaces(self.nsr)
+        elements = getattr(self.parser, name)()
+        return self.load_document(_nth(elements, idx, name))

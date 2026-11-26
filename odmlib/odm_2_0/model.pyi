@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import Any, List, Optional
+from typing import Any, Iterator, List, Optional
 from odmlib.odm_element import ODMElement
 
 AUXILIARY_NAMESPACES: dict[str, str]
@@ -240,13 +240,14 @@ class StudyEventDef(ODMElement):
     Repeating: Optional[str]
     Type: Optional[str]
     Category: Optional[str]
+    CommentOID: Optional[str]
     Description: Optional[Description]
     ItemGroupRef: List[ItemGroupRef]
     WorkflowRef: Optional[WorkflowRef]
     Coding: List[Coding]
     Alias: List[Alias]
     def __len__(self) -> int: ...
-    def __getitem__(self, position: int) -> ItemGroupRef: ...
+    def __getitem__(self, position: int) -> _ItemGroupRef: ...
     def __iter__(self): ...
 
 
@@ -314,17 +315,28 @@ class Origin(ODMElement):
     DocumentRef: List[DocumentRef]
 
 
+class WhereClauseRef(ODMElement):
+    WhereClauseOID: Optional[str]
+
+
 class ItemRef(ODMElement):
     ItemOID: Optional[str]
-    OrderNumber: Optional[int]
     Mandatory: Optional[str]
+    Core: Optional[str]
+    OrderNumber: Optional[int]
     KeySequence: Optional[int]
+    IsNonStandard: Optional[str]
+    HasNoData: Optional[str]
     MethodOID: Optional[str]
+    UnitsItemOID: Optional[str]
+    PreSpecifiedValue: Optional[str]
+    Repeat: Optional[str]
+    Other: Optional[str]
     Role: Optional[str]
     RoleCodeListOID: Optional[str]
     CollectionExceptionConditionOID: Optional[str]
-    UnitsItemOID: Optional[str]
-    PreSpecifiedValue: Optional[str]
+    Origin: List[Origin]
+    WhereClauseRef: List[WhereClauseRef]
 
 
 class SubClass(ODMElement):
@@ -341,27 +353,53 @@ class ItemGroupDef(ODMElement):
     OID: Optional[str]
     Name: Optional[str]
     Repeating: Optional[str]
-    Type: Optional[str]
+    RepeatingLimit: Optional[int]
     IsReferenceData: Optional[str]
     DatasetName: Optional[str]
     Domain: Optional[str]
+    Type: Optional[str]
     Purpose: Optional[str]
     Structure: Optional[str]
     ArchiveLocationID: Optional[str]
+    StandardOID: Optional[str]
+    IsNonStandard: Optional[str]
+    HasNoData: Optional[str]
     CommentOID: Optional[str]
     Description: Optional[Description]
     Class: Optional[Class]
     ItemGroupRef: List[ItemGroupRef]
     ItemRef: List[ItemRef]
+    Coding: List[Coding]
     WorkflowRef: Optional[WorkflowRef]
     Origin: List[Origin]
     Alias: List[Alias]
+    Leaf: Optional[Leaf]
     def __len__(self) -> int: ...
-    def __getitem__(self, position: int) -> ItemRef: ...
+    def __getitem__(self, position: int) -> _ItemRef: ...
     def __iter__(self): ...
 
 
+class Definition(ODMElement):
+    TranslatedText: List[TranslatedText]
+
+
 class Question(ODMElement):
+    TranslatedText: List[TranslatedText]
+
+
+class Prompt(ODMElement):
+    TranslatedText: List[TranslatedText]
+
+
+class CRFCompletionInstructions(ODMElement):
+    TranslatedText: List[TranslatedText]
+
+
+class ImplementationNotes(ODMElement):
+    TranslatedText: List[TranslatedText]
+
+
+class CDISCNotes(ODMElement):
     TranslatedText: List[TranslatedText]
 
 
@@ -453,9 +491,13 @@ class Decode(ODMElement):
 class CodeListItem(ODMElement):
     CodedValue: Optional[str]
     Rank: Optional[float]
+    Other: Optional[str]
     OrderNumber: Optional[int]
     ExtendedValue: Optional[str]
+    CommentOID: Optional[str]
+    Description: Optional[Description]
     Decode: Optional[Decode]
+    Coding: List[Coding]
     Alias: List[Alias]
 
 
@@ -505,6 +547,7 @@ class MethodDef(ODMElement):
     OID: Optional[str]
     Name: Optional[str]
     Type: Optional[str]
+    CommentOID: Optional[str]
     Description: Optional[Description]
     MethodSignature: Optional[MethodSignature]
     FormalExpression: List[FormalExpression]
@@ -742,6 +785,49 @@ class LocationRef(ODMElement):
     LocationOID: Optional[str]
 
 
+class UserRef(ODMElement):
+    UserOID: Optional[str]
+
+
+class DateTimeStamp(ODMElement):
+    _content: Optional[str]
+
+
+class ReasonForChange(ODMElement):
+    _content: Optional[str]
+
+
+class SourceID(ODMElement):
+    _content: Optional[str]
+
+
+class AuditRecord(ODMElement):
+    EditPoint: Optional[str]
+    UsedMethod: Optional[str]
+    UserRef: Optional[UserRef]
+    LocationRef: Optional[LocationRef]
+    DateTimeStamp: Optional[DateTimeStamp]
+    ReasonForChange: Optional[ReasonForChange]
+    SourceID: Optional[SourceID]
+
+
+class Value(ODMElement):
+    SeqNum: Optional[int]
+    _content: Optional[str]
+
+
+class Query(ODMElement):
+    OID: Optional[str]
+    Source: Optional[str]
+    Target: Optional[str]
+    Type: Optional[str]
+    State: Optional[str]
+    LastUpdateDatetime: Optional[str]
+    Name: Optional[str]
+    Value: Optional[Value]
+    AuditRecord: List[AuditRecord]
+
+
 class Telecom(ODMElement):
     TelecomType: Optional[str]
     Value: Optional[str]
@@ -808,6 +894,7 @@ class Location(ODMElement):
     MetaDataVersionRef: List[MetaDataVersionRef]
     Address: List[Address]
     Telecom: List[Telecom]
+    Query: List[Query]
 
 
 class Meaning(ODMElement):
@@ -837,8 +924,161 @@ class Study(ODMElement):
     OID: Optional[str]
     StudyName: Optional[str]
     ProtocolName: Optional[str]
+    VersionID: Optional[str]
+    VersionName: Optional[str]
+    Status: Optional[str]
     Description: Optional[Description]
     MetaDataVersion: List[MetaDataVersion]
+
+
+class SignatureRef(ODMElement):
+    SignatureOID: Optional[str]
+
+
+class Signature(ODMElement):
+    ID: Optional[str]
+    UserRef: Optional[UserRef]
+    LocationRef: Optional[LocationRef]
+    SignatureRef: Optional[SignatureRef]
+    DateTimeStamp: Optional[DateTimeStamp]
+
+
+class Comment(ODMElement):
+    SponsorOrSite: Optional[str]
+    TranslatedText: List[TranslatedText]
+
+
+class FlagValue(ODMElement):
+    CodeListOID: Optional[str]
+    _content: Optional[str]
+
+
+class FlagType(ODMElement):
+    CodeListOID: Optional[str]
+    _content: Optional[str]
+
+
+class Flag(ODMElement):
+    FlagValue: Optional[FlagValue]
+    FlagType: Optional[FlagType]
+
+
+class Annotation(ODMElement):
+    SeqNum: Optional[int]
+    TransactionType: Optional[str]
+    ID: Optional[str]
+    Comment: Optional[Comment]
+    Coding: List[Coding]
+    Flag: List[Flag]
+
+
+class InvestigatorRef(ODMElement):
+    UserOID: Optional[str]
+
+
+class SiteRef(ODMElement):
+    LocationOID: Optional[str]
+
+
+class ItemData(ODMElement):
+    ItemOID: Optional[str]
+    TransactionType: Optional[str]
+    IsNull: Optional[str]
+    Value: List[Value]
+    AuditRecord: Optional[AuditRecord]
+    Signature: Optional[Signature]
+    Annotation: List[Annotation]
+    Query: List[Query]
+
+
+class ItemGroupData(ODMElement):
+    ItemGroupOID: Optional[str]
+    ItemGroupRepeatKey: Optional[str]
+    TransactionType: Optional[str]
+    ItemGroupDataSeq: Optional[int]
+    ItemGroupData: List[ItemGroupData]
+    ItemData: List[ItemData]
+    AuditRecord: Optional[AuditRecord]
+    Signature: Optional[Signature]
+    Annotation: List[Annotation]
+    Query: List[Query]
+    def __len__(self) -> int: ...
+    def __getitem__(self, position: int) -> _ItemData: ...
+    def __iter__(self) -> Iterator[_ItemData]: ...
+    def __bool__(self) -> bool: ...
+
+
+class StudyEventData(ODMElement):
+    StudyEventOID: Optional[str]
+    StudyEventRepeatKey: Optional[str]
+    TransactionType: Optional[str]
+    ItemGroupData: List[ItemGroupData]
+    AuditRecord: Optional[AuditRecord]
+    Signature: Optional[Signature]
+    Annotation: List[Annotation]
+    Query: List[Query]
+    def __len__(self) -> int: ...
+    def __getitem__(self, position: int) -> _ItemGroupData: ...
+    def __iter__(self) -> Iterator[_ItemGroupData]: ...
+    def __bool__(self) -> bool: ...
+
+
+class SubjectData(ODMElement):
+    SubjectKey: Optional[str]
+    TransactionType: Optional[str]
+    InvestigatorRef: Optional[InvestigatorRef]
+    SiteRef: Optional[SiteRef]
+    StudyEventData: List[StudyEventData]
+    AuditRecord: Optional[AuditRecord]
+    Signature: Optional[Signature]
+    Annotation: List[Annotation]
+    Query: List[Query]
+    def __len__(self) -> int: ...
+    def __getitem__(self, position: int) -> _StudyEventData: ...
+    def __iter__(self) -> Iterator[_StudyEventData]: ...
+    def __bool__(self) -> bool: ...
+
+
+class ClinicalData(ODMElement):
+    StudyOID: Optional[str]
+    MetaDataVersionOID: Optional[str]
+    SubjectData: List[SubjectData]
+    ItemGroupData: List[ItemGroupData]
+    AuditRecord: Optional[AuditRecord]
+    Signature: Optional[Signature]
+    Annotation: List[Annotation]
+    Query: List[Query]
+    def __len__(self) -> int: ...
+    def __getitem__(self, position: int) -> _SubjectData: ...
+    def __iter__(self) -> Iterator[_SubjectData]: ...
+    def __bool__(self) -> bool: ...
+
+
+class ReferenceData(ODMElement):
+    StudyOID: Optional[str]
+    MetaDataVersionOID: Optional[str]
+    ItemGroupData: List[ItemGroupData]
+    AuditRecord: Optional[AuditRecord]
+    Signature: Optional[Signature]
+    Annotation: List[Annotation]
+
+
+class KeySet(ODMElement):
+    StudyOID: Optional[str]
+    SubjectKey: Optional[str]
+    MetaDataVersionOID: Optional[str]
+    StudyEventOID: Optional[str]
+    StudyEventRepeatKey: Optional[str]
+    ItemGroupOID: Optional[str]
+    ItemGroupRepeatKey: Optional[str]
+    ItemOID: Optional[str]
+
+
+class Association(ODMElement):
+    StudyOID: Optional[str]
+    MetaDataVersionOID: Optional[str]
+    KeySet: List[KeySet]
+    Annotation: Optional[Annotation]
 
 
 class ODM(ODMElement):
@@ -857,3 +1097,16 @@ class ODM(ODMElement):
     Description: Optional[Description]
     Study: List[Study]
     AdminData: List[AdminData]
+    ReferenceData: List[ReferenceData]
+    ClinicalData: List[ClinicalData]
+    Association: List[Association]
+
+
+# Return types of the container methods. Inside a class body a field named, say,
+# ``ItemRef`` shadows the ``ItemRef`` class, so the methods name these aliases instead.
+_ItemRef = ItemRef
+_ItemGroupRef = ItemGroupRef
+_ItemData = ItemData
+_ItemGroupData = ItemGroupData
+_StudyEventData = StudyEventData
+_SubjectData = SubjectData

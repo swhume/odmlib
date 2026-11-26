@@ -634,6 +634,13 @@ def create_oid_checker(
         checker = create_oid_checker("odm_1_3_2")
         odm.verify_oids(checker)
 
+    An ODM 2.0 file that carries ClinicalData without the metadata it refers to
+    (a data-only transfer) can skip the references into metadata::
+
+        from odmlib.oid_generator_config import ODM_20_DATA_ONLY_SKIP_ATTRS
+
+        checker = create_oid_checker("odm_2_0", extra_skip_attrs=ODM_20_DATA_ONLY_SKIP_ATTRS)
+
     .. versionadded:: 0.2.0
     """
     from odmlib.oid_generator_config import get_skip_config

@@ -203,6 +203,7 @@ class ElementParser:
         self.mdv = []
         self.admin_data = []
         self.clinical_data = []
+        self.reference_data = []
 
     def set_namespaces(self, ns_registry):
         self.nsr = ns_registry

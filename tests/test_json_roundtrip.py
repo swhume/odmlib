@@ -15,6 +15,9 @@ D      XML-loaded tree vs JSON-loaded tree                            ``to_dict(
 E      ``to_dict()`` vs the vendored ``.json`` (ODM 2.0)              equal
 =====  =============================================================  ====================
 
+The vendored ODM 2.0 ClinicalData documents joined in P4. Their JSON was produced by
+odm-v2's own converter, not by odmlib, so leg E is an independent check of the data layer.
+
 The normalizer (N1-N5, in ``tests/_roundtrip.py``) is the complete list of forgiven
 differences, and ``KNOWN_REORDERINGS`` the one named exception. Anything else is a
 library bug, to be fixed in the library, never normalized away. Leg A applies no
@@ -93,7 +96,7 @@ class TestLegE(TestCase):
 
     def test_matches_vendored_json(self):
         vendored = [f for f in FIXTURES if f.vendored_json]
-        self.assertGreaterEqual(len(vendored), 13)
+        self.assertEqual(len(vendored), 25)
         for fixture in vendored:
             with self.subTest(fixture=fixture.name):
                 expected, actual = R.leg_e(fixture)
@@ -149,7 +152,15 @@ class TestHarness(_WithTempDir):
         interleaved = [f.name for f in FIXTURES
                        if R.canonical_xml(f.path, f.model)
                        != R.canonical_xml(f.path, f.model, sort_groups=True)]
-        self.assertGreaterEqual(len(interleaved), 3, interleaved)
+        self.assertGreaterEqual(len(interleaved), 6, interleaved)
+        # ItemData before a nested ItemGroupData (ItemGroupDataGroup, P4)
+        self.assertIn("odm_v2/github/Demographics_RACE/Demographics_RACE_check_all_that_apply.xml",
+                      interleaved)
+
+    def test_every_vendored_clinical_data_document_is_a_fixture(self):
+        clinical = R.vendored_fixtures(clinical_data=True)
+        self.assertEqual(len(clinical), 12)
+        self.assertLessEqual({f.name for f in clinical}, {f.name for f in FIXTURES})
 
     def test_known_reorderings_still_occur(self):
         """An entry in KNOWN_REORDERINGS must still describe its source document."""

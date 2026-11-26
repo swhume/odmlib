@@ -257,6 +257,8 @@ catches `OdmlibError` or one of its subclasses, and builds OID checkers with
 | `xml:lang` was unchecked outside ODM 2.0 | an invalid language code raises `OdmlibValidationError` in every model |
 | An unmodelled attribute in a foreign namespace failed the load | it is ignored with an `OdmlibWarning` |
 | `to_dict()` / `to_json()` wrote `"ItemRef": []` after an unset list was read | empty lists are omitted |
+| An ODM 2.0 document's ClinicalData, ReferenceData and Association were dropped on load | they are loaded, and checked strictly; load with `permissive()` to relax the checks |
+| `clinical_data_to_dataframe()` returned an empty DataFrame for ODM 2.0 | it returns the data |
 
 ### Removed — APIs deprecated in 0.2.x (breaking)
 
@@ -431,6 +433,85 @@ loads it.
   The round-trip tests list it in `KNOWN_REORDERINGS`, which fails if the document stops
   needing the entry. Preserving the order would mean extending the interleave mechanism to
   single-valued members.
+
+### Added — ODM v2.0 ClinicalData, ReferenceData and Association (0.3.0 plan, P4)
+
+- **The ODM 2.0 model now covers the whole XSD: 149 elements, 149 classes.** It has 24 new
+  classes, designed from `ODM-clinicaldata.xsd`, `ODM-referencedata.xsd` and
+  `ODM-foundation.xsd`:
+  - the data: `ClinicalData`, `SubjectData`, `StudyEventData`, `ItemGroupData`, `ItemData`
+    and `Value`;
+  - the audit trail and signatures: `AuditRecord`, `UserRef`, `DateTimeStamp`,
+    `ReasonForChange`, `SourceID`, `Signature` and `SignatureRef`;
+  - annotations: `Annotation`, `Comment`, `Flag`, `FlagValue` and `FlagType`;
+  - `Query`, `InvestigatorRef`, `SiteRef`, `ReferenceData`, `KeySet` and `Association`.
+
+  `ODM` gains `ReferenceData`, `ClinicalData` and `Association`, and `Location` gains
+  `Query`. Before 0.3.0 all of these were dropped on load, without a warning.
+- **ODM 2.0 shapes, not ODM 1.3.2 ones.** There is no `FormData`: a `StudyEventData` holds
+  `ItemGroupData` directly. Values are `Value` child elements, ordered by `SeqNum`, not an
+  `ItemData/@Value` attribute. `AuditRecord`, `Signature` and `Annotation` follow the data
+  children, then `Query`, with no `AuditRecords`/`Signatures`/`Annotations` containers.
+  `AuditRecord/@UsedMethod` replaces `UsedImputationMethod`, a `Comment` holds
+  `TranslatedText`, and `KeySet` has `MetaDataVersionOID` instead of the form attributes.
+- **Nested, interleaved item groups.** `ItemGroupData` contains `ItemGroupData`
+  (`T.SELF`), and its nested groups and `ItemData` share one order, as the XSD's repeating
+  `ItemGroupDataGroup` allows. A loaded document is written back in its own order. Read
+  the combined sequence with `igd.children("ItemGroupData", "ItemData")`. ODM 2.0 JSON
+  keeps one array per type, so a JSON round trip does not carry the interleaving.
+- **Containers.** `ClinicalData`, `SubjectData`, `StudyEventData` and `ItemGroupData`
+  iterate one level down (to `SubjectData`, `StudyEventData`, `ItemGroupData` and
+  `ItemData`) and support `len()` and indexing. They are always truthy, so a
+  `ClinicalData` that holds only top-level `ItemGroupData` is not mistaken for an empty one.
+- **12 new value sets** (`odmlib/data/valuesets.json`), from `ODM-enumerations.xsd`:
+  `TransactionType` on `SubjectData`, `StudyEventData`, `ItemGroupData`, `ItemData` and
+  `Annotation`; `ItemData.IsNull`; `AuditRecord.EditPoint` and `UsedMethod`;
+  `Comment.SponsorOrSite`; and `Query.Source`, `Type` and `State`. The text of
+  `DateTimeStamp` (`xs:dateTime`), `FlagValue` and `FlagType` is required, as the XSD
+  forbids it empty.
+- **Loader accessors.** `ODMLoader.ClinicalData(idx=0)` and `ODMLoader.ReferenceData(idx=0)`
+  load one element and bind the document's namespaces to it. They call the new
+  `load_clinicaldata()` / `load_referencedata()` on `XMLODMLoader` and `JSONODMLoader`, so
+  they also work for ODM 1.3.2 and Dataset-XML 1.0.1. They are not on the `DocumentLoader`
+  interface, so third-party loaders are unaffected. A loader without them (Define-XML, ARM)
+  raises `OdmlibTypeError`, and an index the document does not have raises `IndexError`.
+- **OID checking.** The ClinicalData references (`UserOID`, `LocationOID`, `SignatureOID`,
+  `ItemOID`, `ItemGroupOID`, `StudyEventOID`, `StudyOID`, `MetaDataVersionOID` and
+  `CodeListOID`) resolve by the naming convention. `Query` joins `ODM_20_SKIP_ELEMS`: a
+  Query's OID must still be unique, but it is never reported as unreferenced. The new
+  `oid_generator_config.ODM_20_DATA_ONLY_SKIP_ATTRS` is for a file that carries clinical
+  data without its metadata:
+  `create_oid_checker("odm_2_0", extra_skip_attrs=ODM_20_DATA_ONLY_SKIP_ATTRS)`.
+  References into AdminData are still checked.
+- **`clinical_data_to_dataframe()` supports ODM 2.0.** It returned an empty DataFrame for
+  ODM 2.0, with no error, because it looked for `FormData`. It now walks `ItemGroupData` at
+  the ClinicalData level (`SubjectKey` is `None`) and under `SubjectData` →
+  `StudyEventData`, into nested groups. Each matching group is one row. Several `Value`s
+  give a list ordered by `SeqNum`; `IsNull="Yes"` gives `None`. The walk no longer
+  creates empty child lists in the tree it reads (ODM 1.3.2 too).
+
+### Changed — tests and stubs for the data layer (0.3.0 plan, P4)
+
+- **The XSD alignment guard's allowlists are empty.** `tests/test_odm_2_0_xsd_alignment.py`
+  no longer lists missing classes, model/XSD divergences, missing stub classes or stub
+  field mismatches. The new `test_every_xsd_element_is_reachable_from_odm` pins 149 = 149.
+- **`odmlib/odm_2_0/model.pyi`** has the 24 new classes. It also gained six classes it was
+  missing (`Definition`, `Prompt`, `CRFCompletionInstructions`, `ImplementationNotes`,
+  `CDISCNotes` and `WhereClauseRef`), and fields missing from `CodeListItem`,
+  `ItemGroupDef`, `ItemRef`, `MethodDef`, `Study` and `StudyEventDef`. The container
+  methods no longer trip mypy, so the baseline shrank from 113 to 111 errors.
+- **The round-trip tests cover the 12 vendored ODM 2.0 ClinicalData documents**, through
+  all five legs. Their JSON came from odm-v2's converter, so leg E is an independent check
+  of the data layer. All 12 pass with no new normalization.
+- **The OID oracle (`ref_targets.json`) agrees with `create_oid_checker("odm_2_0")`
+  exactly.** The vendored fixtures' pinned OID findings now include their ClinicalData.
+  Three are new, all upstream content errors: in Columbia, an `ItemGroupData` names an
+  ItemDef; in Matrix_CRF, `IT.FAMILY_RELATIONSHIP` has no ItemDef; in CDASH_MH, `SE.001`
+  has no StudyEventDef.
+- **`tests/test_odm_2_0_clinical_data.py`** builds a document that uses every new class.
+  Each class validates against the XSD on its own and round-trips through XML and JSON.
+  The module also covers the interleaving, hand-built ReferenceData and Association
+  (no fixture has either), the containers and the loader accessors.
 
 ## [0.2.1] - 2026-08-27
 

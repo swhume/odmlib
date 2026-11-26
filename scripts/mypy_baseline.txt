@@ -93,8 +93,6 @@ odmlib/odm_1_3_2/model.pyi: error: Variable "odmlib.odm_1_3_2.model.ItemGroupDef
 odmlib/odm_1_3_2/model.pyi: error: Variable "odmlib.odm_1_3_2.model.StudyEventData.FormData" is not valid as a type  [valid-type]
 odmlib/odm_1_3_2/model.pyi: error: Variable "odmlib.odm_1_3_2.model.StudyEventDef.FormRef" is not valid as a type  [valid-type]
 odmlib/odm_1_3_2/model.pyi: error: Variable "odmlib.odm_1_3_2.model.SubjectData.StudyEventData" is not valid as a type  [valid-type]
-odmlib/odm_2_0/model.pyi: error: Variable "odmlib.odm_2_0.model.ItemGroupDef.ItemRef" is not valid as a type  [valid-type]
-odmlib/odm_2_0/model.pyi: error: Variable "odmlib.odm_2_0.model.StudyEventDef.ItemGroupRef" is not valid as a type  [valid-type]
 odmlib/odm_element.py: error: "type" has no attribute "write_odm"  [attr-defined]
 odmlib/odm_element.py: error: "type" has no attribute "write_odm"  [attr-defined]
 odmlib/odm_element.py: error: Argument 1 to "is_permissive" has incompatible type "int"; expected "ValidationMode"  [arg-type]

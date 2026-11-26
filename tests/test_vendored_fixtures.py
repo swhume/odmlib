@@ -9,8 +9,8 @@ harness (P3) and the ClinicalData model (P4). So this module pins:
   hash it was copied with, so a fixture cannot be "fixed" in place;
 * **validity** -- every XML file validates against the bundled ODM v2.0 XSD;
 * **the OID oracle** -- ``ref_targets.json``, derived from the ODM v2.0 spec
-  independently of odmlib, agrees with ``create_oid_checker("odm_2_0")`` apart
-  from an allowlist that must shrink to empty (P4);
+  independently of odmlib, agrees with ``create_oid_checker("odm_2_0")`` (exactly,
+  since P4 modelled the ClinicalData references);
 * **known OID findings** -- the dangling references, wrong-type references and
   duplicate OIDs that the upstream content really contains, counted per file.
 
@@ -35,6 +35,7 @@ import odmlib.odm_loader as OL
 from odmlib import create_oid_checker
 from odmlib.exceptions import OdmlibOIDError
 from odmlib.odm_parser import ODMSchemaValidator
+from odmlib.oid_generator_config import ODM_20_DATA_ONLY_SKIP_ATTRS
 
 FIXTURE_DIR = os.path.join(os.path.dirname(os.path.realpath(__file__)), "data", "odm_v2")
 MANIFEST_PATH = os.path.join(FIXTURE_DIR, "MANIFEST.json")
@@ -43,21 +44,20 @@ NOT_IN_MANIFEST = {"MANIFEST.json", "PROVENANCE.md"}
 ODM_V2_NS = "http://www.cdisc.org/ns/odm/v2.0"
 
 #: Attributes the ODM v2.0 spec defines as OID references that the odm_2_0
-#: checker does not know yet, because only ClinicalData uses them (UserRef,
-#: InvestigatorRef, SignatureRef). P4 adds those classes and empties this set.
-CHECKER_GAPS: set[str] = {
-    "SignatureOID",
-    "UserOID",
-}
+#: checker does not know. Empty since P4 added UserRef, InvestigatorRef and
+#: SignatureRef, the only users of UserOID and SignatureOID.
+CHECKER_GAPS: set[str] = set()
 
 #: OID findings per vendored XML file, as ``"<kind>:<attribute>": count``.
-#: ``unresolved`` is a reference to an OID the document does not define,
-#: ``wrong-type`` a reference to an element of a type the attribute may not
-#: point at, and ``duplicate`` an OID defined twice. These are the upstream
-#: content as published, not odmlib bugs. Until P4 models ClinicalData, loading
-#: drops it, so the counts cover metadata references only. The two ClinicalData
-#: templates reference a study defined in another file (the data-only case P4b
-#: covers with ``ODM_20_DATA_ONLY_SKIP_ATTRS``).
+#: ``unresolved`` is a reference to an OID the document does not define (each
+#: distinct OID counted once), ``wrong-type`` a reference to an element of a type
+#: the attribute may not point at, and ``duplicate`` an OID defined twice. These
+#: are the upstream content as published, not odmlib bugs. Since P4 the
+#: ClinicalData is loaded and checked too. The ClinicalData templates and the two
+#: query examples reference metadata defined in another file: the templates pass
+#: with ``ODM_20_DATA_ONLY_SKIP_ATTRS``
+#: (``test_clinical_templates_pass_with_data_only_skip``), and the query examples
+#: also leave out the AdminData their UserOID and LocationOID references need.
 KNOWN_OID_FINDINGS: dict[str, dict[str, int]] = {
     "github/Columbia_Suicidal_Scale/Columbia-Suicide_Severity_Scale_ODMv2.xml": {
         "duplicate:OID": 1,
@@ -65,6 +65,8 @@ KNOWN_OID_FINDINGS: dict[str, dict[str, int]] = {
         "unresolved:ConditionOID": 6,
         "unresolved:ItemOID": 1,
         "unresolved:SourceOID": 1,
+        # ItemGroupData ItemGroupOID="IT.Other_Risk_Factors" names an ItemDef
+        "wrong-type:ItemGroupOID": 1,
     },
     "github/Conditional_Repeats/Conditional_Repeats.xml": {
         "unresolved:ConditionOID": 1,
@@ -77,22 +79,56 @@ KNOWN_OID_FINDINGS: dict[str, dict[str, int]] = {
         "unresolved:EndOID": 1,
         "wrong-type:TargetTransitionOID": 1,
     },
+    # ItemData ItemOID="IT.FAMILY_RELATIONSHIP" (24 times) has no ItemDef
+    "github/Matrix_CRF_From_TAUG_Dyslipidemia_1_0/Hypercholesterolemia_CV_Risk_factors_FH_CRF_alternative_ValueLists.xml": {
+        "unresolved:ItemOID": 1,
+    },
+    # StudyEventData StudyEventOID="SE.001" has no StudyEventDef
+    "github/Repeating_ItemGroup_CDASH_1-1_Stroke_LungDisease_IBD_CancerHistory_CRF/CDASH_1-1_MH_Example_Stroke_LungDisease_IBD_CancerHistory.xml": {
+        "unresolved:StudyEventOID": 1,
+    },
     "github/Timing_LZZT/Timing_LZZT_Example_ODM.xml": {
         "unresolved:EndOID": 1,
+    },
+    "spec/clinical-data-query-examples-opening-a-query.xml": {
+        "unresolved:ItemGroupOID": 1,
+        "unresolved:ItemOID": 1,
+        "unresolved:LocationOID": 1,
+        "unresolved:MetaDataVersionOID": 1,
+        "unresolved:StudyEventOID": 1,
+        "unresolved:StudyOID": 1,
+        "unresolved:UserOID": 1,
+    },
+    "spec/clinical-data-query-examples-transaction-history.xml": {
+        "unresolved:ItemGroupOID": 1,
+        "unresolved:ItemOID": 1,
+        "unresolved:LocationOID": 2,
+        "unresolved:MetaDataVersionOID": 1,
+        "unresolved:StudyEventOID": 1,
+        "unresolved:StudyOID": 1,
+        "unresolved:UserOID": 3,
     },
     "spec/hl7-fhir-integration.xml": {
         "unresolved:ItemOID": 9,
     },
     "spec/multiple-selection-using-nested-itemgroupdef.xml": {
         "unresolved:CodeListOID": 1,
-        "unresolved:ItemOID": 5,
+        "unresolved:ItemGroupOID": 1,
+        "unresolved:ItemOID": 13,
     },
     "templates/clinical-data-snapshot.xml": {
+        "unresolved:ItemGroupOID": 1,
+        "unresolved:ItemOID": 5,
         "unresolved:MetaDataVersionOID": 1,
+        "unresolved:StudyEventOID": 1,
         "unresolved:StudyOID": 1,
     },
     "templates/clinical-data-transactional.xml": {
+        "unresolved:CodeListOID": 1,
+        "unresolved:ItemGroupOID": 1,
+        "unresolved:ItemOID": 3,
         "unresolved:MetaDataVersionOID": 1,
+        "unresolved:StudyEventOID": 1,
         "unresolved:StudyOID": 1,
     },
 }
@@ -187,13 +223,13 @@ def _finding_kind(error):
     return "other"
 
 
-def oid_findings(fixture):
+def oid_findings(fixture, extra_skip_attrs=None):
     """Load *fixture* strictly and count its OID findings by kind and attribute."""
     loader = LD.ODMLoader(OL.XMLODMLoader(model_package="odm_2_0"))
     root = loader.open_odm_document(os.path.join(FIXTURE_DIR, _xml_path(fixture)))
     element = loader.create_odmlib(root, fixture["root"])
-    errors = element.validate(collect_errors=True,
-                              oid_checker=create_oid_checker("odm_2_0"))
+    checker = create_oid_checker("odm_2_0", extra_skip_attrs=extra_skip_attrs)
+    errors = element.validate(collect_errors=True, oid_checker=checker)
     unexpected_types = [e for e in errors if not isinstance(e, OdmlibOIDError)]
     if unexpected_types:
         raise AssertionError(f"{_xml_path(fixture)}: non-OID validation errors "
@@ -319,3 +355,13 @@ class TestKnownOIDFindings(TestCase):
 
     def test_vendored_spec_and_template_documents_report_known_oid_findings(self):
         self._check({"spec", "templates"})
+
+    def test_clinical_templates_pass_with_data_only_skip(self):
+        """A data-only file's references into metadata are what ODM_20_DATA_ONLY_SKIP_ATTRS skips."""
+        templates = [f for f in FIXTURES
+                     if f["has_clinical_data"] and _xml_path(f).startswith("templates/")]
+        self.assertEqual(len(templates), 2)
+        for fixture in templates:
+            with self.subTest(file=_xml_path(fixture)):
+                self.assertTrue(oid_findings(fixture))
+                self.assertEqual(oid_findings(fixture, ODM_20_DATA_ONLY_SKIP_ATTRS), {})

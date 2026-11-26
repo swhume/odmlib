@@ -2055,13 +2055,156 @@ class Address(OE.ODMElement):
 
 
 class LocationRef(OE.ODMElement):
-    """A reference to a Location where a User is associated.
+    """The Location at which an audited change was made or a signature was given.
+
+    Used in AuditRecord and Signature.
+
+    .. versionchanged:: 0.3.0
+       The docstring described the ODM 1.3.2 usage; the element itself is unchanged.
 
     Attributes:
-        LocationOID (str, required): OID of the referenced Location.
+        LocationOID (str, required): OID of the referenced Location in AdminData.
     """
 
     LocationOID = T.OIDRef(required=True)
+
+
+# ---------------------------------------------------------------------------
+# Audit trail, values and queries (ODM-clinicaldata.xsd, ODM-foundation.xsd).
+# Declared before Location, which holds Query elements.
+# ---------------------------------------------------------------------------
+
+class UserRef(OE.ODMElement):
+    """The User who made an audited change or gave a signature.
+
+    Used in AuditRecord and Signature.
+
+    .. versionadded:: 0.3.0
+
+    Attributes:
+        UserOID (str, required): OID of the referenced User in AdminData.
+    """
+
+    UserOID = T.OIDRef(required=True)
+
+
+class DateTimeStamp(OE.ODMElement):
+    """When an audited change was made or a signature was given.
+
+    The XSD types the text as ``xs:dateTime``, so an empty ``<DateTimeStamp/>`` is
+    invalid and ``_content`` is required.
+
+    .. versionadded:: 0.3.0
+
+    Attributes:
+        _content (str, required): An ``xs:dateTime`` value.
+    """
+
+    _content = T.DateTimeString(required=True)
+
+
+class ReasonForChange(OE.ODMElement):
+    """Why an audited value was changed.
+
+    .. versionadded:: 0.3.0
+
+    Attributes:
+        _content (str): The reason, as free text.
+    """
+
+    _content = T.String(required=False)
+
+
+class SourceID(OE.ODMElement):
+    """An identifier for the source of an audited value, such as a source document.
+
+    .. versionadded:: 0.3.0
+
+    Attributes:
+        _content (str): The source identifier, as free text.
+    """
+
+    _content = T.String(required=False)
+
+
+class AuditRecord(OE.ODMElement):
+    """Who changed a piece of clinical data, where, when and why.
+
+    ODM 2.0 places an AuditRecord after the data it audits, with no ``AuditRecords``
+    container, and drops the ODM 1.3.2 ``ID`` attribute.
+
+    .. versionadded:: 0.3.0
+
+    Attributes:
+        EditPoint (str): "Monitoring", "DataManagement" or "DBAudit".
+        UsedMethod (str): "Yes" when the value was imputed or derived by a method.
+            ODM 1.3.2 called this ``UsedImputationMethod``.
+        UserRef (UserRef, required): The User who made the change.
+        LocationRef (LocationRef, required): Where the change was made.
+        DateTimeStamp (DateTimeStamp, required): When the change was made.
+        ReasonForChange (ReasonForChange): Why the value was changed.
+        SourceID (SourceID): The source of the value.
+    """
+
+    EditPoint = T.ValueSetString(required=False)
+    UsedMethod = T.ValueSetString(required=False)
+    UserRef = T.ODMObject(required=True, element_class=UserRef)
+    LocationRef = T.ODMObject(required=True, element_class=LocationRef)
+    DateTimeStamp = T.ODMObject(required=True, element_class=DateTimeStamp)
+    ReasonForChange = T.ODMObject(element_class=ReasonForChange)
+    SourceID = T.ODMObject(element_class=SourceID)
+
+
+class Value(OE.ODMElement):
+    """One value of an ItemData, or the text of a Query.
+
+    ODM 2.0 holds values in Value child elements, not in an ``ItemData/@Value``
+    attribute. An ItemData may carry several, ordered by ``SeqNum``.
+
+    .. versionadded:: 0.3.0
+
+    Attributes:
+        SeqNum (int): Position of this value among the ItemData's values.
+        _content (str): The value, as text (an empty value is schema-valid).
+    """
+
+    SeqNum = T.PositiveInteger(required=False)
+    _content = T.String(required=False)
+
+
+class Query(OE.ODMElement):
+    """A data query raised on a Location or on a piece of clinical data.
+
+    Query OIDs must be unique like any other OID, but nothing references a Query,
+    so :func:`~odmlib.oid_generator.create_oid_checker` never reports one as
+    unreferenced.
+
+    .. versionadded:: 0.3.0
+
+    Attributes:
+        OID (str, required): Unique identifier.
+        Source (str, required): Who raised the query: "System",
+            "Data Management", "Site Monitor", "Coding System" or
+            "Safety Reviewer".
+        Target (str): What the query is about, as free text.
+        Type (str): "Manual" or "System".
+        State (str, required): "Candidate", "Open", "Answered", "Closed",
+            "Cancelled" or "Resolved".
+        LastUpdateDatetime (str, required): ``xs:dateTime`` of the last change.
+        Name (str): A name for the query.
+        Value (Value, required): The query text.
+        AuditRecord (list): The query's history.
+    """
+
+    OID = T.OID(required=True)
+    Source = T.ValueSetString(required=True)
+    Target = T.String(required=False)
+    Type = T.ValueSetString(required=False)
+    State = T.ValueSetString(required=True)
+    LastUpdateDatetime = T.DateTimeString(required=True)
+    Name = T.Name(required=False)
+    Value = T.ODMObject(required=True, element_class=Value)
+    AuditRecord = T.ODMListObject(element_class=AuditRecord)
 
 
 # TODO deprecated
@@ -2201,6 +2344,12 @@ class Location(OE.ODMElement):
             "CRO", "Lab".
         MetaDataVersionRef (list, required): One or more references to the
             metadata versions effective at this location.
+        Address (list): Postal addresses.
+        Telecom (list): Contact points.
+        Query (list): Queries raised on this location.
+
+    .. versionchanged:: 0.3.0
+       Added ``Query``.
     """
 
     OID = T.OID(required=True)
@@ -2211,6 +2360,7 @@ class Location(OE.ODMElement):
     MetaDataVersionRef = T.ODMListObject(required=True, element_class=MetaDataVersionRef)
     Address = T.ODMListObject(element_class=Address)
     Telecom = T.ODMListObject(element_class=Telecom)
+    Query = T.ODMListObject(element_class=Query)
 
 
 class Meaning(OE.ODMElement):
@@ -2295,6 +2445,452 @@ class Study(OE.ODMElement):
     MetaDataVersion = T.ODMListObject(required=True, element_class=MetaDataVersion)
 
 
+
+# ---------------------------------------------------------------------------
+# Signatures, annotations, ClinicalData, ReferenceData and Association
+# (ODM-clinicaldata.xsd, ODM-referencedata.xsd, ODM-foundation.xsd).
+#
+# Unlike ODM 1.3.2, the data elements put AuditRecord, Signature and Annotation
+# *after* their data children, followed by Query, with no AuditRecords /
+# Signatures / Annotations containers. There is no FormData: StudyEventData holds
+# ItemGroupData directly.
+# ---------------------------------------------------------------------------
+
+class SignatureRef(OE.ODMElement):
+    """The SignatureDef that gives a Signature its meaning.
+
+    .. versionadded:: 0.3.0
+
+    Attributes:
+        SignatureOID (str, required): OID of the SignatureDef in AdminData.
+    """
+
+    SignatureOID = T.OIDRef(required=True)
+
+
+class Signature(OE.ODMElement):
+    """An electronic signature on clinical data: who signed, where, when and why.
+
+    .. versionadded:: 0.3.0
+
+    Attributes:
+        ID (str): An ``xs:ID`` for the signature (optional in ODM 2.0).
+        UserRef (UserRef, required): The User who signed.
+        LocationRef (LocationRef, required): Where the signature was given.
+        SignatureRef (SignatureRef, required): The SignatureDef that applies.
+        DateTimeStamp (DateTimeStamp, required): When the signature was given.
+    """
+
+    ID = T.ID(required=False)
+    UserRef = T.ODMObject(required=True, element_class=UserRef)
+    LocationRef = T.ODMObject(required=True, element_class=LocationRef)
+    SignatureRef = T.ODMObject(required=True, element_class=SignatureRef)
+    DateTimeStamp = T.ODMObject(required=True, element_class=DateTimeStamp)
+
+
+class Comment(OE.ODMElement):
+    """A comment in an Annotation, in one or more languages.
+
+    ODM 2.0 holds the text in TranslatedText children; the ODM 1.3.2 Comment held
+    it as text content.
+
+    .. versionadded:: 0.3.0
+
+    Attributes:
+        SponsorOrSite (str): "Sponsor" or "Site".
+        TranslatedText (list, required): The comment text.
+    """
+
+    SponsorOrSite = T.ValueSetString(required=False)
+    TranslatedText = T.ODMListObject(required=True, element_class=TranslatedText)
+
+
+class FlagValue(OE.ODMElement):
+    """The value of a Flag, drawn from a CodeList.
+
+    The XSD types the text as ``name`` (non-empty), so ``_content`` is required.
+
+    .. versionadded:: 0.3.0
+
+    Attributes:
+        CodeListOID (str, required): The CodeList the value comes from.
+        _content (str, required): The flag value.
+    """
+
+    CodeListOID = T.OIDRef(required=True)
+    _content = T.Name(required=True)
+
+
+class FlagType(OE.ODMElement):
+    """The type of a Flag, drawn from a CodeList.
+
+    The XSD types the text as ``name`` (non-empty), so ``_content`` is required.
+
+    .. versionadded:: 0.3.0
+
+    Attributes:
+        CodeListOID (str, required): The CodeList the type comes from.
+        _content (str, required): The flag type.
+    """
+
+    CodeListOID = T.OIDRef(required=True)
+    _content = T.Name(required=True)
+
+
+class Flag(OE.ODMElement):
+    """A coded flag in an Annotation.
+
+    .. versionadded:: 0.3.0
+
+    Attributes:
+        FlagValue (FlagValue, required): The flag's value.
+        FlagType (FlagType): The flag's type.
+    """
+
+    FlagValue = T.ODMObject(required=True, element_class=FlagValue)
+    FlagType = T.ODMObject(element_class=FlagType)
+
+
+class Annotation(OE.ODMElement):
+    """A comment, codings and flags attached to clinical data or to an Association.
+
+    .. versionadded:: 0.3.0
+
+    Attributes:
+        SeqNum (int, required): Position of this annotation among its siblings.
+        TransactionType (str): "Insert", "Update", "Remove", "Upsert" or "Context".
+        ID (str): An ``xs:ID`` for the annotation.
+        Comment (Comment): The comment text.
+        Coding (list): Codes from external coding systems.
+        Flag (list): Coded flags.
+    """
+
+    SeqNum = T.PositiveInteger(required=True)
+    TransactionType = T.ValueSetString(required=False)
+    ID = T.ID(required=False)
+    Comment = T.ODMObject(element_class=Comment)
+    Coding = T.ODMListObject(element_class=Coding)
+    Flag = T.ODMListObject(element_class=Flag)
+
+
+class InvestigatorRef(OE.ODMElement):
+    """The investigator responsible for a subject.
+
+    .. versionadded:: 0.3.0
+
+    Attributes:
+        UserOID (str, required): OID of the User in AdminData.
+    """
+
+    UserOID = T.OIDRef(required=True)
+
+
+class SiteRef(OE.ODMElement):
+    """The site at which a subject's data was collected.
+
+    .. versionadded:: 0.3.0
+
+    Attributes:
+        LocationOID (str, required): OID of the Location in AdminData.
+    """
+
+    LocationOID = T.OIDRef(required=True)
+
+
+class ItemData(OE.ODMElement):
+    """The collected value or values of one item.
+
+    Values are Value child elements: ODM 2.0 has no ``ItemData/@Value`` attribute
+    and no typed ``ItemData[Type]`` variants. ``IsNull="Yes"`` marks an item with no
+    value.
+
+    .. versionadded:: 0.3.0
+
+    Attributes:
+        ItemOID (str, required): The ItemDef this data is for.
+        TransactionType (str): "Insert", "Update", "Remove", "Upsert" or "Context".
+        IsNull (str): "Yes" when the item has no value.
+        Value (list): The values, ordered by ``SeqNum`` when there are several.
+        AuditRecord (AuditRecord): Who changed the data, where, when and why.
+        Signature (Signature): An electronic signature on the data.
+        Annotation (list): Comments, codings and flags.
+        Query (list): Queries raised on the data.
+    """
+
+    ItemOID = T.OIDRef(required=True)
+    TransactionType = T.ValueSetString(required=False)
+    IsNull = T.ValueSetString(required=False)
+    Value = T.ODMListObject(element_class=Value)
+    AuditRecord = T.ODMObject(element_class=AuditRecord)
+    Signature = T.ODMObject(element_class=Signature)
+    Annotation = T.ODMListObject(element_class=Annotation)
+    Query = T.ODMListObject(element_class=Query)
+
+
+class ItemGroupData(OE.ODMElement):
+    """The data of one item group, which may nest further item groups.
+
+    The XSD lets ``ItemGroupData`` and ``ItemData`` children interleave in any order
+    (the repeating ``ItemGroupDataGroup``). As in ItemGroupDef, the two lists are
+    views onto one ordered sequence: a loaded ItemGroupData keeps its document order,
+    a child appended to either list goes after every existing child, and
+    serialization writes that order. Read the combined sequence with
+    ``igd.children("ItemGroupData", "ItemData")``. ODM 2.0 JSON keeps one array per
+    type, so it does not carry the interleaving.
+
+    Iterating an ItemGroupData, and ``len()``, cover its ItemData only. It is always
+    truthy, so one that holds only nested groups is not mistaken for an empty one.
+    Children appended to its lists are not type-checked, as on every
+    ``ODMListObject`` list.
+
+    .. versionadded:: 0.3.0
+
+    Attributes:
+        ItemGroupOID (str, required): The ItemGroupDef this data is for.
+        ItemGroupRepeatKey (str): Distinguishes repeats of a repeating group.
+        TransactionType (str): "Insert", "Update", "Remove", "Upsert" or "Context".
+        ItemGroupDataSeq (int): Position of the group in a dataset.
+        ItemGroupData (list): Nested item groups.
+        ItemData (list): The group's items.
+        AuditRecord (AuditRecord): Who changed the data, where, when and why.
+        Signature (Signature): An electronic signature on the data.
+        Annotation (list): Comments, codings and flags.
+        Query (list): Queries raised on the data.
+    """
+
+    ItemGroupOID = T.OIDRef(required=True)
+    ItemGroupRepeatKey = T.NonEmptyString(required=False)
+    TransactionType = T.ValueSetString(required=False)
+    ItemGroupDataSeq = T.PositiveInteger(required=False)
+    ItemGroupData = T.ODMListObject(element_class=T.SELF, group="ItemGroupDataGroup")
+    ItemData = T.ODMListObject(element_class=ItemData, group="ItemGroupDataGroup")
+    AuditRecord = T.ODMObject(element_class=AuditRecord)
+    Signature = T.ODMObject(element_class=Signature)
+    Annotation = T.ODMListObject(element_class=Annotation)
+    Query = T.ODMListObject(element_class=Query)
+
+    def __len__(self):
+        return len(self.ItemData)
+
+    def __getitem__(self, position):
+        return self.ItemData[position]
+
+    def __iter__(self):
+        return iter(self.ItemData)
+
+    def __bool__(self):
+        return True
+
+
+class StudyEventData(OE.ODMElement):
+    """The data collected at one study event, as item groups.
+
+    ODM 2.0 has no FormData: a form is an ``ItemGroupDef Type="Form"``, so its data
+    is an ItemGroupData directly under StudyEventData.
+
+    Iterating a StudyEventData, and ``len()``, cover its ItemGroupData. It is always
+    truthy. Children appended to its lists are not type-checked, as on every
+    ``ODMListObject`` list.
+
+    .. versionadded:: 0.3.0
+
+    Attributes:
+        StudyEventOID (str, required): The StudyEventDef this data is for.
+        StudyEventRepeatKey (str): Distinguishes repeats of a repeating event.
+        TransactionType (str): "Insert", "Update", "Remove", "Upsert" or "Context".
+        ItemGroupData (list): The event's item groups.
+        AuditRecord (AuditRecord): Who changed the data, where, when and why.
+        Signature (Signature): An electronic signature on the data.
+        Annotation (list): Comments, codings and flags.
+        Query (list): Queries raised on the data.
+    """
+
+    StudyEventOID = T.OIDRef(required=True)
+    StudyEventRepeatKey = T.NonEmptyString(required=False)
+    TransactionType = T.ValueSetString(required=False)
+    ItemGroupData = T.ODMListObject(element_class=ItemGroupData)
+    AuditRecord = T.ODMObject(element_class=AuditRecord)
+    Signature = T.ODMObject(element_class=Signature)
+    Annotation = T.ODMListObject(element_class=Annotation)
+    Query = T.ODMListObject(element_class=Query)
+
+    def __len__(self):
+        return len(self.ItemGroupData)
+
+    def __getitem__(self, position):
+        return self.ItemGroupData[position]
+
+    def __iter__(self):
+        return iter(self.ItemGroupData)
+
+    def __bool__(self):
+        return True
+
+
+class SubjectData(OE.ODMElement):
+    """The clinical data of one subject.
+
+    Iterating a SubjectData, and ``len()``, cover its StudyEventData. It is always
+    truthy. Children appended to its lists are not type-checked, as on every
+    ``ODMListObject`` list.
+
+    .. versionadded:: 0.3.0
+
+    Attributes:
+        SubjectKey (str, required): Identifies the subject within the study.
+        TransactionType (str): "Insert", "Update", "Remove", "Upsert" or "Context".
+        InvestigatorRef (InvestigatorRef): The responsible investigator.
+        SiteRef (SiteRef): The subject's site.
+        StudyEventData (list): The subject's study events.
+        AuditRecord (AuditRecord): Who changed the data, where, when and why.
+        Signature (Signature): An electronic signature on the data.
+        Annotation (list): Comments, codings and flags.
+        Query (list): Queries raised on the data.
+    """
+
+    SubjectKey = T.NonEmptyString(required=True)
+    TransactionType = T.ValueSetString(required=False)
+    InvestigatorRef = T.ODMObject(element_class=InvestigatorRef)
+    SiteRef = T.ODMObject(element_class=SiteRef)
+    StudyEventData = T.ODMListObject(element_class=StudyEventData)
+    AuditRecord = T.ODMObject(element_class=AuditRecord)
+    Signature = T.ODMObject(element_class=Signature)
+    Annotation = T.ODMListObject(element_class=Annotation)
+    Query = T.ODMListObject(element_class=Query)
+
+    def __len__(self):
+        return len(self.StudyEventData)
+
+    def __getitem__(self, position):
+        return self.StudyEventData[position]
+
+    def __iter__(self):
+        return iter(self.StudyEventData)
+
+    def __bool__(self):
+        return True
+
+
+class ClinicalData(OE.ODMElement):
+    """The clinical data for one study and MetaDataVersion.
+
+    Holds subject data, and item groups that belong to no subject (for example, data
+    about a site). Iterating a ClinicalData, and ``len()``, cover its SubjectData.
+    It is always truthy, so one that holds only top-level ItemGroupData is not
+    mistaken for an empty one. Children appended to its lists are not type-checked,
+    as on every ``ODMListObject`` list.
+
+    Load one with :meth:`odmlib.loader.ODMLoader.ClinicalData`.
+
+    .. versionadded:: 0.3.0
+
+    Attributes:
+        StudyOID (str, required): The Study the data belongs to.
+        MetaDataVersionOID (str, required): The MetaDataVersion that defines it.
+        SubjectData (list): Data per subject.
+        ItemGroupData (list): Item groups that belong to no subject.
+        AuditRecord (AuditRecord): Who changed the data, where, when and why.
+        Signature (Signature): An electronic signature on the data.
+        Annotation (list): Comments, codings and flags.
+        Query (list): Queries raised on the data.
+    """
+
+    StudyOID = T.OIDRef(required=True)
+    MetaDataVersionOID = T.OIDRef(required=True)
+    SubjectData = T.ODMListObject(element_class=SubjectData)
+    ItemGroupData = T.ODMListObject(element_class=ItemGroupData)
+    AuditRecord = T.ODMObject(element_class=AuditRecord)
+    Signature = T.ODMObject(element_class=Signature)
+    Annotation = T.ODMListObject(element_class=Annotation)
+    Query = T.ODMListObject(element_class=Query)
+
+    def __len__(self):
+        return len(self.SubjectData)
+
+    def __getitem__(self, position):
+        return self.SubjectData[position]
+
+    def __iter__(self):
+        return iter(self.SubjectData)
+
+    def __bool__(self):
+        return True
+
+
+class ReferenceData(OE.ODMElement):
+    """Reference data (for example, laboratory normal ranges) for a study.
+
+    Its item groups are not tied to a subject. Load one with
+    :meth:`odmlib.loader.ODMLoader.ReferenceData`.
+
+    .. versionadded:: 0.3.0
+
+    Attributes:
+        StudyOID (str, required): The Study the data belongs to.
+        MetaDataVersionOID (str, required): The MetaDataVersion that defines it.
+        ItemGroupData (list): The reference data, as item groups.
+        AuditRecord (AuditRecord): Who changed the data, where, when and why.
+        Signature (Signature): An electronic signature on the data.
+        Annotation (list): Comments, codings and flags.
+    """
+
+    StudyOID = T.OIDRef(required=True)
+    MetaDataVersionOID = T.OIDRef(required=True)
+    ItemGroupData = T.ODMListObject(element_class=ItemGroupData)
+    AuditRecord = T.ODMObject(element_class=AuditRecord)
+    Signature = T.ODMObject(element_class=Signature)
+    Annotation = T.ODMListObject(element_class=Annotation)
+
+
+class KeySet(OE.ODMElement):
+    """Identifies one piece of data, at any level, for an Association.
+
+    ODM 2.0 drops the ODM 1.3.2 ``FormOID``/``FormRepeatKey`` attributes and adds
+    ``MetaDataVersionOID``.
+
+    .. versionadded:: 0.3.0
+
+    Attributes:
+        StudyOID (str, required): The Study.
+        SubjectKey (str): The subject.
+        MetaDataVersionOID (str): The MetaDataVersion.
+        StudyEventOID (str): The StudyEventDef.
+        StudyEventRepeatKey (str): The repeat of the study event.
+        ItemGroupOID (str): The ItemGroupDef.
+        ItemGroupRepeatKey (str): The repeat of the item group.
+        ItemOID (str): The ItemDef.
+    """
+
+    StudyOID = T.OIDRef(required=True)
+    SubjectKey = T.NonEmptyString(required=False)
+    MetaDataVersionOID = T.OIDRef(required=False)
+    StudyEventOID = T.OIDRef(required=False)
+    StudyEventRepeatKey = T.NonEmptyString(required=False)
+    ItemGroupOID = T.OIDRef(required=False)
+    ItemGroupRepeatKey = T.NonEmptyString(required=False)
+    ItemOID = T.OIDRef(required=False)
+
+
+class Association(OE.ODMElement):
+    """An Annotation that links two pieces of data, each identified by a KeySet.
+
+    The XSD requires exactly two KeySets. odmlib holds them in one list and does not
+    enforce the count.
+
+    .. versionadded:: 0.3.0
+
+    Attributes:
+        StudyOID (str, required): The Study.
+        MetaDataVersionOID (str, required): The MetaDataVersion.
+        KeySet (list, required): The two linked pieces of data.
+        Annotation (Annotation, required): What links them.
+    """
+
+    StudyOID = T.OIDRef(required=True)
+    MetaDataVersionOID = T.OIDRef(required=True)
+    KeySet = T.ODMListObject(required=True, element_class=KeySet)
+    Annotation = T.ODMObject(required=True, element_class=Annotation)
+
 class ODM(OE.ODMElement):
     """The root element of an ODM 2.0 document.
 
@@ -2325,11 +2921,15 @@ class ODM(OE.ODMElement):
             attributes in a source document are ignored on load.
         Description (Description): Human-readable description of the file.
         Study (list): One or more Study elements.
-        AdminData: Administrative data for the study.
+        AdminData (list): Administrative data for the study.
+        ReferenceData (list): Reference data, such as laboratory normal ranges.
+        ClinicalData (list): Clinical data, per study and MetaDataVersion.
+        Association (list): Annotations linking two pieces of data.
 
     .. versionchanged:: 0.3.0
        Added ``schemaLocation``. A document carrying ``xsi:schemaLocation``
-       previously failed to load.
+       previously failed to load. Added ``ReferenceData``, ``ClinicalData`` and
+       ``Association``, which were dropped on load before.
     """
     FileType = T.ValueSetString(required=True)
     Granularity = T.ValueSetString(required=False)
@@ -2346,6 +2946,6 @@ class ODM(OE.ODMElement):
     Description = T.ODMObject(required=False, element_class=Description)
     Study = T.ODMListObject(required=False, element_class=Study)
     AdminData = T.ODMListObject(required=False, element_class=AdminData)
-    # ReferenceData = T.ODMListObject(element_class=ReferenceData)
-    # ClinicalData = T.ODMListObject(element_class=ClinicalData)
-    # Association = T.ODMListObject(element_class=Association)
+    ReferenceData = T.ODMListObject(required=False, element_class=ReferenceData)
+    ClinicalData = T.ODMListObject(required=False, element_class=ClinicalData)
+    Association = T.ODMListObject(required=False, element_class=Association)

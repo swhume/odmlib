@@ -22,9 +22,8 @@ Functions
     a MetaDataVersion) as a DataFrame with one row per element.
 
 :func:`clinical_data_to_dataframe`
-    Flatten a hierarchical ODM 1.3.2 ClinicalData object
-    (SubjectData → StudyEventData → FormData → ItemGroupData → ItemData)
-    into a tabular DataFrame with one row per subject-event-form-group record.
+    Flatten a hierarchical ODM 1.3.2 or ODM 2.0 ClinicalData object into a
+    tabular DataFrame with one row per record of one item group.
 
 :func:`dataset_to_dataframe`
     Flatten a Dataset-XML 1.0.1 ClinicalData object (no SubjectData
@@ -137,43 +136,102 @@ def clinical_data_to_dataframe(
     clinical_data: Any,
     item_group_oid: str,
 ) -> "pd.DataFrame":
-    """Export ODM 1.3.2 clinical data for one ItemGroup to a DataFrame.
+    """Export the clinical data of one ItemGroup to a DataFrame.
 
-    Traverses the full hierarchy
-    ``SubjectData → StudyEventData → FormData → ItemGroupData → ItemData``
-    and collects rows where ``ItemGroupData.ItemGroupOID`` matches
-    *item_group_oid*.
+    Collects one row per ``ItemGroupData`` whose ``ItemGroupOID`` is
+    *item_group_oid*, with a ``"SubjectKey"`` column plus one column per
+    ``ItemOID`` found in those records. The walk depends on the model:
+
+    * **ODM 1.3.2:** ``SubjectData → StudyEventData → FormData → ItemGroupData
+      → ItemData``. A value is the ``ItemData/@Value`` attribute.
+    * **ODM 2.0:** ItemGroupData at the ClinicalData level (its ``SubjectKey`` is
+      ``None``) and under ``SubjectData → StudyEventData``, recursing into
+      nested ItemGroupData. Each matching group, nested or not, is one row of
+      its own ItemData. A value comes from the ``Value`` child elements: one
+      Value gives a scalar, several give a list ordered by ``SeqNum``, and an
+      ItemData with ``IsNull="Yes"`` (or no Value) gives ``None``.
+
+    The walk reads the tree without changing it.
 
     Args:
-        clinical_data: A ``ClinicalData`` odmlib object from the
-            ``odm_1_3_2`` model.
+        clinical_data: A ``ClinicalData`` odmlib object from the ``odm_1_3_2``
+            or ``odm_2_0`` model.
         item_group_oid: OID of the ``ItemGroupDef`` to extract (e.g.,
             ``"IG.VS"``).
 
     Returns:
         A :class:`pandas.DataFrame` with one row per matching record.
-        Columns include ``"SubjectKey"`` plus one column per ``ItemOID``
-        found in those records.
 
     Raises:
         ImportError: If pandas is not installed.
+
+    .. versionchanged:: 0.3.0
+       Supports ODM 2.0. It returned an empty DataFrame for ODM 2.0, with no
+       error, because it looked for FormData.
     """
     _require_pandas()
 
+    if _is_odm20_clinical_data(clinical_data):
+        return pd.DataFrame(_odm20_rows(clinical_data, item_group_oid))
+
     rows = []
-    for subject in (getattr(clinical_data, "SubjectData", None) or []):
-        for se_data in (getattr(subject, "StudyEventData", None) or []):
-            for form_data in (getattr(se_data, "FormData", None) or []):
-                for ig_data in (getattr(form_data, "ItemGroupData", None) or []):
+    for subject in _children(clinical_data, "SubjectData"):
+        for se_data in _children(subject, "StudyEventData"):
+            for form_data in _children(se_data, "FormData"):
+                for ig_data in _children(form_data, "ItemGroupData"):
                     if getattr(ig_data, "ItemGroupOID", None) == item_group_oid:
                         row: dict[str, Any] = {
                             "SubjectKey": getattr(subject, "SubjectKey", None)
                         }
-                        for item_data in (getattr(ig_data, "ItemData", None) or []):
+                        for item_data in _children(ig_data, "ItemData"):
                             row[item_data.ItemOID] = getattr(item_data, "Value", None)
                         rows.append(row)
 
     return pd.DataFrame(rows)
+
+
+def _children(elem: Any, name: str) -> list:
+    """The child list *name* of *elem*, read without auto-creating an empty one."""
+    return getattr(elem, "__dict__", {}).get(name) or []
+
+
+def _is_odm20_clinical_data(clinical_data: Any) -> bool:
+    """ODM 2.0 ClinicalData holds SubjectData and ItemGroupData; 1.3.2 has no ItemGroupData."""
+    elems = getattr(type(clinical_data), "_elems", {})
+    return "SubjectData" in elems and "ItemGroupData" in elems
+
+
+def _odm20_value(item_data: Any) -> Any:
+    """The value of an ODM 2.0 ItemData: a scalar, a list ordered by SeqNum, or None."""
+    if getattr(item_data, "IsNull", None) == "Yes":
+        return None
+    values = sorted(_children(item_data, "Value"),
+                    key=lambda v: (v.SeqNum is None, v.SeqNum or 0))
+    if not values:
+        return None
+    if len(values) == 1:
+        return values[0]._content
+    return [v._content for v in values]
+
+
+def _odm20_rows(clinical_data: Any, item_group_oid: str) -> list[dict[str, Any]]:
+    """One row per ODM 2.0 ItemGroupData matching *item_group_oid*, at any depth."""
+    rows: list[dict[str, Any]] = []
+
+    def walk(groups: list, subject_key: Optional[str]) -> None:
+        for ig_data in groups:
+            if getattr(ig_data, "ItemGroupOID", None) == item_group_oid:
+                row: dict[str, Any] = {"SubjectKey": subject_key}
+                for item_data in _children(ig_data, "ItemData"):
+                    row[item_data.ItemOID] = _odm20_value(item_data)
+                rows.append(row)
+            walk(_children(ig_data, "ItemGroupData"), subject_key)
+
+    walk(_children(clinical_data, "ItemGroupData"), None)
+    for subject in _children(clinical_data, "SubjectData"):
+        for se_data in _children(subject, "StudyEventData"):
+            walk(_children(se_data, "ItemGroupData"), getattr(subject, "SubjectKey", None))
+    return rows
 
 
 def dataset_to_dataframe(clinical_data: Any) -> "pd.DataFrame":

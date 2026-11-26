@@ -80,8 +80,35 @@ DEFINE_21_SKIP_ELEMS: list[str] = [
 # oid_generator._REF_DEF_ANY_OF, and TargetTransitionOID against its override.
 # Before 0.3.0 all eight were skipped.
 
+#
+# Query is skipped as an element (0.3.0): a Query OID must still be unique, but nothing
+# references a Query, so it is never reported as unreferenced or used as a reference
+# target. The ClinicalData references (UserOID, LocationOID, SignatureOID, ItemOID,
+# ItemGroupOID, StudyEventOID, StudyOID, MetaDataVersionOID, CodeListOID) all resolve
+# by the naming convention, with no override.
+
 ODM_20_SKIP_ATTRS: list[str] = ["FileOID", "PriorFileOID"]
-ODM_20_SKIP_ELEMS: list[str] = ["ODM"]
+ODM_20_SKIP_ELEMS: list[str] = ["ODM", "Query"]
+
+#: Extra attributes to skip for an ODM 2.0 file that carries ClinicalData or
+#: ReferenceData without the metadata it uses (a data-only transfer, where the Study
+#: and MetaDataVersion travel in an earlier file). These attributes point into
+#: metadata, so in such a file they can never resolve::
+#:
+#:     checker = create_oid_checker("odm_2_0", extra_skip_attrs=ODM_20_DATA_ONLY_SKIP_ATTRS)
+#:
+#: References into AdminData (``UserOID``, ``LocationOID``, ``SignatureOID``) are still
+#: checked. A file that also leaves out its AdminData can add them.
+#:
+#: .. versionadded:: 0.3.0
+ODM_20_DATA_ONLY_SKIP_ATTRS: list[str] = [
+    "StudyOID",
+    "MetaDataVersionOID",
+    "StudyEventOID",
+    "ItemGroupOID",
+    "ItemOID",
+    "CodeListOID",
+]
 
 # ---------------------------------------------------------------------------
 # ARM 1.0 (Analysis Results Metadata)

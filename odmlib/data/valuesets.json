@@ -88,7 +88,19 @@
     "ItemRef.Repeat": ["Yes"],
     "ODM.Context": ["Archive", "Exchange", "Submission"],
     "ReturnValue.DataType": ["integer", "decimal", "float", "double", "date", "datetime", "time", "text", "string", "URI", "boolean", "hexBinary", "base64Binary", "hexFloat", "base64Float", "partialDate", "partialTime", "partialDatetime", "durationDatetime", "intervalDatetime", "incompleteDatetime", "incompleteDate", "incompleteTime"],
-    "Telecom.TelecomType": ["Email", "Pager", "Phone", "Fax", "SMS", "URL", "Other"]
+    "Telecom.TelecomType": ["Email", "Pager", "Phone", "Fax", "SMS", "URL", "Other"],
+    "SubjectData.TransactionType": ["Insert", "Update", "Remove", "Upsert", "Context"],
+    "StudyEventData.TransactionType": ["Insert", "Update", "Remove", "Upsert", "Context"],
+    "ItemGroupData.TransactionType": ["Insert", "Update", "Remove", "Upsert", "Context"],
+    "ItemData.TransactionType": ["Insert", "Update", "Remove", "Upsert", "Context"],
+    "ItemData.IsNull": ["Yes"],
+    "Annotation.TransactionType": ["Insert", "Update", "Remove", "Upsert", "Context"],
+    "AuditRecord.EditPoint": ["Monitoring", "DataManagement", "DBAudit"],
+    "AuditRecord.UsedMethod": ["Yes", "No"],
+    "Comment.SponsorOrSite": ["Sponsor", "Site"],
+    "Query.Source": ["System", "Data Management", "Site Monitor", "Coding System", "Safety Reviewer"],
+    "Query.Type": ["Manual", "System"],
+    "Query.State": ["Candidate", "Open", "Answered", "Closed", "Cancelled", "Resolved"]
   },
   "define_2_0": {
     "MetaDataVersion.DefineVersion": {

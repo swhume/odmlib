@@ -161,7 +161,12 @@ loader = LD.ODMLoader(OL.XMLODMLoader(model_package="odm_1_3_2"))
 loader.open_odm_document("file.xml")
 odm = loader.root()  # Returns odmlib object hierarchy
 mdv = loader.MetaDataVersion()  # Get first MetaDataVersion
+cd = loader.ClinicalData()  # First ClinicalData (0.3.0; also ReferenceData(idx))
 ```
+
+`ClinicalData()`/`ReferenceData()` call the XML/JSON ODM loaders' `load_clinicaldata` /
+`load_referencedata`. They are deliberately **not** on the `DocumentLoader` ABC (that would
+break third-party loaders); the facade raises `OdmlibTypeError` for a loader without them.
 
 ### Serialization
 
@@ -249,6 +254,11 @@ overrides in `oid_generator_config.py`. It defines:
 The manual `rules/oid_ref.py` `OIDRef` classes were removed in 0.3.0;
 `tests/test_oid_generator.py` keeps their `ref_def` tables as a frozen snapshot.
 
+For ODM 2.0, `Query` is a `skip_elem`: its OID must be unique but it is never reported as
+unreferenced. A data-only ClinicalData file (metadata in an earlier file) can pass
+`extra_skip_attrs=oid_generator_config.ODM_20_DATA_ONLY_SKIP_ATTRS`; references into
+AdminData are still checked.
+
 The checker also has `ref_def_any_of` (0.3.0) for references that may point at several
 element types — ODM 2.0's workflow and timing references (`StartOID`, `SourceOID`, `TargetOID`, `EndOID`, `StructuralElementOID`,
 `PredecessorOID`, `SuccessorOID`), from `_REF_DEF_ANY_OF`. The target sets follow the ODM
@@ -317,7 +327,8 @@ ODM requires specific element order in XML. odmlib enforces this:
 
 **Interleaved repeating groups** (`interleave.py`, 0.3.0). Where the XSD lets two child
 types alternate — ODM 2.0 `ItemGroupDef` (`ItemGroupRef`/`ItemRef`), `StudyEventGroupDef`
-(`StudyEventGroupRef`/`StudyEventRef`), `WorkflowDef` (`Transition`/`Branching`) — the
+(`StudyEventGroupRef`/`StudyEventRef`), `WorkflowDef` (`Transition`/`Branching`),
+`ItemGroupData` (nested `ItemGroupData`/`ItemData`) — the
 member descriptors are declared `T.ODMListObject(..., group="<XSD group name>")`.
 `ODMMeta` records them in `_groups`/`_group_of`, and each list is stored as a
 `GroupMemberList`: a real `list` that writes through to one shared `InterleavedGroup`
@@ -344,6 +355,13 @@ ODM v2.0 changes:
   from `ODM` and that no `_content` is required where the XSD allows empty text.
 - `xsi:*` attributes a class does not model are ignored on load (all models);
   `ODM.schemaLocation` is modelled and round-trips.
+- **ClinicalData layer (0.3.0).** The whole ODM 2.0 XSD is modelled (149 elements; the
+  alignment guard's allowlists are empty). Do not copy 1.3.2 shapes: there is no
+  `FormData` (StudyEventData holds ItemGroupData), values are `Value` child elements (no
+  `ItemData/@Value`), and AuditRecord/Signature/Annotation follow the data children,
+  then Query, with no `AuditRecords`/`Signatures`/`Annotations` containers.
+  `ItemGroupData` nests itself via `T.SELF`. The containers (ClinicalData, SubjectData,
+  StudyEventData, ItemGroupData) iterate one level down and are always truthy.
 
 ### Define-XML Extensions
 

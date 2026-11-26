@@ -145,15 +145,24 @@ Exporting metadata to a DataFrame
 Exporting clinical data to a DataFrame
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-For ODM 1.3.2 hierarchical clinical data:
+For ODM 1.3.2 and ODM 2.0 hierarchical clinical data, pass one ``ClinicalData``
+(``odm.ClinicalData`` is a list in both models):
 
 .. code-block:: python
 
     from odmlib.dataframe import clinical_data_to_dataframe
 
-    # Flatten all VS records to a DataFrame
-    df = clinical_data_to_dataframe(odm.ClinicalData, item_group_oid="IG.VS")
+    loader = LD.ODMLoader(OL.XMLODMLoader(model_package="odm_2_0"))
+    loader.open_odm_document("data.xml")
+
+    # Flatten all VS records to a DataFrame: one row per ItemGroupData
+    df = clinical_data_to_dataframe(loader.ClinicalData(), item_group_oid="IG.VS")
     print(df.head())
+
+For ODM 2.0 the walk also covers ItemGroupData directly under ClinicalData (with a
+``SubjectKey`` of ``None``) and nested ItemGroupData. An item with several ``Value``
+elements gives a list ordered by ``SeqNum``, and one with ``IsNull="Yes"`` gives
+``None``.
 
 For Dataset-XML 1.0.1 (flat structure):
 

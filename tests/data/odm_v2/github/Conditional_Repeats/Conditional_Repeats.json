@@ -1,0 +1,118 @@
+{
+  "MetaDataVersion": {
+    "OID": "MV.001",
+    "Name": "MetaDataVersion 1",
+    "Protocol": {
+      "StudyTimings": {
+        "StudyTiming": [
+          {
+            "OID": "Timings",
+            "Name": "Study timings",
+            "TransitionTimingConstraint": [
+              {
+                "OID": "TIM.1",
+                "Name": "Duration between two radiotherapies",
+                "TransitionOID": "TR.2_REPEAT",
+                "TimepointTarget": "P7D",
+                "TimepointPreWindow": "P1D",
+                "TimepointPostWindow": "P2D",
+                "Description": {
+                  "TranslatedText": [
+                    {
+                      "lang": "en",
+                      "Type": "text/plain",
+                      "_content": "There must always be 7 days between two cycles of radiotherapy"
+                    },
+                    {
+                      "lang": "de",
+                      "Type": "text/plain",
+                      "_content": "Zwischen zwei Radiotherapie Behandlungen muss es immer 7 Tagen geben"
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "WorkflowDef": [
+      {
+        "OID": "WF.RADIOTHERARPY_WORKFLOW",
+        "Name": "Radiotherapy workflow",
+        "WorkflowStart": {
+          "StartOID": "SE.1"
+        },
+        "Transition": [
+          {
+            "OID": "TR.1-2",
+            "Name": "Transition from start to radiation therapy",
+            "SourceOID": "SE.1",
+            "TargetOID": "SE.2"
+          },
+          {
+            "OID": "TR.Branch",
+            "SourceOID": "SE.2",
+            "Name": "Transition from radiation therapy to repeat test",
+            "TargetOID": "BR.BRANCH"
+          },
+          {
+            "OID": "TR.2_REPEAT",
+            "Name": "Loop back to radiotherapy",
+            "SourceOID": "BR.BRANCH",
+            "TargetOID": "SE.2"
+          },
+          {
+            "OID": "TR.2-3",
+            "Name": "Transition to end of radiotherapy",
+            "SourceOID": "BR.BRANCH",
+            "TargetOID": "SE.3"
+          }
+        ],
+        "Branching": [
+          {
+            "OID": "BR.BRANCH",
+            "Name": "repeat test",
+            "Type": "Exclusive",
+            "TargetTransition": [
+              {
+                "TargetTransitionOID": "TR.2_REPEAT",
+                "ConditionOID": "COND.NUMREPEATS"
+              }
+            ],
+            "DefaultTransition": [
+              {
+                "TargetTransitionOID": "TR.2-3"
+              }
+            ]
+          }
+        ],
+        "WorkflowEnd": [
+          {
+            "EndOID": "SE.3"
+          }
+        ]
+      }
+    ],
+    "StudyEventDef": [
+      {
+        "OID": "SE.1",
+        "Name": "Start of Therapy",
+        "Repeating": "No",
+        "Type": "Scheduled"
+      },
+      {
+        "OID": "SE.2",
+        "Name": "Radiation Therapy",
+        "Repeating": "Yes",
+        "Type": "Scheduled"
+      },
+      {
+        "OID": "SE.3",
+        "Name": "End of Therapy",
+        "Repeating": "No",
+        "Type": "Scheduled"
+      }
+    ]
+  }
+}

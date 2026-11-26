@@ -1,0 +1,87 @@
+<MetaDataVersion xmlns="http://www.cdisc.org/ns/odm/v2.0" OID="MV.001" Name="MetaDataVersion 1">
+    <Protocol>
+        <StudyTimings>
+            <StudyTiming OID="Timings" Name="Study timings">
+                <!-- Study must start between January 2021 and June 30 2021 -->
+                <AbsoluteTimingConstraint OID="TIM.STUDYSTART"
+                    Name="Study start absolute timing constraint" StudyEventOID="SE.STUDYSTART"
+                    TimepointTarget="2021-01-01" TimepointPostWindow="P6M">
+                    <Description>
+                        <TranslatedText xml:lang="en" Type="text/plain">The study must start between January 2021 and June
+                            30 2021</TranslatedText>
+                        <TranslatedText xml:lang="nl" Type="text/plain">The studie moet tussen 1 januari 2021 en 30 juni
+                            2021 aangevangen worden worden</TranslatedText>
+                    </Description>
+                </AbsoluteTimingConstraint>
+                <!-- Study end must be before one year after study start with a pardon period of month -->
+                <RelativeTimingConstraint OID="TIM.STUDYEND" Name="Study end relative timing constraint"
+                    PredecessorOID="SE.STUDYSTART" SuccessorOID="SE.STUDYEND"
+                    TimepointRelativeTarget="P1Y" TimepointPostWindow="P1M">
+                    <Description>
+                        <TranslatedText xml:lang="en" Type="text/plain">The study must be completed within one year after
+                            study start, with a pardon period of one month</TranslatedText>
+                        <TranslatedText xml:lang="nl" Type="text/plain">De studie moet binnen een jaar na studie aanvang,
+                            met een uitloopperiode van 1 maand</TranslatedText>
+                    </Description>
+                </RelativeTimingConstraint>
+                <!-- Workflow transition constraints: 
+            Visit 1 must be within 2 months after study start +/- 7 days. 
+            Visit 2 must be within 3 months after visit 1 +/- 14 days.
+            Study end for the subject must be within 1 month after visit 2 +/- 7 days -->
+                <TransitionTimingConstraint OID="TIM.TR.START-VISIT1"
+                    Name="Timing between study start and visit 1" TransitionOID="TR.START-VISIT1"
+                    TimepointTarget="P2M" TimepointPreWindow="P7D" TimepointPostWindow="P7D">
+                    <Description>
+                        <TranslatedText xml:lang="en" Type="text/plain">Visit 1 must be within two months after study
+                            start for the subject, with a window of +/- 7 days</TranslatedText>
+                        <TranslatedText xml:lang="nl" Type="text/plain">Visite 1 moet binnen twee maanden na aanvang van
+                            de studie zijn, met een venster van +/- 7 dagen</TranslatedText>
+                    </Description>
+                </TransitionTimingConstraint>
+                <TransitionTimingConstraint OID="TIM.TR.VISIT1-VISIT2"
+                    Name="Timing between visit 1 and visit 2" TransitionOID="TR.VISIT1-VISIT2"
+                    TimepointTarget="P3M" TimepointPreWindow="P14D" TimepointPostWindow="P14D">
+                    <Description>
+                        <TranslatedText xml:lang="en" Type="text/plain">Visit 2 must be within three months after visit 1
+                            for the subject, with a window of +/- 14 days</TranslatedText>
+                        <TranslatedText xml:lang="nl" Type="text/plain">Visite 2 moet binnen drie maanden na aanvang van
+                            visite 1 zijn, met een venster van +/- 14 dagen</TranslatedText>
+                    </Description>
+                </TransitionTimingConstraint>
+                <TransitionTimingConstraint OID="TIM.TR.VISIT2-END"
+                    Name="Timing between visit 2 and study end" TransitionOID="TR.VISIT2-END"
+                    TimepointTarget="P1M" TimepointPreWindow="P7D" TimepointPostWindow="P7D">
+                    <Description>
+                        <TranslatedText xml:lang="en" Type="text/plain">Study end must be within one month after visit 2
+                            for the subject, with a window of +/- 7 days</TranslatedText>
+                        <TranslatedText xml:lang="nl" Type="text/plain">Einde van de studie moet binnen een maand na
+                            visite 2 zijn, met een venster van +/- 7 dagen</TranslatedText>
+                    </Description>
+                </TransitionTimingConstraint>
+            </StudyTiming>
+        </StudyTimings>
+    </Protocol>        
+    <WorkflowDef OID="WF.SIMPLE" Name="Simple linear workflow">
+        <Description>
+            <TranslatedText xml:lang="en" Type="text/plain">Simple linear workflow
+                example</TranslatedText>
+            <TranslatedText xml:lang="nl" Type="text/plain">Eenvoudige rechtlijnige
+                workflow</TranslatedText>
+        </Description>
+        <WorkflowStart StartOID="SE.STUDYSTART"/>
+        <Transition OID="TR.START-VISIT1" Name="Transition from study start to visit 1"
+            SourceOID="SE.STUDYSTART" TargetOID="SE.1"/>
+        <Transition OID="TR.VISIT1-VISIT2" Name="Transition from visit 1 to visit 2"
+            SourceOID="SE.1" TargetOID="SE.2"/>
+        <Transition OID="TR.VISIT2-END" Name="Transition from visit 2 to study end" SourceOID="SE.2"
+            TargetOID="SE.STUDYEND"/>
+        <WorkflowEnd EndOID="SE.STUDYEND"/>
+    </WorkflowDef>
+    <!--We model all the tasks as StudyEvents-->
+    <!--For a repeating task, we would set @Repeating='Yes'-->
+    <StudyEventDef OID="SE.STUDYSTART" Name="Start of Study" Repeating="No" Type="Scheduled"/>
+    <StudyEventDef OID="SE.1" Name="Visit 1" Repeating="No" Type="Scheduled"/>
+    <StudyEventDef OID="SE.2" Name="Visit 2" Repeating="No" Type="Scheduled"/>
+    <StudyEventDef OID="SE.STUDYEND" Name="End of Study" Repeating="No" Type="Scheduled"/>
+    <!-- Examples of timing constraints -->
+</MetaDataVersion>

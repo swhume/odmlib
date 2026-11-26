@@ -1,0 +1,4 @@
+# Vendored ODM v2.0 fixtures are pinned by sha256 in tests/data/odm_v2/MANIFEST.json.
+# Never convert their line endings, or a Windows checkout (core.autocrlf=true)
+# no longer matches the recorded hashes.
+tests/data/odm_v2/** -text

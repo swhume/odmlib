@@ -1,0 +1,256 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ODM xmlns="http://www.cdisc.org/ns/odm/v2.0" 
+    xmlns:xs="http://www.w3.org/2001/XMLSchema"
+    xmlns:ds="http://www.w3.org/2000/09/xmldsig#"
+    xmlns:xlink="http://www.w3.org/1999/xlink"
+    FileOID="Atlas_Questionnaire_Metadata"
+    FileType="Snapshot"
+    Granularity="Metadata"
+    ODMVersion="2.0"
+    CreationDateTime="2021-03-21T14:40:00+01:00">
+    <!-- Source: CDISC Questionnaires: ATLAS: 
+        https://www.cdisc.org/standards/foundational/qrs/age-treatment-systemic-antibiotics-leukocyte-count-serum-albumin-and -->
+    <Study OID="ATLAS" StudyName="Age, treatment with systemic antibiotics, leukocyte count, serum albumin, and serum creatinine as a measure of renal function"
+        ProtocolName="Example ATLAS protocol">
+        <MetaDataVersion OID="MV.ATLAS.001" Name="ATLAS v.1">
+            <Protocol>
+                <StudyEventGroupRef StudyEventGroupOID="SEG.ATLAS" Mandatory="Yes"/>
+            </Protocol>
+            <StudyEventGroupDef OID="SEG.ATLAS" Name="Atlas">
+                <StudyEventRef StudyEventOID="SE.ATLAS" Mandatory="Yes"/>
+            </StudyEventGroupDef>
+            <!-- Use of the form in the StudyEvent (e.g. visit) -->
+            <StudyEventDef OID="SE.ATLAS" Name="Atlas Visit" Type="Scheduled" Repeating="No">
+                <ItemGroupRef ItemGroupOID="IG.ATLAS_FORM" Mandatory="Yes"/>
+            </StudyEventDef>
+            <!-- The form -->
+            <!-- TODO? Is it the responsibility of ODM to take that this form is displayed as a matrix?
+                With the columns containing the scores "0", "1" and "2".
+                Personally, I don't think it is ODMs responsibilty in this case.
+                The choices could also be represented by e.g. radiobuttons
+            -->
+            <ItemGroupDef OID="IG.ATLAS_FORM" Name="ATLAS Form" Repeating="No" Type="Form">
+                <ItemGroupRef ItemGroupOID="IG.ATLAS_QUESTIONS" Mandatory="Yes"/>
+                <ItemGroupRef ItemGroupOID="IG.ATLAS_SCORE" Mandatory="Yes"/>
+            </ItemGroupDef>
+            <ItemGroupDef OID="IG.ATLAS_QUESTIONS" Name="Atlas Form - Questions" Repeating="No" Type="Section">
+                <ItemRef ItemOID="IT.AGE" Mandatory="Yes" />
+                <ItemRef ItemOID="IT.SYST_ANTIBIOTICS" Mandatory="Yes"/>
+                <ItemRef ItemOID="IT.LEUKOCYTE_COUNT" Mandatory="Yes"/>
+                <ItemRef ItemOID="IT.ALBUMIN" Mandatory="Yes"/>
+                <ItemRef ItemOID="IT.CREATININE" Mandatory="Yes"/>
+            </ItemGroupDef>
+            <!-- part with the total score (derived) -->
+            <ItemGroupDef OID="IG.ATLAS_SCORE" Name="Total score" Repeating="No" Type="Section">
+                <ItemRef ItemOID="IT.TOTAL_SCORE" Mandatory="Yes" MethodOID="MT.TOTAL_SCORE"/>
+            </ItemGroupDef>
+            
+            <!-- Individual items -->
+            <ItemDef OID="IT.AGE" Name="Age" DataType="integer">
+                <Question><TranslatedText xml:lang="en" Type="text/plain">Age</TranslatedText></Question>
+                <CodeListRef CodeListOID="CL.AGE"/>
+                <Alias Context="SDTM" Name="RSSTRESN/RSSTRESC where RSTESTCD=ATLAS101"/>
+            </ItemDef>
+            <ItemDef OID="IT.SYST_ANTIBIOTICS" Name="Treatment with systemic antibiotics" DataType="integer">
+                <Question><TranslatedText xml:lang="en" Type="text/plain">Treatment with systemic antibiotics during CDI therapy (&gt;= 1 day)</TranslatedText></Question>
+                <CodeListRef CodeListOID="CL.SYST_ANTIBIOTICS"/>
+                <Alias Context="SDTM" Name="RSSTRESN/RSSTRESC where RSTESTCD=ATLAS102"/>
+            </ItemDef>
+            <ItemDef OID="IT.LEUKOCYTE_COUNT" Name="Luekocyte count" DataType="integer">
+                <Question><TranslatedText xml:lang="en" Type="text/plain">Leukocyte count (total)</TranslatedText></Question>
+                <CodeListRef CodeListOID="CL.LEUKOCYTE_COUNT" />
+                <!-- Example of instruction to have the test performed according to LOINC code 6690-2
+                (https://loinc.org/6690-2/): Leukocytes [#/volume] in Blood by Automated count -->
+                <Coding Code="6690-2" System="http://loinc.org" SystemName="LOINC" SystemVersion="2.72"/>
+                <!-- Use in SDTM -->
+                <Alias Context="SDTM" Name="RSSTRESN/RSSTRESC where RSTESTCD=ATLAS103"/>
+            </ItemDef>
+            <ItemDef OID="IT.ALBUMIN" Name="Serum albumin" DataType="integer">
+                <Question><TranslatedText xml:lang="en" Type="text/plain">Albumin (serum)</TranslatedText></Question>
+                <CodeListRef CodeListOID="CL.ALBUMIN" />
+                <!-- Example of instruction to have the test performed according to LOINC code 1751-7
+                (https://loinc.org/1751-7/): Albumin [Mass/volume] in Serum or Plasma -->
+                <Coding Code="1751-7" System="http://loinc.org" SystemName="LOINC" SystemVersion="2.72"/>
+                <!-- Use in SDTM -->
+                <Alias Context="SDTM" Name="RSSTRESN/RSSTRESC where RSTESTCD=ATLAS104"/>
+            </ItemDef>
+            <ItemDef OID="IT.CREATININE" Name="Serum creatinine" DataType="integer">
+                <Question><TranslatedText xml:lang="en" Type="text/plain">Serum creatinine (as a measure of renal function></TranslatedText></Question>
+                <CodeListRef CodeListOID="CL.CREATININE" />
+                <!-- Example of instruction to have the test performed according to LOINC code 14682-9
+                (https://loinc.org/14682-9/): Creatinine [Moles/volume] in Serum or Plasma -->
+                <Coding Code="14682-9" System="http://loinc.org" SystemName="LOINC" SystemVersion="2.72"/>
+                <Alias Context="SDTM" Name="RSSTRESN/RSSTRESC where RSTESTCD=ATLAS105"/>
+            </ItemDef>
+            <!-- Total score -->
+            <ItemDef OID="IT.TOTAL_SCORE" Name="Total score" DataType="integer">
+                <Question>
+                    <TranslatedText xml:lang="en" Type="text/plain">Total Points: </TranslatedText>
+                </Question>
+            </ItemDef>
+            <!-- CodeLists -->
+            <!-- Scores for age -->
+            <CodeList OID="CL.AGE" Name="Age" DataType="integer"><!-- coded values are used for the scores -->
+                <Description><TranslatedText xml:lang="en" Type="text/plain">Age</TranslatedText></Description>
+                <!-- The "CodedValue" represents the number of points, goint into SDTM QSSTRESC/QSSTRESN
+                The "Decode" will go into SDTM QSORRES -->
+                <CodeListItem CodedValue="0">
+                    <Decode>
+                        <TranslatedText xml:lang="en" Type="text/plain">&lt; 60 years</TranslatedText>
+                    </Decode>
+                    <Alias Context="SDTM" Name="RSSTRESN/RSSTRESC"/>
+                </CodeListItem>
+                <CodeListItem CodedValue="1">
+                    <Decode>
+                        <TranslatedText xml:lang="en" Type="text/plain">60 - 79 years</TranslatedText>
+                    </Decode>
+                    <Alias Context="SDTM" Name="RSSTRESN/RSSTRESC"/>
+                </CodeListItem>
+                <CodeListItem CodedValue="2">
+                    <Decode>
+                        <TranslatedText xml:lang="en" Type="text/plain">&gt;= 80 years</TranslatedText>
+                    </Decode>
+                    <Alias Context="SDTM" Name="RSSTRESN/RSSTRESC"/>
+                </CodeListItem>
+                <Alias Context="SDTM" Name="RSORRES"/>
+            </CodeList>
+            <!-- Scores for treatment with systemic antibiotics -->
+            <CodeList OID="CL.SYST_ANTIBIOTICS" Name="Treatment with systemic antibiotics" DataType="integer">
+                <Description><TranslatedText xml:lang="en" Type="text/plain">Treatment with systemic antibiotics during CDI therapy (&gt;= 1 day)</TranslatedText></Description>
+                <CodeListItem CodedValue="0">
+                    <Decode>
+                        <TranslatedText xml:lang="en" Type="text/plain">No</TranslatedText>
+                    </Decode>
+                    <Alias Context="SDTM" Name="RSSTRESN/RSSTRESC"/>
+                </CodeListItem>
+                <CodeListItem CodedValue="2">
+                    <Decode>
+                        <TranslatedText xml:lang="en" Type="text/plain">Yes</TranslatedText>
+                    </Decode>
+                    <Alias Context="SDTM" Name="RSSTRESN/RSSTRESC"/>
+                </CodeListItem>
+                <Alias Context="SDTM" Name="RSORRES"/>
+            </CodeList>
+            <!-- Scores for leukocyte count -->
+            <CodeList OID="CL.LEUKOCYTE_COUNT" Name="Leukocyte count" DataType="integer">
+                <Description><TranslatedText xml:lang="en" Type="text/plain">Leukocyte count (total)</TranslatedText></Description>
+                <CodeListItem CodedValue="0">
+                    <Decode>
+                        <TranslatedText xml:lang="en" Type="text/plain">&lt;16,000</TranslatedText>
+                    </Decode>
+                    <Alias Context="SDTM" Name="RSSTRESN/RSSTRESC"/>
+                </CodeListItem>
+                <CodeListItem CodedValue="1">
+                    <Decode>
+                        <TranslatedText xml:lang="en" Type="text/plain">16,000 - 25,000</TranslatedText>
+                    </Decode>
+                    <Alias Context="SDTM" Name="RSSTRESN/RSSTRESC"/>
+                </CodeListItem>
+                <CodeListItem CodedValue="2">
+                    <Decode>
+                        <TranslatedText xml:lang="en" Type="text/plain">&gt;25,000</TranslatedText>
+                    </Decode>
+                    <Alias Context="SDTM" Name="RSSTRESN/RSSTRESC"/>
+                </CodeListItem>
+                <!-- Use in SDTM -->
+                <Alias Context="SDTM" Name="RSORRES"/>
+            </CodeList>
+            <!-- Scores for albumin -->
+            <CodeList OID="CL.ALBUMIN" Name="Serum Albumin" DataType="integer">
+                <Description><TranslatedText xml:lang="en" Type="text/plain">Albumin (serum)</TranslatedText></Description>
+                <CodeListItem CodedValue="0">
+                    <Decode>
+                        <TranslatedText xml:lang="en" Type="text/plain">&gt;35 g/L</TranslatedText>
+                    </Decode>
+                    <Alias Context="SDTM" Name="RSSTRESN/RSSTRESC"/>
+                </CodeListItem>
+                <CodeListItem CodedValue="1">
+                    <Decode>
+                        <TranslatedText xml:lang="en" Type="text/plain">26 - 35 g/L</TranslatedText>
+                    </Decode>
+                    <Alias Context="SDTM" Name="RSSTRESN/RSSTRESC"/>
+                </CodeListItem>
+                <CodeListItem CodedValue="2">
+                    <Decode>
+                        <TranslatedText xml:lang="en" Type="text/plain">&lt;= 25 g/L</TranslatedText>
+                    </Decode>
+                    <Alias Context="SDTM" Name="RSSTRESN/RSSTRESC"/>
+                </CodeListItem>
+                <Alias Context="SDTM" Name="RSORRES"/>
+            </CodeList>
+            <!-- Scores for creatinine -->
+            <CodeList OID="CL.CREATININE" Name="Serum creatinine" DataType="integer">
+                <Description><TranslatedText xml:lang="en" Type="text/plain">Serum creatinine (as a measure of renal function)</TranslatedText></Description>
+                <CodeListItem CodedValue="0">
+                    <Decode>
+                        <TranslatedText xml:lang="en" Type="text/plain">&lt;= 120 umol/L</TranslatedText>
+                    </Decode>
+                    <Alias Context="SDTM" Name="RSSTRESN/RSSTRESC"/>
+                </CodeListItem>
+                <CodeListItem CodedValue="1">
+                    <Decode>
+                        <TranslatedText xml:lang="en" Type="text/plain">121 - 179 umol/L</TranslatedText>
+                    </Decode>
+                    <Alias Context="SDTM" Name="RSSTRESN/RSSTRESC"/>
+                </CodeListItem>
+                <CodeListItem CodedValue="2">
+                    <Decode>
+                        <TranslatedText xml:lang="en" Type="text/plain">&gt;= 180 umol/L</TranslatedText>
+                    </Decode>
+                    <Alias Context="SDTM" Name="RSSTRESN/RSSTRESC"/>
+                </CodeListItem>
+                <Alias Context="SDTM" Name="RSORRES"/>
+            </CodeList>
+            <MethodDef OID="MT.TOTAL_SCORE" Name="ATLAS total score calculation">
+                <Description>
+                    <TranslatedText xml:lang="en" Type="text/plain">The total score is calculated as the sum of the scores of the 5 questions</TranslatedText>
+                </Description>
+                <!-- MethodSignature content (example) -->
+                <MethodSignature>
+                    <Parameter Name="Age" Definition="Age category" DataType="integer"/>
+                    <Parameter Name="Treatment with systemic antibiotics" DataType="integer"/>
+                    <Parameter Name="Leukocyte count" DataType="integer"/>
+                    <Parameter Name="Serum albumin" DataType="integer"/>
+                    <Parameter Name="Seum creatinine" DataType="integer"/>
+                    <ReturnValue Name="Total score" DataType="integer"/>
+                </MethodSignature>
+                <FormalExpression Context="XPath">
+                    <!-- with XPath, we need to go up to the form level,
+                        than drill down to the group with questions and to the individual question -->
+                    <Code><![CDATA[
+                            ../../ItemGroupData[@ItemGroupOID='IG.ATLAS_QUESTIONS']/ItemData[@ItemOID='IT.AGE']/Value 
+                                + ../../ItemGroupData[@ItemGroupOID='IG.ATLAS_QUESTIONS']/ItemData[@ItemOID='IT.SYST_ANTIBIOTICS']/Value 
+                                + ../../ItemGroupData[@ItemGroupOID='IG.ATLAS_QUESTIONS']/ItemData[@ItemOID='IT.LEUKOCYTE_COUNT']/Value 
+                                + ../../ItemGroupData[@ItemGroupOID='IG.ATLAS_QUESTIONS']/ItemData[@ItemOID='IT.ALBUMIN']/Value
+                                + ../../ItemGroupData[@ItemGroupOID='IG.ATLAS_QUESTIONS']/ItemData[@ItemOID='IT.CREATININE']/Value
+                           ]]></Code>
+                </FormalExpression>
+            </MethodDef>
+        </MetaDataVersion>
+    </Study>
+    <!-- Example ClinicalData -->
+    <ClinicalData StudyOID="ATLAS" MetaDataVersionOID="MV.ATLAS.001">
+        <SubjectData SubjectKey="001">
+            <StudyEventData StudyEventOID="SE.ATLAS">
+                <ItemGroupData ItemGroupOID="IG.ATLAS_FORM">
+                    <ItemGroupData ItemGroupOID="IG.ATLAS_QUESTIONS">
+                        <!-- Age between 60 and 79 years: 1 point -->
+                        <ItemData ItemOID="IT.AGE"><Value>1</Value></ItemData>
+                        <!-- No treatment with systemic antibiotics: 0 points -->
+                        <ItemData ItemOID="IT.SYST_ANTIBIOTICS"><Value>0</Value></ItemData>
+                        <!-- Leukocyte count &gt; 25,000: 2 points -->
+                        <ItemData ItemOID="IT.LEUKOCYTE_COUNT"><Value>2</Value></ItemData>
+                        <!-- Albumin Serum between 26 and 35 g/L: 1 point -->
+                        <ItemData ItemOID="IT.ALBUMIN"><Value>2</Value></ItemData>
+                        <!-- Serum creatinine larger than 180 umol/L: 2 points -->
+                        <ItemData ItemOID="IT.CREATININE"><Value>2</Value></ItemData>
+                    </ItemGroupData>
+                    <ItemGroupData ItemGroupOID="IG.ATLAS_SCORE">
+                        <!-- Total score = 1 + 0 + 2 + 2 + 2 = 7 -->
+                        <ItemData ItemOID="IT.TOTAL_SCORE"><Value>7</Value></ItemData>
+                    </ItemGroupData>
+                </ItemGroupData>
+            </StudyEventData>
+        </SubjectData>
+    </ClinicalData>
+</ODM>

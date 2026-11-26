@@ -1,0 +1,516 @@
+{
+  "FileOID": "ODM.1497516063497",
+  "FileType": "Snapshot",
+  "CreationDateTime": "2017-06-15T09:45:36+01:00",
+  "ODMVersion": "2.0",
+  "Originator": "DataExchangeStandardsTeam",
+  "SourceSystem": "Origin Study Modeller",
+  "SourceSystemVersion": "3.7.1",
+  "Study": [
+    {
+      "OID": "S.RPTIG.UC-D",
+      "StudyName": "RPTIG-UC-D",
+      "ProtocolName": "Repeating Item Groups Use Case D",
+      "Description": {
+        "TranslatedText": [
+          {
+            "lang": "en",
+            "Type": "text/plain",
+            "_content": "\n\t\t\t\tMedical History form with a set of questions that repeat for each of a number of pre-defined histories, \n\t\t\t\tand allows additional histories to be collected. One entry in the repeating codelist represents an \"other\" \n\t\t\t\tbody system, and for these repeats an additional field collects the \"other\" information.\n\t\t\t"
+          }
+        ]
+      },
+      "MetaDataVersion": [
+        {
+          "OID": "MDV.RPTIG.UC-D",
+          "Name": "Repeating Item Groups Use Case D - Codelist Repeat with 'other' field",
+          "StudyEventDef": [
+            {
+              "OID": "SE.MEDHIS",
+              "Name": "Visit with collection of Medical History",
+              "Repeating": "No",
+              "Type": "Scheduled",
+              "ItemGroupRef": [
+                {
+                  "ItemGroupOID": "IG.MEDHIST",
+                  "Mandatory": "Yes"
+                }
+              ]
+            }
+          ],
+          "ItemGroupDef": [
+            {
+              "OID": "F.MEDHIST",
+              "Name": "Medical History",
+              "Repeating": "No",
+              "Type": "Form",
+              "ItemGroupRef": [
+                {
+                  "ItemGroupOID": "IG.MEDHIST",
+                  "Mandatory": "Yes",
+                  "OrderNumber": 1
+                }
+              ]
+            },
+            {
+              "OID": "IG.MEDHIST",
+              "Name": "Medical History",
+              "Repeating": "Static",
+              "Type": "Section",
+              "Domain": "MH",
+              "ItemRef": [
+                {
+                  "ItemOID": "I.MH.BODSYS",
+                  "Mandatory": "Yes",
+                  "Repeat": "Yes",
+                  "OrderNumber": 1
+                },
+                {
+                  "ItemOID": "I.MH.SYSOTH",
+                  "Mandatory": "No",
+                  "Other": "Yes",
+                  "OrderNumber": 2
+                },
+                {
+                  "ItemOID": "I.MH.TERM",
+                  "Mandatory": "No",
+                  "OrderNumber": 3
+                },
+                {
+                  "ItemOID": "I.MH.ACTIVE",
+                  "Mandatory": "No",
+                  "OrderNumber": 4
+                }
+              ],
+              "Origin": [
+                {
+                  "Type": "Collected",
+                  "Description": {
+                    "TranslatedText": [
+                      {
+                        "lang": "en",
+                        "Type": "text/plain",
+                        "_content": "Use as Case Report Form (CRF)"
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+          ],
+          "ItemDef": [
+            {
+              "OID": "I.MH.BODSYS",
+              "Name": "Body System",
+              "DataType": "integer",
+              "Length": 8,
+              "Question": {
+                "TranslatedText": [
+                  {
+                    "lang": "en",
+                    "Type": "text/plain",
+                    "_content": "Body System"
+                  },
+                  {
+                    "lang": "fr",
+                    "Type": "text/plain",
+                    "_content": "Système De Corps"
+                  }
+                ]
+              },
+              "CodeListRef": {
+                "CodeListOID": "CL.MHSYSTEM"
+              },
+              "Alias": [
+                {
+                  "Context": "SDTM",
+                  "Name": "MHBODSYS"
+                }
+              ]
+            },
+            {
+              "OID": "I.MH.TERM",
+              "Name": "MH Abnormality",
+              "DataType": "text",
+              "Length": 80,
+              "Question": {
+                "TranslatedText": [
+                  {
+                    "lang": "en",
+                    "Type": "text/plain",
+                    "_content": "Abnormality"
+                  },
+                  {
+                    "lang": "fr",
+                    "Type": "text/plain",
+                    "_content": "Anomalie"
+                  }
+                ]
+              },
+              "Alias": [
+                {
+                  "Context": "SDTM",
+                  "Name": "MHTERM"
+                }
+              ]
+            },
+            {
+              "OID": "I.MH.ACTIVE",
+              "Name": "MH Active",
+              "DataType": "integer",
+              "Length": 8,
+              "Question": {
+                "TranslatedText": [
+                  {
+                    "lang": "en",
+                    "Type": "text/plain",
+                    "_content": "Currently Active"
+                  },
+                  {
+                    "lang": "fr",
+                    "Type": "text/plain",
+                    "_content": "Actuellement Actif"
+                  }
+                ]
+              },
+              "CodeListRef": {
+                "CodeListOID": "CL.ACTINACT"
+              },
+              "Alias": [
+                {
+                  "Context": "SDTM",
+                  "Name": "MHCONDC"
+                }
+              ]
+            },
+            {
+              "OID": "I.MH.SYSOTH",
+              "Name": "Body System Other",
+              "DataType": "text",
+              "Length": 40,
+              "Question": {
+                "TranslatedText": [
+                  {
+                    "lang": "en",
+                    "Type": "text/plain",
+                    "_content": "Other"
+                  },
+                  {
+                    "lang": "fr",
+                    "Type": "text/plain",
+                    "_content": "Autre"
+                  }
+                ]
+              },
+              "Alias": [
+                {
+                  "Context": "SDTM",
+                  "Name": "MHSYSOTH"
+                }
+              ]
+            }
+          ],
+          "CodeList": [
+            {
+              "OID": "CL.MHSYSTEM",
+              "Name": "Body System",
+              "DataType": "integer",
+              "CodeListItem": [
+                {
+                  "CodedValue": "1",
+                  "Decode": {
+                    "TranslatedText": [
+                      {
+                        "lang": "en",
+                        "Type": "text/plain",
+                        "_content": "Skin"
+                      },
+                      {
+                        "lang": "fr",
+                        "Type": "text/plain",
+                        "_content": "Peau"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "CodedValue": "2",
+                  "Decode": {
+                    "TranslatedText": [
+                      {
+                        "lang": "en",
+                        "Type": "text/plain",
+                        "_content": "Eyes"
+                      },
+                      {
+                        "lang": "fr",
+                        "Type": "text/plain",
+                        "_content": "Yeux"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "CodedValue": "3",
+                  "Decode": {
+                    "TranslatedText": [
+                      {
+                        "lang": "en",
+                        "Type": "text/plain",
+                        "_content": "Heart"
+                      },
+                      {
+                        "lang": "fr",
+                        "Type": "text/plain",
+                        "_content": "Coeur"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "CodedValue": "4",
+                  "Decode": {
+                    "TranslatedText": [
+                      {
+                        "lang": "en",
+                        "Type": "text/plain",
+                        "_content": "Abdomen"
+                      },
+                      {
+                        "lang": "fr",
+                        "Type": "text/plain",
+                        "_content": "Abdomen"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "CodedValue": "5",
+                  "Decode": {
+                    "TranslatedText": [
+                      {
+                        "lang": "en",
+                        "Type": "text/plain",
+                        "_content": "Neurological"
+                      },
+                      {
+                        "lang": "fr",
+                        "Type": "text/plain",
+                        "_content": "Neurologique"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "CodedValue": "99",
+                  "Other": "Yes",
+                  "Decode": {
+                    "TranslatedText": [
+                      {
+                        "lang": "en",
+                        "Type": "text/plain",
+                        "_content": "Other"
+                      },
+                      {
+                        "lang": "fr",
+                        "Type": "text/plain",
+                        "_content": "Autre"
+                      }
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "OID": "CL.ACTINACT",
+              "Name": "Status (Active / Non-Active)",
+              "DataType": "integer",
+              "CodeListItem": [
+                {
+                  "CodedValue": "1",
+                  "Decode": {
+                    "TranslatedText": [
+                      {
+                        "lang": "en",
+                        "Type": "text/plain",
+                        "_content": "Active"
+                      },
+                      {
+                        "lang": "fr",
+                        "Type": "text/plain",
+                        "_content": "Actif"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "CodedValue": "2",
+                  "Decode": {
+                    "TranslatedText": [
+                      {
+                        "lang": "en",
+                        "Type": "text/plain",
+                        "_content": "Inactive"
+                      },
+                      {
+                        "lang": "fr",
+                        "Type": "text/plain",
+                        "_content": "Inactif"
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "ClinicalData": [
+    {
+      "StudyOID": "S.RPTIG.UC-D",
+      "MetaDataVersionOID": "MDV.RPTIG.UC-D",
+      "SubjectData": [
+        {
+          "SubjectKey": "1",
+          "StudyEventData": [
+            {
+              "StudyEventOID": "SE.MEDHIS",
+              "ItemGroupData": [
+                {
+                  "ItemGroupOID": "F.MEDHIST",
+                  "ItemGroupData": [
+                    {
+                      "ItemGroupOID": "IG.MEDHIST",
+                      "ItemGroupRepeatKey": "1",
+                      "ItemData": [
+                        {
+                          "ItemOID": "I.MH.BODSYS",
+                          "Value": [
+                            {
+                              "_content": "1"
+                            }
+                          ]
+                        },
+                        {
+                          "ItemOID": "I.MH.TERM",
+                          "Value": [
+                            {
+                              "_content": "some problem"
+                            }
+                          ]
+                        },
+                        {
+                          "ItemOID": "I.MH.ACTIVE"
+                        }
+                      ]
+                    },
+                    {
+                      "ItemGroupOID": "IG.MEDHIST",
+                      "ItemGroupRepeatKey": "2",
+                      "ItemData": [
+                        {
+                          "ItemOID": "I.MH.BODSYS",
+                          "Value": [
+                            {
+                              "_content": "3"
+                            }
+                          ]
+                        },
+                        {
+                          "ItemOID": "I.MH.TERM",
+                          "Value": [
+                            {
+                              "_content": "some other problem"
+                            }
+                          ]
+                        },
+                        {
+                          "ItemOID": "I.MH.ACTIVE",
+                          "Value": [
+                            {
+                              "_content": "2"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "ItemGroupOID": "IG.MEDHIST",
+                      "ItemGroupRepeatKey": "3",
+                      "ItemData": [
+                        {
+                          "ItemOID": "I.MH.BODSYS",
+                          "Value": [
+                            {
+                              "_content": "3"
+                            }
+                          ]
+                        },
+                        {
+                          "ItemOID": "I.MH.TERM",
+                          "Value": [
+                            {
+                              "_content": "another heart related problem"
+                            }
+                          ]
+                        },
+                        {
+                          "ItemOID": "I.MH.ACTIVE",
+                          "Value": [
+                            {
+                              "_content": "2"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "ItemGroupOID": "IG.MEDHIST",
+                      "ItemGroupRepeatKey": "4",
+                      "ItemData": [
+                        {
+                          "ItemOID": "I.MH.BODSYS",
+                          "Value": [
+                            {
+                              "_content": "99"
+                            }
+                          ]
+                        },
+                        {
+                          "ItemOID": "I.MH.SYSOTH",
+                          "Value": [
+                            {
+                              "_content": "My Other Body System"
+                            }
+                          ]
+                        },
+                        {
+                          "ItemOID": "I.MH.TERM",
+                          "Value": [
+                            {
+                              "_content": "a final problem"
+                            }
+                          ]
+                        },
+                        {
+                          "ItemOID": "I.MH.ACTIVE",
+                          "Value": [
+                            {
+                              "_content": "2"
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

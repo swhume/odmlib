@@ -1,0 +1,408 @@
+{
+  "MetaDataVersion": {
+    "OID": "MV.001",
+    "Name": "MetaDataVersion 1",
+    "WorkflowDef": [
+      {
+        "OID": "WF.INCLUSION_EXCLUSION",
+        "Name": "Inclusion/Exclusion workflow",
+        "WorkflowStart": {
+          "StartOID": "IT.INCLUSION_1"
+        },
+        "Transition": [
+          {
+            "OID": "TR.1",
+            "Name": "Transition from inclusion question 1 to evaluation of inclusion question 1",
+            "SourceOID": "IT.INCLUSION_1",
+            "TargetOID": "BR.1"
+          },
+          {
+            "OID": "TR.2",
+            "Name": "Transition to inclusion criterion 2",
+            "SourceOID": "BR.1",
+            "TargetOID": "IT.INCLUSION_2"
+          },
+          {
+            "OID": "TR.3",
+            "Name": "Transition to evaluation of inclusion criterion 2",
+            "SourceOID": "IT.INCLUSION_2",
+            "TargetOID": "BR.2"
+          },
+          {
+            "OID": "TR.4",
+            "Name": "Transition to exlusion criterion 1",
+            "SourceOID": "BR.2",
+            "TargetOID": "IT.EXCLUSION_1"
+          },
+          {
+            "OID": "TR.5",
+            "Name": "Transition to evaluation of exclusion criterion 1",
+            "SourceOID": "IT.EXCLUSION_1",
+            "TargetOID": "BR.3"
+          },
+          {
+            "OID": "TR.5",
+            "Name": "Transition to exlusion criterion 2",
+            "SourceOID": "BR.3",
+            "TargetOID": "IT.EXCLUSION_2"
+          },
+          {
+            "OID": "TR.6",
+            "Name": "Transition to evaluation of exclusion criterion 2",
+            "SourceOID": "IT.EXCLUSION_2",
+            "TargetOID": "BR.4"
+          },
+          {
+            "OID": "TR.INCLUSION_1_TO_STUDYEND",
+            "Name": "Subject excluded from study as not meeting inclusion criterion 1",
+            "SourceOID": "BR.1",
+            "TargetOID": "SEG.END"
+          },
+          {
+            "OID": "TR.INCLUSION_2_TO_STUDYEND",
+            "Name": "Subject excluded from study as not meeting inclusion criterion 2",
+            "SourceOID": "BR.2",
+            "TargetOID": "SEG.END"
+          },
+          {
+            "OID": "TR.EXCLUSION_1_TO_STUDYEND",
+            "Name": "Subject excluded from study due to meeting exclusion criterion 1",
+            "SourceOID": "BR.3",
+            "TargetOID": "SEG.END"
+          },
+          {
+            "OID": "TR.EXCLUSION_2_TO_STUDYEND",
+            "Name": "Subject excluded from study due to meeting exclusion criterion 2",
+            "SourceOID": "BR.4",
+            "TargetOID": "SEG.END"
+          }
+        ],
+        "Branching": [
+          {
+            "OID": "BR.1",
+            "Name": "Evaluation of includion criterion 1",
+            "Type": "Exclusive",
+            "TargetTransition": [
+              {
+                "TargetTransitionOID": "TR.INCLUSION_1_TO_STUDYEND",
+                "ConditionOID": "COND.INCL1.NOTMET"
+              }
+            ],
+            "DefaultTransition": [
+              {
+                "TargetTransitionOID": "TR.2"
+              }
+            ]
+          },
+          {
+            "OID": "BR.2",
+            "Name": "Evaluation of includion criterion 2",
+            "Type": "Exclusive",
+            "TargetTransition": [
+              {
+                "TargetTransitionOID": "TR.INCLUSION_2_TO_STUDYEND",
+                "ConditionOID": "COND.INCL2.NOTMET"
+              }
+            ],
+            "DefaultTransition": [
+              {
+                "TargetTransitionOID": "TR.4"
+              }
+            ]
+          },
+          {
+            "OID": "BR.3",
+            "Name": "Evaluation of exclusion criterion 1",
+            "Type": "Exclusive",
+            "TargetTransition": [
+              {
+                "TargetTransitionOID": "TR.EXCLUSION_1_TO_STUDYEND",
+                "ConditionOID": "COND.EXCL1.MET"
+              }
+            ],
+            "DefaultTransition": [
+              {
+                "TargetTransitionOID": "TR.5"
+              }
+            ]
+          },
+          {
+            "OID": "BR.4",
+            "Name": "Evaluation of exclusion criterion 2",
+            "Type": "Exclusive",
+            "TargetTransition": [
+              {
+                "TargetTransitionOID": "TR.EXCLUSION_2_TO_STUDYEND",
+                "ConditionOID": "COND.EXCL2.MET"
+              }
+            ],
+            "DefaultTransition": [
+              {
+                "TargetTransitionOID": "SEG.SCREENING"
+              }
+            ]
+          }
+        ],
+        "WorkflowEnd": [
+          {
+            "EndOID": "WF.END"
+          }
+        ]
+      }
+    ],
+    "StudyEventGroupDef": [
+      {
+        "OID": "SEG.START",
+        "Name": "Study start"
+      },
+      {
+        "OID": "SEG.END",
+        "Name": "Study end"
+      },
+      {
+        "OID": "SEG.INCLUSION_EXCLUSION",
+        "Name": "Execute inclusion/exclusion criteria",
+        "WorkflowRef": {
+          "WorkflowOID": "WF.INCLUSION_EXCLUSION"
+        }
+      },
+      {
+        "OID": "SEG.SCREENING",
+        "Name": "Screening activities"
+      }
+    ],
+    "ItemGroupDef": [
+      {
+        "OID": "IG.IE_CRITERIA",
+        "Name": "Inclusion-Exclusion Criteria",
+        "Repeating": "No",
+        "Type": "Section",
+        "ItemRef": [
+          {
+            "ItemOID": "IT.INCLUSION_1",
+            "Mandatory": "Yes"
+          },
+          {
+            "ItemOID": "IT.INCLUSION_2",
+            "Mandatory": "Yes"
+          },
+          {
+            "ItemOID": "IT.EXCLUSION_1",
+            "Mandatory": "Yes"
+          },
+          {
+            "ItemOID": "IT.EXCLUSION_2",
+            "Mandatory": "Yes"
+          }
+        ]
+      }
+    ],
+    "ItemDef": [
+      {
+        "OID": "IT.INCLUSION_1",
+        "Name": "Inclusion Criterion 1",
+        "DataType": "text",
+        "Length": 1,
+        "Question": {
+          "TranslatedText": [
+            {
+              "lang": "en",
+              "Type": "text/plain",
+              "_content": "is there a diagnosis of the study disease indication (disease XYZ)?"
+            }
+          ]
+        },
+        "CodeListRef": {
+          "CodeListOID": "CL.YESNO"
+        }
+      },
+      {
+        "OID": "IT.INCLUSION_2",
+        "Name": "Inclusion Criterion 2",
+        "DataType": "text",
+        "Length": 1,
+        "Question": {
+          "TranslatedText": [
+            {
+              "lang": "en",
+              "Type": "text/plain",
+              "_content": "Is the subject between 18 and 65 years old?"
+            }
+          ]
+        },
+        "CodeListRef": {
+          "CodeListOID": "CL.YESNO"
+        }
+      },
+      {
+        "OID": "IT.EXCLUSION_1",
+        "Name": "Exclusion Criterion 1",
+        "DataType": "text",
+        "Length": 1,
+        "Question": {
+          "TranslatedText": [
+            {
+              "lang": "en",
+              "Type": "text/plain",
+              "_content": "Does the subject has a diagnosis of  diabetes type 1 or 2?"
+            }
+          ]
+        },
+        "CodeListRef": {
+          "CodeListOID": "CL.YESNO"
+        }
+      },
+      {
+        "OID": "IT.EXCLUSION_2",
+        "Name": "Exclusion Criterion 2",
+        "DataType": "text",
+        "Length": 1,
+        "Question": {
+          "TranslatedText": [
+            {
+              "lang": "en",
+              "Type": "text/plain",
+              "_content": "Did the subject undergo a surgical procedure in the last 12 months?"
+            }
+          ]
+        },
+        "CodeListRef": {
+          "CodeListOID": "CL.YESNO"
+        }
+      }
+    ],
+    "CodeList": [
+      {
+        "OID": "CL.YESNO",
+        "Name": "Yes-No codelist",
+        "DataType": "text",
+        "CodeListItem": [
+          {
+            "CodedValue": "Y",
+            "Decode": {
+              "TranslatedText": [
+                {
+                  "lang": "en",
+                  "Type": "text/plain",
+                  "_content": "Yes"
+                },
+                {
+                  "lang": "fr",
+                  "Type": "text/plain",
+                  "_content": "Oui"
+                }
+              ]
+            }
+          },
+          {
+            "CodedValue": "N",
+            "Decode": {
+              "TranslatedText": [
+                {
+                  "lang": "en",
+                  "Type": "text/plain",
+                  "_content": "No"
+                },
+                {
+                  "lang": "fr",
+                  "Type": "text/plain",
+                  "_content": "Non"
+                }
+              ]
+            }
+          }
+        ]
+      }
+    ],
+    "ConditionDef": [
+      {
+        "OID": "COND.INCL1.NOTMET",
+        "Name": "Inclusion criterion 1 not met",
+        "Description": {
+          "TranslatedText": [
+            {
+              "lang": "en",
+              "Type": "text/plain",
+              "_content": "Inclusion criterion 1 not met: there a no diagnosis of the study disease indication (disease XYZ)"
+            }
+          ]
+        },
+        "MethodSignature": {},
+        "FormalExpression": [
+          {
+            "Context": "ODM",
+            "Code": {
+              "_content": "ItemData[@ItemOID='IT.INCLUSION_1']/@Value='N'"
+            }
+          }
+        ]
+      },
+      {
+        "OID": "COND.INCL2.NOTMET",
+        "Name": "Inclusion criterion 1 not met",
+        "Description": {
+          "TranslatedText": [
+            {
+              "lang": "en",
+              "Type": "text/plain",
+              "_content": "Inclusion criterion 2 not met: the subject is not between 18 and 15 years old"
+            }
+          ]
+        },
+        "MethodSignature": {},
+        "FormalExpression": [
+          {
+            "Context": "ODM",
+            "Code": {
+              "_content": "ItemData[@ItemOID='IT.INCLUSION_2']/@Value='N'"
+            }
+          }
+        ]
+      },
+      {
+        "OID": "COND.EXCL1.MET",
+        "Name": "Exclusion criterion 1 is met",
+        "Description": {
+          "TranslatedText": [
+            {
+              "lang": "en",
+              "Type": "text/plain",
+              "_content": "Exclusion criterion 1 has been met: the subject has a diagnosis of  diabetes type 1 or 2"
+            }
+          ]
+        },
+        "MethodSignature": {},
+        "FormalExpression": [
+          {
+            "Context": "ODM",
+            "Code": {
+              "_content": "ItemData[@ItemOID='IT.EXCLUSION_1']/@Value='Y'"
+            }
+          }
+        ]
+      },
+      {
+        "OID": "COND.EXCL2.MET",
+        "Name": "Exclusion criterion 2 is met",
+        "Description": {
+          "TranslatedText": [
+            {
+              "lang": "en",
+              "Type": "text/plain",
+              "_content": "Exclusion criterion 2 has been met: the subject did undergo a surgical procedure in the last 12 months"
+            }
+          ]
+        },
+        "MethodSignature": {},
+        "FormalExpression": [
+          {
+            "Context": "ODM",
+            "Code": {
+              "_content": "ItemData[@ItemOID='IT.EXCLUSION_2']/@Value='Y'"
+            }
+          }
+        ]
+      }
+    ]
+  }
+}

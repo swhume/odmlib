@@ -4,6 +4,17 @@ import odmlib.loader as LD
 import odmlib.ns_registry as NS
 import os
 import json
+import tempfile
+
+
+def _tmp_dir(test_case):
+    """A throw-away directory for generated output, removed after the test.
+
+    Writing into the tracked tests/data/ directory dirtied the working tree.
+    """
+    tmp_dir = tempfile.TemporaryDirectory()
+    test_case.addCleanup(tmp_dir.cleanup)
+    return tmp_dir.name
 
 
 class TestODMLoader(TestCase):
@@ -15,6 +26,7 @@ class TestODMLoader(TestCase):
         self.odm_file = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'data', 'definev21-adam.xml')
         self.loader = LD.ODMLoader(ARM.XMLArmLoader(model_package="arm_1_0", ns_uri="http://www.cdisc.org/ns/arm/v1.0"))
         self.jloader = LD.ODMLoader(ARM.JSONArmLoader())
+        self.tmp_dir = _tmp_dir(self)
 
     def test_unknown_loader(self):
         with self.assertRaises(TypeError):
@@ -65,14 +77,14 @@ class TestODMLoader(TestCase):
         root = self.loader.open_odm_document(self.odm_file)
         odm = self.loader.create_odmlib(root)
         odm_json = odm.to_json()
-        odm_json_file = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'data', 'adam_define21_test.json')
+        odm_json_file = os.path.join(self.tmp_dir, 'adam_define21_test.json')
         with open(odm_json_file, "w") as odm_in:
             odm_in.write(odm_json)
         # Use JSONArmLoader to load JSON back with ARM model classes
         json_loader = LD.ODMLoader(ARM.JSONArmLoader())
         odm_dict = json_loader.open_odm_document(odm_json_file)
         rt_odm = json_loader.create_odmlib(odm_dict, "ODM")
-        def_xml_file = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'data', 'adam_def_test_roundtrip.xml')
+        def_xml_file = os.path.join(self.tmp_dir, 'adam_def_test_roundtrip.xml')
         rt_odm.write_xml(def_xml_file)
         root2 = self.loader.open_odm_document(def_xml_file)
         odm2 = self.loader.create_odmlib(root2)
@@ -98,7 +110,7 @@ class TestJSONArmLoader(TestCase):
         xml_loader = LD.ODMLoader(ARM.XMLArmLoader())
         xml_loader.open_odm_document(self.odm_file)
         odm = xml_loader.load_odm()
-        self.json_file = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'data', 'adam_arm_test.json')
+        self.json_file = os.path.join(_tmp_dir(self), 'adam_arm_test.json')
         with open(self.json_file, "w") as f:
             f.write(odm.to_json())
         self.loader = LD.ODMLoader(ARM.JSONArmLoader())

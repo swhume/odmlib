@@ -23,6 +23,7 @@ classifiers = [
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
     "Topic :: Scientific/Engineering :: Medical Science Apps.",
     "Operating System :: OS Independent",
 ]
@@ -74,13 +75,15 @@ testpaths = ["tests"]
 python_files = ["test_*.py"]
 python_classes = ["Test*"]
 python_functions = ["test_*"]
-addopts = ["--continue-on-collection-errors"]
 
 [tool.mypy]
 python_version = "3.10"
 warn_return_any = true
 warn_unused_configs = true
 ignore_missing_imports = true
+# Schema version directories ("1.0", "2.1", ...) hold an __init__.py but are not
+# valid package names; without this mypy stops before checking anything.
+exclude = ["^odmlib/schemas/"]
 
 [tool.coverage.run]
 source = ["odmlib"]

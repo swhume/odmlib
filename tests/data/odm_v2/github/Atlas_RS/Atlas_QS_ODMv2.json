@@ -1,0 +1,767 @@
+{
+  "FileOID": "Atlas_Questionnaire_Metadata",
+  "FileType": "Snapshot",
+  "Granularity": "Metadata",
+  "ODMVersion": "2.0",
+  "CreationDateTime": "2021-03-21T14:40:00+01:00",
+  "Study": [
+    {
+      "OID": "ATLAS",
+      "StudyName": "Age, treatment with systemic antibiotics, leukocyte count, serum albumin, and serum creatinine as a measure of renal function",
+      "ProtocolName": "Example ATLAS protocol",
+      "MetaDataVersion": [
+        {
+          "OID": "MV.ATLAS.001",
+          "Name": "ATLAS v.1",
+          "Protocol": {
+            "StudyEventGroupRef": [
+              {
+                "StudyEventGroupOID": "SEG.ATLAS",
+                "Mandatory": "Yes"
+              }
+            ]
+          },
+          "StudyEventGroupDef": [
+            {
+              "OID": "SEG.ATLAS",
+              "Name": "Atlas",
+              "StudyEventRef": [
+                {
+                  "StudyEventOID": "SE.ATLAS",
+                  "Mandatory": "Yes"
+                }
+              ]
+            }
+          ],
+          "StudyEventDef": [
+            {
+              "OID": "SE.ATLAS",
+              "Name": "Atlas Visit",
+              "Type": "Scheduled",
+              "Repeating": "No",
+              "ItemGroupRef": [
+                {
+                  "ItemGroupOID": "IG.ATLAS_FORM",
+                  "Mandatory": "Yes"
+                }
+              ]
+            }
+          ],
+          "ItemGroupDef": [
+            {
+              "OID": "IG.ATLAS_FORM",
+              "Name": "ATLAS Form",
+              "Repeating": "No",
+              "Type": "Form",
+              "ItemGroupRef": [
+                {
+                  "ItemGroupOID": "IG.ATLAS_QUESTIONS",
+                  "Mandatory": "Yes"
+                },
+                {
+                  "ItemGroupOID": "IG.ATLAS_SCORE",
+                  "Mandatory": "Yes"
+                }
+              ]
+            },
+            {
+              "OID": "IG.ATLAS_QUESTIONS",
+              "Name": "Atlas Form - Questions",
+              "Repeating": "No",
+              "Type": "Section",
+              "ItemRef": [
+                {
+                  "ItemOID": "IT.AGE",
+                  "Mandatory": "Yes"
+                },
+                {
+                  "ItemOID": "IT.SYST_ANTIBIOTICS",
+                  "Mandatory": "Yes"
+                },
+                {
+                  "ItemOID": "IT.LEUKOCYTE_COUNT",
+                  "Mandatory": "Yes"
+                },
+                {
+                  "ItemOID": "IT.ALBUMIN",
+                  "Mandatory": "Yes"
+                },
+                {
+                  "ItemOID": "IT.CREATININE",
+                  "Mandatory": "Yes"
+                }
+              ]
+            },
+            {
+              "OID": "IG.ATLAS_SCORE",
+              "Name": "Total score",
+              "Repeating": "No",
+              "Type": "Section",
+              "ItemRef": [
+                {
+                  "ItemOID": "IT.TOTAL_SCORE",
+                  "Mandatory": "Yes",
+                  "MethodOID": "MT.TOTAL_SCORE"
+                }
+              ]
+            }
+          ],
+          "ItemDef": [
+            {
+              "OID": "IT.AGE",
+              "Name": "Age",
+              "DataType": "integer",
+              "Question": {
+                "TranslatedText": [
+                  {
+                    "lang": "en",
+                    "Type": "text/plain",
+                    "_content": "Age"
+                  }
+                ]
+              },
+              "CodeListRef": {
+                "CodeListOID": "CL.AGE"
+              },
+              "Alias": [
+                {
+                  "Context": "SDTM",
+                  "Name": "RSSTRESN/RSSTRESC where RSTESTCD=ATLAS101"
+                }
+              ]
+            },
+            {
+              "OID": "IT.SYST_ANTIBIOTICS",
+              "Name": "Treatment with systemic antibiotics",
+              "DataType": "integer",
+              "Question": {
+                "TranslatedText": [
+                  {
+                    "lang": "en",
+                    "Type": "text/plain",
+                    "_content": "Treatment with systemic antibiotics during CDI therapy (>= 1 day)"
+                  }
+                ]
+              },
+              "CodeListRef": {
+                "CodeListOID": "CL.SYST_ANTIBIOTICS"
+              },
+              "Alias": [
+                {
+                  "Context": "SDTM",
+                  "Name": "RSSTRESN/RSSTRESC where RSTESTCD=ATLAS102"
+                }
+              ]
+            },
+            {
+              "OID": "IT.LEUKOCYTE_COUNT",
+              "Name": "Luekocyte count",
+              "DataType": "integer",
+              "Question": {
+                "TranslatedText": [
+                  {
+                    "lang": "en",
+                    "Type": "text/plain",
+                    "_content": "Leukocyte count (total)"
+                  }
+                ]
+              },
+              "CodeListRef": {
+                "CodeListOID": "CL.LEUKOCYTE_COUNT"
+              },
+              "Coding": [
+                {
+                  "Code": "6690-2",
+                  "System": "http://loinc.org",
+                  "SystemName": "LOINC",
+                  "SystemVersion": "2.72"
+                }
+              ],
+              "Alias": [
+                {
+                  "Context": "SDTM",
+                  "Name": "RSSTRESN/RSSTRESC where RSTESTCD=ATLAS103"
+                }
+              ]
+            },
+            {
+              "OID": "IT.ALBUMIN",
+              "Name": "Serum albumin",
+              "DataType": "integer",
+              "Question": {
+                "TranslatedText": [
+                  {
+                    "lang": "en",
+                    "Type": "text/plain",
+                    "_content": "Albumin (serum)"
+                  }
+                ]
+              },
+              "CodeListRef": {
+                "CodeListOID": "CL.ALBUMIN"
+              },
+              "Coding": [
+                {
+                  "Code": "1751-7",
+                  "System": "http://loinc.org",
+                  "SystemName": "LOINC",
+                  "SystemVersion": "2.72"
+                }
+              ],
+              "Alias": [
+                {
+                  "Context": "SDTM",
+                  "Name": "RSSTRESN/RSSTRESC where RSTESTCD=ATLAS104"
+                }
+              ]
+            },
+            {
+              "OID": "IT.CREATININE",
+              "Name": "Serum creatinine",
+              "DataType": "integer",
+              "Question": {
+                "TranslatedText": [
+                  {
+                    "lang": "en",
+                    "Type": "text/plain",
+                    "_content": "Serum creatinine (as a measure of renal function>"
+                  }
+                ]
+              },
+              "CodeListRef": {
+                "CodeListOID": "CL.CREATININE"
+              },
+              "Coding": [
+                {
+                  "Code": "14682-9",
+                  "System": "http://loinc.org",
+                  "SystemName": "LOINC",
+                  "SystemVersion": "2.72"
+                }
+              ],
+              "Alias": [
+                {
+                  "Context": "SDTM",
+                  "Name": "RSSTRESN/RSSTRESC where RSTESTCD=ATLAS105"
+                }
+              ]
+            },
+            {
+              "OID": "IT.TOTAL_SCORE",
+              "Name": "Total score",
+              "DataType": "integer",
+              "Question": {
+                "TranslatedText": [
+                  {
+                    "lang": "en",
+                    "Type": "text/plain",
+                    "_content": "Total Points: "
+                  }
+                ]
+              }
+            }
+          ],
+          "CodeList": [
+            {
+              "OID": "CL.AGE",
+              "Name": "Age",
+              "DataType": "integer",
+              "Description": {
+                "TranslatedText": [
+                  {
+                    "lang": "en",
+                    "Type": "text/plain",
+                    "_content": "Age"
+                  }
+                ]
+              },
+              "CodeListItem": [
+                {
+                  "CodedValue": "0",
+                  "Decode": {
+                    "TranslatedText": [
+                      {
+                        "lang": "en",
+                        "Type": "text/plain",
+                        "_content": "< 60 years"
+                      }
+                    ]
+                  },
+                  "Alias": [
+                    {
+                      "Context": "SDTM",
+                      "Name": "RSSTRESN/RSSTRESC"
+                    }
+                  ]
+                },
+                {
+                  "CodedValue": "1",
+                  "Decode": {
+                    "TranslatedText": [
+                      {
+                        "lang": "en",
+                        "Type": "text/plain",
+                        "_content": "60 - 79 years"
+                      }
+                    ]
+                  },
+                  "Alias": [
+                    {
+                      "Context": "SDTM",
+                      "Name": "RSSTRESN/RSSTRESC"
+                    }
+                  ]
+                },
+                {
+                  "CodedValue": "2",
+                  "Decode": {
+                    "TranslatedText": [
+                      {
+                        "lang": "en",
+                        "Type": "text/plain",
+                        "_content": ">= 80 years"
+                      }
+                    ]
+                  },
+                  "Alias": [
+                    {
+                      "Context": "SDTM",
+                      "Name": "RSSTRESN/RSSTRESC"
+                    }
+                  ]
+                }
+              ],
+              "Alias": [
+                {
+                  "Context": "SDTM",
+                  "Name": "RSORRES"
+                }
+              ]
+            },
+            {
+              "OID": "CL.SYST_ANTIBIOTICS",
+              "Name": "Treatment with systemic antibiotics",
+              "DataType": "integer",
+              "Description": {
+                "TranslatedText": [
+                  {
+                    "lang": "en",
+                    "Type": "text/plain",
+                    "_content": "Treatment with systemic antibiotics during CDI therapy (>= 1 day)"
+                  }
+                ]
+              },
+              "CodeListItem": [
+                {
+                  "CodedValue": "0",
+                  "Decode": {
+                    "TranslatedText": [
+                      {
+                        "lang": "en",
+                        "Type": "text/plain",
+                        "_content": "No"
+                      }
+                    ]
+                  },
+                  "Alias": [
+                    {
+                      "Context": "SDTM",
+                      "Name": "RSSTRESN/RSSTRESC"
+                    }
+                  ]
+                },
+                {
+                  "CodedValue": "2",
+                  "Decode": {
+                    "TranslatedText": [
+                      {
+                        "lang": "en",
+                        "Type": "text/plain",
+                        "_content": "Yes"
+                      }
+                    ]
+                  },
+                  "Alias": [
+                    {
+                      "Context": "SDTM",
+                      "Name": "RSSTRESN/RSSTRESC"
+                    }
+                  ]
+                }
+              ],
+              "Alias": [
+                {
+                  "Context": "SDTM",
+                  "Name": "RSORRES"
+                }
+              ]
+            },
+            {
+              "OID": "CL.LEUKOCYTE_COUNT",
+              "Name": "Leukocyte count",
+              "DataType": "integer",
+              "Description": {
+                "TranslatedText": [
+                  {
+                    "lang": "en",
+                    "Type": "text/plain",
+                    "_content": "Leukocyte count (total)"
+                  }
+                ]
+              },
+              "CodeListItem": [
+                {
+                  "CodedValue": "0",
+                  "Decode": {
+                    "TranslatedText": [
+                      {
+                        "lang": "en",
+                        "Type": "text/plain",
+                        "_content": "<16,000"
+                      }
+                    ]
+                  },
+                  "Alias": [
+                    {
+                      "Context": "SDTM",
+                      "Name": "RSSTRESN/RSSTRESC"
+                    }
+                  ]
+                },
+                {
+                  "CodedValue": "1",
+                  "Decode": {
+                    "TranslatedText": [
+                      {
+                        "lang": "en",
+                        "Type": "text/plain",
+                        "_content": "16,000 - 25,000"
+                      }
+                    ]
+                  },
+                  "Alias": [
+                    {
+                      "Context": "SDTM",
+                      "Name": "RSSTRESN/RSSTRESC"
+                    }
+                  ]
+                },
+                {
+                  "CodedValue": "2",
+                  "Decode": {
+                    "TranslatedText": [
+                      {
+                        "lang": "en",
+                        "Type": "text/plain",
+                        "_content": ">25,000"
+                      }
+                    ]
+                  },
+                  "Alias": [
+                    {
+                      "Context": "SDTM",
+                      "Name": "RSSTRESN/RSSTRESC"
+                    }
+                  ]
+                }
+              ],
+              "Alias": [
+                {
+                  "Context": "SDTM",
+                  "Name": "RSORRES"
+                }
+              ]
+            },
+            {
+              "OID": "CL.ALBUMIN",
+              "Name": "Serum Albumin",
+              "DataType": "integer",
+              "Description": {
+                "TranslatedText": [
+                  {
+                    "lang": "en",
+                    "Type": "text/plain",
+                    "_content": "Albumin (serum)"
+                  }
+                ]
+              },
+              "CodeListItem": [
+                {
+                  "CodedValue": "0",
+                  "Decode": {
+                    "TranslatedText": [
+                      {
+                        "lang": "en",
+                        "Type": "text/plain",
+                        "_content": ">35 g/L"
+                      }
+                    ]
+                  },
+                  "Alias": [
+                    {
+                      "Context": "SDTM",
+                      "Name": "RSSTRESN/RSSTRESC"
+                    }
+                  ]
+                },
+                {
+                  "CodedValue": "1",
+                  "Decode": {
+                    "TranslatedText": [
+                      {
+                        "lang": "en",
+                        "Type": "text/plain",
+                        "_content": "26 - 35 g/L"
+                      }
+                    ]
+                  },
+                  "Alias": [
+                    {
+                      "Context": "SDTM",
+                      "Name": "RSSTRESN/RSSTRESC"
+                    }
+                  ]
+                },
+                {
+                  "CodedValue": "2",
+                  "Decode": {
+                    "TranslatedText": [
+                      {
+                        "lang": "en",
+                        "Type": "text/plain",
+                        "_content": "<= 25 g/L"
+                      }
+                    ]
+                  },
+                  "Alias": [
+                    {
+                      "Context": "SDTM",
+                      "Name": "RSSTRESN/RSSTRESC"
+                    }
+                  ]
+                }
+              ],
+              "Alias": [
+                {
+                  "Context": "SDTM",
+                  "Name": "RSORRES"
+                }
+              ]
+            },
+            {
+              "OID": "CL.CREATININE",
+              "Name": "Serum creatinine",
+              "DataType": "integer",
+              "Description": {
+                "TranslatedText": [
+                  {
+                    "lang": "en",
+                    "Type": "text/plain",
+                    "_content": "Serum creatinine (as a measure of renal function)"
+                  }
+                ]
+              },
+              "CodeListItem": [
+                {
+                  "CodedValue": "0",
+                  "Decode": {
+                    "TranslatedText": [
+                      {
+                        "lang": "en",
+                        "Type": "text/plain",
+                        "_content": "<= 120 umol/L"
+                      }
+                    ]
+                  },
+                  "Alias": [
+                    {
+                      "Context": "SDTM",
+                      "Name": "RSSTRESN/RSSTRESC"
+                    }
+                  ]
+                },
+                {
+                  "CodedValue": "1",
+                  "Decode": {
+                    "TranslatedText": [
+                      {
+                        "lang": "en",
+                        "Type": "text/plain",
+                        "_content": "121 - 179 umol/L"
+                      }
+                    ]
+                  },
+                  "Alias": [
+                    {
+                      "Context": "SDTM",
+                      "Name": "RSSTRESN/RSSTRESC"
+                    }
+                  ]
+                },
+                {
+                  "CodedValue": "2",
+                  "Decode": {
+                    "TranslatedText": [
+                      {
+                        "lang": "en",
+                        "Type": "text/plain",
+                        "_content": ">= 180 umol/L"
+                      }
+                    ]
+                  },
+                  "Alias": [
+                    {
+                      "Context": "SDTM",
+                      "Name": "RSSTRESN/RSSTRESC"
+                    }
+                  ]
+                }
+              ],
+              "Alias": [
+                {
+                  "Context": "SDTM",
+                  "Name": "RSORRES"
+                }
+              ]
+            }
+          ],
+          "MethodDef": [
+            {
+              "OID": "MT.TOTAL_SCORE",
+              "Name": "ATLAS total score calculation",
+              "Description": {
+                "TranslatedText": [
+                  {
+                    "lang": "en",
+                    "Type": "text/plain",
+                    "_content": "The total score is calculated as the sum of the scores of the 5 questions"
+                  }
+                ]
+              },
+              "MethodSignature": {
+                "Parameter": [
+                  {
+                    "Name": "Age",
+                    "Definition": "Age category",
+                    "DataType": "integer"
+                  },
+                  {
+                    "Name": "Treatment with systemic antibiotics",
+                    "DataType": "integer"
+                  },
+                  {
+                    "Name": "Leukocyte count",
+                    "DataType": "integer"
+                  },
+                  {
+                    "Name": "Serum albumin",
+                    "DataType": "integer"
+                  },
+                  {
+                    "Name": "Seum creatinine",
+                    "DataType": "integer"
+                  }
+                ],
+                "ReturnValue": [
+                  {
+                    "Name": "Total score",
+                    "DataType": "integer"
+                  }
+                ]
+              },
+              "FormalExpression": [
+                {
+                  "Context": "XPath",
+                  "Code": {
+                    "_content": "\n                            ../../ItemGroupData[@ItemGroupOID='IG.ATLAS_QUESTIONS']/ItemData[@ItemOID='IT.AGE']/Value \n                                + ../../ItemGroupData[@ItemGroupOID='IG.ATLAS_QUESTIONS']/ItemData[@ItemOID='IT.SYST_ANTIBIOTICS']/Value \n                                + ../../ItemGroupData[@ItemGroupOID='IG.ATLAS_QUESTIONS']/ItemData[@ItemOID='IT.LEUKOCYTE_COUNT']/Value \n                                + ../../ItemGroupData[@ItemGroupOID='IG.ATLAS_QUESTIONS']/ItemData[@ItemOID='IT.ALBUMIN']/Value\n                                + ../../ItemGroupData[@ItemGroupOID='IG.ATLAS_QUESTIONS']/ItemData[@ItemOID='IT.CREATININE']/Value\n                           "
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "ClinicalData": [
+    {
+      "StudyOID": "ATLAS",
+      "MetaDataVersionOID": "MV.ATLAS.001",
+      "SubjectData": [
+        {
+          "SubjectKey": "001",
+          "StudyEventData": [
+            {
+              "StudyEventOID": "SE.ATLAS",
+              "ItemGroupData": [
+                {
+                  "ItemGroupOID": "IG.ATLAS_FORM",
+                  "ItemGroupData": [
+                    {
+                      "ItemGroupOID": "IG.ATLAS_QUESTIONS",
+                      "ItemData": [
+                        {
+                          "ItemOID": "IT.AGE",
+                          "Value": [
+                            {
+                              "_content": "1"
+                            }
+                          ]
+                        },
+                        {
+                          "ItemOID": "IT.SYST_ANTIBIOTICS",
+                          "Value": [
+                            {
+                              "_content": "0"
+                            }
+                          ]
+                        },
+                        {
+                          "ItemOID": "IT.LEUKOCYTE_COUNT",
+                          "Value": [
+                            {
+                              "_content": "2"
+                            }
+                          ]
+                        },
+                        {
+                          "ItemOID": "IT.ALBUMIN",
+                          "Value": [
+                            {
+                              "_content": "2"
+                            }
+                          ]
+                        },
+                        {
+                          "ItemOID": "IT.CREATININE",
+                          "Value": [
+                            {
+                              "_content": "2"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "ItemGroupOID": "IG.ATLAS_SCORE",
+                      "ItemData": [
+                        {
+                          "ItemOID": "IT.TOTAL_SCORE",
+                          "Value": [
+                            {
+                              "_content": "7"
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

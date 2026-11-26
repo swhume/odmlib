@@ -1,0 +1,191 @@
+{
+  "FileType": "Transactional",
+  "Context": "Exchange",
+  "ODMVersion": "2.0",
+  "FileOID": "ODM.EXAMPLE.CLINICAL.2",
+  "PriorFileOID": "ODM.EXAMPLE.CLINICAL.1",
+  "CreationDateTime": "2026-02-15T08:00:00",
+  "AsOfDateTime": "2026-02-15T07:55:00",
+  "Originator": "Example Sponsor",
+  "SourceSystem": "Example EDC",
+  "AdminData": [
+    {
+      "StudyOID": "ST.EXAMPLE",
+      "User": [
+        {
+          "OID": "USR.CRC01",
+          "UserType": "Other",
+          "LocationOID": "LOC.SITE01",
+          "FullName": {
+            "_content": "Sam Lee"
+          }
+        }
+      ],
+      "Location": [
+        {
+          "OID": "LOC.SITE01",
+          "Name": "Site 01",
+          "MetaDataVersionRef": [
+            {
+              "StudyOID": "ST.EXAMPLE",
+              "MetaDataVersionOID": "MDV.EXAMPLE.1",
+              "EffectiveDate": "2026-01-01"
+            }
+          ]
+        }
+      ],
+      "SignatureDef": [
+        {
+          "OID": "SD.PI",
+          "Methodology": "Electronic",
+          "Meaning": {
+            "_content": "Investigator approval of the form"
+          },
+          "LegalReason": {
+            "_content": "21 CFR Part 11"
+          }
+        }
+      ]
+    }
+  ],
+  "ClinicalData": [
+    {
+      "StudyOID": "ST.EXAMPLE",
+      "MetaDataVersionOID": "MDV.EXAMPLE.1",
+      "SubjectData": [
+        {
+          "SubjectKey": "SITE01-002",
+          "TransactionType": "Insert",
+          "SiteRef": {
+            "LocationOID": "LOC.SITE01"
+          },
+          "StudyEventData": [
+            {
+              "StudyEventOID": "SE.SCREENING",
+              "ItemGroupData": [
+                {
+                  "ItemGroupOID": "IG.DM",
+                  "ItemData": [
+                    {
+                      "ItemOID": "IT.DM.SEX",
+                      "Value": [
+                        {
+                          "_content": "M"
+                        }
+                      ],
+                      "AuditRecord": {
+                        "UserRef": {
+                          "UserOID": "USR.CRC01"
+                        },
+                        "LocationRef": {
+                          "LocationOID": "LOC.SITE01"
+                        },
+                        "DateTimeStamp": {
+                          "_content": "2026-02-10T10:15:00"
+                        }
+                      }
+                    },
+                    {
+                      "ItemOID": "IT.DM.BRTHDAT",
+                      "IsNull": "Yes",
+                      "AuditRecord": {
+                        "UserRef": {
+                          "UserOID": "USR.CRC01"
+                        },
+                        "LocationRef": {
+                          "LocationOID": "LOC.SITE01"
+                        },
+                        "DateTimeStamp": {
+                          "_content": "2026-02-10T10:16:00"
+                        }
+                      },
+                      "Annotation": [
+                        {
+                          "SeqNum": 1,
+                          "Flag": [
+                            {
+                              "FlagValue": {
+                                "CodeListOID": "CL.NULLFLAVOR",
+                                "_content": "ASKU"
+                              }
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ],
+                  "Signature": {
+                    "UserRef": {
+                      "UserOID": "USR.CRC01"
+                    },
+                    "LocationRef": {
+                      "LocationOID": "LOC.SITE01"
+                    },
+                    "SignatureRef": {
+                      "SignatureOID": "SD.PI"
+                    },
+                    "DateTimeStamp": {
+                      "_content": "2026-02-12T16:00:00"
+                    }
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "SubjectKey": "SITE01-001",
+          "TransactionType": "Update",
+          "StudyEventData": [
+            {
+              "StudyEventOID": "SE.SCREENING",
+              "ItemGroupData": [
+                {
+                  "ItemGroupOID": "IG.DM",
+                  "ItemData": [
+                    {
+                      "ItemOID": "IT.DM.AGE",
+                      "Value": [
+                        {
+                          "_content": "51"
+                        }
+                      ],
+                      "AuditRecord": {
+                        "EditPoint": "DataManagement",
+                        "UsedMethod": "No",
+                        "UserRef": {
+                          "UserOID": "USR.CRC01"
+                        },
+                        "LocationRef": {
+                          "LocationOID": "LOC.SITE01"
+                        },
+                        "DateTimeStamp": {
+                          "_content": "2026-02-14T09:30:00"
+                        },
+                        "ReasonForChange": {
+                          "_content": "Transcription error corrected"
+                        }
+                      },
+                      "Query": [
+                        {
+                          "OID": "Q.0001",
+                          "Source": "Data Management",
+                          "State": "Closed",
+                          "LastUpdateDatetime": "2026-02-14T09:31:00",
+                          "Type": "Manual",
+                          "Value": {
+                            "_content": "Age does not match the date of birth; please check."
+                          }
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

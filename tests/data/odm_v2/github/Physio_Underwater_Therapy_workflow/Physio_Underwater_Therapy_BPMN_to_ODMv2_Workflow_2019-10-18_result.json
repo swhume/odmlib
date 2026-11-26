@@ -1,0 +1,171 @@
+{
+  "MetaDataVersion": {
+    "OID": "MV.001",
+    "Name": "MetaDataVersion 1",
+    "WorkflowDef": [
+      {
+        "OID": "WF1",
+        "Name": "Workflow",
+        "WorkflowStart": {
+          "StartOID": "SE_0imo8x1"
+        },
+        "Transition": [
+          {
+            "OID": "TR.SequenceFlow_00de882",
+            "Name": "Transition from Visit 1 to Arm Branching",
+            "SourceOID": "SE_0imo8x1",
+            "TargetOID": "ExclusiveGateway_19rvqwk"
+          },
+          {
+            "OID": "TR.SequenceFlow_1sm9dlo",
+            "Name": "Physio+underwater therapy arm",
+            "SourceOID": "ExclusiveGateway_19rvqwk",
+            "TargetOID": "ParallelGateway_12qduy7"
+          },
+          {
+            "OID": "TR.SequenceFlow_1hk2z8h",
+            "Name": "Physiotherapy Arm",
+            "SourceOID": "ExclusiveGateway_19rvqwk",
+            "TargetOID": "SE_0m6x4je"
+          },
+          {
+            "OID": "TR.SequenceFlow_0z0iuws",
+            "Name": "Underwater therapy arm",
+            "SourceOID": "ExclusiveGateway_19rvqwk",
+            "TargetOID": "SE_0stubbd"
+          },
+          {
+            "OID": "TR.SequenceFlow_0ao0p7m",
+            "Name": "Transition from Physio+underwater therapy in parallel to Physiotherapy",
+            "SourceOID": "ParallelGateway_12qduy7",
+            "TargetOID": "SE_0m6x4je"
+          },
+          {
+            "OID": "TR.SequenceFlow_0dnupty",
+            "Name": "Transition from Physio+underwater therapy in parallel to Underwater therapy",
+            "SourceOID": "ParallelGateway_12qduy7",
+            "TargetOID": "SE_0stubbd"
+          },
+          {
+            "OID": "TR.SequenceFlow_0mxsfta",
+            "Name": "Transition from Physiotherapy to Visit 2: Evaluation",
+            "SourceOID": "SE_0m6x4je",
+            "TargetOID": "SE_0ltgyb8"
+          },
+          {
+            "OID": "TR.SequenceFlow_0ecqyq5",
+            "Name": "Transition from Underwater therapy to Visit 2: Evaluation",
+            "SourceOID": "SE_0stubbd",
+            "TargetOID": "SE_0ltgyb8"
+          }
+        ],
+        "Branching": [
+          {
+            "OID": "ExclusiveGateway_19rvqwk",
+            "Name": "Arm Branching",
+            "Type": "Exclusive",
+            "TargetTransition": [
+              {
+                "TargetTransitionOID": "TR.SequenceFlow_1sm9dlo",
+                "ConditionOID": "COND.SequenceFlow_1sm9dlo"
+              },
+              {
+                "TargetTransitionOID": "TR.SequenceFlow_1hk2z8h",
+                "ConditionOID": "COND.SequenceFlow_1hk2z8h"
+              },
+              {
+                "TargetTransitionOID": "TR.SequenceFlow_0z0iuws",
+                "ConditionOID": "COND.SequenceFlow_0z0iuws"
+              }
+            ]
+          },
+          {
+            "OID": "ParallelGateway_12qduy7",
+            "Name": "Physio+underwater therapy in parallel",
+            "Type": "Parallel",
+            "TargetTransition": [
+              {
+                "TargetTransitionOID": "TR.SequenceFlow_0ao0p7m"
+              },
+              {
+                "TargetTransitionOID": "TR.SequenceFlow_0dnupty"
+              }
+            ]
+          }
+        ],
+        "WorkflowEnd": [
+          {
+            "EndOID": "SE_0ltgyb8"
+          }
+        ]
+      }
+    ],
+    "StudyEventDef": [
+      {
+        "OID": "SE_0imo8x1",
+        "Name": "Visit 1",
+        "Repeating": "No",
+        "Type": "Scheduled"
+      },
+      {
+        "OID": "SE_0m6x4je",
+        "Name": "Physiotherapy",
+        "Repeating": "No",
+        "Type": "Scheduled"
+      },
+      {
+        "OID": "SE_0stubbd",
+        "Name": "Underwater therapy",
+        "Repeating": "No",
+        "Type": "Scheduled"
+      },
+      {
+        "OID": "SE_0ltgyb8",
+        "Name": "Visit 2: Evaluation",
+        "Repeating": "No",
+        "Type": "Scheduled"
+      }
+    ],
+    "ConditionDef": [
+      {
+        "OID": "COND.SequenceFlow_1sm9dlo",
+        "Name": "Condition for Physio+underwater therapy arm",
+        "Description": {
+          "TranslatedText": [
+            {
+              "Type": "text/plain",
+              "_content": "Condition for Physio+underwater therapy arm"
+            }
+          ]
+        },
+        "MethodSignature": {}
+      },
+      {
+        "OID": "COND.SequenceFlow_1hk2z8h",
+        "Name": "Condition for Physiotherapy Arm",
+        "Description": {
+          "TranslatedText": [
+            {
+              "Type": "text/plain",
+              "_content": "Condition for Physiotherapy Arm"
+            }
+          ]
+        },
+        "MethodSignature": {}
+      },
+      {
+        "OID": "COND.SequenceFlow_0z0iuws",
+        "Name": "Condition for Underwater therapy arm",
+        "Description": {
+          "TranslatedText": [
+            {
+              "Type": "text/plain",
+              "_content": "Condition for Underwater therapy arm"
+            }
+          ]
+        },
+        "MethodSignature": {}
+      }
+    ]
+  }
+}

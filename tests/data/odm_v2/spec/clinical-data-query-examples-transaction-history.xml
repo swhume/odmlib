@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ODM FileType="Snapshot" Granularity="AllClinicalData" CreationDateTime="2021-02-10T13:36:51.668-00:00" FileOID="8ca17c08-5a6f-4fcb-bf82-b4fa46fe6d99" ODMVersion="2.0" xmlns="http://www.cdisc.org/ns/odm/v2.0">
+<ClinicalData StudyOID="EX001" MetaDataVersionOID="1010">
+    <SubjectData SubjectKey="1001" TransactionType="Insert">
+        <SiteRef LocationOID="WestWing"/>
+        <StudyEventData StudyEventOID="Visit1">
+               <ItemGroupData ItemGroupOID="VISDT" ItemGroupRepeatKey="1">
+                   <ItemData ItemOID="VISDT">
+                    <Value>2020-10-01</Value>
+                       <AuditRecord>
+                           <UserRef UserOID="CRC01"/>
+                           <LocationRef LocationOID="TeaPot1"/>
+                           <DateTimeStamp>2021-02-14T13:36:51.668-00:00</DateTimeStamp>
+                           <ReasonForChange>Entered 2020-10-01</ReasonForChange>
+                       </AuditRecord>
+                        <Query Source="System" Type="System" OID="A529A2F2-F896-4AF7-AD4D-11B7110727BC" State="Closed" LastUpdateDatetime="2021-03-10T13:36:51.668-00:00" Name="VISDT_NOT_FUTURE">
+                           <Value>Value is in the future, please correct</Value>
+                           <AuditRecord>
+                               <UserRef UserOID="SYSTEM"/>
+                               <LocationRef LocationOID="WestWing"/>
+                               <DateTimeStamp>2021-02-10T13:36:51.668-00:00</DateTimeStamp>
+                               <ReasonForChange>Edit check raised</ReasonForChange>
+                           </AuditRecord>
+                           <AuditRecord>
+                               <UserRef UserOID="CRC01"/>
+                               <LocationRef LocationOID="TeaPot1"/>
+                               <DateTimeStamp>2021-02-12T13:36:51.668-00:00</DateTimeStamp>
+                               <ReasonForChange>Reviewed</ReasonForChange>
+                           </AuditRecord>
+                           <AuditRecord>
+                               <UserRef UserOID="CRC01"/>
+                               <LocationRef LocationOID="TeaPot1"/>
+                               <DateTimeStamp>2021-02-14T13:36:51.668-00:00</DateTimeStamp>
+                               <ReasonForChange>Updated value to 2021-10-01 [Status Changed to "Answered"]</ReasonForChange>
+                           </AuditRecord>
+                           <AuditRecord>
+                               <UserRef UserOID="SYSTEM"/>
+                               <LocationRef LocationOID="WestWing"/>
+                               <DateTimeStamp>2021-02-14T13:37:51.668-00:00</DateTimeStamp>
+                               <ReasonForChange>Edit check raised [Status Changed to "Open"]</ReasonForChange>
+                           </AuditRecord>
+                           <AuditRecord>
+                               <UserRef UserOID="CRC01"/>
+                               <LocationRef LocationOID="TeaPot1"/>
+                               <DateTimeStamp>2021-02-16T13:36:51.668-00:00</DateTimeStamp>
+                               <ReasonForChange>Reviewed</ReasonForChange>
+                           </AuditRecord>
+                           <AuditRecord>
+                               <UserRef UserOID="CRC01"/>
+                               <LocationRef LocationOID="TeaPot1"/>
+                               <DateTimeStamp>2021-02-18T13:36:51.668-00:00</DateTimeStamp>
+                               <ReasonForChange>Updated value to 2020-10-01 [Status Changed to "Answered"]</ReasonForChange>
+                           </AuditRecord>
+                           <AuditRecord>
+                               <UserRef UserOID="SYSTEM"/>
+                               <LocationRef LocationOID="WestWing"/>
+                               <DateTimeStamp>2021-02-18T13:36:51.668-00:00</DateTimeStamp>
+                               <ReasonForChange>Edit check resolved by response [Status Changed to "Resolved"]</ReasonForChange>
+                           </AuditRecord>
+                           <AuditRecord>
+                               <UserRef UserOID="SYSTEM"/>
+                               <LocationRef LocationOID="WestWing"/>
+                               <DateTimeStamp>2021-02-25T13:36:51.668-00:00</DateTimeStamp>
+                               <ReasonForChange>Edit check auto-closed [Status Changed to "Closed"]</ReasonForChange>
+                           </AuditRecord>
+                           <AuditRecord>
+                               <UserRef UserOID="INV01"/>
+                               <LocationRef LocationOID="TeaPot1"/>
+                               <DateTimeStamp>2021-03-10T13:36:51.668-00:00</DateTimeStamp>
+                               <ReasonForChange>Signed Subject CRF</ReasonForChange>
+                           </AuditRecord>
+                       </Query>
+                   </ItemData>
+               </ItemGroupData>
+        </StudyEventData>
+    </SubjectData>
+</ClinicalData>
+</ODM>

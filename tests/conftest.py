@@ -4,9 +4,57 @@ These fixtures provide common test setups that replace repetitive setUp()
 methods across test files.  They also ensure proper namespace registry
 cleanup between tests to prevent state leakage through the Borg singleton.
 """
+import hashlib
 import os
 import pytest
 import odmlib.ns_registry as NS
+
+
+# ---------------------------------------------------------------------------
+# tests/data/ is read-only
+# ---------------------------------------------------------------------------
+
+_TEST_DATA_DIR = os.path.join(os.path.dirname(os.path.realpath(__file__)), "data")
+
+
+def _snapshot_tree(root):
+    """``{relative_path: sha256}`` for every file under *root*."""
+    digests = {}
+    for current, dirnames, filenames in os.walk(root):
+        dirnames[:] = [d for d in dirnames if d != "__pycache__"]
+        for filename in filenames:
+            path = os.path.join(current, filename)
+            with open(path, "rb") as handle:
+                digest = hashlib.sha256(handle.read()).hexdigest()
+            digests[os.path.relpath(path, root).replace(os.sep, "/")] = digest
+    return digests
+
+
+@pytest.fixture(scope="session", autouse=True)
+def tests_data_is_read_only():
+    """Fail the run if any test creates, changes or deletes a file in tests/data/.
+
+    Write generated output to ``tempfile.TemporaryDirectory()`` with
+    ``self.addCleanup(tmp.cleanup)``. The suite is unittest-style, so pytest's
+    ``tmp_path`` is not injected. Writing into the tracked fixtures dirties the
+    working tree, and it can also turn one test's output into another test's
+    input, which makes results depend on test order.
+
+    The failure is reported as an error in the teardown of the session's last
+    test. It lists every affected file.
+    """
+    before = _snapshot_tree(_TEST_DATA_DIR)
+    yield
+    after = _snapshot_tree(_TEST_DATA_DIR)
+    if after == before:
+        return
+    lines = ["tests modified tracked files under tests/data/ "
+             "(write to tempfile.TemporaryDirectory() instead):"]
+    lines += [f"  changed: {p}" for p in sorted(p for p in set(before) & set(after)
+                                                 if before[p] != after[p])]
+    lines += [f"  created: {p}" for p in sorted(set(after) - set(before))]
+    lines += [f"  deleted: {p}" for p in sorted(set(before) - set(after))]
+    pytest.fail("\n".join(lines), pytrace=False)
 
 
 # ---------------------------------------------------------------------------

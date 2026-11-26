@@ -1,0 +1,5769 @@
+{
+  "CreationDateTime": "2009-09-07T18:19:28+01:00",
+  "FileOID": "CES_001",
+  "FileType": "Transactional",
+  "Granularity": "Metadata",
+  "SourceSystem": "XML4Pharma CDISC ODM Study Designer",
+  "SourceSystemVersion": "2008R2",
+  "ODMVersion": "2.0",
+  "Description": {
+    "TranslatedText": [
+      {
+        "Type": "text/plain",
+        "_content": "A simple trial to demonstrate the end-to-end application of the CDISC Standards from D.I.H extended by J.A."
+      }
+    ]
+  },
+  "Study": [
+    {
+      "OID": "CES",
+      "StudyName": "CDISC Example Study",
+      "ProtocolName": "CDISC Example Study",
+      "MetaDataVersion": [
+        {
+          "Name": "CDISC Example Study Metadata",
+          "OID": "CES_MDV_V1",
+          "Description": {
+            "TranslatedText": [
+              {
+                "Type": "text/plain",
+                "_content": "CDISC Example Study Metadata"
+              }
+            ]
+          },
+          "WorkflowDef": [
+            {
+              "OID": "WF.MAIN",
+              "Name": "Protocol main workflow",
+              "Description": {
+                "TranslatedText": [
+                  {
+                    "Type": "text/plain",
+                    "lang": "en",
+                    "_content": "Linear workflow generated from ODM 1.3 'Protocol' element for 'Scheduled' StudyEvents"
+                  }
+                ]
+              },
+              "WorkflowStart": {
+                "StartOID": "BASELINE"
+              },
+              "Transition": [
+                {
+                  "OID": "TR.BASELINE.WEEK_1",
+                  "Name": "Transition between StudyEvent Baseline Visit and StudyEvent Week 1 Visit",
+                  "SourceOID": "BASELINE",
+                  "TargetOID": "WEEK_1"
+                },
+                {
+                  "OID": "TR.WEEK_1.WEEK_2",
+                  "Name": "Transition between StudyEvent Week 1 Visit and StudyEvent Week 2 Visit",
+                  "SourceOID": "WEEK_1",
+                  "TargetOID": "WEEK_2"
+                },
+                {
+                  "OID": "TR.WEEK_2.DIARY",
+                  "Name": "Transition between StudyEvent Week 2 Visit and StudyEvent Patient Diary Event",
+                  "SourceOID": "WEEK_2",
+                  "TargetOID": "DIARY"
+                }
+              ],
+              "WorkflowEnd": [
+                {
+                  "EndOID": "DIARY"
+                }
+              ]
+            }
+          ],
+          "StudyEventDef": [
+            {
+              "Name": "Baseline Visit",
+              "OID": "BASELINE",
+              "Repeating": "No",
+              "Type": "Scheduled",
+              "Description": {
+                "TranslatedText": [
+                  {
+                    "lang": "en",
+                    "Type": "text/plain",
+                    "_content": "Baseline"
+                  },
+                  {
+                    "lang": "de",
+                    "Type": "text/plain",
+                    "_content": "Basislinie"
+                  }
+                ]
+              },
+              "ItemGroupRef": [
+                {
+                  "Mandatory": "Yes",
+                  "OrderNumber": 1,
+                  "ItemGroupOID": "F_BASELINE"
+                },
+                {
+                  "Mandatory": "Yes",
+                  "OrderNumber": 2,
+                  "ItemGroupOID": "F_CM"
+                },
+                {
+                  "Mandatory": "Yes",
+                  "OrderNumber": 3,
+                  "ItemGroupOID": "F_LAB"
+                },
+                {
+                  "CollectionExceptionConditionOID": "COND.FORMUSE.SMOKING_COMPLAINTS",
+                  "Mandatory": "No",
+                  "OrderNumber": 4,
+                  "ItemGroupOID": "F_COMPLAINTS_REL_SMOKING"
+                }
+              ],
+              "Alias": [
+                {
+                  "Context": "TEST",
+                  "Name": "Baseline Alias"
+                }
+              ]
+            },
+            {
+              "Name": "Week 1 Visit",
+              "OID": "WEEK_1",
+              "Repeating": "No",
+              "Type": "Scheduled",
+              "Description": {
+                "TranslatedText": [
+                  {
+                    "lang": "en",
+                    "Type": "text/plain",
+                    "_content": "Week 1 Visit"
+                  },
+                  {
+                    "lang": "de",
+                    "Type": "text/plain",
+                    "_content": "Woche 1 Visite"
+                  }
+                ]
+              },
+              "ItemGroupRef": [
+                {
+                  "Mandatory": "Yes",
+                  "OrderNumber": 1,
+                  "ItemGroupOID": "F_WEEK_1_2"
+                },
+                {
+                  "Mandatory": "Yes",
+                  "OrderNumber": 2,
+                  "ItemGroupOID": "F_LAB"
+                }
+              ]
+            },
+            {
+              "Name": "Week 2 Visit",
+              "OID": "WEEK_2",
+              "Repeating": "No",
+              "Type": "Scheduled",
+              "Description": {
+                "TranslatedText": [
+                  {
+                    "lang": "en",
+                    "Type": "text/plain",
+                    "_content": "Week 2 Visit"
+                  },
+                  {
+                    "lang": "de",
+                    "Type": "text/plain",
+                    "_content": "Woche 2 Visite"
+                  }
+                ]
+              },
+              "ItemGroupRef": [
+                {
+                  "Mandatory": "Yes",
+                  "OrderNumber": 1,
+                  "ItemGroupOID": "F_WEEK_1_2"
+                },
+                {
+                  "Mandatory": "Yes",
+                  "OrderNumber": 2,
+                  "ItemGroupOID": "F_LAB"
+                }
+              ]
+            },
+            {
+              "Name": "Patient Diary Event",
+              "OID": "DIARY",
+              "Repeating": "Yes",
+              "Type": "Scheduled",
+              "Description": {
+                "TranslatedText": [
+                  {
+                    "lang": "en",
+                    "Type": "text/plain",
+                    "_content": "Patient diary is returned"
+                  }
+                ]
+              },
+              "ItemGroupRef": [
+                {
+                  "Mandatory": "Yes",
+                  "OrderNumber": 1,
+                  "ItemGroupOID": "F_DIARY"
+                }
+              ]
+            },
+            {
+              "Name": "Adverse Event",
+              "OID": "AE",
+              "Repeating": "No",
+              "Type": "Common",
+              "ItemGroupRef": [
+                {
+                  "Mandatory": "No",
+                  "OrderNumber": 1,
+                  "ItemGroupOID": "F_AE"
+                },
+                {
+                  "Mandatory": "No",
+                  "OrderNumber": 2,
+                  "ItemGroupOID": "F_CM"
+                }
+              ]
+            }
+          ],
+          "ItemGroupDef": [
+            {
+              "Name": "Baseline Visit Form",
+              "OID": "F_BASELINE",
+              "Repeating": "No",
+              "Type": "Form",
+              "Description": {
+                "TranslatedText": [
+                  {
+                    "lang": "en",
+                    "Type": "text/plain",
+                    "_content": "Baseline"
+                  },
+                  {
+                    "lang": "fr",
+                    "Type": "text/plain",
+                    "_content": "Ligne de base"
+                  },
+                  {
+                    "lang": "de",
+                    "Type": "text/plain",
+                    "_content": "Basislinie"
+                  },
+                  {
+                    "lang": "ko",
+                    "Type": "text/plain",
+                    "_content": "기준선"
+                  }
+                ]
+              },
+              "ItemGroupRef": [
+                {
+                  "ItemGroupOID": "IG_COMMON",
+                  "Mandatory": "Yes",
+                  "OrderNumber": 1
+                },
+                {
+                  "ItemGroupOID": "IG_DM",
+                  "Mandatory": "Yes",
+                  "OrderNumber": 2
+                },
+                {
+                  "ItemGroupOID": "IG_SH",
+                  "Mandatory": "Yes",
+                  "OrderNumber": 3
+                },
+                {
+                  "ItemGroupOID": "IG_DH",
+                  "Mandatory": "Yes",
+                  "OrderNumber": 5
+                },
+                {
+                  "ItemGroupOID": "IG_PE_BASE",
+                  "Mandatory": "Yes",
+                  "OrderNumber": 6
+                },
+                {
+                  "ItemGroupOID": "IG_XRAY",
+                  "Mandatory": "Yes",
+                  "OrderNumber": 7
+                },
+                {
+                  "CollectionExceptionConditionOID": "COND.IGUSE.SMOKING_COMPLAINTS",
+                  "ItemGroupOID": "IG_SMOKING_COMPLAINTS",
+                  "Mandatory": "No",
+                  "OrderNumber": 4
+                }
+              ],
+              "Alias": [
+                {
+                  "Context": "TEST",
+                  "Name": "Baseline Form Alias"
+                }
+              ]
+            },
+            {
+              "Name": "Week 1 and 2 Form",
+              "OID": "F_WEEK_1_2",
+              "Repeating": "No",
+              "Type": "Form",
+              "Description": {
+                "TranslatedText": [
+                  {
+                    "lang": "en",
+                    "Type": "text/plain",
+                    "_content": "Week 1 and 2"
+                  },
+                  {
+                    "lang": "fr",
+                    "Type": "text/plain",
+                    "_content": "Semaine 1 et 2"
+                  },
+                  {
+                    "lang": "de",
+                    "Type": "text/plain",
+                    "_content": "Woche 1 und 2"
+                  },
+                  {
+                    "lang": "ko",
+                    "Type": "text/plain",
+                    "_content": "주 1과 2"
+                  }
+                ]
+              },
+              "ItemGroupRef": [
+                {
+                  "ItemGroupOID": "IG_COMMON",
+                  "Mandatory": "Yes",
+                  "OrderNumber": 1
+                },
+                {
+                  "ItemGroupOID": "IG_PE_WEEK",
+                  "Mandatory": "Yes",
+                  "OrderNumber": 2
+                }
+              ]
+            },
+            {
+              "Name": "Diary Form",
+              "OID": "F_DIARY",
+              "Repeating": "No",
+              "Type": "Form",
+              "Description": {
+                "TranslatedText": [
+                  {
+                    "lang": "en",
+                    "Type": "text/plain",
+                    "_content": "Diary"
+                  },
+                  {
+                    "lang": "fr",
+                    "Type": "text/plain",
+                    "_content": "Journal"
+                  },
+                  {
+                    "lang": "de",
+                    "Type": "text/plain",
+                    "_content": "Tagesbuch"
+                  },
+                  {
+                    "lang": "ko",
+                    "Type": "text/plain",
+                    "_content": "일기"
+                  }
+                ]
+              },
+              "ItemGroupRef": [
+                {
+                  "ItemGroupOID": "IG_COMMON",
+                  "Mandatory": "Yes",
+                  "OrderNumber": 1
+                },
+                {
+                  "ItemGroupOID": "IG_PD",
+                  "Mandatory": "Yes",
+                  "OrderNumber": 2
+                }
+              ]
+            },
+            {
+              "Name": "Adverse Event Form (ACRO)",
+              "OID": "F_AE",
+              "Repeating": "Simple",
+              "Type": "Form",
+              "Description": {
+                "TranslatedText": [
+                  {
+                    "lang": "en",
+                    "Type": "text/plain",
+                    "_content": "Adverse Events"
+                  },
+                  {
+                    "lang": "fr",
+                    "Type": "text/plain",
+                    "_content": "Evénements défavorables"
+                  },
+                  {
+                    "lang": "de",
+                    "Type": "text/plain",
+                    "_content": "Unerwünschte Vorfälle"
+                  },
+                  {
+                    "lang": "ko",
+                    "Type": "text/plain"
+                  }
+                ]
+              },
+              "ItemGroupRef": [
+                {
+                  "ItemGroupOID": "IG_COMMON",
+                  "Mandatory": "Yes",
+                  "OrderNumber": 1
+                },
+                {
+                  "ItemGroupOID": "IG_AE_OCCURRED",
+                  "Mandatory": "Yes",
+                  "OrderNumber": 2
+                },
+                {
+                  "CollectionExceptionConditionOID": "COND.IGUSE.ADVERSE_EVENTS",
+                  "ItemGroupOID": "IG_AE",
+                  "Mandatory": "Yes",
+                  "OrderNumber": 3
+                }
+              ]
+            },
+            {
+              "Name": "Prior or Concomitant Medications (ACRO)",
+              "OID": "F_CM",
+              "Repeating": "Simple",
+              "Type": "Form",
+              "Description": {
+                "TranslatedText": [
+                  {
+                    "lang": "en",
+                    "Type": "text/plain",
+                    "_content": "Prior or Concomitant Medications"
+                  },
+                  {
+                    "lang": "fr",
+                    "Type": "text/plain",
+                    "_content": "Médications précédentes"
+                  },
+                  {
+                    "lang": "de",
+                    "Type": "text/plain",
+                    "_content": "Vorherige Medikationen"
+                  },
+                  {
+                    "lang": "ko",
+                    "Type": "text/plain"
+                  }
+                ]
+              },
+              "ItemGroupRef": [
+                {
+                  "ItemGroupOID": "IG_COMMON",
+                  "Mandatory": "Yes",
+                  "OrderNumber": 1
+                },
+                {
+                  "ItemGroupOID": "IG_CM_TAKEN",
+                  "Mandatory": "Yes",
+                  "OrderNumber": 2
+                },
+                {
+                  "CollectionExceptionConditionOID": "COND.IGUSE.CM",
+                  "ItemGroupOID": "IG_CM",
+                  "Mandatory": "Yes",
+                  "OrderNumber": 3
+                }
+              ]
+            },
+            {
+              "Name": "Laboratory",
+              "OID": "F_LAB",
+              "Repeating": "No",
+              "Type": "Form",
+              "Description": {
+                "TranslatedText": [
+                  {
+                    "lang": "en",
+                    "Type": "text/plain",
+                    "_content": "Laboratory"
+                  },
+                  {
+                    "lang": "de",
+                    "Type": "text/plain",
+                    "_content": "Laboratorium"
+                  },
+                  {
+                    "lang": "fr",
+                    "Type": "text/plain",
+                    "_content": "Laboratoire"
+                  },
+                  {
+                    "lang": "ko",
+                    "Type": "text/plain"
+                  }
+                ]
+              },
+              "ItemGroupRef": [
+                {
+                  "ItemGroupOID": "IG_COMMON",
+                  "Mandatory": "Yes",
+                  "OrderNumber": 1
+                },
+                {
+                  "ItemGroupOID": "IG_LB_HEMATOLOGY",
+                  "Mandatory": "Yes",
+                  "OrderNumber": 3
+                }
+              ]
+            },
+            {
+              "Name": "Complaints related to smoking",
+              "OID": "F_COMPLAINTS_REL_SMOKING",
+              "Repeating": "No",
+              "Type": "Form",
+              "Description": {
+                "TranslatedText": [
+                  {
+                    "lang": "en",
+                    "Type": "text/plain",
+                    "_content": "Complaints related to smoking - Do NOT use this form when the subject is a non-smoker"
+                  },
+                  {
+                    "lang": "fr",
+                    "Type": "text/plain",
+                    "_content": "Plaintes en relation avec le fumage - N'utilisez pas ce formulaire quand le sujet est non-fumeur"
+                  },
+                  {
+                    "lang": "de",
+                    "Type": "text/plain",
+                    "_content": "Klagen in beziehung zum rauchen - Benützen sie diesen Formular nicht wenn der Patient nicht-raucher ist."
+                  },
+                  {
+                    "lang": "ko",
+                    "Type": "text/plain"
+                  }
+                ]
+              },
+              "ItemGroupRef": [
+                {
+                  "ItemGroupOID": "IG_SMOKING_COMPLAINTS",
+                  "Mandatory": "Yes",
+                  "OrderNumber": 1
+                }
+              ]
+            },
+            {
+              "Domain": "all",
+              "Name": "Common",
+              "OID": "IG_COMMON",
+              "Repeating": "No",
+              "DatasetName": "COMMON",
+              "Type": "Section",
+              "Description": {
+                "TranslatedText": [
+                  {
+                    "lang": "en",
+                    "Type": "text/plain",
+                    "_content": "Common"
+                  },
+                  {
+                    "lang": "fr",
+                    "Type": "text/plain",
+                    "_content": "General"
+                  },
+                  {
+                    "lang": "de",
+                    "Type": "text/plain",
+                    "_content": "Algemein"
+                  },
+                  {
+                    "lang": "ko",
+                    "Type": "text/plain"
+                  }
+                ]
+              },
+              "ItemRef": [
+                {
+                  "ItemOID": "I_SITE",
+                  "Mandatory": "Yes",
+                  "OrderNumber": 1
+                },
+                {
+                  "ItemOID": "I_SUBJECTID",
+                  "Mandatory": "Yes",
+                  "OrderNumber": 2
+                },
+                {
+                  "ItemOID": "I_VISIT",
+                  "Mandatory": "Yes",
+                  "OrderNumber": 3
+                },
+                {
+                  "ItemOID": "I_VISITTIME",
+                  "Mandatory": "Yes",
+                  "OrderNumber": 4
+                }
+              ],
+              "Alias": [
+                {
+                  "Context": "TEST",
+                  "Name": "Common ItemGroup Alias"
+                }
+              ]
+            },
+            {
+              "Domain": "DM",
+              "Name": "Demographics",
+              "OID": "IG_DM",
+              "Repeating": "No",
+              "DatasetName": "DEMOG",
+              "Type": "Section",
+              "Description": {
+                "TranslatedText": [
+                  {
+                    "lang": "en",
+                    "Type": "text/plain",
+                    "_content": "Demographics"
+                  },
+                  {
+                    "lang": "fr",
+                    "Type": "text/plain",
+                    "_content": "Demographie"
+                  },
+                  {
+                    "lang": "de",
+                    "Type": "text/plain",
+                    "_content": "Demografie"
+                  },
+                  {
+                    "lang": "ko",
+                    "Type": "text/plain"
+                  }
+                ]
+              },
+              "ItemRef": [
+                {
+                  "ItemOID": "I_BRTHDT",
+                  "Mandatory": "Yes",
+                  "OrderNumber": 1
+                },
+                {
+                  "ItemOID": "I_SEX",
+                  "Mandatory": "Yes",
+                  "OrderNumber": 2
+                },
+                {
+                  "ItemOID": "I_RACE",
+                  "Mandatory": "No",
+                  "OrderNumber": 3
+                }
+              ],
+              "Alias": [
+                {
+                  "Context": "SDTM",
+                  "Name": "DM"
+                }
+              ]
+            },
+            {
+              "Domain": "SU",
+              "Name": "Smoking History",
+              "OID": "IG_SH",
+              "Repeating": "No",
+              "DatasetName": "SMOKE",
+              "Type": "Section",
+              "Description": {
+                "TranslatedText": [
+                  {
+                    "lang": "en",
+                    "Type": "text/plain",
+                    "_content": "Smoking History"
+                  },
+                  {
+                    "lang": "fr",
+                    "Type": "text/plain",
+                    "_content": "Histoire consommation du tabac"
+                  },
+                  {
+                    "lang": "de",
+                    "Type": "text/plain",
+                    "_content": "Vergangenheit i.B.a. Rauchen"
+                  },
+                  {
+                    "lang": "ko",
+                    "Type": "text/plain"
+                  }
+                ]
+              },
+              "ItemRef": [
+                {
+                  "ItemOID": "I_SMOKING",
+                  "Mandatory": "Yes",
+                  "OrderNumber": 1
+                },
+                {
+                  "CollectionExceptionConditionOID": "COND.SMOKING",
+                  "ItemOID": "I_NR_CIGARETTES",
+                  "Mandatory": "No",
+                  "OrderNumber": 2
+                }
+              ]
+            },
+            {
+              "Domain": "SU",
+              "Name": "Drinking History",
+              "OID": "IG_DH",
+              "Repeating": "No",
+              "DatasetName": "DRINK",
+              "Type": "Section",
+              "Description": {
+                "TranslatedText": [
+                  {
+                    "lang": "en",
+                    "Type": "text/plain",
+                    "_content": "Drinking history"
+                  },
+                  {
+                    "lang": "fr",
+                    "Type": "text/plain",
+                    "_content": "Histoire consommation de l'alcool"
+                  },
+                  {
+                    "lang": "de",
+                    "Type": "text/plain",
+                    "_content": "Vergangenheit i.B.a. Alkoholverbrauch"
+                  },
+                  {
+                    "lang": "ko",
+                    "Type": "text/plain"
+                  }
+                ]
+              },
+              "ItemRef": [
+                {
+                  "ItemOID": "I_DRINKING",
+                  "Mandatory": "Yes",
+                  "OrderNumber": 1
+                }
+              ]
+            },
+            {
+              "Domain": "VS",
+              "Name": "Physical Exam",
+              "OID": "IG_PE_BASE",
+              "Repeating": "No",
+              "DatasetName": "PHYEXBAS",
+              "Type": "Section",
+              "Description": {
+                "TranslatedText": [
+                  {
+                    "lang": "en",
+                    "Type": "text/plain",
+                    "_content": "Physical examination: Base"
+                  },
+                  {
+                    "lang": "fr",
+                    "Type": "text/plain",
+                    "_content": "Examination du corps: Base"
+                  },
+                  {
+                    "lang": "de",
+                    "Type": "text/plain",
+                    "_content": "Körperuntersuchung: Basis"
+                  },
+                  {
+                    "lang": "ko",
+                    "Type": "text/plain"
+                  }
+                ]
+              },
+              "ItemRef": [
+                {
+                  "ItemOID": "I_HEIGHT",
+                  "Mandatory": "Yes",
+                  "OrderNumber": 1
+                },
+                {
+                  "ItemOID": "I_WEIGHT",
+                  "Mandatory": "Yes",
+                  "OrderNumber": 2
+                },
+                {
+                  "ItemOID": "I_SYSBP",
+                  "Mandatory": "No",
+                  "OrderNumber": 3
+                },
+                {
+                  "ItemOID": "I_DIABP",
+                  "Mandatory": "Yes",
+                  "MethodOID": "METH.001",
+                  "OrderNumber": 4
+                },
+                {
+                  "CollectionExceptionConditionOID": "COND.DBP.DIZZY",
+                  "ItemOID": "I_DIZZY",
+                  "Mandatory": "Yes",
+                  "OrderNumber": 5
+                }
+              ]
+            },
+            {
+              "Name": "XRay",
+              "OID": "IG_XRAY",
+              "Repeating": "No",
+              "Type": "Section",
+              "Description": {
+                "TranslatedText": [
+                  {
+                    "lang": "en",
+                    "Type": "text/plain",
+                    "_content": "X-Ray"
+                  },
+                  {
+                    "lang": "fr",
+                    "Type": "text/plain",
+                    "_content": "Rayons X"
+                  },
+                  {
+                    "lang": "de",
+                    "Type": "text/plain",
+                    "_content": "Röntgenbild"
+                  },
+                  {
+                    "lang": "ko",
+                    "Type": "text/plain"
+                  }
+                ]
+              },
+              "ItemRef": [
+                {
+                  "ItemOID": "I_XRAY",
+                  "Mandatory": "Yes",
+                  "OrderNumber": 1
+                }
+              ]
+            },
+            {
+              "Domain": "VS",
+              "Name": "Physical Exam",
+              "OID": "IG_PE_WEEK",
+              "Repeating": "No",
+              "DatasetName": "PHYEX",
+              "Type": "Section",
+              "Description": {
+                "TranslatedText": [
+                  {
+                    "lang": "en",
+                    "Type": "text/plain",
+                    "_content": "Physical Examination: Week"
+                  },
+                  {
+                    "lang": "fr",
+                    "Type": "text/plain",
+                    "_content": "Examination du corps: Semaine"
+                  },
+                  {
+                    "Type": "text/plain",
+                    "_content": "Körperuntersuchung: Woche"
+                  },
+                  {
+                    "lang": "ko",
+                    "Type": "text/plain"
+                  }
+                ]
+              },
+              "ItemRef": [
+                {
+                  "ItemOID": "I_WEIGHT",
+                  "Mandatory": "Yes",
+                  "OrderNumber": 1
+                },
+                {
+                  "ItemOID": "I_SYSBP",
+                  "Mandatory": "Yes",
+                  "OrderNumber": 2
+                },
+                {
+                  "ItemOID": "I_DIABP",
+                  "Mandatory": "Yes",
+                  "OrderNumber": 3
+                }
+              ]
+            },
+            {
+              "Domain": "QS",
+              "Name": "Patient Diary",
+              "OID": "IG_PD",
+              "Repeating": "Simple",
+              "DatasetName": "DIARY",
+              "Type": "Section",
+              "Description": {
+                "TranslatedText": [
+                  {
+                    "lang": "en",
+                    "Type": "text/plain",
+                    "_content": "Patient diary"
+                  },
+                  {
+                    "lang": "fr",
+                    "Type": "text/plain",
+                    "_content": "Journal du patient"
+                  },
+                  {
+                    "lang": "de",
+                    "Type": "text/plain",
+                    "_content": "Patient Tagesbuch"
+                  },
+                  {
+                    "lang": "ko",
+                    "Type": "text/plain"
+                  }
+                ]
+              },
+              "ItemRef": [
+                {
+                  "ItemOID": "I_DAY",
+                  "Mandatory": "Yes",
+                  "OrderNumber": 1
+                },
+                {
+                  "ItemOID": "I_DATE",
+                  "Mandatory": "Yes",
+                  "OrderNumber": 2
+                },
+                {
+                  "ItemOID": "I_DIARY",
+                  "Mandatory": "Yes",
+                  "OrderNumber": 3
+                }
+              ]
+            },
+            {
+              "Domain": "AE",
+              "Name": "Adverse Events Occurred",
+              "OID": "IG_AE_OCCURRED",
+              "Repeating": "No",
+              "DatasetName": "AEOCCUR",
+              "Type": "Section",
+              "Description": {
+                "TranslatedText": [
+                  {
+                    "lang": "en",
+                    "Type": "text/plain",
+                    "_content": "Adverse events"
+                  },
+                  {
+                    "lang": "fr",
+                    "Type": "text/plain",
+                    "_content": "Evénements défavorables"
+                  },
+                  {
+                    "lang": "de",
+                    "Type": "text/plain",
+                    "_content": "Unerwünschte Vorfälle"
+                  },
+                  {
+                    "lang": "ko",
+                    "Type": "text/plain"
+                  }
+                ]
+              },
+              "ItemRef": [
+                {
+                  "ItemOID": "I_AE_OCCURRED",
+                  "Mandatory": "Yes",
+                  "OrderNumber": 1
+                }
+              ]
+            },
+            {
+              "Domain": "AE",
+              "Name": "Adverse Event",
+              "OID": "IG_AE",
+              "Repeating": "Simple",
+              "DatasetName": "AEEVENT",
+              "Type": "Section",
+              "Description": {
+                "TranslatedText": [
+                  {
+                    "lang": "en",
+                    "Type": "text/plain",
+                    "_content": "Adverse events"
+                  },
+                  {
+                    "lang": "de",
+                    "Type": "text/plain",
+                    "_content": "Unerwünschte Vorfälle"
+                  },
+                  {
+                    "lang": "fr",
+                    "Type": "text/plain",
+                    "_content": "Evénement défavorables"
+                  },
+                  {
+                    "lang": "ko",
+                    "Type": "text/plain"
+                  }
+                ]
+              },
+              "ItemRef": [
+                {
+                  "ItemOID": "I_AE_EVENT",
+                  "Mandatory": "Yes",
+                  "OrderNumber": 1
+                },
+                {
+                  "ItemOID": "I_AE_TERM",
+                  "Mandatory": "Yes",
+                  "OrderNumber": 2
+                },
+                {
+                  "ItemOID": "I_AE_START",
+                  "Mandatory": "Yes",
+                  "OrderNumber": 3
+                },
+                {
+                  "ItemOID": "I_AE_CONTINUES",
+                  "Mandatory": "No",
+                  "OrderNumber": 4
+                },
+                {
+                  "CollectionExceptionConditionOID": "COND.AESTOP.STOPPED",
+                  "ItemOID": "I_AE_STOP",
+                  "Mandatory": "No",
+                  "OrderNumber": 5
+                },
+                {
+                  "CollectionExceptionConditionOID": "COND.AESTOP.STOPPED",
+                  "ItemOID": "I_AE_DURATION",
+                  "Mandatory": "No",
+                  "OrderNumber": 6
+                },
+                {
+                  "ItemOID": "I_AE_SERIOUS",
+                  "Mandatory": "Yes",
+                  "OrderNumber": 7
+                },
+                {
+                  "CollectionExceptionConditionOID": "COND.AE_SEVERITY.AE_SERIOUS",
+                  "ItemOID": "I_AE_SEVERITY",
+                  "Mandatory": "Yes",
+                  "OrderNumber": 8
+                },
+                {
+                  "ItemOID": "I_AE_RELATED",
+                  "Mandatory": "Yes",
+                  "OrderNumber": 9
+                },
+                {
+                  "ItemOID": "I_AE_ACTION",
+                  "Mandatory": "Yes",
+                  "OrderNumber": 10
+                },
+                {
+                  "ItemOID": "I_AE_OUTCOME",
+                  "Mandatory": "Yes",
+                  "OrderNumber": 11
+                }
+              ]
+            },
+            {
+              "Domain": "CM",
+              "Name": "Non-study Medications Taken",
+              "OID": "IG_CM_TAKEN",
+              "Repeating": "No",
+              "DatasetName": "NSMEDTK",
+              "Type": "Section",
+              "Description": {
+                "TranslatedText": [
+                  {
+                    "lang": "fr",
+                    "Type": "text/plain",
+                    "_content": "Medicaments non-relatéé à l'étude"
+                  },
+                  {
+                    "lang": "de",
+                    "Type": "text/plain",
+                    "_content": "Medikamente ohne Beziehung zum Studium"
+                  },
+                  {
+                    "lang": "en",
+                    "Type": "text/plain",
+                    "_content": "Non-study related medication"
+                  },
+                  {
+                    "lang": "ko",
+                    "Type": "text/plain"
+                  }
+                ]
+              },
+              "ItemRef": [
+                {
+                  "ItemOID": "I_CM_TAKEN",
+                  "Mandatory": "Yes",
+                  "OrderNumber": 1
+                }
+              ]
+            },
+            {
+              "Domain": "CM",
+              "Name": "Prior or Concomitant Medications",
+              "OID": "IG_CM",
+              "Repeating": "Simple",
+              "DatasetName": "CONMED",
+              "Type": "Section",
+              "Description": {
+                "TranslatedText": [
+                  {
+                    "lang": "fr",
+                    "Type": "text/plain",
+                    "_content": "Médications précédentes"
+                  },
+                  {
+                    "lang": "en",
+                    "Type": "text/plain",
+                    "_content": "Concomittant medication"
+                  },
+                  {
+                    "lang": "de",
+                    "Type": "text/plain",
+                    "_content": "Vorherige Medikationen"
+                  },
+                  {
+                    "lang": "ko",
+                    "Type": "text/plain"
+                  }
+                ]
+              },
+              "ItemRef": [
+                {
+                  "ItemOID": "I_CM_NUMBER",
+                  "Mandatory": "Yes",
+                  "OrderNumber": 1
+                },
+                {
+                  "ItemOID": "I_CM_NAME",
+                  "Mandatory": "Yes",
+                  "OrderNumber": 2
+                },
+                {
+                  "ItemOID": "I_CM_DOSE",
+                  "Mandatory": "Yes",
+                  "OrderNumber": 3
+                },
+                {
+                  "ItemOID": "I_CM_DOSEUNIT",
+                  "Mandatory": "Yes",
+                  "OrderNumber": 4
+                },
+                {
+                  "ItemOID": "I_CM_DOSEFREQ",
+                  "Mandatory": "Yes",
+                  "OrderNumber": 5
+                },
+                {
+                  "ItemOID": "I_CM_START",
+                  "Mandatory": "Yes",
+                  "OrderNumber": 6
+                },
+                {
+                  "ItemOID": "I_CM_CONTINUES",
+                  "Mandatory": "Yes",
+                  "OrderNumber": 7
+                },
+                {
+                  "CollectionExceptionConditionOID": "COND.CMSTOP.STOP_DATE",
+                  "ItemOID": "I_CM_STOP",
+                  "Mandatory": "Yes",
+                  "OrderNumber": 8
+                },
+                {
+                  "ItemOID": "I_CM_IEXISTING",
+                  "Mandatory": "Yes",
+                  "OrderNumber": 9
+                },
+                {
+                  "ItemOID": "I_CM_IAE",
+                  "Mandatory": "Yes",
+                  "OrderNumber": 10
+                },
+                {
+                  "ItemOID": "I_CM_IPROP",
+                  "Mandatory": "Yes",
+                  "OrderNumber": 11
+                },
+                {
+                  "CollectionExceptionConditionOID": "COND.PROHYLAXIS",
+                  "ItemOID": "I_CM_IPROPDESC",
+                  "Mandatory": "Yes",
+                  "OrderNumber": 12
+                }
+              ]
+            },
+            {
+              "Domain": "LB",
+              "Name": "Hematology",
+              "OID": "IG_LB_HEMATOLOGY",
+              "Repeating": "No",
+              "DatasetName": "LAB",
+              "Type": "Section",
+              "Description": {
+                "TranslatedText": [
+                  {
+                    "lang": "en",
+                    "Type": "text/plain",
+                    "_content": "Hematology Lab"
+                  },
+                  {
+                    "lang": "fr",
+                    "Type": "text/plain",
+                    "_content": "Hématologie Laboratoire"
+                  },
+                  {
+                    "lang": "de",
+                    "Type": "text/plain",
+                    "_content": "Hematologie Laboratorium"
+                  },
+                  {
+                    "lang": "ko",
+                    "Type": "text/plain"
+                  }
+                ]
+              },
+              "ItemRef": [
+                {
+                  "ItemOID": "I_LB_NAME",
+                  "Mandatory": "Yes",
+                  "OrderNumber": 1
+                },
+                {
+                  "ItemOID": "I_LB_ID",
+                  "Mandatory": "Yes",
+                  "OrderNumber": 2
+                },
+                {
+                  "ItemOID": "I_LB_ACCESSION",
+                  "Mandatory": "Yes",
+                  "OrderNumber": 3
+                },
+                {
+                  "ItemOID": "I_LB_RBC_NOTDONE",
+                  "Mandatory": "Yes",
+                  "OrderNumber": 4
+                },
+                {
+                  "CollectionExceptionConditionOID": "COND.LB_RBC",
+                  "ItemOID": "I_LB_RBC",
+                  "Mandatory": "Yes",
+                  "OrderNumber": 5
+                },
+                {
+                  "CollectionExceptionConditionOID": "COND.LB_RBC",
+                  "ItemOID": "I_LB_RBC_LO",
+                  "Mandatory": "Yes",
+                  "OrderNumber": 6
+                },
+                {
+                  "CollectionExceptionConditionOID": "COND.LB_RBC",
+                  "ItemOID": "I_LB_RBC_HI",
+                  "Mandatory": "Yes",
+                  "OrderNumber": 7
+                },
+                {
+                  "ItemOID": "I_LB_WBC_NOTDONE",
+                  "Mandatory": "Yes",
+                  "OrderNumber": 8
+                },
+                {
+                  "CollectionExceptionConditionOID": "COND.LB_WBC",
+                  "ItemOID": "I_LB_WBC",
+                  "Mandatory": "Yes",
+                  "OrderNumber": 9
+                },
+                {
+                  "CollectionExceptionConditionOID": "COND.LB_WBC",
+                  "ItemOID": "I_LB_WBC_LO",
+                  "Mandatory": "Yes",
+                  "OrderNumber": 10
+                },
+                {
+                  "CollectionExceptionConditionOID": "COND.LB_WBC",
+                  "ItemOID": "I_LB_WBC_HI",
+                  "Mandatory": "Yes",
+                  "OrderNumber": 11
+                }
+              ]
+            },
+            {
+              "Name": "Complaints due to smoking",
+              "OID": "IG_SMOKING_COMPLAINTS",
+              "Repeating": "No",
+              "Type": "Section",
+              "Description": {
+                "TranslatedText": [
+                  {
+                    "lang": "en",
+                    "Type": "text/plain",
+                    "_content": "Complaints related to smoking"
+                  },
+                  {
+                    "lang": "fr",
+                    "Type": "text/plain",
+                    "_content": "Plaintes en relation avec la consommation de tabac"
+                  },
+                  {
+                    "lang": "de",
+                    "Type": "text/plain",
+                    "_content": "Klagen in beziehung zum Rauchen"
+                  },
+                  {
+                    "lang": "ko",
+                    "Type": "text/plain"
+                  }
+                ]
+              },
+              "ItemRef": [
+                {
+                  "ItemOID": "I_BREATHING",
+                  "Mandatory": "No",
+                  "OrderNumber": 1
+                },
+                {
+                  "ItemOID": "I_COUGHING",
+                  "Mandatory": "No",
+                  "OrderNumber": 2
+                },
+                {
+                  "ItemOID": "I_HEART_COMPLAINTS",
+                  "Mandatory": "No",
+                  "OrderNumber": 3
+                },
+                {
+                  "ItemOID": "I_ILNESS_DAYS_LAST_YEAR",
+                  "Mandatory": "No",
+                  "OrderNumber": 4
+                },
+                {
+                  "ItemOID": "I_BRONCHITS",
+                  "Mandatory": "No",
+                  "OrderNumber": 5
+                },
+                {
+                  "ItemOID": "I_PNEUMONIA",
+                  "Mandatory": "No",
+                  "OrderNumber": 6
+                }
+              ]
+            }
+          ],
+          "ItemDef": [
+            {
+              "DataType": "integer",
+              "Name": "Site Number",
+              "OID": "I_SITE",
+              "Description": {
+                "TranslatedText": [
+                  {
+                    "lang": "en",
+                    "Type": "text/plain",
+                    "_content": "Site Number as assigned by CRO"
+                  }
+                ]
+              },
+              "Question": {
+                "TranslatedText": [
+                  {
+                    "lang": "en",
+                    "Type": "text/plain",
+                    "_content": "Site number"
+                  },
+                  {
+                    "lang": "fr",
+                    "Type": "text/plain",
+                    "_content": "Numéro de la clinique"
+                  },
+                  {
+                    "lang": "de",
+                    "Type": "text/plain",
+                    "_content": "Klinik Nummer"
+                  },
+                  {
+                    "lang": "ko",
+                    "Type": "text/plain"
+                  }
+                ]
+              },
+              "Alias": [
+                {
+                  "Context": "SDTM",
+                  "Name": "SITEID"
+                }
+              ]
+            },
+            {
+              "DataType": "text",
+              "Length": 11,
+              "Name": "Subject ID",
+              "OID": "I_SUBJECTID",
+              "Question": {
+                "TranslatedText": [
+                  {
+                    "lang": "en",
+                    "Type": "text/plain",
+                    "_content": "Subject ID"
+                  },
+                  {
+                    "lang": "de",
+                    "Type": "text/plain",
+                    "_content": "ID des Patienten"
+                  },
+                  {
+                    "lang": "fr",
+                    "Type": "text/plain",
+                    "_content": "ID du Sujet"
+                  },
+                  {
+                    "lang": "ko",
+                    "Type": "text/plain"
+                  }
+                ]
+              },
+              "Alias": [
+                {
+                  "Context": "SDTM",
+                  "Name": "USUBJID"
+                }
+              ]
+            },
+            {
+              "DataType": "text",
+              "Length": 3,
+              "Name": "Subject Initials",
+              "OID": "I_SUBJECTINITIALS",
+              "Question": {
+                "TranslatedText": [
+                  {
+                    "lang": "en",
+                    "Type": "text/plain",
+                    "_content": "Subject Initials"
+                  },
+                  {
+                    "lang": "fr",
+                    "Type": "text/plain",
+                    "_content": "Initiales du Sujet"
+                  },
+                  {
+                    "lang": "de",
+                    "Type": "text/plain",
+                    "_content": "Initialen des Patienten"
+                  },
+                  {
+                    "lang": "ko",
+                    "Type": "text/plain"
+                  }
+                ]
+              }
+            },
+            {
+              "DataType": "date",
+              "Name": "Visit Date",
+              "OID": "I_VISIT",
+              "Question": {
+                "TranslatedText": [
+                  {
+                    "lang": "en",
+                    "Type": "text/plain",
+                    "_content": "Visit Date"
+                  },
+                  {
+                    "lang": "fr",
+                    "Type": "text/plain",
+                    "_content": "Date de Visite"
+                  },
+                  {
+                    "lang": "de",
+                    "Type": "text/plain",
+                    "_content": "Besuchsdatum"
+                  },
+                  {
+                    "lang": "ko",
+                    "Type": "text/plain"
+                  }
+                ]
+              },
+              "Alias": [
+                {
+                  "Context": "SDTM",
+                  "Name": "RFSTDTC"
+                }
+              ]
+            },
+            {
+              "DataType": "time",
+              "Name": "Visit Time",
+              "OID": "I_VISITTIME",
+              "Question": {
+                "TranslatedText": [
+                  {
+                    "lang": "en",
+                    "Type": "text/plain",
+                    "_content": "Visit Start Time"
+                  },
+                  {
+                    "lang": "fr",
+                    "Type": "text/plain",
+                    "_content": "Temps de Visite"
+                  },
+                  {
+                    "lang": "de",
+                    "Type": "text/plain",
+                    "_content": "Besuchszeit"
+                  },
+                  {
+                    "lang": "ko",
+                    "Type": "text/plain"
+                  }
+                ]
+              }
+            },
+            {
+              "DataType": "date",
+              "Name": "Date of Birth",
+              "OID": "I_BRTHDT",
+              "Question": {
+                "TranslatedText": [
+                  {
+                    "lang": "en",
+                    "Type": "text/plain",
+                    "_content": "Date of Birth"
+                  },
+                  {
+                    "lang": "fr",
+                    "Type": "text/plain",
+                    "_content": "Date de Naissance"
+                  },
+                  {
+                    "lang": "de",
+                    "Type": "text/plain",
+                    "_content": "Geburtsdatum"
+                  },
+                  {
+                    "lang": "ko",
+                    "Type": "text/plain"
+                  }
+                ]
+              },
+              "Alias": [
+                {
+                  "Context": "SDTM",
+                  "Name": "BRTHDTC"
+                }
+              ]
+            },
+            {
+              "DataType": "text",
+              "Length": 1,
+              "Name": "DM - Sex",
+              "OID": "I_SEX",
+              "Question": {
+                "TranslatedText": [
+                  {
+                    "lang": "en",
+                    "Type": "text/plain",
+                    "_content": "Sex"
+                  },
+                  {
+                    "lang": "fr",
+                    "Type": "text/plain",
+                    "_content": "Genre"
+                  },
+                  {
+                    "lang": "de",
+                    "Type": "text/plain",
+                    "_content": "Geschlecht"
+                  },
+                  {
+                    "lang": "ko",
+                    "Type": "text/plain"
+                  }
+                ]
+              },
+              "CodeListRef": {
+                "CodeListOID": "CL_SEX"
+              },
+              "Alias": [
+                {
+                  "Context": "SDTM",
+                  "Name": "SEX"
+                }
+              ]
+            },
+            {
+              "DataType": "text",
+              "Length": 20,
+              "Name": "DM - Race",
+              "OID": "I_RACE",
+              "Question": {
+                "TranslatedText": [
+                  {
+                    "lang": "en",
+                    "Type": "text/plain",
+                    "_content": "Race"
+                  },
+                  {
+                    "lang": "fr",
+                    "Type": "text/plain",
+                    "_content": "Appartenance ethnique"
+                  },
+                  {
+                    "lang": "de",
+                    "Type": "text/plain",
+                    "_content": "Ethnischer Ursprung"
+                  },
+                  {
+                    "lang": "ko",
+                    "Type": "text/plain"
+                  }
+                ]
+              },
+              "CodeListRef": {
+                "CodeListOID": "CL_RACE"
+              },
+              "Alias": [
+                {
+                  "Context": "SDTM",
+                  "Name": "RACE"
+                }
+              ]
+            },
+            {
+              "DataType": "boolean",
+              "Name": "Smoking",
+              "OID": "I_SMOKING",
+              "Question": {
+                "TranslatedText": [
+                  {
+                    "lang": "en",
+                    "Type": "text/plain",
+                    "_content": "Check when the subject is a smoker"
+                  },
+                  {
+                    "lang": "fr",
+                    "Type": "text/plain",
+                    "_content": "Marquez quand le sujet est fumeur"
+                  },
+                  {
+                    "lang": "de",
+                    "Type": "text/plain",
+                    "_content": "Markieren wenn der Patient Raucher ist"
+                  },
+                  {
+                    "lang": "ko",
+                    "Type": "text/plain"
+                  }
+                ]
+              },
+              "Alias": [
+                {
+                  "Context": "SDTM",
+                  "Name": "SUDOSE"
+                }
+              ]
+            },
+            {
+              "DataType": "text",
+              "Length": 6,
+              "Name": "Number of cigarettes per day",
+              "OID": "I_NR_CIGARETTES",
+              "Question": {
+                "TranslatedText": [
+                  {
+                    "lang": "en",
+                    "Type": "text/plain",
+                    "_content": "Number of cigarettes per day"
+                  },
+                  {
+                    "lang": "fr",
+                    "Type": "text/plain",
+                    "_content": "Nombre de cigarettes par jour"
+                  },
+                  {
+                    "lang": "de",
+                    "Type": "text/plain",
+                    "_content": "Zahl der Zigaretten pro Tag"
+                  },
+                  {
+                    "lang": "ko",
+                    "Type": "text/plain"
+                  }
+                ]
+              },
+              "CodeListRef": {
+                "CodeListOID": "CL_SMOKING"
+              }
+            },
+            {
+              "DataType": "text",
+              "Length": 20,
+              "Name": "Drinking",
+              "OID": "I_DRINKING",
+              "Question": {
+                "TranslatedText": [
+                  {
+                    "lang": "en",
+                    "Type": "text/plain",
+                    "_content": "Number of alcoholic drinks per day"
+                  },
+                  {
+                    "lang": "fr",
+                    "Type": "text/plain",
+                    "_content": "Nombre de boissons alcoolique par jour"
+                  },
+                  {
+                    "lang": "de",
+                    "Type": "text/plain",
+                    "_content": "Zahl der alkoholische Getränke pro Tag"
+                  },
+                  {
+                    "lang": "ko",
+                    "Type": "text/plain"
+                  }
+                ]
+              },
+              "CodeListRef": {
+                "CodeListOID": "CL_DRINKING"
+              },
+              "Alias": [
+                {
+                  "Context": "SDTM",
+                  "Name": "SUDOSE"
+                }
+              ]
+            },
+            {
+              "DataType": "integer",
+              "Length": 3,
+              "Name": "Systolic BP",
+              "OID": "I_SYSBP",
+              "Question": {
+                "TranslatedText": [
+                  {
+                    "lang": "en",
+                    "Type": "text/plain",
+                    "_content": "Systolic blood pressure"
+                  },
+                  {
+                    "lang": "fr",
+                    "Type": "text/plain",
+                    "_content": "Tension artérielle systolique"
+                  },
+                  {
+                    "lang": "de",
+                    "Type": "text/plain",
+                    "_content": "Systolischer Blutdruck"
+                  },
+                  {
+                    "lang": "ko",
+                    "Type": "text/plain"
+                  }
+                ]
+              },
+              "RangeCheck": [
+                {
+                  "Comparator": "LT",
+                  "SoftHard": "Hard",
+                  "CheckValue": [
+                    {
+                      "_content": "180"
+                    }
+                  ],
+                  "ErrorMessage": {
+                    "TranslatedText": [
+                      {
+                        "lang": "en",
+                        "Type": "text/plain",
+                        "_content": "The value should be below 180"
+                      },
+                      {
+                        "lang": "fr",
+                        "Type": "text/plain",
+                        "_content": "La valeur doit être en dessous de 180"
+                      },
+                      {
+                        "lang": "de",
+                        "Type": "text/plain",
+                        "_content": "Der Wert sollte unter 180 sein"
+                      },
+                      {
+                        "lang": "ko",
+                        "Type": "text/plain"
+                      }
+                    ]
+                  }
+                }
+              ],
+              "Alias": [
+                {
+                  "Context": "SDTM",
+                  "Name": "VSORRES where VSTESTCD=SYSBP"
+                },
+                {
+                  "Context": "CDASH",
+                  "Name": "SYSBP"
+                }
+              ]
+            },
+            {
+              "DataType": "integer",
+              "Length": 3,
+              "Name": "Diastolic BP",
+              "OID": "I_DIABP",
+              "Question": {
+                "TranslatedText": [
+                  {
+                    "lang": "en",
+                    "Type": "text/plain",
+                    "_content": "Diastolic blood pressure"
+                  },
+                  {
+                    "lang": "fr",
+                    "Type": "text/plain",
+                    "_content": "Tension artérielle diastolique"
+                  },
+                  {
+                    "lang": "de",
+                    "Type": "text/plain",
+                    "_content": "Diastolischer Blutdruck"
+                  },
+                  {
+                    "lang": "ko",
+                    "Type": "text/plain"
+                  }
+                ]
+              },
+              "RangeCheck": [
+                {
+                  "Comparator": "LT",
+                  "SoftHard": "Hard",
+                  "CheckValue": [
+                    {
+                      "_content": "120"
+                    }
+                  ],
+                  "ErrorMessage": {
+                    "TranslatedText": [
+                      {
+                        "lang": "en",
+                        "Type": "text/plain",
+                        "_content": "The value should be below 120"
+                      },
+                      {
+                        "lang": "fr",
+                        "Type": "text/plain",
+                        "_content": "La valeur doit être en dessous de 120"
+                      },
+                      {
+                        "lang": "de",
+                        "Type": "text/plain",
+                        "_content": "Der Wert sollte unter 120 sein"
+                      },
+                      {
+                        "lang": "ko",
+                        "Type": "text/plain"
+                      }
+                    ]
+                  }
+                }
+              ],
+              "Alias": [
+                {
+                  "Context": "SDTM",
+                  "Name": "VSORRES where VSTESTCD=DIABP"
+                }
+              ]
+            },
+            {
+              "DataType": "URI",
+              "Length": 3,
+              "Name": "Link to XRay",
+              "OID": "I_XRAY",
+              "Question": {
+                "TranslatedText": [
+                  {
+                    "lang": "en",
+                    "Type": "text/plain",
+                    "_content": "Server or File location of X-Ray photograph"
+                  },
+                  {
+                    "lang": "fr",
+                    "Type": "text/plain",
+                    "_content": "Location (fichier ou URL) de la photographie rayons X"
+                  },
+                  {
+                    "lang": "de",
+                    "Type": "text/plain",
+                    "_content": "Datei oder URL des Röntgenbilds"
+                  },
+                  {
+                    "lang": "ko",
+                    "Type": "text/plain"
+                  }
+                ]
+              }
+            },
+            {
+              "DataType": "integer",
+              "Length": 3,
+              "Name": "Height",
+              "OID": "I_HEIGHT",
+              "Question": {
+                "TranslatedText": [
+                  {
+                    "lang": "en",
+                    "Type": "text/plain",
+                    "_content": "Height"
+                  },
+                  {
+                    "lang": "fr",
+                    "Type": "text/plain",
+                    "_content": "Taille"
+                  },
+                  {
+                    "lang": "de",
+                    "Type": "text/plain",
+                    "_content": "Größe"
+                  },
+                  {
+                    "lang": "ko",
+                    "Type": "text/plain"
+                  }
+                ]
+              },
+              "RangeCheck": [
+                {
+                  "Comparator": "LT",
+                  "SoftHard": "Hard",
+                  "CheckValue": [
+                    {
+                      "_content": "220"
+                    }
+                  ],
+                  "ErrorMessage": {
+                    "TranslatedText": [
+                      {
+                        "lang": "en",
+                        "Type": "text/plain",
+                        "_content": "The height value should be below 220 cm"
+                      },
+                      {
+                        "lang": "fr",
+                        "Type": "text/plain",
+                        "_content": "La valeur de la taille doit être en dessous de 220 cm"
+                      },
+                      {
+                        "lang": "de",
+                        "Type": "text/plain",
+                        "_content": "Der Länge sollte unter 220 cm liegen"
+                      },
+                      {
+                        "lang": "ko",
+                        "Type": "text/plain"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "Comparator": "LT",
+                  "SoftHard": "Hard",
+                  "CheckValue": [
+                    {
+                      "_content": "90"
+                    }
+                  ],
+                  "ErrorMessage": {
+                    "TranslatedText": [
+                      {
+                        "lang": "en",
+                        "Type": "text/plain",
+                        "_content": "The height value should be below 90 inches"
+                      },
+                      {
+                        "lang": "fr",
+                        "Type": "text/plain",
+                        "_content": "La valeur de la taille doit être en dessous de 90 pouces"
+                      },
+                      {
+                        "lang": "de",
+                        "Type": "text/plain",
+                        "_content": "Der Länge sollte unter 90 Zoll liegen"
+                      },
+                      {
+                        "lang": "ko",
+                        "Type": "text/plain"
+                      }
+                    ]
+                  }
+                }
+              ],
+              "Alias": [
+                {
+                  "Context": "SDTM",
+                  "Name": "VSORRES where VSTESTCD=HEIGHT"
+                }
+              ]
+            },
+            {
+              "DataType": "integer",
+              "Length": 3,
+              "Name": "Weight",
+              "OID": "I_WEIGHT",
+              "Question": {
+                "TranslatedText": [
+                  {
+                    "lang": "en",
+                    "Type": "text/plain",
+                    "_content": "Weight"
+                  },
+                  {
+                    "lang": "fr",
+                    "Type": "text/plain",
+                    "_content": "Poids"
+                  },
+                  {
+                    "lang": "de",
+                    "Type": "text/plain",
+                    "_content": "Gewicht"
+                  },
+                  {
+                    "lang": "ko",
+                    "Type": "text/plain"
+                  }
+                ]
+              },
+              "RangeCheck": [
+                {
+                  "Comparator": "LT",
+                  "SoftHard": "Hard",
+                  "CheckValue": [
+                    {
+                      "_content": "150"
+                    }
+                  ],
+                  "ErrorMessage": {
+                    "TranslatedText": [
+                      {
+                        "lang": "en",
+                        "Type": "text/plain",
+                        "_content": "The weight value should be below 150 kg"
+                      },
+                      {
+                        "lang": "fr",
+                        "Type": "text/plain",
+                        "_content": "La valeur du poids doit être en dessous de 150 kilo"
+                      },
+                      {
+                        "lang": "de",
+                        "Type": "text/plain",
+                        "_content": "das Gewicht sollte unter 150 Kg liegen"
+                      },
+                      {
+                        "lang": "ko",
+                        "Type": "text/plain"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "Comparator": "LT",
+                  "SoftHard": "Hard",
+                  "CheckValue": [
+                    {
+                      "_content": "300"
+                    }
+                  ],
+                  "ErrorMessage": {
+                    "TranslatedText": [
+                      {
+                        "lang": "en",
+                        "Type": "text/plain",
+                        "_content": "The weight should be below 300 Pounds"
+                      },
+                      {
+                        "lang": "fr",
+                        "Type": "text/plain",
+                        "_content": "La valeur du poids doit être en dessous de 300 livres"
+                      },
+                      {
+                        "lang": "de",
+                        "Type": "text/plain",
+                        "_content": "das Gewicht sollte unter 300 Pfund liegen"
+                      },
+                      {
+                        "lang": "ko",
+                        "Type": "text/plain"
+                      }
+                    ]
+                  }
+                }
+              ],
+              "Alias": [
+                {
+                  "Context": "SDTM",
+                  "Name": "VSORRES where VSTESTCD=WEIGHT"
+                }
+              ]
+            },
+            {
+              "DataType": "integer",
+              "Length": 1,
+              "Name": "Diary Day",
+              "OID": "I_DAY",
+              "Question": {
+                "TranslatedText": [
+                  {
+                    "lang": "en",
+                    "Type": "text/plain",
+                    "_content": "Day"
+                  },
+                  {
+                    "lang": "fr",
+                    "Type": "text/plain",
+                    "_content": "Jour"
+                  },
+                  {
+                    "lang": "de",
+                    "Type": "text/plain",
+                    "_content": "Tag"
+                  },
+                  {
+                    "lang": "ko",
+                    "Type": "text/plain"
+                  }
+                ]
+              },
+              "CodeListRef": {
+                "CodeListOID": "CL_DIARY_DAY"
+              },
+              "Alias": [
+                {
+                  "Context": "SDTM",
+                  "Name": "QSDY"
+                }
+              ]
+            },
+            {
+              "DataType": "date",
+              "Name": "Diary Date",
+              "OID": "I_DATE",
+              "Question": {
+                "TranslatedText": [
+                  {
+                    "lang": "en",
+                    "Type": "text/plain",
+                    "_content": "Date"
+                  },
+                  {
+                    "lang": "fr",
+                    "Type": "text/plain",
+                    "_content": "Date"
+                  },
+                  {
+                    "lang": "de",
+                    "Type": "text/plain",
+                    "_content": "Datum"
+                  },
+                  {
+                    "lang": "ko",
+                    "Type": "text/plain"
+                  }
+                ]
+              },
+              "Alias": [
+                {
+                  "Context": "SDTM",
+                  "Name": "QSDTC"
+                }
+              ]
+            },
+            {
+              "DataType": "integer",
+              "Length": 1,
+              "Name": "Scale",
+              "OID": "I_DIARY",
+              "Question": {
+                "TranslatedText": [
+                  {
+                    "lang": "en",
+                    "Type": "text/plain",
+                    "_content": "Discomfort Severity"
+                  },
+                  {
+                    "lang": "de",
+                    "Type": "text/plain",
+                    "_content": "Höhe der Beschwerten"
+                  },
+                  {
+                    "lang": "fr",
+                    "Type": "text/plain",
+                    "_content": "Niveau de décomfort"
+                  },
+                  {
+                    "lang": "ko",
+                    "Type": "text/plain"
+                  }
+                ]
+              },
+              "CodeListRef": {
+                "CodeListOID": "CL_DIARY"
+              },
+              "Alias": [
+                {
+                  "Context": "SDTM",
+                  "Name": "QSORRES"
+                }
+              ]
+            },
+            {
+              "DataType": "integer",
+              "Length": 1,
+              "Name": "Adverse Event Experienced",
+              "OID": "I_AE_OCCURRED",
+              "Question": {
+                "TranslatedText": [
+                  {
+                    "lang": "en",
+                    "Type": "text/plain",
+                    "_content": "Has the subject experienced any adverse events"
+                  },
+                  {
+                    "lang": "fr",
+                    "Type": "text/plain",
+                    "_content": "Est ce que le sujet a eu des événements défavorables"
+                  },
+                  {
+                    "lang": "de",
+                    "Type": "text/plain",
+                    "_content": "Hat der Patient unerwünschte Vorfälle"
+                  },
+                  {
+                    "lang": "ko",
+                    "Type": "text/plain"
+                  }
+                ]
+              },
+              "CodeListRef": {
+                "CodeListOID": "CL_NOYES"
+              }
+            },
+            {
+              "DataType": "integer",
+              "Length": 3,
+              "Name": "Adverse Event Number",
+              "OID": "I_AE_EVENT",
+              "Question": {
+                "TranslatedText": [
+                  {
+                    "lang": "en",
+                    "Type": "text/plain",
+                    "_content": "Event No."
+                  },
+                  {
+                    "lang": "fr",
+                    "Type": "text/plain",
+                    "_content": "Numéro de l'événement"
+                  },
+                  {
+                    "lang": "de",
+                    "Type": "text/plain",
+                    "_content": "Zahl des Vorfalls"
+                  },
+                  {
+                    "lang": "ko",
+                    "Type": "text/plain"
+                  }
+                ]
+              },
+              "Alias": [
+                {
+                  "Context": "SDTM",
+                  "Name": "AESPID"
+                }
+              ]
+            },
+            {
+              "DataType": "text",
+              "Length": 255,
+              "Name": "Adverse Event Term",
+              "OID": "I_AE_TERM",
+              "Question": {
+                "TranslatedText": [
+                  {
+                    "lang": "en",
+                    "Type": "text/plain",
+                    "_content": "Adverse event"
+                  },
+                  {
+                    "lang": "fr",
+                    "Type": "text/plain",
+                    "_content": "Evénement défavorable"
+                  },
+                  {
+                    "lang": "de",
+                    "Type": "text/plain",
+                    "_content": "Vorfall"
+                  },
+                  {
+                    "lang": "ko",
+                    "Type": "text/plain"
+                  }
+                ]
+              },
+              "Alias": [
+                {
+                  "Context": "SDTM",
+                  "Name": "AETERM"
+                }
+              ]
+            },
+            {
+              "DataType": "date",
+              "Name": "Adverse Event Start Date",
+              "OID": "I_AE_START",
+              "Question": {
+                "TranslatedText": [
+                  {
+                    "lang": "en",
+                    "Type": "text/plain",
+                    "_content": "Start Date"
+                  },
+                  {
+                    "lang": "fr",
+                    "Type": "text/plain",
+                    "_content": "Date du début"
+                  },
+                  {
+                    "lang": "de",
+                    "Type": "text/plain",
+                    "_content": "Anfangsdatum"
+                  },
+                  {
+                    "lang": "ko",
+                    "Type": "text/plain"
+                  }
+                ]
+              },
+              "Alias": [
+                {
+                  "Context": "SDTM",
+                  "Name": "AESTDTC"
+                }
+              ]
+            },
+            {
+              "DataType": "date",
+              "Name": "Adverse Event Stop Date",
+              "OID": "I_AE_STOP",
+              "Question": {
+                "TranslatedText": [
+                  {
+                    "lang": "en",
+                    "Type": "text/plain",
+                    "_content": "Stop Date"
+                  },
+                  {
+                    "lang": "fr",
+                    "Type": "text/plain",
+                    "_content": "Date de la fin"
+                  },
+                  {
+                    "lang": "de",
+                    "Type": "text/plain",
+                    "_content": "Datum des Endes"
+                  },
+                  {
+                    "lang": "ko",
+                    "Type": "text/plain"
+                  }
+                ]
+              },
+              "Alias": [
+                {
+                  "Context": "SDTM",
+                  "Name": "AEENDTC"
+                }
+              ]
+            },
+            {
+              "DataType": "durationDatetime",
+              "Name": "AE duration",
+              "OID": "I_AE_DURATION",
+              "Question": {
+                "TranslatedText": [
+                  {
+                    "lang": "en",
+                    "Type": "text/plain",
+                    "_content": "Duration of the adverse event"
+                  },
+                  {
+                    "lang": "fr",
+                    "Type": "text/plain",
+                    "_content": "Durée de l'événement défavorable"
+                  },
+                  {
+                    "lang": "de",
+                    "Type": "text/plain",
+                    "_content": "Dauer des Vorfalls"
+                  },
+                  {
+                    "lang": "ko",
+                    "Type": "text/plain"
+                  }
+                ]
+              }
+            },
+            {
+              "DataType": "integer",
+              "Length": 1,
+              "Name": "Adverse Event Continues",
+              "OID": "I_AE_CONTINUES",
+              "Question": {
+                "TranslatedText": [
+                  {
+                    "lang": "en",
+                    "Type": "text/plain",
+                    "_content": "Is the adverse event still continuing"
+                  },
+                  {
+                    "lang": "fr",
+                    "Type": "text/plain",
+                    "_content": "Est ce que l'événement continue toujours"
+                  },
+                  {
+                    "lang": "de",
+                    "Type": "text/plain",
+                    "_content": "Ist der Vorfall heute noch kontinuierend"
+                  },
+                  {
+                    "lang": "ko",
+                    "Type": "text/plain"
+                  }
+                ]
+              },
+              "CodeListRef": {
+                "CodeListOID": "CL_NOYES"
+              },
+              "Alias": [
+                {
+                  "Context": "SDTM",
+                  "Name": "AEENRF"
+                }
+              ]
+            },
+            {
+              "DataType": "integer",
+              "Length": 1,
+              "Name": "Adverse Event Serious",
+              "OID": "I_AE_SERIOUS",
+              "Question": {
+                "TranslatedText": [
+                  {
+                    "lang": "en",
+                    "Type": "text/plain",
+                    "_content": "Was event serious"
+                  },
+                  {
+                    "lang": "fr",
+                    "Type": "text/plain",
+                    "_content": "Est ce que l'événement était sérieux"
+                  },
+                  {
+                    "lang": "de",
+                    "Type": "text/plain",
+                    "_content": "War der Vorfall ernsthaft"
+                  },
+                  {
+                    "lang": "ko",
+                    "Type": "text/plain"
+                  }
+                ]
+              },
+              "CodeListRef": {
+                "CodeListOID": "CL_NOYES"
+              },
+              "Alias": [
+                {
+                  "Context": "SDTM",
+                  "Name": "AESER"
+                }
+              ]
+            },
+            {
+              "DataType": "integer",
+              "Length": 1,
+              "Name": "Adverse Event Severity",
+              "OID": "I_AE_SEVERITY",
+              "Question": {
+                "TranslatedText": [
+                  {
+                    "lang": "en",
+                    "Type": "text/plain",
+                    "_content": "Severity"
+                  },
+                  {
+                    "lang": "fr",
+                    "Type": "text/plain",
+                    "_content": "Sévérité"
+                  },
+                  {
+                    "lang": "de",
+                    "Type": "text/plain",
+                    "_content": "Ernsthaftigkeit"
+                  },
+                  {
+                    "lang": "ko",
+                    "Type": "text/plain"
+                  }
+                ]
+              },
+              "CodeListRef": {
+                "CodeListOID": "CL_AE_SEVERITY"
+              },
+              "Alias": [
+                {
+                  "Context": "SDTM",
+                  "Name": "AESEV"
+                }
+              ]
+            },
+            {
+              "DataType": "integer",
+              "Length": 1,
+              "Name": "Adverse Event Related",
+              "OID": "I_AE_RELATED",
+              "Question": {
+                "TranslatedText": [
+                  {
+                    "lang": "en",
+                    "Type": "text/plain",
+                    "_content": "Is there a reasonable possibility that the AE may have been caused by the study drug"
+                  },
+                  {
+                    "lang": "fr",
+                    "Type": "text/plain",
+                    "_content": "Est ce que il y a une possibilité raisonnable que l' événement défavorable a pu avoir été provoqué par la drogue de l'étude"
+                  },
+                  {
+                    "lang": "de",
+                    "Type": "text/plain",
+                    "_content": "Gibt es eine angemessene Möglichkeit, dass der Vorfall durch das Medikament des Studiums verursacht werdet"
+                  },
+                  {
+                    "lang": "ko",
+                    "Type": "text/plain"
+                  }
+                ]
+              },
+              "CodeListRef": {
+                "CodeListOID": "CL_NOYES"
+              },
+              "Alias": [
+                {
+                  "Context": "SDTM",
+                  "Name": "AEREL"
+                }
+              ]
+            },
+            {
+              "DataType": "integer",
+              "Length": 1,
+              "Name": "Adverse Event Action Taken",
+              "OID": "I_AE_ACTION",
+              "Question": {
+                "TranslatedText": [
+                  {
+                    "lang": "en",
+                    "Type": "text/plain",
+                    "_content": "Action taken with study drug"
+                  },
+                  {
+                    "lang": "fr",
+                    "Type": "text/plain",
+                    "_content": "Mesure prise avec le medicament de l'étude"
+                  },
+                  {
+                    "lang": "de",
+                    "Type": "text/plain",
+                    "_content": "Ergriffene Maßnahmen mit Medikament des Studiums"
+                  },
+                  {
+                    "lang": "ko",
+                    "Type": "text/plain"
+                  }
+                ]
+              },
+              "CodeListRef": {
+                "CodeListOID": "CL_AE_ACTION"
+              },
+              "Alias": [
+                {
+                  "Context": "SDTM",
+                  "Name": "AEACN"
+                }
+              ]
+            },
+            {
+              "DataType": "integer",
+              "Length": 1,
+              "Name": "Adverse Event Subject Outcome",
+              "OID": "I_AE_OUTCOME",
+              "Question": {
+                "TranslatedText": [
+                  {
+                    "lang": "en",
+                    "Type": "text/plain",
+                    "_content": "Subject outcome"
+                  },
+                  {
+                    "lang": "fr",
+                    "Type": "text/plain",
+                    "_content": "Résultats du sujet"
+                  },
+                  {
+                    "lang": "de",
+                    "Type": "text/plain",
+                    "_content": "Patient Resultate"
+                  },
+                  {
+                    "lang": "ko",
+                    "Type": "text/plain"
+                  }
+                ]
+              },
+              "CodeListRef": {
+                "CodeListOID": "CL_AE_OUTCOME"
+              },
+              "Alias": [
+                {
+                  "Context": "SDTM",
+                  "Name": "AEOUT"
+                }
+              ]
+            },
+            {
+              "DataType": "integer",
+              "Length": 1,
+              "Name": "Non-study Medications taken",
+              "OID": "I_CM_TAKEN",
+              "Question": {
+                "TranslatedText": [
+                  {
+                    "lang": "en",
+                    "Type": "text/plain",
+                    "_content": "Were any non-study medications taken"
+                  },
+                  {
+                    "lang": "fr",
+                    "Type": "text/plain",
+                    "_content": "Est ce que le sujet a pris des medicament non-relatéé à l'étude"
+                  },
+                  {
+                    "lang": "de",
+                    "Type": "text/plain",
+                    "_content": "Hat der Patient Medikamente genommen, die keine Beziehung zum Studium haben"
+                  },
+                  {
+                    "lang": "ko",
+                    "Type": "text/plain"
+                  }
+                ]
+              },
+              "CodeListRef": {
+                "CodeListOID": "CL_NOYES"
+              }
+            },
+            {
+              "DataType": "integer",
+              "Length": 3,
+              "Name": "Medication Number",
+              "OID": "I_CM_NUMBER",
+              "Question": {
+                "TranslatedText": [
+                  {
+                    "lang": "en",
+                    "Type": "text/plain",
+                    "_content": "Medication No."
+                  },
+                  {
+                    "lang": "fr",
+                    "Type": "text/plain",
+                    "_content": "No. du Médicament"
+                  },
+                  {
+                    "lang": "de",
+                    "Type": "text/plain",
+                    "_content": "Nummer des Medikaments"
+                  },
+                  {
+                    "lang": "ko",
+                    "Type": "text/plain"
+                  }
+                ]
+              },
+              "Alias": [
+                {
+                  "Context": "SDTM",
+                  "Name": "CMSPID"
+                }
+              ]
+            },
+            {
+              "DataType": "text",
+              "Length": 255,
+              "Name": "Medication Name",
+              "OID": "I_CM_NAME",
+              "Question": {
+                "TranslatedText": [
+                  {
+                    "lang": "en",
+                    "Type": "text/plain",
+                    "_content": "Drug Name (Brand or Generic)"
+                  },
+                  {
+                    "lang": "fr",
+                    "Type": "text/plain",
+                    "_content": "Nom de la Drogue (Marque ou générique)"
+                  },
+                  {
+                    "lang": "de",
+                    "Type": "text/plain",
+                    "_content": "Name des Medikaments (Marke oder Generisch)"
+                  },
+                  {
+                    "lang": "ko",
+                    "Type": "text/plain"
+                  }
+                ]
+              },
+              "Alias": [
+                {
+                  "Context": "SDTM",
+                  "Name": "CMTRT"
+                }
+              ]
+            },
+            {
+              "DataType": "text",
+              "Length": 20,
+              "Name": "Medication Dose",
+              "OID": "I_CM_DOSE",
+              "Question": {
+                "TranslatedText": [
+                  {
+                    "lang": "en",
+                    "Type": "text/plain",
+                    "_content": "Total Dose Per Freqeuncy Checked"
+                  },
+                  {
+                    "lang": "fr",
+                    "Type": "text/plain",
+                    "_content": "Dose totale par fréquence vérifié"
+                  },
+                  {
+                    "lang": "de",
+                    "Type": "text/plain",
+                    "_content": "Totale Dosis per überprüfte Frequenz"
+                  },
+                  {
+                    "lang": "ko",
+                    "Type": "text/plain"
+                  }
+                ]
+              },
+              "Alias": [
+                {
+                  "Context": "SDTM",
+                  "Name": "CMDOSE"
+                }
+              ]
+            },
+            {
+              "DataType": "text",
+              "Length": 20,
+              "Name": "Medication Dose Units",
+              "OID": "I_CM_DOSEUNIT",
+              "Question": {
+                "TranslatedText": [
+                  {
+                    "lang": "en",
+                    "Type": "text/plain",
+                    "_content": "Unit"
+                  },
+                  {
+                    "lang": "fr",
+                    "Type": "text/plain",
+                    "_content": "Unité"
+                  },
+                  {
+                    "lang": "de",
+                    "Type": "text/plain",
+                    "_content": "Einheit"
+                  },
+                  {
+                    "lang": "ko",
+                    "Type": "text/plain"
+                  }
+                ]
+              },
+              "Alias": [
+                {
+                  "Context": "SDTM",
+                  "Name": "CMDOSEU"
+                }
+              ]
+            },
+            {
+              "DataType": "integer",
+              "Length": 1,
+              "Name": "Medication Dose Frequency",
+              "OID": "I_CM_DOSEFREQ",
+              "Question": {
+                "TranslatedText": [
+                  {
+                    "lang": "en",
+                    "Type": "text/plain",
+                    "_content": "Frequency"
+                  },
+                  {
+                    "lang": "fr",
+                    "Type": "text/plain",
+                    "_content": "Fréquence"
+                  },
+                  {
+                    "lang": "de",
+                    "Type": "text/plain",
+                    "_content": "Frequenz"
+                  },
+                  {
+                    "lang": "ko",
+                    "Type": "text/plain"
+                  }
+                ]
+              },
+              "CodeListRef": {
+                "CodeListOID": "CL_CM_FREQUENCY"
+              },
+              "Alias": [
+                {
+                  "Context": "SDTM",
+                  "Name": "CMDOSFRQ"
+                }
+              ]
+            },
+            {
+              "DataType": "date",
+              "Name": "Medication Start Date",
+              "OID": "I_CM_START",
+              "Question": {
+                "TranslatedText": [
+                  {
+                    "lang": "en",
+                    "Type": "text/plain",
+                    "_content": "Start Date"
+                  },
+                  {
+                    "lang": "fr",
+                    "Type": "text/plain",
+                    "_content": "Date du début"
+                  },
+                  {
+                    "lang": "de",
+                    "Type": "text/plain",
+                    "_content": "Anfangsdatum"
+                  },
+                  {
+                    "lang": "ko",
+                    "Type": "text/plain"
+                  }
+                ]
+              },
+              "Alias": [
+                {
+                  "Context": "SDTM",
+                  "Name": "CMSTDTC"
+                }
+              ]
+            },
+            {
+              "DataType": "date",
+              "Name": "Medication Stop Date",
+              "OID": "I_CM_STOP",
+              "Question": {
+                "TranslatedText": [
+                  {
+                    "lang": "en",
+                    "Type": "text/plain",
+                    "_content": "Stop Date"
+                  },
+                  {
+                    "lang": "fr",
+                    "Type": "text/plain",
+                    "_content": "Date de la fin"
+                  },
+                  {
+                    "lang": "de",
+                    "Type": "text/plain",
+                    "_content": "Datum des Endes"
+                  },
+                  {
+                    "lang": "ko",
+                    "Type": "text/plain"
+                  }
+                ]
+              },
+              "Alias": [
+                {
+                  "Context": "SDTM",
+                  "Name": "CMENDTC"
+                }
+              ]
+            },
+            {
+              "DataType": "integer",
+              "Length": 1,
+              "Name": "Medication Continues",
+              "OID": "I_CM_CONTINUES",
+              "Question": {
+                "TranslatedText": [
+                  {
+                    "lang": "en",
+                    "Type": "text/plain",
+                    "_content": "Is medication still continuing"
+                  },
+                  {
+                    "lang": "fr",
+                    "Type": "text/plain",
+                    "_content": "Est ce que le médicament est utilisé à ce jour"
+                  },
+                  {
+                    "lang": "de",
+                    "Type": "text/plain",
+                    "_content": "Benützt der Patient dieses Medikament noch immer"
+                  },
+                  {
+                    "lang": "ko",
+                    "Type": "text/plain"
+                  }
+                ]
+              },
+              "CodeListRef": {
+                "CodeListOID": "CL_NOYES"
+              },
+              "Alias": [
+                {
+                  "Context": "SDTM",
+                  "Name": "CMENRF"
+                }
+              ]
+            },
+            {
+              "DataType": "integer",
+              "Length": 3,
+              "Name": "Pre-exisitng Illness",
+              "OID": "I_CM_IEXISTING",
+              "Question": {
+                "TranslatedText": [
+                  {
+                    "lang": "en",
+                    "Type": "text/plain",
+                    "_content": "Pre-existing illness No."
+                  },
+                  {
+                    "lang": "fr",
+                    "Type": "text/plain",
+                    "_content": "No. Maladie se produisant avant"
+                  },
+                  {
+                    "lang": "de",
+                    "Type": "text/plain",
+                    "_content": "Vorherige Krankheit Nummer"
+                  }
+                ]
+              },
+              "Alias": [
+                {
+                  "Context": "SDTM",
+                  "Name": "CMINDC"
+                }
+              ]
+            },
+            {
+              "DataType": "integer",
+              "Length": 3,
+              "Name": "Adverse Event",
+              "OID": "I_CM_IAE",
+              "Question": {
+                "TranslatedText": [
+                  {
+                    "lang": "en",
+                    "Type": "text/plain",
+                    "_content": "Adverse Event No."
+                  },
+                  {
+                    "lang": "fr",
+                    "Type": "text/plain",
+                    "_content": "No. de l'événement défavorable"
+                  },
+                  {
+                    "lang": "de",
+                    "Type": "text/plain",
+                    "_content": "Vorfall Nummer"
+                  },
+                  {
+                    "lang": "ko",
+                    "Type": "text/plain"
+                  }
+                ]
+              },
+              "Alias": [
+                {
+                  "Context": "SDTM",
+                  "Name": "CMINDC"
+                }
+              ]
+            },
+            {
+              "DataType": "integer",
+              "Length": 1,
+              "Name": "Prophylaxis",
+              "OID": "I_CM_IPROP",
+              "Question": {
+                "TranslatedText": [
+                  {
+                    "lang": "en",
+                    "Type": "text/plain",
+                    "_content": "Prophylaxis"
+                  },
+                  {
+                    "lang": "fr",
+                    "Type": "text/plain",
+                    "_content": "Prophylaxie"
+                  },
+                  {
+                    "lang": "de",
+                    "Type": "text/plain",
+                    "_content": "Prophylaxis"
+                  },
+                  {
+                    "lang": "ko",
+                    "Type": "text/plain"
+                  }
+                ]
+              },
+              "CodeListRef": {
+                "CodeListOID": "CL_NOYES"
+              },
+              "Alias": [
+                {
+                  "Context": "SDTM",
+                  "Name": "CMINDC"
+                }
+              ]
+            },
+            {
+              "DataType": "text",
+              "Length": 20,
+              "Name": "Prophylaxis Description",
+              "OID": "I_CM_IPROPDESC",
+              "Question": {
+                "TranslatedText": [
+                  {
+                    "lang": "en",
+                    "Type": "text/plain",
+                    "_content": "Prophylaxis, Specify"
+                  },
+                  {
+                    "lang": "fr",
+                    "Type": "text/plain",
+                    "_content": "Prophylaxie, Description"
+                  },
+                  {
+                    "lang": "de",
+                    "Type": "text/plain",
+                    "_content": "Prophylaxis, Beschreibung"
+                  },
+                  {
+                    "lang": "ko",
+                    "Type": "text/plain"
+                  }
+                ]
+              },
+              "Alias": [
+                {
+                  "Context": "SDTM",
+                  "Name": "CMINDC"
+                }
+              ]
+            },
+            {
+              "DataType": "text",
+              "Length": 20,
+              "Name": "Laboratory Name",
+              "OID": "I_LB_NAME",
+              "Question": {
+                "TranslatedText": [
+                  {
+                    "lang": "en",
+                    "Type": "text/plain",
+                    "_content": "Laboratory Name"
+                  },
+                  {
+                    "lang": "fr",
+                    "Type": "text/plain",
+                    "_content": "Nom du laboratoire"
+                  },
+                  {
+                    "lang": "de",
+                    "Type": "text/plain",
+                    "_content": "Name des Labors"
+                  },
+                  {
+                    "lang": "ko",
+                    "Type": "text/plain"
+                  }
+                ]
+              },
+              "Alias": [
+                {
+                  "Context": "SDTM",
+                  "Name": "LBNAM"
+                }
+              ]
+            },
+            {
+              "DataType": "text",
+              "Length": 5,
+              "Name": "Laboratory ID",
+              "OID": "I_LB_ID",
+              "Question": {
+                "TranslatedText": [
+                  {
+                    "lang": "en",
+                    "Type": "text/plain",
+                    "_content": "Laboratory ID"
+                  },
+                  {
+                    "lang": "fr",
+                    "Type": "text/plain",
+                    "_content": "Identification du laboratoire"
+                  },
+                  {
+                    "lang": "de",
+                    "Type": "text/plain",
+                    "_content": "Identifikation des Labors"
+                  },
+                  {
+                    "lang": "ko",
+                    "Type": "text/plain"
+                  }
+                ]
+              }
+            },
+            {
+              "DataType": "integer",
+              "Length": 5,
+              "Name": "Accession Number",
+              "OID": "I_LB_ACCESSION",
+              "Question": {
+                "TranslatedText": [
+                  {
+                    "lang": "en",
+                    "Type": "text/plain",
+                    "_content": "Accession #"
+                  },
+                  {
+                    "lang": "fr",
+                    "Type": "text/plain",
+                    "_content": "Numéro de l'entréé"
+                  },
+                  {
+                    "lang": "de",
+                    "Type": "text/plain",
+                    "_content": "Zugangszahl"
+                  },
+                  {
+                    "lang": "ko",
+                    "Type": "text/plain"
+                  }
+                ]
+              }
+            },
+            {
+              "DataType": "float",
+              "Length": 8,
+              "Name": "RBC",
+              "OID": "I_LB_RBC",
+              "Question": {
+                "TranslatedText": [
+                  {
+                    "lang": "en",
+                    "Type": "text/plain",
+                    "_content": "Red Blood Count"
+                  },
+                  {
+                    "lang": "fr",
+                    "Type": "text/plain",
+                    "_content": "Compte des corps rouges dans le sang"
+                  },
+                  {
+                    "lang": "de",
+                    "Type": "text/plain",
+                    "_content": "Zahl der roten Blutkörper"
+                  },
+                  {
+                    "lang": "ko",
+                    "Type": "text/plain"
+                  }
+                ]
+              },
+              "RangeCheck": [
+                {
+                  "Comparator": "LE",
+                  "SoftHard": "Hard",
+                  "CheckValue": [
+                    {
+                      "_content": "8.0"
+                    }
+                  ],
+                  "ErrorMessage": {
+                    "TranslatedText": [
+                      {
+                        "lang": "en",
+                        "Type": "text/plain",
+                        "_content": "The value should be between 2.0 and 8.0"
+                      },
+                      {
+                        "lang": "fr",
+                        "Type": "text/plain",
+                        "_content": "La valuer doit être entre 2.0 et 8.0"
+                      },
+                      {
+                        "lang": "de",
+                        "Type": "text/plain",
+                        "_content": "Der Wert sollte zwichen 2.0 und 8.0 sein"
+                      },
+                      {
+                        "lang": "ko",
+                        "Type": "text/plain"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "Comparator": "GE",
+                  "SoftHard": "Hard",
+                  "CheckValue": [
+                    {
+                      "_content": "2.0"
+                    }
+                  ],
+                  "ErrorMessage": {
+                    "TranslatedText": [
+                      {
+                        "lang": "en",
+                        "Type": "text/plain",
+                        "_content": "The value should be between 2.0 and 8.0"
+                      },
+                      {
+                        "lang": "fr",
+                        "Type": "text/plain",
+                        "_content": "La valuer doit être entre 2.0 et 8.0"
+                      },
+                      {
+                        "lang": "de",
+                        "Type": "text/plain",
+                        "_content": "Der Wert sollte zwichen 2.0 und 8.0 sein"
+                      },
+                      {
+                        "lang": "ko",
+                        "Type": "text/plain"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "Comparator": "LE",
+                  "SoftHard": "Soft",
+                  "CheckValue": [
+                    {
+                      "_content": "6.5"
+                    }
+                  ],
+                  "ErrorMessage": {
+                    "TranslatedText": [
+                      {
+                        "lang": "en",
+                        "Type": "text/plain",
+                        "_content": "The value should be between 4.0 and 6.5"
+                      },
+                      {
+                        "lang": "fr",
+                        "Type": "text/plain",
+                        "_content": "La valuer doit être entre 4.0 et 6.5"
+                      },
+                      {
+                        "lang": "de",
+                        "Type": "text/plain",
+                        "_content": "Der Wert sollte zwischen 4.0 und 6.5 sein"
+                      },
+                      {
+                        "lang": "ko",
+                        "Type": "text/plain"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "Comparator": "GE",
+                  "SoftHard": "Soft",
+                  "CheckValue": [
+                    {
+                      "_content": "4.0"
+                    }
+                  ],
+                  "ErrorMessage": {
+                    "TranslatedText": [
+                      {
+                        "lang": "en",
+                        "Type": "text/plain",
+                        "_content": "The value should be between 4.0 and 6.5"
+                      },
+                      {
+                        "lang": "fr",
+                        "Type": "text/plain",
+                        "_content": "La valuer doit être entre 4.0 et 6.5"
+                      },
+                      {
+                        "lang": "de",
+                        "Type": "text/plain",
+                        "_content": "Der Wert sollte zwischen 4.0 und 6.5 sein"
+                      },
+                      {
+                        "lang": "ko",
+                        "Type": "text/plain"
+                      }
+                    ]
+                  }
+                }
+              ],
+              "Alias": [
+                {
+                  "Context": "SDTM",
+                  "Name": "LBORRES"
+                }
+              ]
+            },
+            {
+              "DataType": "float",
+              "Length": 8,
+              "Name": "RBC Normal Range Lo",
+              "OID": "I_LB_RBC_LO",
+              "Question": {
+                "TranslatedText": [
+                  {
+                    "lang": "en",
+                    "Type": "text/plain",
+                    "_content": "Red Blood Count, Normal Range, Low"
+                  },
+                  {
+                    "lang": "fr",
+                    "Type": "text/plain",
+                    "_content": "Compte des corps rouges dans le sang, gamme normale, basse"
+                  },
+                  {
+                    "lang": "de",
+                    "Type": "text/plain",
+                    "_content": "Zahl der roten Blutkörper, Normalniveau, Unten"
+                  },
+                  {
+                    "lang": "ko",
+                    "Type": "text/plain"
+                  }
+                ]
+              },
+              "Alias": [
+                {
+                  "Context": "SDTM",
+                  "Name": "LBORNRLO"
+                }
+              ]
+            },
+            {
+              "DataType": "float",
+              "Length": 8,
+              "Name": "RBC Normal Range Hi",
+              "OID": "I_LB_RBC_HI",
+              "Question": {
+                "TranslatedText": [
+                  {
+                    "lang": "en",
+                    "Type": "text/plain",
+                    "_content": "Red Blood Count, Normal Range, High"
+                  },
+                  {
+                    "lang": "fr",
+                    "Type": "text/plain",
+                    "_content": "Compte des corps rouges dans le sang, gamme normale, haute"
+                  },
+                  {
+                    "lang": "de",
+                    "Type": "text/plain",
+                    "_content": "Zahl der roten Blutkörper, Normalniveau, Oben"
+                  },
+                  {
+                    "lang": "ko",
+                    "Type": "text/plain"
+                  }
+                ]
+              },
+              "Alias": [
+                {
+                  "Context": "SDTM",
+                  "Name": "LBORNRHI"
+                }
+              ]
+            },
+            {
+              "DataType": "boolean",
+              "Name": "RBC Done",
+              "OID": "I_LB_RBC_NOTDONE",
+              "Question": {
+                "TranslatedText": [
+                  {
+                    "lang": "en",
+                    "Type": "text/plain",
+                    "_content": "Check when not done"
+                  },
+                  {
+                    "lang": "fr",
+                    "Type": "text/plain",
+                    "_content": "Marquez si ne pas faite"
+                  },
+                  {
+                    "lang": "de",
+                    "Type": "text/plain",
+                    "_content": "Markieren wenn nicht ausgeführt"
+                  },
+                  {
+                    "lang": "ko",
+                    "Type": "text/plain"
+                  }
+                ]
+              },
+              "Alias": [
+                {
+                  "Context": "SDTM",
+                  "Name": "LBSTAT"
+                }
+              ]
+            },
+            {
+              "DataType": "float",
+              "Length": 8,
+              "Name": "WBC",
+              "OID": "I_LB_WBC",
+              "Question": {
+                "TranslatedText": [
+                  {
+                    "lang": "en",
+                    "Type": "text/plain",
+                    "_content": "White Blood Count"
+                  },
+                  {
+                    "lang": "fr",
+                    "Type": "text/plain",
+                    "_content": "Compte des corps blanches dang le sang"
+                  },
+                  {
+                    "lang": "de",
+                    "Type": "text/plain",
+                    "_content": "Zahl der weisse Blutkörper"
+                  },
+                  {
+                    "lang": "ko",
+                    "Type": "text/plain"
+                  }
+                ]
+              },
+              "RangeCheck": [
+                {
+                  "Comparator": "LE",
+                  "SoftHard": "Hard",
+                  "CheckValue": [
+                    {
+                      "_content": "15"
+                    }
+                  ],
+                  "ErrorMessage": {
+                    "TranslatedText": [
+                      {
+                        "lang": "en",
+                        "Type": "text/plain",
+                        "_content": "The value should be between 2 and 15"
+                      },
+                      {
+                        "lang": "fr",
+                        "Type": "text/plain",
+                        "_content": "La valuer doit être enter 2 et 15"
+                      },
+                      {
+                        "lang": "de",
+                        "Type": "text/plain",
+                        "_content": "Der Wert sollte zwischen 2 und 15 sein"
+                      },
+                      {
+                        "lang": "ko",
+                        "Type": "text/plain"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "Comparator": "GE",
+                  "SoftHard": "Hard",
+                  "CheckValue": [
+                    {
+                      "_content": "2.0"
+                    }
+                  ],
+                  "ErrorMessage": {
+                    "TranslatedText": [
+                      {
+                        "lang": "en",
+                        "Type": "text/plain",
+                        "_content": "The value should be between 2 and 15"
+                      },
+                      {
+                        "lang": "fr",
+                        "Type": "text/plain",
+                        "_content": "La valuer doit être entre 2 et 15"
+                      },
+                      {
+                        "lang": "de",
+                        "Type": "text/plain",
+                        "_content": "Der Wert sollte zwischen 2 and 15 sein"
+                      },
+                      {
+                        "lang": "ko",
+                        "Type": "text/plain"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "Comparator": "LE",
+                  "SoftHard": "Soft",
+                  "CheckValue": [
+                    {
+                      "_content": "12.0"
+                    }
+                  ],
+                  "ErrorMessage": {
+                    "TranslatedText": [
+                      {
+                        "lang": "en",
+                        "Type": "text/plain",
+                        "_content": "The value should be between 3.5 and 12"
+                      },
+                      {
+                        "lang": "fr",
+                        "Type": "text/plain",
+                        "_content": "La valuer dout être entre 3.5 et 12"
+                      },
+                      {
+                        "lang": "de",
+                        "Type": "text/plain",
+                        "_content": "Der Wert sollte zwischen 3.5 und 12 sein"
+                      },
+                      {
+                        "lang": "ko",
+                        "Type": "text/plain"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "Comparator": "GE",
+                  "SoftHard": "Soft",
+                  "CheckValue": [
+                    {
+                      "_content": "3.5"
+                    }
+                  ],
+                  "ErrorMessage": {
+                    "TranslatedText": [
+                      {
+                        "lang": "en",
+                        "Type": "text/plain",
+                        "_content": "The value should be between 3.5 and 12"
+                      },
+                      {
+                        "lang": "fr",
+                        "Type": "text/plain",
+                        "_content": "La valuer doit être entre 3.5 et 12"
+                      },
+                      {
+                        "lang": "de",
+                        "Type": "text/plain",
+                        "_content": "Der Wert sollte zwischen 3.5 und 12 sein"
+                      },
+                      {
+                        "lang": "ko",
+                        "Type": "text/plain"
+                      }
+                    ]
+                  }
+                }
+              ],
+              "Alias": [
+                {
+                  "Context": "SDTM",
+                  "Name": "LBORRES"
+                }
+              ]
+            },
+            {
+              "DataType": "float",
+              "Length": 8,
+              "Name": "WBC Normal Range Lo",
+              "OID": "I_LB_WBC_LO",
+              "Question": {
+                "TranslatedText": [
+                  {
+                    "lang": "en",
+                    "Type": "text/plain",
+                    "_content": "White Blood Count, Normal Range, Low"
+                  },
+                  {
+                    "lang": "fr",
+                    "Type": "text/plain",
+                    "_content": "Compte des corps blanches dans le sang, gamme normale, basse"
+                  },
+                  {
+                    "lang": "de",
+                    "Type": "text/plain",
+                    "_content": "Zahl der weissen Blutkörper, Normalniveau, Unten"
+                  },
+                  {
+                    "lang": "ko",
+                    "Type": "text/plain"
+                  }
+                ]
+              },
+              "Alias": [
+                {
+                  "Context": "SDTM",
+                  "Name": "LBORNRLO"
+                }
+              ]
+            },
+            {
+              "DataType": "float",
+              "Length": 8,
+              "Name": "WBC Normal Range Hi",
+              "OID": "I_LB_WBC_HI",
+              "Question": {
+                "TranslatedText": [
+                  {
+                    "lang": "en",
+                    "Type": "text/plain",
+                    "_content": "White Blood Count, Normal Range, High"
+                  },
+                  {
+                    "lang": "fr",
+                    "Type": "text/plain",
+                    "_content": "Compte des corps blanches dans le sang, gamme normale, haute"
+                  },
+                  {
+                    "lang": "de",
+                    "Type": "text/plain",
+                    "_content": "Zahl der weissen Blutkörper, Normalniveau, Oben"
+                  },
+                  {
+                    "lang": "ko",
+                    "Type": "text/plain"
+                  }
+                ]
+              },
+              "Alias": [
+                {
+                  "Context": "SDTM",
+                  "Name": "LBORNRHI"
+                }
+              ]
+            },
+            {
+              "DataType": "boolean",
+              "Name": "WBC Done",
+              "OID": "I_LB_WBC_NOTDONE",
+              "Question": {
+                "TranslatedText": [
+                  {
+                    "lang": "en",
+                    "Type": "text/plain",
+                    "_content": "Check when not Done"
+                  },
+                  {
+                    "lang": "fr",
+                    "Type": "text/plain",
+                    "_content": "Marquez si ne pas faite"
+                  },
+                  {
+                    "lang": "de",
+                    "Type": "text/plain",
+                    "_content": "Markieren wenn nicht ausgeführt"
+                  },
+                  {
+                    "lang": "ko",
+                    "Type": "text/plain"
+                  }
+                ]
+              },
+              "Alias": [
+                {
+                  "Context": "SDTM",
+                  "Name": "LBSTAT"
+                }
+              ]
+            },
+            {
+              "DataType": "integer",
+              "Length": 1,
+              "Name": "Pregancy",
+              "OID": "I_PREGNANCY",
+              "Question": {
+                "TranslatedText": [
+                  {
+                    "lang": "en",
+                    "Type": "text/plain",
+                    "_content": "Is the subject pregnant ?"
+                  },
+                  {
+                    "lang": "fr",
+                    "Type": "text/plain",
+                    "_content": "Est ce que le patient est enceinte?"
+                  },
+                  {
+                    "lang": "de",
+                    "Type": "text/plain",
+                    "_content": "Ist die Patientin schwanger ?"
+                  },
+                  {
+                    "lang": "ko",
+                    "Type": "text/plain"
+                  }
+                ]
+              },
+              "CodeListRef": {
+                "CodeListOID": "CL_NOYES"
+              }
+            },
+            {
+              "DataType": "integer",
+              "Length": 1,
+              "Name": "Breath complaints",
+              "OID": "I_BREATHING",
+              "Question": {
+                "TranslatedText": [
+                  {
+                    "lang": "en",
+                    "Type": "text/plain",
+                    "_content": "Breathing"
+                  },
+                  {
+                    "lang": "fr",
+                    "Type": "text/plain",
+                    "_content": "Respiration"
+                  },
+                  {
+                    "lang": "de",
+                    "Type": "text/plain",
+                    "_content": "Atmung"
+                  },
+                  {
+                    "lang": "ko",
+                    "Type": "text/plain"
+                  }
+                ]
+              },
+              "CodeListRef": {
+                "CodeListOID": "CL_NOYES"
+              }
+            },
+            {
+              "DataType": "integer",
+              "Length": 1,
+              "Name": "Coughing problems",
+              "OID": "I_COUGHING",
+              "Question": {
+                "TranslatedText": [
+                  {
+                    "lang": "en",
+                    "Type": "text/plain",
+                    "_content": "Coughing"
+                  },
+                  {
+                    "lang": "fr",
+                    "Type": "text/plain",
+                    "_content": "Tousser"
+                  },
+                  {
+                    "lang": "de",
+                    "Type": "text/plain",
+                    "_content": "Husten"
+                  },
+                  {
+                    "lang": "ko",
+                    "Type": "text/plain"
+                  }
+                ]
+              },
+              "CodeListRef": {
+                "CodeListOID": "CL_NOYES"
+              }
+            },
+            {
+              "DataType": "integer",
+              "Length": 2,
+              "Name": "No. of bronchitis illnesses",
+              "OID": "I_BRONCHITS",
+              "Question": {
+                "TranslatedText": [
+                  {
+                    "lang": "en",
+                    "Type": "text/plain",
+                    "_content": "Number of bronchitis cases during the last year"
+                  },
+                  {
+                    "lang": "fr",
+                    "Type": "text/plain",
+                    "_content": "Nombre de maladies bronchite dans la dernièrre annéé"
+                  },
+                  {
+                    "lang": "de",
+                    "Type": "text/plain",
+                    "_content": "Zahl der Bronchitis Krankheiten letztes Jahr"
+                  },
+                  {
+                    "lang": "ko",
+                    "Type": "text/plain"
+                  }
+                ]
+              }
+            },
+            {
+              "DataType": "integer",
+              "Length": 2,
+              "Name": "No. of pneunomia illnesses",
+              "OID": "I_PNEUMONIA",
+              "Question": {
+                "TranslatedText": [
+                  {
+                    "lang": "en",
+                    "Type": "text/plain",
+                    "_content": "Number of pneumonia cases last year"
+                  },
+                  {
+                    "lang": "fr",
+                    "Type": "text/plain",
+                    "_content": "Nombre de maladies pneunomie dans la dernièrre annéé"
+                  },
+                  {
+                    "lang": "de",
+                    "Type": "text/plain",
+                    "_content": "Zahl der Lungenentzundungen letztes Jahr"
+                  },
+                  {
+                    "lang": "ko",
+                    "Type": "text/plain"
+                  }
+                ]
+              }
+            },
+            {
+              "DataType": "integer",
+              "Length": 1,
+              "Name": "Hart complaints",
+              "OID": "I_HEART_COMPLAINTS",
+              "Question": {
+                "TranslatedText": [
+                  {
+                    "lang": "en",
+                    "Type": "text/plain",
+                    "_content": "Heart"
+                  },
+                  {
+                    "lang": "fr",
+                    "Type": "text/plain",
+                    "_content": "Coeur"
+                  },
+                  {
+                    "lang": "de",
+                    "Type": "text/plain",
+                    "_content": "Herz"
+                  },
+                  {
+                    "lang": "ko",
+                    "Type": "text/plain"
+                  }
+                ]
+              },
+              "CodeListRef": {
+                "CodeListOID": "CL_NOYES"
+              }
+            },
+            {
+              "DataType": "integer",
+              "Length": 3,
+              "Name": "No. of illness days last year",
+              "OID": "I_ILNESS_DAYS_LAST_YEAR",
+              "Question": {
+                "TranslatedText": [
+                  {
+                    "lang": "en",
+                    "Type": "text/plain",
+                    "_content": "No. of illness days last year"
+                  },
+                  {
+                    "lang": "fr",
+                    "Type": "text/plain",
+                    "_content": "Nombre de jours de maladie dans la dernière annéé"
+                  },
+                  {
+                    "lang": "de",
+                    "Type": "text/plain",
+                    "_content": "Zahl der Krankheitstage letztes Jahr"
+                  },
+                  {
+                    "lang": "ko",
+                    "Type": "text/plain"
+                  }
+                ]
+              }
+            },
+            {
+              "DataType": "integer",
+              "Length": 1,
+              "Name": "Dizzyness at low DBP",
+              "OID": "I_DIZZY",
+              "Question": {
+                "TranslatedText": [
+                  {
+                    "lang": "en",
+                    "Type": "text/plain",
+                    "_content": "Does the subject feel dizzy when standing up from a sitting position"
+                  },
+                  {
+                    "lang": "fr",
+                    "Type": "text/plain",
+                    "_content": "Est ce que le patient se sent étourdi quand il se lève d'une position assise"
+                  },
+                  {
+                    "lang": "de",
+                    "Type": "text/plain",
+                    "_content": "Fühlt der Patient sich schwindlich wenn er aufsteht aus eine sittende Position"
+                  },
+                  {
+                    "lang": "ko",
+                    "Type": "text/plain"
+                  }
+                ]
+              },
+              "CodeListRef": {
+                "CodeListOID": "CL_NOYES"
+              }
+            }
+          ],
+          "CodeList": [
+            {
+              "DataType": "text",
+              "Name": "Sex",
+              "OID": "CL_SEX",
+              "CodeListItem": [
+                {
+                  "CodedValue": "M",
+                  "Decode": {
+                    "TranslatedText": [
+                      {
+                        "lang": "en",
+                        "Type": "text/plain",
+                        "_content": "Male"
+                      },
+                      {
+                        "lang": "fr",
+                        "Type": "text/plain",
+                        "_content": "Masculin"
+                      },
+                      {
+                        "lang": "de",
+                        "Type": "text/plain",
+                        "_content": "Männlich"
+                      },
+                      {
+                        "lang": "ko",
+                        "Type": "text/plain"
+                      }
+                    ]
+                  },
+                  "Alias": [
+                    {
+                      "Context": "CDASH",
+                      "Name": "CL.SEX Male"
+                    },
+                    {
+                      "Context": "SDTM",
+                      "Name": "DM.SEX=M"
+                    }
+                  ]
+                },
+                {
+                  "CodedValue": "F",
+                  "Decode": {
+                    "TranslatedText": [
+                      {
+                        "lang": "en",
+                        "Type": "text/plain",
+                        "_content": "Female"
+                      },
+                      {
+                        "lang": "fr",
+                        "Type": "text/plain",
+                        "_content": "Féminin"
+                      },
+                      {
+                        "lang": "de",
+                        "Type": "text/plain",
+                        "_content": "Weiblich"
+                      },
+                      {
+                        "lang": "ko",
+                        "Type": "text/plain"
+                      }
+                    ]
+                  },
+                  "Alias": [
+                    {
+                      "Context": "CDASH",
+                      "Name": "CL.SEX Female"
+                    },
+                    {
+                      "Context": "SDTM",
+                      "Name": "DM.SEX=F"
+                    }
+                  ]
+                }
+              ],
+              "Alias": [
+                {
+                  "Context": "CDASH",
+                  "Name": "CL.SEX"
+                }
+              ]
+            },
+            {
+              "DataType": "text",
+              "Name": "Race",
+              "OID": "CL_RACE",
+              "CodeListItem": [
+                {
+                  "CodedValue": "CAUCASIAN",
+                  "Decode": {
+                    "TranslatedText": [
+                      {
+                        "lang": "en",
+                        "Type": "text/plain",
+                        "_content": "Caucasian"
+                      },
+                      {
+                        "lang": "fr",
+                        "Type": "text/plain",
+                        "_content": "Caucasien"
+                      },
+                      {
+                        "lang": "de",
+                        "Type": "text/plain",
+                        "_content": "Kaukasisch"
+                      },
+                      {
+                        "lang": "ko",
+                        "Type": "text/plain"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "CodedValue": "BLACK",
+                  "Decode": {
+                    "TranslatedText": [
+                      {
+                        "lang": "en",
+                        "Type": "text/plain",
+                        "_content": "Black"
+                      },
+                      {
+                        "lang": "fr",
+                        "Type": "text/plain",
+                        "_content": "Noire"
+                      },
+                      {
+                        "lang": "de",
+                        "Type": "text/plain",
+                        "_content": "Schwarz"
+                      },
+                      {
+                        "lang": "ko",
+                        "Type": "text/plain"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "CodedValue": "ASIAN",
+                  "Decode": {
+                    "TranslatedText": [
+                      {
+                        "lang": "en",
+                        "Type": "text/plain",
+                        "_content": "Asian"
+                      },
+                      {
+                        "lang": "fr",
+                        "Type": "text/plain",
+                        "_content": "Asiate"
+                      },
+                      {
+                        "lang": "de",
+                        "Type": "text/plain",
+                        "_content": "Asiatisch"
+                      },
+                      {
+                        "lang": "ko",
+                        "Type": "text/plain"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "CodedValue": "OTHER",
+                  "Decode": {
+                    "TranslatedText": [
+                      {
+                        "lang": "en",
+                        "Type": "text/plain",
+                        "_content": "Other"
+                      },
+                      {
+                        "lang": "fr",
+                        "Type": "text/plain",
+                        "_content": "Autre"
+                      },
+                      {
+                        "lang": "de",
+                        "Type": "text/plain",
+                        "_content": "Sonstige"
+                      },
+                      {
+                        "lang": "ko",
+                        "Type": "text/plain"
+                      }
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "DataType": "text",
+              "Name": "Smoking",
+              "OID": "CL_SMOKING",
+              "CodeListItem": [
+                {
+                  "CodedValue": "LT10",
+                  "Decode": {
+                    "TranslatedText": [
+                      {
+                        "lang": "en",
+                        "Type": "text/plain",
+                        "_content": "Less Than 10 cigarettes per day"
+                      },
+                      {
+                        "lang": "fr",
+                        "Type": "text/plain",
+                        "_content": "Moins que 10 cigarettes par jour"
+                      },
+                      {
+                        "lang": "de",
+                        "Type": "text/plain",
+                        "_content": "Weniger als 10 Zigaretten pro Tag"
+                      },
+                      {
+                        "lang": "ko",
+                        "Type": "text/plain"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "CodedValue": "10TO20",
+                  "Decode": {
+                    "TranslatedText": [
+                      {
+                        "lang": "en",
+                        "Type": "text/plain",
+                        "_content": "10 to 20 cigarettes per day"
+                      },
+                      {
+                        "lang": "fr",
+                        "Type": "text/plain",
+                        "_content": "10 à 20 cigarettes par jour"
+                      },
+                      {
+                        "lang": "de",
+                        "Type": "text/plain",
+                        "_content": "10 bis 20 Zigaretten pro Tag"
+                      },
+                      {
+                        "lang": "ko",
+                        "Type": "text/plain"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "CodedValue": "GT20",
+                  "Decode": {
+                    "TranslatedText": [
+                      {
+                        "lang": "en",
+                        "Type": "text/plain",
+                        "_content": "Greater Than 20 cigarettes per day"
+                      },
+                      {
+                        "lang": "fr",
+                        "Type": "text/plain",
+                        "_content": "Plus de 20 cigarettes par jour"
+                      },
+                      {
+                        "lang": "de",
+                        "Type": "text/plain",
+                        "_content": "Mehr als 20 Zigaretten pro Tag"
+                      },
+                      {
+                        "lang": "ko",
+                        "Type": "text/plain"
+                      }
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "DataType": "text",
+              "Name": "Drinking",
+              "OID": "CL_DRINKING",
+              "CodeListItem": [
+                {
+                  "CodedValue": "LT1",
+                  "OrderNumber": 1,
+                  "Decode": {
+                    "TranslatedText": [
+                      {
+                        "lang": "en",
+                        "Type": "text/plain",
+                        "_content": "Less Than 1 drink per day"
+                      },
+                      {
+                        "lang": "fr",
+                        "Type": "text/plain",
+                        "_content": "Moins que une boisson par jour"
+                      },
+                      {
+                        "lang": "de",
+                        "Type": "text/plain",
+                        "_content": "Weniger als ein Getränk pro Tag"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "CodedValue": "1TO2",
+                  "OrderNumber": 2,
+                  "Decode": {
+                    "TranslatedText": [
+                      {
+                        "lang": "en",
+                        "Type": "text/plain",
+                        "_content": "1 to 2 drinks per day"
+                      },
+                      {
+                        "lang": "fr",
+                        "Type": "text/plain",
+                        "_content": "1 à 2 boissons par jour"
+                      },
+                      {
+                        "lang": "de",
+                        "Type": "text/plain",
+                        "_content": "1 bis 2 Getränke pro Tag"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "CodedValue": "GT2",
+                  "OrderNumber": 3,
+                  "Decode": {
+                    "TranslatedText": [
+                      {
+                        "lang": "en",
+                        "Type": "text/plain",
+                        "_content": "Greater Than 2 drinks per day"
+                      },
+                      {
+                        "lang": "fr",
+                        "Type": "text/plain",
+                        "_content": "Plus que 2 boissons par jour"
+                      },
+                      {
+                        "lang": "de",
+                        "Type": "text/plain",
+                        "_content": "Mehr als 2 Getränke pro Tag"
+                      }
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "DataType": "integer",
+              "Name": "Diary",
+              "OID": "CL_DIARY",
+              "CodeListItem": [
+                {
+                  "CodedValue": "1",
+                  "Decode": {
+                    "TranslatedText": [
+                      {
+                        "lang": "en",
+                        "Type": "text/plain",
+                        "_content": "None"
+                      },
+                      {
+                        "lang": "fr",
+                        "Type": "text/plain",
+                        "_content": "Aucun"
+                      },
+                      {
+                        "lang": "de",
+                        "Type": "text/plain",
+                        "_content": "Keine"
+                      },
+                      {
+                        "lang": "ko",
+                        "Type": "text/plain"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "CodedValue": "2",
+                  "Decode": {
+                    "TranslatedText": [
+                      {
+                        "lang": "en",
+                        "Type": "text/plain",
+                        "_content": "Mild"
+                      },
+                      {
+                        "lang": "fr",
+                        "Type": "text/plain",
+                        "_content": "Doux"
+                      },
+                      {
+                        "lang": "de",
+                        "Type": "text/plain",
+                        "_content": "Mild"
+                      },
+                      {
+                        "lang": "ko",
+                        "Type": "text/plain"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "CodedValue": "3",
+                  "Decode": {
+                    "TranslatedText": [
+                      {
+                        "lang": "en",
+                        "Type": "text/plain",
+                        "_content": "Moderate"
+                      },
+                      {
+                        "lang": "fr",
+                        "Type": "text/plain",
+                        "_content": "Modéré"
+                      },
+                      {
+                        "lang": "de",
+                        "Type": "text/plain",
+                        "_content": "Gemäßigt"
+                      },
+                      {
+                        "lang": "ko",
+                        "Type": "text/plain"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "CodedValue": "4",
+                  "Decode": {
+                    "TranslatedText": [
+                      {
+                        "lang": "en",
+                        "Type": "text/plain",
+                        "_content": "Severe"
+                      },
+                      {
+                        "lang": "fr",
+                        "Type": "text/plain",
+                        "_content": "Grave"
+                      },
+                      {
+                        "lang": "de",
+                        "Type": "text/plain",
+                        "_content": "Ernsthaft"
+                      },
+                      {
+                        "lang": "ko",
+                        "Type": "text/plain"
+                      }
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "DataType": "integer",
+              "Name": "Diary Day",
+              "OID": "CL_DIARY_DAY",
+              "CodeListItem": [
+                {
+                  "CodedValue": "1",
+                  "Decode": {
+                    "TranslatedText": [
+                      {
+                        "lang": "en",
+                        "Type": "text/plain",
+                        "_content": "1"
+                      },
+                      {
+                        "lang": "fr",
+                        "Type": "text/plain",
+                        "_content": "1"
+                      },
+                      {
+                        "lang": "de",
+                        "Type": "text/plain",
+                        "_content": "1"
+                      },
+                      {
+                        "lang": "it",
+                        "Type": "text/plain",
+                        "_content": "i"
+                      },
+                      {
+                        "lang": "ko",
+                        "Type": "text/plain"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "CodedValue": "2",
+                  "Decode": {
+                    "TranslatedText": [
+                      {
+                        "lang": "en",
+                        "Type": "text/plain",
+                        "_content": "2"
+                      },
+                      {
+                        "lang": "fr",
+                        "Type": "text/plain",
+                        "_content": "2"
+                      },
+                      {
+                        "lang": "de",
+                        "Type": "text/plain",
+                        "_content": "2"
+                      },
+                      {
+                        "lang": "it",
+                        "Type": "text/plain",
+                        "_content": "ii"
+                      },
+                      {
+                        "lang": "ko",
+                        "Type": "text/plain"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "CodedValue": "3",
+                  "Decode": {
+                    "TranslatedText": [
+                      {
+                        "lang": "en",
+                        "Type": "text/plain",
+                        "_content": "3"
+                      },
+                      {
+                        "lang": "fr",
+                        "Type": "text/plain",
+                        "_content": "3"
+                      },
+                      {
+                        "lang": "de",
+                        "Type": "text/plain",
+                        "_content": "3"
+                      },
+                      {
+                        "lang": "it",
+                        "Type": "text/plain",
+                        "_content": "iii"
+                      },
+                      {
+                        "lang": "ko",
+                        "Type": "text/plain"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "CodedValue": "4",
+                  "Decode": {
+                    "TranslatedText": [
+                      {
+                        "lang": "en",
+                        "Type": "text/plain",
+                        "_content": "4"
+                      },
+                      {
+                        "lang": "fr",
+                        "Type": "text/plain",
+                        "_content": "4"
+                      },
+                      {
+                        "lang": "de",
+                        "Type": "text/plain",
+                        "_content": "4"
+                      },
+                      {
+                        "lang": "it",
+                        "Type": "text/plain",
+                        "_content": "iv"
+                      },
+                      {
+                        "lang": "ko",
+                        "Type": "text/plain"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "CodedValue": "5",
+                  "Decode": {
+                    "TranslatedText": [
+                      {
+                        "lang": "en",
+                        "Type": "text/plain",
+                        "_content": "5"
+                      },
+                      {
+                        "lang": "fr",
+                        "Type": "text/plain",
+                        "_content": "5"
+                      },
+                      {
+                        "lang": "de",
+                        "Type": "text/plain",
+                        "_content": "5"
+                      },
+                      {
+                        "lang": "it",
+                        "Type": "text/plain",
+                        "_content": "v"
+                      },
+                      {
+                        "lang": "ko",
+                        "Type": "text/plain"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "CodedValue": "6",
+                  "Decode": {
+                    "TranslatedText": [
+                      {
+                        "lang": "en",
+                        "Type": "text/plain",
+                        "_content": "6"
+                      },
+                      {
+                        "lang": "fr",
+                        "Type": "text/plain",
+                        "_content": "6"
+                      },
+                      {
+                        "lang": "de",
+                        "Type": "text/plain",
+                        "_content": "6"
+                      },
+                      {
+                        "lang": "it",
+                        "Type": "text/plain",
+                        "_content": "vi"
+                      },
+                      {
+                        "lang": "ko",
+                        "Type": "text/plain"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "CodedValue": "7",
+                  "Decode": {
+                    "TranslatedText": [
+                      {
+                        "lang": "en",
+                        "Type": "text/plain",
+                        "_content": "7"
+                      },
+                      {
+                        "lang": "fr",
+                        "Type": "text/plain",
+                        "_content": "7"
+                      },
+                      {
+                        "lang": "de",
+                        "Type": "text/plain",
+                        "_content": "7"
+                      },
+                      {
+                        "lang": "it",
+                        "Type": "text/plain",
+                        "_content": "vii"
+                      },
+                      {
+                        "lang": "ko",
+                        "Type": "text/plain"
+                      }
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "DataType": "integer",
+              "Name": "No Yes",
+              "OID": "CL_NOYES",
+              "CodeListItem": [
+                {
+                  "CodedValue": "0",
+                  "Decode": {
+                    "TranslatedText": [
+                      {
+                        "lang": "en",
+                        "Type": "text/plain",
+                        "_content": "No"
+                      },
+                      {
+                        "lang": "fr",
+                        "Type": "text/plain",
+                        "_content": "Non"
+                      },
+                      {
+                        "lang": "de",
+                        "Type": "text/plain",
+                        "_content": "Nein"
+                      },
+                      {
+                        "lang": "ko",
+                        "Type": "text/plain"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "CodedValue": "1",
+                  "Decode": {
+                    "TranslatedText": [
+                      {
+                        "lang": "en",
+                        "Type": "text/plain",
+                        "_content": "Yes"
+                      },
+                      {
+                        "lang": "fr",
+                        "Type": "text/plain",
+                        "_content": "Oui"
+                      },
+                      {
+                        "lang": "de",
+                        "Type": "text/plain",
+                        "_content": "Ja"
+                      },
+                      {
+                        "lang": "ko",
+                        "Type": "text/plain"
+                      }
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "DataType": "integer",
+              "Name": "Adverse Event Severity",
+              "OID": "CL_AE_SEVERITY",
+              "CodeListItem": [
+                {
+                  "CodedValue": "1",
+                  "Decode": {
+                    "TranslatedText": [
+                      {
+                        "lang": "en",
+                        "Type": "text/plain",
+                        "_content": "Mild"
+                      },
+                      {
+                        "lang": "fr",
+                        "Type": "text/plain",
+                        "_content": "Doux"
+                      },
+                      {
+                        "lang": "de",
+                        "Type": "text/plain",
+                        "_content": "Mild"
+                      },
+                      {
+                        "lang": "ko",
+                        "Type": "text/plain"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "CodedValue": "2",
+                  "Decode": {
+                    "TranslatedText": [
+                      {
+                        "lang": "en",
+                        "Type": "text/plain",
+                        "_content": "Moderate"
+                      },
+                      {
+                        "lang": "fr",
+                        "Type": "text/plain",
+                        "_content": "Modéré"
+                      },
+                      {
+                        "lang": "de",
+                        "Type": "text/plain",
+                        "_content": "Gemäßigt"
+                      },
+                      {
+                        "lang": "ko",
+                        "Type": "text/plain"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "CodedValue": "3",
+                  "Decode": {
+                    "TranslatedText": [
+                      {
+                        "lang": "en",
+                        "Type": "text/plain",
+                        "_content": "Severe"
+                      },
+                      {
+                        "lang": "fr",
+                        "Type": "text/plain",
+                        "_content": "Grave"
+                      },
+                      {
+                        "lang": "de",
+                        "Type": "text/plain",
+                        "_content": "Ernsthaft"
+                      },
+                      {
+                        "lang": "ko",
+                        "Type": "text/plain"
+                      }
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "DataType": "integer",
+              "Name": "Adverse Event Action Taken",
+              "OID": "CL_AE_ACTION",
+              "CodeListItem": [
+                {
+                  "CodedValue": "1",
+                  "Decode": {
+                    "TranslatedText": [
+                      {
+                        "lang": "en",
+                        "Type": "text/plain",
+                        "_content": "None"
+                      },
+                      {
+                        "lang": "fr",
+                        "Type": "text/plain",
+                        "_content": "Aucun"
+                      },
+                      {
+                        "lang": "de",
+                        "Type": "text/plain",
+                        "_content": "Keine"
+                      },
+                      {
+                        "lang": "ko",
+                        "Type": "text/plain"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "CodedValue": "2",
+                  "Decode": {
+                    "TranslatedText": [
+                      {
+                        "lang": "en",
+                        "Type": "text/plain",
+                        "_content": "Study drug regimen changed"
+                      },
+                      {
+                        "lang": "fr",
+                        "Type": "text/plain",
+                        "_content": "Regime de l'étude changé"
+                      },
+                      {
+                        "lang": "de",
+                        "Type": "text/plain",
+                        "_content": "Regime des Studiums geändert"
+                      },
+                      {
+                        "lang": "ko",
+                        "Type": "text/plain"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "CodedValue": "3",
+                  "Decode": {
+                    "TranslatedText": [
+                      {
+                        "lang": "en",
+                        "Type": "text/plain",
+                        "_content": "Temporarily stopped study drug"
+                      },
+                      {
+                        "lang": "fr",
+                        "Type": "text/plain",
+                        "_content": "Etude arreté temporairement"
+                      },
+                      {
+                        "lang": "de",
+                        "Type": "text/plain",
+                        "_content": "Studium temporär unterbrochen"
+                      },
+                      {
+                        "lang": "ko",
+                        "Type": "text/plain"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "CodedValue": "4",
+                  "Decode": {
+                    "TranslatedText": [
+                      {
+                        "lang": "en",
+                        "Type": "text/plain",
+                        "_content": "Study drug discontinued"
+                      },
+                      {
+                        "lang": "fr",
+                        "Type": "text/plain",
+                        "_content": "Etude du medicament discontinué"
+                      },
+                      {
+                        "lang": "de",
+                        "Type": "text/plain",
+                        "_content": "Studium des Medikaments diskontinuiert"
+                      },
+                      {
+                        "lang": "ko",
+                        "Type": "text/plain"
+                      }
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "DataType": "integer",
+              "Name": "Adverse Event Action Taken",
+              "OID": "CL_AE_OUTCOME",
+              "CodeListItem": [
+                {
+                  "CodedValue": "1",
+                  "Decode": {
+                    "TranslatedText": [
+                      {
+                        "lang": "en",
+                        "Type": "text/plain",
+                        "_content": "Subject remains in study"
+                      },
+                      {
+                        "lang": "fr",
+                        "Type": "text/plain",
+                        "_content": "Sujet reste dans l'étude"
+                      },
+                      {
+                        "lang": "de",
+                        "Type": "text/plain",
+                        "_content": "Patient bleibt in dem Studium"
+                      },
+                      {
+                        "lang": "ko",
+                        "Type": "text/plain"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "CodedValue": "2",
+                  "Decode": {
+                    "TranslatedText": [
+                      {
+                        "lang": "en",
+                        "Type": "text/plain",
+                        "_content": "Withdrawn from study"
+                      },
+                      {
+                        "lang": "fr",
+                        "Type": "text/plain",
+                        "_content": "Retraité de l'étude"
+                      },
+                      {
+                        "lang": "de",
+                        "Type": "text/plain",
+                        "_content": "Vom Studium ausgeschlossen"
+                      },
+                      {
+                        "lang": "ko",
+                        "Type": "text/plain"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "CodedValue": "3",
+                  "Decode": {
+                    "TranslatedText": [
+                      {
+                        "lang": "en",
+                        "Type": "text/plain",
+                        "_content": "Lost to follow-up"
+                      },
+                      {
+                        "lang": "fr",
+                        "Type": "text/plain",
+                        "_content": "Perdu au follow-up"
+                      },
+                      {
+                        "lang": "de",
+                        "Type": "text/plain",
+                        "_content": "Verloren an follow-up"
+                      },
+                      {
+                        "lang": "ko",
+                        "Type": "text/plain"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "CodedValue": "4",
+                  "Decode": {
+                    "TranslatedText": [
+                      {
+                        "lang": "en",
+                        "Type": "text/plain",
+                        "_content": "Death"
+                      },
+                      {
+                        "lang": "fr",
+                        "Type": "text/plain",
+                        "_content": "Mort"
+                      },
+                      {
+                        "lang": "de",
+                        "Type": "text/plain",
+                        "_content": "Tot"
+                      },
+                      {
+                        "lang": "ko",
+                        "Type": "text/plain"
+                      }
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "DataType": "integer",
+              "Name": "Medications Frequency",
+              "OID": "CL_CM_FREQUENCY",
+              "CodeListItem": [
+                {
+                  "CodedValue": "1",
+                  "Decode": {
+                    "TranslatedText": [
+                      {
+                        "lang": "en",
+                        "Type": "text/plain",
+                        "_content": "Single Dose"
+                      },
+                      {
+                        "lang": "fr",
+                        "Type": "text/plain",
+                        "_content": "Une dose"
+                      },
+                      {
+                        "lang": "de",
+                        "Type": "text/plain",
+                        "_content": "Eine Dosis"
+                      },
+                      {
+                        "lang": "ko",
+                        "Type": "text/plain"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "CodedValue": "2",
+                  "Decode": {
+                    "TranslatedText": [
+                      {
+                        "lang": "en",
+                        "Type": "text/plain",
+                        "_content": "Daily"
+                      },
+                      {
+                        "lang": "fr",
+                        "Type": "text/plain",
+                        "_content": "Quotidien"
+                      },
+                      {
+                        "lang": "de",
+                        "Type": "text/plain",
+                        "_content": "Täglich"
+                      },
+                      {
+                        "lang": "ko",
+                        "Type": "text/plain"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "CodedValue": "3",
+                  "Decode": {
+                    "TranslatedText": [
+                      {
+                        "lang": "en",
+                        "Type": "text/plain",
+                        "_content": "Weekly"
+                      },
+                      {
+                        "lang": "fr",
+                        "Type": "text/plain",
+                        "_content": "Hebdomadaire"
+                      },
+                      {
+                        "lang": "de",
+                        "Type": "text/plain",
+                        "_content": "Wöchentlich"
+                      },
+                      {
+                        "lang": "ko",
+                        "Type": "text/plain"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "CodedValue": "4",
+                  "Decode": {
+                    "TranslatedText": [
+                      {
+                        "lang": "en",
+                        "Type": "text/plain",
+                        "_content": "Monthly"
+                      },
+                      {
+                        "lang": "fr",
+                        "Type": "text/plain",
+                        "_content": "Mensuel"
+                      },
+                      {
+                        "lang": "de",
+                        "Type": "text/plain",
+                        "_content": "Monatlich"
+                      },
+                      {
+                        "lang": "ko",
+                        "Type": "text/plain"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "CodedValue": "5",
+                  "Decode": {
+                    "TranslatedText": [
+                      {
+                        "lang": "en",
+                        "Type": "text/plain",
+                        "_content": "PRN"
+                      },
+                      {
+                        "lang": "fr",
+                        "Type": "text/plain",
+                        "_content": "PRN"
+                      },
+                      {
+                        "lang": "de",
+                        "Type": "text/plain",
+                        "_content": "PRN"
+                      },
+                      {
+                        "lang": "ko",
+                        "Type": "text/plain"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "CodedValue": "99",
+                  "Decode": {
+                    "TranslatedText": [
+                      {
+                        "lang": "en",
+                        "Type": "text/plain",
+                        "_content": "Other"
+                      },
+                      {
+                        "lang": "fr",
+                        "Type": "text/plain",
+                        "_content": "Autre"
+                      },
+                      {
+                        "lang": "de",
+                        "Type": "text/plain",
+                        "_content": "Sonstige"
+                      },
+                      {
+                        "lang": "ko",
+                        "Type": "text/plain"
+                      }
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "DataType": "text",
+              "Name": "Not Done",
+              "OID": "CL_NOTDONEE",
+              "CodeListItem": [
+                {
+                  "CodedValue": "NOT DONE",
+                  "Decode": {
+                    "TranslatedText": [
+                      {
+                        "lang": "en",
+                        "Type": "text/plain",
+                        "_content": "NOT DONE"
+                      },
+                      {
+                        "lang": "ko",
+                        "Type": "text/plain"
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+          ],
+          "ConditionDef": [
+            {
+              "Name": "Smoking condition",
+              "OID": "COND.SMOKING",
+              "Description": {
+                "TranslatedText": [
+                  {
+                    "lang": "en",
+                    "Type": "text/plain",
+                    "_content": "Only to be collected if the subject is smoking"
+                  },
+                  {
+                    "lang": "fr",
+                    "Type": "text/plain",
+                    "_content": "Ne doit etre collecte si le sujet est fumeur."
+                  },
+                  {
+                    "lang": "de",
+                    "Type": "text/plain",
+                    "_content": "Nur zu erfassen wenn der Patient Raucher ist."
+                  },
+                  {
+                    "lang": "ko",
+                    "Type": "text/plain"
+                  }
+                ]
+              },
+              "MethodSignature": {},
+              "FormalExpression": [
+                {
+                  "Context": "XPath",
+                  "Code": {
+                    "_content": "../ItemData[@ItemOID='I_SMOKING'][@Value='false']"
+                  }
+                }
+              ],
+              "Alias": [
+                {
+                  "Context": "CDASH",
+                  "Name": "CDASH alias"
+                }
+              ]
+            },
+            {
+              "Name": "Condition whether the subject is male",
+              "OID": "COND.SEX.MALE",
+              "Description": {
+                "TranslatedText": [
+                  {
+                    "lang": "en",
+                    "Type": "text/plain",
+                    "_content": "Only to be collected when the subject is female."
+                  },
+                  {
+                    "lang": "fr",
+                    "Type": "text/plain",
+                    "_content": "Ne doit etre collecte si le sujet est feminin."
+                  },
+                  {
+                    "lang": "de",
+                    "Type": "text/plain",
+                    "_content": "Nur zu erfassen wenn der Patient weiblich ist."
+                  },
+                  {
+                    "lang": "ko",
+                    "Type": "text/plain"
+                  }
+                ]
+              },
+              "MethodSignature": {},
+              "FormalExpression": [
+                {
+                  "Context": "XPath",
+                  "Code": {
+                    "_content": "../ItemData[@ItemOID='I_SEX'][@Value='M']"
+                  }
+                }
+              ]
+            },
+            {
+              "Name": "Usage of form about smoking complaints",
+              "OID": "COND.FORMUSE.SMOKING_COMPLAINTS",
+              "Description": {
+                "TranslatedText": [
+                  {
+                    "lang": "en",
+                    "Type": "text/plain",
+                    "_content": "Use this form only if in the BaseLine form it is marked that the subject is smoking."
+                  },
+                  {
+                    "lang": "fr",
+                    "Type": "text/plain",
+                    "_content": "Utilisez ce formulaire dans le cas que dans le formulaire Ligne de Base il est marque que le sujet est fumeur."
+                  },
+                  {
+                    "lang": "de",
+                    "Type": "text/plain",
+                    "_content": "Benützen sie diese Formular nur wenn is das Formular BasisLinie angegeben ist das der Patient Raucher ist."
+                  },
+                  {
+                    "lang": "ko",
+                    "Type": "text/plain"
+                  }
+                ]
+              },
+              "MethodSignature": {},
+              "FormalExpression": [
+                {
+                  "Context": "XPath",
+                  "Code": {
+                    "_content": "../FormData[@FormOID='F_BASELINE']/ItemGroupData[@ItemGroupOID='IG_SH']/ItemData[@ItemOID='I_SMOKING'][@Value='0']"
+                  }
+                }
+              ]
+            },
+            {
+              "Name": "Usage of itemgroup about smoking complaints",
+              "OID": "COND.IGUSE.SMOKING_COMPLAINTS",
+              "Description": {
+                "TranslatedText": [
+                  {
+                    "lang": "en",
+                    "Type": "text/plain",
+                    "_content": "Use this group only if it is marked that the subject is smoking"
+                  },
+                  {
+                    "lang": "fr",
+                    "Type": "text/plain",
+                    "_content": "Utilisez cette groupe dans le cas qu'il est marqué que le sujet est fumeur"
+                  },
+                  {
+                    "lang": "de",
+                    "Type": "text/plain",
+                    "_content": "Benützen sie diese Gruppe nur wenn angegeben ist das der Patient Raucher ist"
+                  },
+                  {
+                    "lang": "ko",
+                    "Type": "text/plain"
+                  }
+                ]
+              },
+              "MethodSignature": {},
+              "FormalExpression": [
+                {
+                  "Context": "XPath",
+                  "Code": {
+                    "_content": "../ItemGroupData[@ItemGroupOID='IG_SH']/ItemData[@ItemOID='I_SMOKING'][@Value='false']"
+                  }
+                }
+              ]
+            },
+            {
+              "Name": "Usage of itemgroup about details of adverse events",
+              "OID": "COND.IGUSE.ADVERSE_EVENTS",
+              "Description": {
+                "TranslatedText": [
+                  {
+                    "lang": "en",
+                    "Type": "text/plain",
+                    "_content": "Use this group only if it is marked that an adverse event occurred"
+                  },
+                  {
+                    "lang": "fr",
+                    "Type": "text/plain",
+                    "_content": "Utilisez cette groupe dans le cas qu'il est marqué qu'il y a un événement défavorable"
+                  },
+                  {
+                    "lang": "de",
+                    "Type": "text/plain",
+                    "_content": "Benützen sie diese Gruppe nur wenn angegeben ist das es einen ungewünschte Erreignis statt gefunden hat"
+                  },
+                  {
+                    "lang": "ko",
+                    "Type": "text/plain"
+                  }
+                ]
+              },
+              "MethodSignature": {},
+              "FormalExpression": [
+                {
+                  "Context": "XPath",
+                  "Code": {
+                    "_content": "../ItemGroupData[@ItemGroupOID='IG_AE_OCCURRED']/ItemData[@ItemOID='I_AE_OCCURRED'][@Value='0']"
+                  }
+                }
+              ]
+            },
+            {
+              "Name": "AE continuing condition",
+              "OID": "COND.AESTOP.STOPPED",
+              "Description": {
+                "TranslatedText": [
+                  {
+                    "lang": "en",
+                    "Type": "text/plain",
+                    "_content": "Use this group only if it is marked that the adverse event is continueing"
+                  },
+                  {
+                    "lang": "fr",
+                    "Type": "text/plain",
+                    "_content": "Utilisez cette groupe dans le cas qu'il est marqué qu'il y l'événement défavorable continue"
+                  },
+                  {
+                    "lang": "de",
+                    "Type": "text/plain",
+                    "_content": "Benützen sie diese Gruppe nur wenn angegeben ist das einen ungewünschte Erreignis noch immer statt findet"
+                  },
+                  {
+                    "lang": "ko",
+                    "Type": "text/plain"
+                  }
+                ]
+              },
+              "MethodSignature": {},
+              "FormalExpression": [
+                {
+                  "Context": "XPath",
+                  "Code": {
+                    "_content": "../ItemData[@ItemOID='I_AE_CONTINUES'][@Value='1']"
+                  }
+                }
+              ]
+            },
+            {
+              "Name": "Usage of ItemGroup about non-study medication",
+              "OID": "COND.IGUSE.CM",
+              "Description": {
+                "TranslatedText": [
+                  {
+                    "lang": "en",
+                    "Type": "text/plain",
+                    "_content": "Use this group only if it is marked that concurrent medication has been taken"
+                  },
+                  {
+                    "lang": "fr",
+                    "Type": "text/plain",
+                    "_content": "Utilisez cette groupe dans le cas qu'il est marqué que d'autres médicaments ont été prises"
+                  },
+                  {
+                    "lang": "de",
+                    "Type": "text/plain",
+                    "_content": "Benützen sie diese Gruppe nur wenn angegeben ist das andere Medikamenten benützt sein"
+                  },
+                  {
+                    "lang": "ko",
+                    "Type": "text/plain"
+                  }
+                ]
+              },
+              "MethodSignature": {},
+              "FormalExpression": [
+                {
+                  "Context": "XPath",
+                  "Code": {
+                    "_content": "../ItemGroupData[@ItemGroupOID='IG_CM_TAKEN']/ItemData[@ItemOID='I_CM_TAKEN'][@Value='0']"
+                  }
+                }
+              ]
+            },
+            {
+              "Name": "Condition of low systolic blood pressure",
+              "OID": "COND.DBP.DIZZY",
+              "Description": {
+                "TranslatedText": [
+                  {
+                    "lang": "en",
+                    "Type": "text/plain",
+                    "_content": "Needs not be collected when the diastolic blood pressure is 90 or higher"
+                  },
+                  {
+                    "lang": "fr",
+                    "Type": "text/plain",
+                    "_content": "Ne doit pas être collectée si la pression diastolique est 90 ou plus haut"
+                  },
+                  {
+                    "lang": "de",
+                    "Type": "text/plain",
+                    "_content": "Sollte nicht eingesammelt werden wenn der Wert der diastolischer Blutdrück 90 oder höher ist"
+                  },
+                  {
+                    "lang": "ko",
+                    "Type": "text/plain"
+                  }
+                ]
+              },
+              "MethodSignature": {},
+              "FormalExpression": [
+                {
+                  "Context": "XPath",
+                  "Code": {
+                    "_content": "../ItemData[@ItemOID='I_DIABP'][@Value > 90]"
+                  }
+                }
+              ]
+            },
+            {
+              "Name": "CM continueing condition",
+              "OID": "COND.CMSTOP.STOP_DATE",
+              "Description": {
+                "TranslatedText": [
+                  {
+                    "lang": "en",
+                    "Type": "text/plain",
+                    "_content": "Use this group only if it is marked that concurrent medication is ongoing"
+                  },
+                  {
+                    "lang": "fr",
+                    "Type": "text/plain",
+                    "_content": "Utilisez cette groupe dans le cas qu'il est marqué que d'autres médicaments sont encore pris a ce temps"
+                  },
+                  {
+                    "lang": "de",
+                    "Type": "text/plain",
+                    "_content": "Benützen sie diese Gruppe nur wenn angegeben ist das noch immer andere Medikamenten benützt werden"
+                  },
+                  {
+                    "lang": "ko",
+                    "Type": "text/plain"
+                  }
+                ]
+              },
+              "MethodSignature": {},
+              "FormalExpression": [
+                {
+                  "Context": "XPath",
+                  "Code": {
+                    "_content": "../ItemData[@ItemOID='I_CM_CONTINUES'][@Value='1']"
+                  }
+                }
+              ]
+            },
+            {
+              "Name": "Profylaxis condition",
+              "OID": "COND.PROHYLAXIS",
+              "Description": {
+                "TranslatedText": [
+                  {
+                    "lang": "en",
+                    "Type": "text/plain",
+                    "_content": "Use this group only if it is marked that there is prophylaxis"
+                  },
+                  {
+                    "lang": "fr",
+                    "Type": "text/plain",
+                    "_content": "Utilisez cette groupe dans le cas qu'il est marqué qu'il y a du Prophylaxie"
+                  },
+                  {
+                    "lang": "de",
+                    "Type": "text/plain",
+                    "_content": "Benützen sie diese Gruppe nur wenn angegeben ist das es Prophylaxis gibt"
+                  },
+                  {
+                    "lang": "ko",
+                    "Type": "text/plain"
+                  }
+                ]
+              },
+              "MethodSignature": {},
+              "FormalExpression": [
+                {
+                  "Context": "XPath",
+                  "Code": {
+                    "_content": "../ItemData[@ItemOID='I_CM_IPROP'][@Value='0']"
+                  }
+                }
+              ]
+            },
+            {
+              "Name": "Red Blood Count Not-done condition",
+              "OID": "COND.LB_RBC",
+              "Description": {
+                "TranslatedText": [
+                  {
+                    "lang": "en",
+                    "Type": "text/plain",
+                    "_content": "Not to be entered if marked that no Red Blood Count was done"
+                  },
+                  {
+                    "lang": "fr",
+                    "Type": "text/plain",
+                    "_content": "Ne doit pas etre donné si'l est marqué que le nombre de corps rouges n'ont pas été collecté."
+                  },
+                  {
+                    "lang": "de",
+                    "Type": "text/plain",
+                    "_content": "Nicht einführen wenn angegeben ist das keine rote Blutkörper gezählt sind"
+                  },
+                  {
+                    "lang": "ko",
+                    "Type": "text/plain"
+                  }
+                ]
+              },
+              "MethodSignature": {},
+              "FormalExpression": [
+                {
+                  "Context": "XPath",
+                  "Code": {
+                    "_content": "../ItemData[@ItemOID='I_LB_RBC_NOTDONE'][@Value='true']"
+                  }
+                }
+              ]
+            },
+            {
+              "Name": "White Blood Count Not-done condition",
+              "OID": "COND.LB_WBC",
+              "Description": {
+                "TranslatedText": [
+                  {
+                    "lang": "de",
+                    "Type": "text/plain",
+                    "_content": "Nicht einführen wenn angegeben ist das keine weisse Blutkörper gezählt sind"
+                  },
+                  {
+                    "lang": "fr",
+                    "Type": "text/plain",
+                    "_content": "Ne doit pas etre donné si'l est marqué que le nombre de corps blanches n'ont pas été collecté."
+                  },
+                  {
+                    "lang": "en",
+                    "Type": "text/plain",
+                    "_content": "Not to be entered if marked that no White Blood Count was done"
+                  },
+                  {
+                    "lang": "ko",
+                    "Type": "text/plain"
+                  }
+                ]
+              },
+              "MethodSignature": {},
+              "FormalExpression": [
+                {
+                  "Context": "XPath",
+                  "Code": {
+                    "_content": "../ItemData[@ItemOID='I_LB_WBC_NOTDONE'][@Value='true']"
+                  }
+                }
+              ]
+            },
+            {
+              "Name": "AE Severity Condition",
+              "OID": "COND.AE_SEVERITY.AE_SERIOUS",
+              "Description": {
+                "TranslatedText": [
+                  {
+                    "lang": "de",
+                    "Type": "text/plain",
+                    "_content": "Nicht einführen wenn angegeben ist das den Ungewünsche Vorfall nicht ernsthaft war"
+                  },
+                  {
+                    "lang": "fr",
+                    "Type": "text/plain",
+                    "_content": "Ne doit pas etre donné si'l est marqué que l'événement défavorable n'était pas sérieux"
+                  },
+                  {
+                    "lang": "en",
+                    "Type": "text/plain",
+                    "_content": "Not to be entered if marked that the AE was not serious"
+                  },
+                  {
+                    "lang": "ko",
+                    "Type": "text/plain"
+                  }
+                ]
+              },
+              "MethodSignature": {},
+              "FormalExpression": [
+                {
+                  "Context": "XPath",
+                  "Code": {
+                    "_content": "../ItemData[@ItemOID='I_AE_SERIOUS'][@Value='0']"
+                  }
+                }
+              ]
+            }
+          ],
+          "MethodDef": [
+            {
+              "Name": "Method definition",
+              "OID": "METH.001",
+              "Description": {
+                "TranslatedText": [
+                  {
+                    "lang": "en",
+                    "Type": "text/plain",
+                    "_content": "English method description"
+                  },
+                  {
+                    "lang": "de",
+                    "Type": "text/plain",
+                    "_content": "Deutsche Methode Beschreibung"
+                  },
+                  {
+                    "lang": "fr",
+                    "Type": "text/plain",
+                    "_content": "Description Francaise de la Méthode"
+                  },
+                  {
+                    "lang": "ko",
+                    "Type": "text/plain"
+                  }
+                ]
+              },
+              "MethodSignature": {},
+              "FormalExpression": [
+                {
+                  "Context": "MyScriptingLanguage1",
+                  "Code": {
+                    "_content": "Test Algorithm 1"
+                  }
+                },
+                {
+                  "Context": "MyScriptingLanguage2",
+                  "Code": {
+                    "_content": "Test Algorithm 2"
+                  }
+                }
+              ],
+              "Alias": [
+                {
+                  "Context": "CDASH",
+                  "Name": "CDASH alias"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

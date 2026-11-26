@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- ODM v2.0 clinical data snapshot template (Non-normative). The current state of the data for one
+     subject, against the metadata in study-metadata.xml (the prior file in the series, named by
+     PriorFileOID). A Snapshot needs no TransactionType; if one is given it must be Insert.
+     AdminData supplies the User and Location that InvestigatorRef and SiteRef point to. -->
+<ODM xmlns="http://www.cdisc.org/ns/odm/v2.0"
+     FileType="Snapshot" Context="Exchange" ODMVersion="2.0"
+     FileOID="ODM.EXAMPLE.CLINICAL.1" PriorFileOID="ODM.EXAMPLE.METADATA.1"
+     CreationDateTime="2026-02-01T08:00:00" AsOfDateTime="2026-02-01T07:55:00"
+     Originator="Example Sponsor" SourceSystem="Example EDC">
+  <AdminData StudyOID="ST.EXAMPLE">
+    <User OID="USR.INV01" UserType="Investigator" LocationOID="LOC.SITE01">
+      <FullName>Jane Smith</FullName>
+    </User>
+    <Location OID="LOC.SITE01" Name="Site 01">
+      <MetaDataVersionRef StudyOID="ST.EXAMPLE" MetaDataVersionOID="MDV.EXAMPLE.1" EffectiveDate="2026-01-01"/>
+    </Location>
+  </AdminData>
+  <!-- ClinicalData names the Study and the MetaDataVersion whose OIDs the data uses -->
+  <ClinicalData StudyOID="ST.EXAMPLE" MetaDataVersionOID="MDV.EXAMPLE.1">
+    <SubjectData SubjectKey="SITE01-001">
+      <InvestigatorRef UserOID="USR.INV01"/>
+      <SiteRef LocationOID="LOC.SITE01"/>
+      <StudyEventData StudyEventOID="SE.SCREENING">
+        <ItemGroupData ItemGroupOID="IG.DM">
+          <!-- Values are Value child elements (no Value attribute in v2.0) -->
+          <ItemData ItemOID="IT.DM.BRTHDAT"><Value>1975-04-12</Value></ItemData>
+          <ItemData ItemOID="IT.DM.AGE"><Value>50</Value></ItemData>
+          <ItemData ItemOID="IT.DM.AGEU"><Value>YEARS</Value></ItemData>
+          <ItemData ItemOID="IT.DM.SEX"><Value>F</Value></ItemData>
+          <ItemData ItemOID="IT.DM.CHILDPOT"><Value>N</Value></ItemData>
+        </ItemGroupData>
+      </StudyEventData>
+    </SubjectData>
+  </ClinicalData>
+</ODM>

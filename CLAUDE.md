@@ -383,7 +383,14 @@ To create proprietary extensions:
 ## Testing Conventions
 
 - Tests use `unittest.TestCase` (not pytest)
-- Test data files located in `tests/data/`
+- Test data files located in `tests/data/`. **It is read-only during a run:** a session
+  fixture in `conftest.py` fails the run if any file there is created, changed or deleted.
+  Write generated output to `tempfile.TemporaryDirectory()` with `self.addCleanup(...)`.
+- `tests/data/odm_v2/` holds ODM v2.0 fixtures vendored from the odm-v2 skill and pinned by
+  sha256 in its `MANIFEST.json` (licences in `PROVENANCE.md`). Never edit them in place:
+  fix them in odm-v2, then run
+  `python scripts/sync_odm_v2_fixtures.py --source <odm-v2>/.claude/skills/odm-v2/examples`
+  (`--check` reports drift).
 - Each major element type has a dedicated test file (e.g., `test_itemDef.py`)
 - Tests include: object creation, XML/JSON round-tripping, validation, conformance checks
 - Some tests use snapshot comparison (e.g., `tests/data/cdash_demo_v20.xml`)

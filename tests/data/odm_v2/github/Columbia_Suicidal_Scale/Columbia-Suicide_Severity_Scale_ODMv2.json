@@ -1,0 +1,4180 @@
+{
+  "FileOID": "SDY_1",
+  "FileType": "Snapshot",
+  "CreationDateTime": "2021-03-11T17:33:17",
+  "Study": [
+    {
+      "OID": "STUDY.CSSRS",
+      "StudyName": "Columbia Suicid Severity Rating Scale Example",
+      "ProtocolName": "Protocol: Columbia Suicid Severity Rating Scale Example",
+      "MetaDataVersion": [
+        {
+          "OID": "MV.CSSRS.001",
+          "Name": "MetaDataVersion 1",
+          "Protocol": {
+            "StudyEventGroupRef": [
+              {
+                "StudyEventGroupOID": "SEG.CSSRS",
+                "Mandatory": "Yes"
+              }
+            ]
+          },
+          "WorkflowDef": [
+            {
+              "OID": "WF.CSSRS_SUICIDAL_IDEATION",
+              "Name": "Workflow Columbia Suicid Severity Rating Scale questionnaire, part Suicidal Ideation",
+              "Description": {
+                "TranslatedText": [
+                  {
+                    "lang": "en",
+                    "Type": "text/plain",
+                    "_content": "Workflow Columbia Suicid Severity Rating Scale\n                        questionnaire, section \"Suicidal Ideation\""
+                  }
+                ]
+              },
+              "WorkflowStart": {
+                "StartOID": "IT.1.Wish_to_be_Dead"
+              },
+              "Transition": [
+                {
+                  "OID": "TR.1-BRANCH",
+                  "Name": "Transition from 'Whish to be dead question' to  branching for 'Non-Specific Active Suicidal Thoughts' question and 'If yes, describe' question",
+                  "SourceOID": "IT.1.Wish_to_be_Dead",
+                  "TargetOID": "BR.1"
+                },
+                {
+                  "OID": "TR.1-BRANCH-DESC",
+                  "Name": "Transition to question 'Wish to be Dead - Description'",
+                  "SourceOID": "BR.1",
+                  "TargetOID": "IT.1.Wish_to_be_Dead_Description"
+                },
+                {
+                  "OID": "TR.1-BRANCH-2",
+                  "Name": "Default transition to question 'Non-Specific Active Suicidal Thoughts'",
+                  "SourceOID": "BR.1",
+                  "TargetOID": "IT.2.Non-Specific_Active_Suicidal_Thoughts"
+                },
+                {
+                  "OID": "TR.1-DESC-2",
+                  "Name": "Transition from 'Wish to be Dead - Description' question to 'Non-Specific Active Suicidal Thoughts' question",
+                  "SourceOID": "IT.1.Wish_to_be_Dead_Description",
+                  "TargetOID": "IT.2.Non-Specific_Active_Suicidal_Thoughts"
+                },
+                {
+                  "OID": "TR.2-BRANCH",
+                  "Name": "Transition from 'Non-Specific Active Suicidal Thoughts' question to branching for 'Active Suicidal Ideation with Any Methods' question and If yes, describe' question",
+                  "SourceOID": "IT.2.Non-Specific_Active_Suicidal_Thoughts",
+                  "TargetOID": "BR.2"
+                },
+                {
+                  "OID": "TR.2-BRANCH-DESC",
+                  "Name": "Transition to question 'Non-Specific Active Suicidal Thoughts - Description'",
+                  "SourceOID": "BR.2",
+                  "TargetOID": "IT.2.Non-Specific_Active_Suicidal_Thoughts_Description"
+                },
+                {
+                  "OID": "TR.2-DESC-BRANCH",
+                  "Name": "Non-Specific Active Suicidal Thoughts - Description' to next branching",
+                  "SourceOID": "IT.2.Non-Specific_Active_Suicidal_Thoughts_Description",
+                  "TargetOID": "BR.2_OUT"
+                },
+                {
+                  "OID": "TR.2-BRANCH-BRANCH",
+                  "Name": "Default transition to branching point where one one can get out of the current workflow",
+                  "SourceOID": "BR.2",
+                  "TargetOID": "BR.2_OUT"
+                },
+                {
+                  "OID": "TR.Go_To_Suicidal_Behavior",
+                  "Name": "Transition after questions 1 and 2, to group 'Suicidal Behavior'",
+                  "SourceOID": "BR.2_OUT",
+                  "TargetOID": "IG.SUICIDAL_BEHAVIOR"
+                },
+                {
+                  "OID": "TR.Go_To_Intensity_of_Ideation",
+                  "Name": "Transition after questions 1 and 2, to group 'Intensity of Ideation'",
+                  "SourceOID": "BR.2_OUT",
+                  "TargetOID": "IG.Intensity_of_Ideation"
+                },
+                {
+                  "OID": "TR.2-BRANCH-BRANCH-3",
+                  "Name": "Transition after branching point after question 2 'Non-specific Active Suicidal Thoughts' to question 3 'Active Suicidal Ideation with Any Methods'",
+                  "SourceOID": "BR.2_OUT",
+                  "TargetOID": "IT.3.Active_Suicidal_Ideation_with_Any_Methods"
+                },
+                {
+                  "OID": "TR.3-BRANCH-DESC",
+                  "Name": "Transition from 'Non-Specific Active Suicidal Thoughts' to branching for 'Active suicidation with some intent to act' and 'If yes, describe' question",
+                  "SourceOID": "IT.2.Non-Specific_Active_Suicidal_Thoughts",
+                  "TargetOID": "BR.3"
+                },
+                {
+                  "OID": "TR.3-BRANCH-DESC",
+                  "Name": "Transition to question 'Active Suicidal Ideation with Any Methods - Description'",
+                  "SourceOID": "BR.3",
+                  "TargetOID": "IT.3.Active_Suicidal_Ideation_with_Any_Methods_Description"
+                },
+                {
+                  "OID": "TR.3-BRANCH-4",
+                  "Name": "Transition from 'Active suicidal ideation with any methods' to 'Active suicidal ideation with some intent'",
+                  "SourceOID": "BR.3",
+                  "TargetOID": "IT.4.Active_Suicidal_Ideation_with_Some_Intent"
+                },
+                {
+                  "OID": "TR.3-DESC-4",
+                  "Name": "Transition from 'Active suicidal ideation with any methods - description' to 'Active suicidal ideation with some intent'",
+                  "SourceOID": "IT.3.Active_Suicidal_Ideation_with_Any_Methods_Description",
+                  "TargetOID": "IT.4.Active_Suicidal_Ideation_with_Some_Intent"
+                },
+                {
+                  "OID": "TR.4-BRANCH",
+                  "Name": "Transition from 'Active Suicidal Ideation with Some Intent to Act' to branching for 'Active Suicidal Ideation with Specific Plan and Intent' and 'If yes, describe' question",
+                  "SourceOID": "IT.4.Active_Suicidal_Ideation_with_Some_Intent",
+                  "TargetOID": "BR.4"
+                },
+                {
+                  "OID": "TR.4-BRANCH-DESC",
+                  "Name": "Transition to question 'Active suicidal ideation with some intent - description",
+                  "SourceOID": "BR.4",
+                  "TargetOID": "IT.4.Active_Suicidal_Ideation_with_Some_Intent_Description"
+                },
+                {
+                  "OID": "TR.4-DESC-5",
+                  "Name": "Transition from 'Active Suicidal Ideation with Some Intent to Act - Description' to 'Active Suicidal Ideation with Specific Plan and Intent'",
+                  "SourceOID": "IT.4.Active_Suicidal_Ideation_with_Some_Intent_Description",
+                  "TargetOID": "IT.5.Active_Suicidal_Ideation_with_Specific_Plan_and_Intent"
+                },
+                {
+                  "OID": "TR.4-BRANCH-5",
+                  "Name": "Deault transition from question 'Active Suicidal Ideation with Some Intent to Act' to question 'Active Suicidal Ideation with Specific Plan and Intent'",
+                  "SourceOID": "IT.BR4",
+                  "TargetOID": "IT.5.Active_Suicidal_Ideation_with_Specific_Plan_and_Intent"
+                },
+                {
+                  "OID": "TR.5-BRANCH",
+                  "Name": "Transition from 'Active Suicidal Ideation with specific plan' to branching for 'Itensity of Ideation section' and 'If yes, describe'",
+                  "SourceOID": "IT.5.Active_Suicidal_Ideation_with_Specific_Plan_and_Intent",
+                  "TargetOID": "BR.5"
+                },
+                {
+                  "OID": "TR.5-BRANCH-END",
+                  "Name": "Transition from branching to question 'Intensity of ideation'",
+                  "SourceOID": "BR.5",
+                  "TargetOID": "IG.Intensity_of_Ideation"
+                },
+                {
+                  "OID": "TR.5-BRANCH-DESC",
+                  "Name": "Transition to question 'Active Suicidation with specific plan - description'",
+                  "SourceOID": "BR.5",
+                  "TargetOID": "IT.5.Active_Suicidal_Ideation_with_Specific_Plan_and_Intent_Description"
+                },
+                {
+                  "OID": "TR.5-DESC-END",
+                  "Name": "Transition from 'Active suicidal ideation with specific plan - descrition' to section ''Intensity of ideation",
+                  "SourceOID": "IT.5.Active_Suicidal_Ideation_with_Specific_Plan_and_Intent_Description",
+                  "TargetOID": "IG.Intensity_of_Ideation"
+                }
+              ],
+              "Branching": [
+                {
+                  "OID": "BR.1",
+                  "Name": "Branching on conditional 'Non-Specific Active Suicidal Thoughts' question",
+                  "Type": "Exclusive",
+                  "TargetTransition": [
+                    {
+                      "TargetTransitionOID": "TR.1-BRANCH-DESC",
+                      "ConditionOID": "COND.Wish_to_be_dead_yes"
+                    }
+                  ],
+                  "DefaultTransition": [
+                    {
+                      "TargetTransitionOID": "TR.1-BRANCH-2"
+                    }
+                  ]
+                },
+                {
+                  "OID": "BR.2",
+                  "Name": "Branching on conditional 'Non-Specific Active Suicidal Thoughts' question",
+                  "Type": "Exclusive",
+                  "TargetTransition": [
+                    {
+                      "TargetTransitionOID": "TR.2-BRANCH-DESC",
+                      "ConditionOID": "COND.Non-Specific_Active_Suicidal_Thoughts_Yes"
+                    }
+                  ],
+                  "DefaultTransition": [
+                    {
+                      "TargetTransitionOID": "TR.2-BRANCH-BRANCH"
+                    }
+                  ]
+                },
+                {
+                  "OID": "BR.2_OUT",
+                  "Name": "Branching after question 2, different ways to leave the workflow for 'Suicidal Ideation'",
+                  "Type": "Exclusive",
+                  "TargetTransition": [
+                    {
+                      "TargetTransitionOID": "TR.Go_To_Suicidal_Behavior",
+                      "ConditionOID": "COND.1_and_2_negative"
+                    },
+                    {
+                      "TargetTransitionOID": "TR.Go_To_Intensity_of_Ideation",
+                      "ConditionOID": "COND.2_negative"
+                    }
+                  ],
+                  "DefaultTransition": [
+                    {
+                      "TargetTransitionOID": "TR.2-BRANCH-BRANCH-3"
+                    }
+                  ]
+                },
+                {
+                  "OID": "BR.3",
+                  "Name": "Branching on conditional 'Active Suicidal Ideation with Any Methods' question",
+                  "Type": "Exclusive",
+                  "TargetTransition": [
+                    {
+                      "TargetTransitionOID": "TR.3-BRANCH-DESC",
+                      "ConditionOID": "COND.Active_Suicidal_Ideation_with_Any_Methods_Yes"
+                    }
+                  ],
+                  "DefaultTransition": [
+                    {
+                      "TargetTransitionOID": "TR.3-BRANCH-4"
+                    }
+                  ]
+                },
+                {
+                  "OID": "BR.4",
+                  "Name": "Branching on conditional 'Active Suicidal Ideation with Some Intent to Act' question",
+                  "Type": "Exclusive",
+                  "TargetTransition": [
+                    {
+                      "TargetTransitionOID": "TR.4-BRANCH-DESC",
+                      "ConditionOID": "Active_Suicidal_Ideation_with_Some_Intent_Yes"
+                    }
+                  ],
+                  "DefaultTransition": [
+                    {
+                      "TargetTransitionOID": "TR.4-BRANCH-5"
+                    }
+                  ]
+                },
+                {
+                  "OID": "BR.5",
+                  "Name": "Branching on conditional 'Active suicidal ideation with some intent'",
+                  "Type": "Exclusive",
+                  "TargetTransition": [
+                    {
+                      "TargetTransitionOID": "TR.5-BRANCH-DESC",
+                      "ConditionOID": "COND.Active_Suicidal_Ideation_with_Specific_Plan_and_Intent_Yes"
+                    }
+                  ],
+                  "DefaultTransition": [
+                    {
+                      "TargetTransitionOID": "TR.5-BRANCH-END"
+                    }
+                  ]
+                }
+              ],
+              "WorkflowEnd": [
+                {
+                  "EndOID": "IG.Intensity_of_Ideation"
+                }
+              ]
+            }
+          ],
+          "StudyEventGroupDef": [
+            {
+              "OID": "SEG.CSSRS",
+              "Name": "Columbia Suicid Severity Rating Scale",
+              "StudyEventRef": [
+                {
+                  "StudyEventOID": "SE.CSSRS",
+                  "Mandatory": "Yes"
+                }
+              ]
+            }
+          ],
+          "StudyEventDef": [
+            {
+              "OID": "SE.CSSRS",
+              "Name": "Columbia Suicid Severity Rating Scale Visit",
+              "Repeating": "No",
+              "Type": "Scheduled",
+              "ItemGroupRef": [
+                {
+                  "ItemGroupOID": "FO.C-SSRS_Form",
+                  "Mandatory": "Yes"
+                }
+              ]
+            }
+          ],
+          "ItemGroupDef": [
+            {
+              "OID": "FO.C-SSRS_Form",
+              "Name": "Columbia-Suicide Severity Rating Scale Form",
+              "Repeating": "No",
+              "Type": "Form",
+              "ItemGroupRef": [
+                {
+                  "ItemGroupOID": "IG.Risk_assessment",
+                  "Mandatory": "Yes"
+                },
+                {
+                  "ItemGroupOID": "IG.Suicidal_Ideation",
+                  "Mandatory": "Yes"
+                },
+                {
+                  "ItemGroupOID": "IG.Intensity_of_Ideation",
+                  "Mandatory": "Yes"
+                }
+              ]
+            },
+            {
+              "OID": "IG.Risk_assessment",
+              "Name": "Risk Assessment",
+              "Repeating": "No",
+              "Type": "Section",
+              "Description": {
+                "TranslatedText": [
+                  {
+                    "lang": "en",
+                    "Type": "text/plain",
+                    "_content": "RISK ASSESSMENT VERSION"
+                  }
+                ]
+              },
+              "ItemGroupRef": [
+                {
+                  "ItemGroupOID": "IG.Suicidal_and_Self-Injury_Behavior",
+                  "Mandatory": "No"
+                },
+                {
+                  "ItemGroupOID": "IG.Suicide_Ideation",
+                  "Mandatory": "No"
+                },
+                {
+                  "ItemGroupOID": "IG.Activating_Events_Recent",
+                  "Mandatory": "No"
+                },
+                {
+                  "ItemGroupOID": "IG.Treatment_History",
+                  "Mandatory": "No"
+                },
+                {
+                  "ItemGroupOID": "IG.Other_Risk_Factors",
+                  "Mandatory": "No"
+                },
+                {
+                  "ItemGroupOID": "IG.Clinical_Status_Recent",
+                  "Mandatory": "No"
+                },
+                {
+                  "ItemGroupOID": "IG.Protective_factors",
+                  "Mandatory": "No"
+                },
+                {
+                  "ItemGroupOID": "IG.Other_Protective_Factors",
+                  "Mandatory": "No"
+                }
+              ]
+            },
+            {
+              "OID": "IG.Suicidal_and_Self-Injury_Behavior",
+              "Name": "Section Suicidal and Self-Injury Behavior",
+              "Repeating": "No",
+              "Type": "Section",
+              "Description": {
+                "TranslatedText": [
+                  {
+                    "lang": "en",
+                    "Type": "text/plain",
+                    "_content": "Section Suicidal and Self-Injury\n                        Behavior"
+                  }
+                ]
+              },
+              "ItemGroupRef": [
+                {
+                  "ItemGroupOID": "IG.Actual_suicide_attempt_with_Lifetime",
+                  "Mandatory": "No"
+                },
+                {
+                  "ItemGroupOID": "IG.Interrupted_attempt_with_Lifetime",
+                  "Mandatory": "No"
+                },
+                {
+                  "ItemGroupOID": "IG.Aborted_attempt_with_Lifetime",
+                  "Mandatory": "No"
+                },
+                {
+                  "ItemGroupOID": "IG.Other_preparatory_acts",
+                  "Mandatory": "No"
+                },
+                {
+                  "ItemGroupOID": "IG.Self-injury_behavior",
+                  "Mandatory": "No"
+                }
+              ]
+            },
+            {
+              "OID": "IG.Actual_suicide_attempt_with_Lifetime",
+              "Name": "Actual suicide attempt with Lifetime additional checkbox",
+              "Repeating": "Static",
+              "Type": "Section",
+              "ItemRef": [
+                {
+                  "ItemOID": "IT.Actual_suicide_attempt",
+                  "Mandatory": "No"
+                },
+                {
+                  "ItemOID": "IT.PAST_WEEK_LIFETIME",
+                  "Mandatory": "No",
+                  "Repeat": "Yes"
+                }
+              ]
+            },
+            {
+              "OID": "IG.Interrupted_attempt_with_Lifetime",
+              "Name": "Interrupted attempt with Lifetime additional checkbox",
+              "Repeating": "Static",
+              "Type": "Section",
+              "ItemRef": [
+                {
+                  "ItemOID": "IT.Interrupted_attempt",
+                  "Mandatory": "No"
+                },
+                {
+                  "ItemOID": "IT.PAST_WEEK_LIFETIME",
+                  "Mandatory": "No",
+                  "Repeat": "Yes"
+                }
+              ]
+            },
+            {
+              "OID": "IG.Aborted_attempt_with_Lifetime",
+              "Name": "Aborted attempt with Lifetime additional checkbox",
+              "Repeating": "Static",
+              "Type": "Section",
+              "ItemRef": [
+                {
+                  "ItemOID": "IT.Aborted_attempt",
+                  "Mandatory": "No"
+                },
+                {
+                  "ItemOID": "IT.PAST_WEEK_LIFETIME",
+                  "Mandatory": "No",
+                  "Repeat": "Yes"
+                }
+              ]
+            },
+            {
+              "OID": "IG.Other_preparatory_acts",
+              "Name": "Other preparatory acts to kill self with Lifetime additional Checkbox",
+              "Repeating": "Static",
+              "Type": "Section",
+              "ItemRef": [
+                {
+                  "ItemOID": "IT.Other_preparatory_acts",
+                  "Mandatory": "No"
+                },
+                {
+                  "ItemOID": "IT.PAST_WEEK_LIFETIME",
+                  "Mandatory": "No",
+                  "Repeat": "Yes"
+                }
+              ]
+            },
+            {
+              "OID": "IG.Self-injury_behavior",
+              "Name": "Self-injury behavior with Lifetime additional Checkbox",
+              "Repeating": "Static",
+              "Type": "Section",
+              "ItemRef": [
+                {
+                  "ItemOID": "IT.Self-injury_behavior",
+                  "Mandatory": "No"
+                },
+                {
+                  "ItemOID": "IT.PAST_WEEK_LIFETIME",
+                  "Mandatory": "No",
+                  "Repeat": "Yes"
+                }
+              ]
+            },
+            {
+              "OID": "IG.Suicide_Ideation",
+              "Name": "Suicide Ideation",
+              "Repeating": "No",
+              "Type": "Section",
+              "ItemRef": [
+                {
+                  "ItemOID": "IT.Wish_to_be_dead_assessment",
+                  "Mandatory": "No"
+                },
+                {
+                  "ItemOID": "IT.Suicidal_thoughts",
+                  "Mandatory": "No"
+                },
+                {
+                  "ItemOID": "IT.Suicidal_thoughts_with_method",
+                  "Mandatory": "No"
+                },
+                {
+                  "ItemOID": "IT.Suicidal_intent",
+                  "Mandatory": "No"
+                },
+                {
+                  "ItemOID": "IT.Suicidal_intent_with_specific_plan",
+                  "Mandatory": "No"
+                }
+              ]
+            },
+            {
+              "OID": "IG.Activating_Events_Recent",
+              "Name": "Activating Events (Recent)",
+              "Repeating": "No",
+              "Type": "Section",
+              "Description": {
+                "TranslatedText": [
+                  {
+                    "lang": "en",
+                    "Type": "text/plain",
+                    "_content": "Activating Events (Recent)"
+                  }
+                ]
+              },
+              "ItemRef": [
+                {
+                  "ItemOID": "IT.Recent_loss_or_other_significant_negative_event",
+                  "Mandatory": "No"
+                },
+                {
+                  "ItemOID": "IT.Recent_loss_or_other_significant_negative_event_Description",
+                  "Mandatory": "No",
+                  "CollectionExceptionConditionOID": "COND.Recent_loss_or_other_significant_negative_event_Description"
+                },
+                {
+                  "ItemOID": "IT.Pending_incarceration_or_homelessness",
+                  "Mandatory": "No"
+                },
+                {
+                  "ItemOID": "IT.Current_or_pending_isolation_or_feeling_alone",
+                  "Mandatory": "No"
+                }
+              ]
+            },
+            {
+              "OID": "IG.Treatment_History",
+              "Name": "Treatment History",
+              "Repeating": "No",
+              "Type": "Section",
+              "Description": {
+                "TranslatedText": [
+                  {
+                    "lang": "en",
+                    "Type": "text/plain",
+                    "_content": "Treatment History"
+                  }
+                ]
+              },
+              "ItemRef": [
+                {
+                  "ItemOID": "IT.Previous_psychiatric_diagnoses_and_treatments",
+                  "Mandatory": "No"
+                },
+                {
+                  "ItemOID": "IT.Hopeless_or_dissatisfied_with_treatment",
+                  "Mandatory": "No"
+                },
+                {
+                  "ItemOID": "IT.Noncompliant_with_treatment",
+                  "Mandatory": "No"
+                },
+                {
+                  "ItemOID": "IT.Not_receiving_treatment",
+                  "Mandatory": "No"
+                }
+              ]
+            },
+            {
+              "OID": "IG.Other_Risk_Factors",
+              "Name": "Other Risk Factors",
+              "Repeating": "No",
+              "Type": "Section",
+              "Description": {
+                "TranslatedText": [
+                  {
+                    "lang": "en",
+                    "Type": "text/plain",
+                    "_content": "Other Risk Factors"
+                  }
+                ]
+              },
+              "ItemRef": [
+                {
+                  "ItemOID": "IT.Other_Risk_Factors",
+                  "Mandatory": "No"
+                },
+                {
+                  "ItemOID": "IT.Other_Risk_Factors_Description",
+                  "Mandatory": "No",
+                  "CollectionExceptionConditionOID": "COND.Other_Risk_Factors"
+                }
+              ]
+            },
+            {
+              "OID": "IG.Clinical_Status_Recent",
+              "Name": "Clinical Status (Recent)",
+              "Repeating": "No",
+              "Type": "Section",
+              "Description": {
+                "TranslatedText": [
+                  {
+                    "lang": "en",
+                    "Type": "text/plain",
+                    "_content": "Clinical Status (Recent)"
+                  }
+                ]
+              },
+              "ItemRef": [
+                {
+                  "ItemOID": "IT.Hopelessness",
+                  "Mandatory": "No"
+                },
+                {
+                  "ItemOID": "IT.Helplessness",
+                  "Mandatory": "No"
+                },
+                {
+                  "ItemOID": "IT.Feeling_Trapped",
+                  "Mandatory": "No"
+                },
+                {
+                  "ItemOID": "IT.Major_depressive_episode",
+                  "Mandatory": "No"
+                },
+                {
+                  "ItemOID": "IT.Mixed_affective_episode",
+                  "Mandatory": "No"
+                },
+                {
+                  "ItemOID": "IT.Command_hallucinations_to_hurt_self",
+                  "Mandatory": "No"
+                },
+                {
+                  "ItemOID": "IT.Highly_impulsive_behavior",
+                  "Mandatory": "No"
+                },
+                {
+                  "ItemOID": "IT.Substance_abuse_or_dependence",
+                  "Mandatory": "No"
+                },
+                {
+                  "ItemOID": "IT.Agitation_or_severe_anxiety",
+                  "Mandatory": "No"
+                },
+                {
+                  "ItemOID": "IT.Perceived_burden_on_family_or_others",
+                  "Mandatory": "No"
+                },
+                {
+                  "ItemOID": "IT.Chronic_physical_pain",
+                  "Mandatory": "No"
+                },
+                {
+                  "ItemOID": "IT.Homicidal_ideation",
+                  "Mandatory": "No"
+                },
+                {
+                  "ItemOID": "IT.Aggressive_behavior_towards_others",
+                  "Mandatory": "No"
+                },
+                {
+                  "ItemOID": "IT.Method_for_suicide_available",
+                  "Mandatory": "No"
+                },
+                {
+                  "ItemOID": "IT.Refuses_or_feels_unable_to_agree_to_safety_plan",
+                  "Mandatory": "No"
+                },
+                {
+                  "ItemOID": "IT.Sexual_abuse_lifetime",
+                  "Mandatory": "No"
+                },
+                {
+                  "ItemOID": "IT.Family_history_of_suicide",
+                  "Mandatory": "No"
+                }
+              ]
+            },
+            {
+              "OID": "IG.Protective_factors",
+              "Name": "Protective factors",
+              "Repeating": "No",
+              "Type": "Section",
+              "Description": {
+                "TranslatedText": [
+                  {
+                    "lang": "en",
+                    "Type": "text/plain",
+                    "_content": "Protective Factors (Recent)"
+                  }
+                ]
+              },
+              "ItemRef": [
+                {
+                  "ItemOID": "IT.Identifies_reasons_for_living",
+                  "Mandatory": "No"
+                },
+                {
+                  "ItemOID": "IT.Responsibility_to_family_or_others",
+                  "Mandatory": "No"
+                },
+                {
+                  "ItemOID": "IT.Supportive_social_network_or_family",
+                  "Mandatory": "No"
+                },
+                {
+                  "ItemOID": "IT.Fear_of_death",
+                  "Mandatory": "No"
+                },
+                {
+                  "ItemOID": "IT.Belief_that_suicide_is_immoral",
+                  "Mandatory": "No"
+                },
+                {
+                  "ItemOID": "IT.Engaged_in_work_or_school",
+                  "Mandatory": "No"
+                },
+                {
+                  "ItemOID": "IT.Engaged_with_Phone_Worker",
+                  "Mandatory": "No"
+                }
+              ]
+            },
+            {
+              "OID": "IG.Other_Protective_Factors",
+              "Name": "Other Protective Factors",
+              "Repeating": "No",
+              "Type": "Section",
+              "Description": {
+                "TranslatedText": [
+                  {
+                    "lang": "en",
+                    "Type": "text/plain",
+                    "_content": "Other Protective Factors"
+                  }
+                ]
+              },
+              "ItemRef": [
+                {
+                  "ItemOID": "IT.Other_Protective_Factors",
+                  "Mandatory": "No"
+                },
+                {
+                  "ItemOID": "IT.Other_Protective_Factors_Description",
+                  "Mandatory": "No",
+                  "CollectionExceptionConditionOID": "CL.Other_Protective_Factors"
+                }
+              ]
+            },
+            {
+              "OID": "IG.Suicidal_Ideation",
+              "Name": "SUICIDAL IDEATION",
+              "Repeating": "No",
+              "Type": "Section",
+              "Description": {
+                "TranslatedText": [
+                  {
+                    "lang": "en",
+                    "Type": "text/plain",
+                    "_content": "Ask questions 1 and 2. If both are negative,\n                        proceed to \"Suicidal Behavior\" section. If the answer to question 2 is\n                        \"yes\", ask questions 3, 4 and 5. If the answer to question 1 and/or 2 is\n                        \"yes\", complete \"Intensity of Ideation\" section below."
+                  }
+                ]
+              },
+              "ItemGroupRef": [
+                {
+                  "ItemGroupOID": "IG.Wish_to_bed_Dead_Group_with_Description",
+                  "Mandatory": "Yes"
+                },
+                {
+                  "ItemGroupOID": "IG_Non-Specific_Active_Suicidal_Thoughts_with_Description",
+                  "Mandatory": "Yes"
+                },
+                {
+                  "ItemGroupOID": "IG.Active_Suicidal_Ideation_with_Any_Methods_with_Description",
+                  "Mandatory": "Yes"
+                },
+                {
+                  "ItemGroupOID": "IG.Active_Suicidal_Ideation_with_Some_Intent_to_Act_with_Description",
+                  "Mandatory": "Yes"
+                },
+                {
+                  "ItemGroupOID": "IG.Active_Suicidal_Ideation_with_Specific_Plan_and_Intent_with_Description",
+                  "Mandatory": "Yes"
+                }
+              ]
+            },
+            {
+              "OID": "IG.Wish_to_bed_Dead_Group_with_Description",
+              "Name": "'Wish to be dead group', with 'If yes: describe'",
+              "Repeating": "No",
+              "Type": "Section",
+              "ItemGroupRef": [
+                {
+                  "ItemGroupOID": "IG.Wish_to_be_Dead",
+                  "Mandatory": "No"
+                }
+              ],
+              "ItemRef": [
+                {
+                  "ItemOID": "IT.1.Wish_to_be_Dead_Description",
+                  "Mandatory": "No"
+                }
+              ]
+            },
+            {
+              "OID": "IG.Wish_to_be_Dead",
+              "Name": "'Wish to be dead group', repeating over 'Lifetime' and 'Past 1 month'",
+              "Repeating": "Static",
+              "Type": "Section",
+              "ItemRef": [
+                {
+                  "ItemOID": "IT.1.Wish_to_be_Dead",
+                  "Mandatory": "No"
+                },
+                {
+                  "ItemOID": "IT.Lifetime_Past_1_Month",
+                  "Repeat": "Yes",
+                  "Mandatory": "No"
+                }
+              ]
+            },
+            {
+              "OID": "IG_Non-Specific_Active_Suicidal_Thoughts_with_Description",
+              "Name": "'Non-Specific Active Suicidal Thoughts' group, with 'If yes: describe'",
+              "Repeating": "No",
+              "Type": "Section",
+              "ItemGroupRef": [
+                {
+                  "ItemGroupOID": "IG_Non-Specific_Active_Suicidal_Thoughts",
+                  "Mandatory": "No"
+                }
+              ],
+              "ItemRef": [
+                {
+                  "ItemOID": "IT.2.Non-Specific_Active_Suicidal_Thoughts_Description",
+                  "Mandatory": "No"
+                }
+              ]
+            },
+            {
+              "OID": "IG_Non-Specific_Active_Suicidal_Thoughts",
+              "Name": "'Non-Specific Active Suicidal Thoughts' group, repeating over 'Lifetime' and 'Past 1 month'",
+              "Repeating": "Static",
+              "Type": "Section",
+              "ItemRef": [
+                {
+                  "ItemOID": "IT.2.Non-Specific_Active_Suicidal_Thoughts",
+                  "Mandatory": "No"
+                },
+                {
+                  "ItemOID": "IT.Lifetime_Past_1_Month",
+                  "Repeat": "Yes",
+                  "Mandatory": "No"
+                }
+              ]
+            },
+            {
+              "OID": "IG.Active_Suicidal_Ideation_with_Any_Methods_with_Description",
+              "Name": "'Active Suicidal Ideation with Any Methods ...' group, with 'If yes: descripbe'",
+              "Repeating": "No",
+              "Type": "Section",
+              "ItemGroupRef": [
+                {
+                  "ItemGroupOID": "IG.Active_Suicidal_Ideation_with_Any_Methods",
+                  "Mandatory": "No"
+                }
+              ],
+              "ItemRef": [
+                {
+                  "ItemOID": "IT.3.Active_Suicidal_Ideation_with_Any_Methods_Description",
+                  "Mandatory": "No"
+                }
+              ]
+            },
+            {
+              "OID": "IG.Active_Suicidal_Ideation_with_Any_Methods",
+              "Name": "Active Suicidal Ideation with Any Methods ...' group, repeating over 'Lifetime' and 'Past 1 month'",
+              "Repeating": "Static",
+              "Type": "Section",
+              "ItemRef": [
+                {
+                  "ItemOID": "IT.3.Active_Suicidal_Ideation_with_Any_Methods",
+                  "Mandatory": "No"
+                },
+                {
+                  "ItemOID": "IT.Lifetime_Past_1_Month",
+                  "Repeat": "Yes",
+                  "Mandatory": "No"
+                }
+              ]
+            },
+            {
+              "OID": "IG.Active_Suicidal_Ideation_with_Some_Intent_to_Act_with_Description",
+              "Name": "'Active Suicidal Ideation with Some Intent to Act, ...', with 'If yes: describe'",
+              "Repeating": "No",
+              "Type": "Section",
+              "ItemGroupRef": [
+                {
+                  "ItemGroupOID": "IG.Active_Suicidal_Ideation_with_Some_Intent_to_Act",
+                  "Mandatory": "No"
+                }
+              ],
+              "ItemRef": [
+                {
+                  "ItemOID": "IT.4.Active_Suicidal_Ideation_with_Some_Intent_Description",
+                  "Mandatory": "No"
+                }
+              ]
+            },
+            {
+              "OID": "IG.Active_Suicidal_Ideation_with_Some_Intent_to_Act",
+              "Name": "'Active Suicidal Ideation with Some Intent to Act, ...', repeating over 'Lifetime' and 'Past 1 month'",
+              "Repeating": "Static",
+              "Type": "Section",
+              "ItemRef": [
+                {
+                  "ItemOID": "IT.4.Active_Suicidal_Ideation_with_Some_Intent",
+                  "Mandatory": "Yes"
+                },
+                {
+                  "ItemOID": "IT.Lifetime_Past_1_Month",
+                  "Repeat": "Yes",
+                  "Mandatory": "No"
+                }
+              ]
+            },
+            {
+              "OID": "IG.Active_Suicidal_Ideation_with_Specific_Plan_and_Intent_with_Description",
+              "Name": "'Active Suicidal Ideation with Specific Plan and Intent' group, with 'If yes: describe'",
+              "Repeating": "No",
+              "Type": "Section",
+              "ItemGroupRef": [
+                {
+                  "ItemGroupOID": "IG.Active_Suicidal_Ideation_with_Specific_Plan_and_Intent",
+                  "Mandatory": "No"
+                }
+              ],
+              "ItemRef": [
+                {
+                  "ItemOID": "IT.5.Active_Suicidal_Ideation_with_Specific_Plan_and_Intent_Description",
+                  "Mandatory": "No"
+                }
+              ]
+            },
+            {
+              "OID": "IG.Active_Suicidal_Ideation_with_Specific_Plan_and_Intent",
+              "Name": "'Active Suicidal Ideation with Specific Plan and Intent' group, repeating over 'Lifetime' and 'Past 1 month'",
+              "Repeating": "Static",
+              "Type": "Section",
+              "ItemRef": [
+                {
+                  "ItemOID": "IT.5.Active_Suicidal_Ideation_with_Specific_Plan_and_Intent",
+                  "Mandatory": "No"
+                },
+                {
+                  "ItemOID": "IT.Lifetime_Past_1_Month",
+                  "Repeat": "Yes",
+                  "Mandatory": "No"
+                }
+              ]
+            },
+            {
+              "OID": "IG.Intensity_of_Ideation",
+              "Name": "Intensity of Ideation",
+              "Repeating": "No",
+              "Type": "Section",
+              "Description": {
+                "TranslatedText": [
+                  {
+                    "lang": "en",
+                    "Type": "text/plain",
+                    "_content": "Intensity of Ideation"
+                  }
+                ]
+              },
+              "ItemRef": [
+                {
+                  "ItemOID": "IT.Most_Severe_Ideation_Lifetime",
+                  "Mandatory": "No"
+                },
+                {
+                  "ItemOID": "IT.Most_Severe_Ideation_Lifetime_Description",
+                  "Mandatory": "No"
+                },
+                {
+                  "ItemOID": "IT.Most_Severe_Ideation_Recent",
+                  "Mandatory": "No"
+                },
+                {
+                  "ItemOID": "IT.Most_Severe_Ideation_Recent_Description",
+                  "Mandatory": "No"
+                },
+                {
+                  "ItemOID": "IT.Intensity_of_Ideation_Frequency",
+                  "Mandatory": "No"
+                },
+                {
+                  "ItemOID": "IT.Intensity_Ideation_Duration",
+                  "Mandatory": "No"
+                },
+                {
+                  "ItemOID": "IT.Controllability",
+                  "Mandatory": "No"
+                },
+                {
+                  "ItemOID": "IT.Deterrents",
+                  "Mandatory": "No"
+                },
+                {
+                  "ItemOID": "IT.Reasons_for_Ideation",
+                  "Mandatory": "No"
+                }
+              ]
+            },
+            {
+              "OID": "IG.SUICIDAL_BEHAVIOR",
+              "Name": "Suicidal Behavior",
+              "Repeating": "No",
+              "Type": "Section",
+              "Description": {
+                "TranslatedText": [
+                  {
+                    "lang": "en",
+                    "Type": "text/plain",
+                    "_content": "Suicidal Behavior"
+                  }
+                ]
+              },
+              "ItemGroupRef": [
+                {
+                  "ItemGroupOID": "IG.Suicidal_attempts",
+                  "Mandatory": "No"
+                },
+                {
+                  "ItemGroupOID": "IG.Lethality",
+                  "Mandatory": "No"
+                }
+              ]
+            },
+            {
+              "OID": "IG.Suicidal_attempts",
+              "Name": "Suicidal Behavior",
+              "Repeating": "No",
+              "Type": "Section",
+              "ItemGroupRef": [
+                {
+                  "ItemGroupOID": "IG.Made_a_suicide_attempt_lifetime_3months",
+                  "Mandatory": "No"
+                },
+                {
+                  "ItemGroupOID": "IG.Done_anything_to_harm_yourself_lifetime_3months",
+                  "Mandatory": "No"
+                },
+                {
+                  "ItemGroupOID": "IG.Done_anything_dangerous_lifetime_3months",
+                  "Mandatory": "No"
+                },
+                {
+                  "ItemGroupOID": "IG.Number_of_attempts_lifetime_3months",
+                  "Mandatory": "No"
+                },
+                {
+                  "ItemGroupOID": "IG.Dangerous_behavior",
+                  "Mandatory": "No"
+                },
+                {
+                  "ItemGroupOID": "IG.Non-Suicidal_Self-injurous_Behavior_lifetime_3months",
+                  "Mandatory": "No"
+                },
+                {
+                  "ItemGroupOID": "IG.Interrupted_Attempt",
+                  "Mandatory": "No"
+                },
+                {
+                  "ItemGroupOID": "IG.Aborted_or_Self-Interrupted_Attempt",
+                  "Mandatory": "No"
+                },
+                {
+                  "ItemGroupOID": "IG.Preparatory_Acts_or_Behavior",
+                  "Mandatory": "No"
+                }
+              ]
+            },
+            {
+              "OID": "IG.Made_a_suicide_attempt_lifetime_3months",
+              "Name": "Made a suicide attempt lifetime or 3 months",
+              "Repeating": "Static",
+              "Type": "Section",
+              "ItemRef": [
+                {
+                  "ItemOID": "IT.Made_a_suicide_attempt",
+                  "Mandatory": "No"
+                },
+                {
+                  "ItemOID": "IT.Lifetime_Past_3_Months",
+                  "Mandatory": "No",
+                  "Repeat": "Yes"
+                }
+              ]
+            },
+            {
+              "OID": "IG.Done_anything_to_harm_yourself_lifetime_3months",
+              "Name": "Done anything to harm yourself lifetime or 3 months",
+              "Repeating": "Static",
+              "Type": "Section",
+              "ItemRef": [
+                {
+                  "ItemOID": "IT.Done_anything_to_harm_yourself",
+                  "Mandatory": "No"
+                },
+                {
+                  "ItemOID": "IT.Lifetime_Past_3_Months",
+                  "Mandatory": "No",
+                  "Repeat": "Yes"
+                }
+              ]
+            },
+            {
+              "OID": "IG.Done_anything_dangerous_lifetime_3months",
+              "Name": "Done anything dangerous lifetime or 3 months",
+              "Repeating": "Static",
+              "Type": "Section",
+              "ItemRef": [
+                {
+                  "ItemOID": "IT.Done_anything_dangerous",
+                  "Mandatory": "No"
+                },
+                {
+                  "ItemOID": "IT.Lifetime_Past_3_Months",
+                  "Mandatory": "No",
+                  "Repeat": "Yes"
+                }
+              ]
+            },
+            {
+              "OID": "IG.Number_of_attempts_lifetime_3months",
+              "Name": "Number of attempts lifetime or 3 months",
+              "Repeating": "Static",
+              "Type": "Section",
+              "ItemRef": [
+                {
+                  "ItemOID": "IT.Number_of_attempts",
+                  "Mandatory": "No"
+                },
+                {
+                  "ItemOID": "IT.Lifetime_Past_3_Months",
+                  "Mandatory": "No",
+                  "Repeat": "Yes"
+                }
+              ]
+            },
+            {
+              "OID": "IG.Dangerous_behavior",
+              "Name": "Dangerous behavior",
+              "Repeating": "Simple",
+              "Type": "Section",
+              "ItemRef": [
+                {
+                  "ItemOID": "IT.What_did_you_do",
+                  "Mandatory": "No"
+                },
+                {
+                  "ItemOID": "IT.Way_to_end_your_life_1",
+                  "Mandatory": "No"
+                },
+                {
+                  "ItemOID": "IT.Way_to_end_your_life_2",
+                  "Mandatory": "No"
+                },
+                {
+                  "ItemOID": "IT.Way_to_end_your_life_3",
+                  "Mandatory": "No"
+                },
+                {
+                  "ItemOID": "IT.Way_to_end_your_life_4",
+                  "Mandatory": "No"
+                },
+                {
+                  "ItemOID": "IT.Way_to_end_your_life_5",
+                  "Mandatory": "No"
+                },
+                {
+                  "ItemOID": "IT.Way_to_end_your_life_5_Description",
+                  "Mandatory": "No",
+                  "CollectionExceptionConditionOID": "COND.Way_to_end_your_life_5_Description"
+                }
+              ]
+            },
+            {
+              "OID": "IG.Non-Suicidal_Self-injurous_Behavior_lifetime_3months",
+              "Name": "Non-Suicidal Self-injurous Behavior lifetime or 3 months",
+              "Repeating": "Static",
+              "Type": "Section",
+              "ItemRef": [
+                {
+                  "ItemOID": "IT.Subject_engaged_in_Non-Suicidal_Self-Injurious_Behavior",
+                  "Mandatory": "No"
+                },
+                {
+                  "ItemOID": "IT.Lifetime_Past_3_Months",
+                  "Mandatory": "No",
+                  "Repeat": "Yes"
+                }
+              ]
+            },
+            {
+              "OID": "IG.Interrupted_Attempt",
+              "Name": "Interrupted Attempt",
+              "Repeating": "Static",
+              "Type": "Section",
+              "ItemRef": [
+                {
+                  "ItemOID": "IT.Time_starting_something_to_end_life",
+                  "Mandatory": "No"
+                },
+                {
+                  "ItemOID": "IT.Time_starting_something_to_end_life_description",
+                  "Mandatory": "No",
+                  "CollectionExceptionConditionOID": "COND.Time_starting_something_to_end_life_description"
+                },
+                {
+                  "ItemOID": "IT.Interrupted_attemps_number",
+                  "Mandatory": "No"
+                },
+                {
+                  "ItemOID": "IT.Lifetime_Past_3_Months",
+                  "Mandatory": "No",
+                  "Repeat": "Yes"
+                }
+              ]
+            },
+            {
+              "OID": "IG.Aborted_or_Self-Interrupted_Attempt",
+              "Name": "Aborted or Self-Interrupted Attempt",
+              "Repeating": "Static",
+              "Type": "Section",
+              "ItemRef": [
+                {
+                  "ItemOID": "IT.Aborted_attempt",
+                  "Mandatory": "No"
+                },
+                {
+                  "ItemOID": "IT.Aborted_attempt_description",
+                  "Mandatory": "No",
+                  "CollectionExceptionConditionOID": "COND.Aborted_attempt_description"
+                },
+                {
+                  "ItemOID": "IT.Self_interrupted_attemps_number",
+                  "Mandatory": "No"
+                },
+                {
+                  "ItemOID": "IT.Lifetime_Past_3_Months",
+                  "Mandatory": "No",
+                  "Repeat": "Yes"
+                }
+              ]
+            },
+            {
+              "OID": "IG.Preparatory_Acts_or_Behavior",
+              "Name": "Preparatory Acts or Behavior",
+              "Repeating": "Static",
+              "Type": "Section",
+              "ItemRef": [
+                {
+                  "ItemOID": "IT.Steps_towards_making_suicide_attempt",
+                  "Mandatory": "No"
+                },
+                {
+                  "ItemOID": "IT.Steps_towards_making_suicide_attempt_description",
+                  "Mandatory": "No",
+                  "CollectionExceptionConditionOID": "COND.Steps_towards_making_suicide_attempt_description"
+                },
+                {
+                  "ItemOID": "IT.Steps_towards_making_suicide_attempt_total_number",
+                  "Mandatory": "No"
+                },
+                {
+                  "ItemOID": "IT.Lifetime_Past_3_Months",
+                  "Mandatory": "No",
+                  "Repeat": "Yes"
+                }
+              ]
+            },
+            {
+              "OID": "IG.Lethality",
+              "Name": "Lethality",
+              "Repeating": "No",
+              "Type": "Section",
+              "ItemGroupRef": [
+                {
+                  "ItemGroupOID": "IG.Actual_Lethality",
+                  "Mandatory": "No"
+                },
+                {
+                  "ItemGroupOID": "IG.Potential_Lethality",
+                  "Mandatory": "No",
+                  "CollectionExceptionConditionOID": "COND.Potential_Lethality"
+                }
+              ]
+            },
+            {
+              "OID": "IG.Actual_Lethality",
+              "Name": "Actual Lethality/Medical Damage",
+              "Repeating": "Static",
+              "Type": "Section",
+              "ItemRef": [
+                {
+                  "ItemOID": "IT.Actual_Lethality",
+                  "Mandatory": "No"
+                },
+                {
+                  "ItemOID": "IT.Actual_Lethality_Date",
+                  "Mandatory": "No"
+                },
+                {
+                  "ItemOID": "IT.Lethality_Type",
+                  "Mandatory": "No",
+                  "Repeat": "Yes"
+                }
+              ]
+            },
+            {
+              "OID": "IG.Potential_Lethality",
+              "Name": "Potential Lethality",
+              "Repeating": "Static",
+              "Type": "Section",
+              "Description": {
+                "TranslatedText": [
+                  {
+                    "lang": "en",
+                    "Type": "text/plain",
+                    "_content": "Potential Lethality: Only Answer if Actual Lethality=0"
+                  }
+                ]
+              },
+              "ItemRef": [
+                {
+                  "ItemOID": "IT.Potential_Lethality",
+                  "Mandatory": "No"
+                },
+                {
+                  "ItemOID": "IT.Potential_Lethality_Date",
+                  "Mandatory": "No"
+                },
+                {
+                  "ItemOID": "IT.Lethality_Type",
+                  "Mandatory": "No",
+                  "Repeat": "Yes"
+                }
+              ]
+            }
+          ],
+          "ItemDef": [
+            {
+              "OID": "IT.PAST_WEEK_LIFETIME",
+              "Name": "Past week versus Lifetime",
+              "DataType": "text",
+              "CodeListRef": {
+                "CodeListOID": "CL.Past_week_Lifetime"
+              }
+            },
+            {
+              "OID": "IT.Lifetime_Past_1_Month",
+              "Name": "Lifetime versus Past 1 Month",
+              "DataType": "text",
+              "CodeListRef": {
+                "CodeListOID": "CL.Lifetime_Past_1_Month"
+              }
+            },
+            {
+              "OID": "IT.Lifetime_Past_3_Months",
+              "Name": "Lifetime versus Past 3 Months",
+              "DataType": "text",
+              "CodeListRef": {
+                "CodeListOID": "CL.Lifetime_Past_3_Months"
+              }
+            },
+            {
+              "OID": "IT.Actual_suicide_attempt",
+              "Name": "Actual suicide attempt",
+              "DataType": "text",
+              "Question": {
+                "TranslatedText": [
+                  {
+                    "lang": "en",
+                    "Type": "text/plain",
+                    "_content": "Actual suicide attempt"
+                  }
+                ]
+              },
+              "CodeListRef": {
+                "CodeListOID": "CL.YesOnly"
+              }
+            },
+            {
+              "OID": "IT.Interrupted_attempt",
+              "Name": "Interrupted attempt",
+              "DataType": "text",
+              "Question": {
+                "TranslatedText": [
+                  {
+                    "lang": "en",
+                    "Type": "text/plain",
+                    "_content": "Interrupted attempt"
+                  }
+                ]
+              },
+              "CodeListRef": {
+                "CodeListOID": "CL.YesOnly"
+              }
+            },
+            {
+              "OID": "IT.Aborted_attempt",
+              "Name": "Aborted attempt",
+              "DataType": "text",
+              "Question": {
+                "TranslatedText": [
+                  {
+                    "lang": "en",
+                    "Type": "text/plain",
+                    "_content": "Aborted attempt"
+                  }
+                ]
+              },
+              "CodeListRef": {
+                "CodeListOID": "CL.YesOnly"
+              }
+            },
+            {
+              "OID": "IT.Other_preparatory_acts",
+              "Name": "Other preparatory acts to kill self",
+              "DataType": "text",
+              "Question": {
+                "TranslatedText": [
+                  {
+                    "lang": "en",
+                    "Type": "text/plain",
+                    "_content": "Other preparatory acts to kill\n                        self"
+                  }
+                ]
+              },
+              "CodeListRef": {
+                "CodeListOID": "CL.YesOnly"
+              }
+            },
+            {
+              "OID": "IT.Self-injury_behavior_without_suicide_intent",
+              "Name": "Self-injury behavior w/o suicide intent",
+              "DataType": "text",
+              "Question": {
+                "TranslatedText": [
+                  {
+                    "lang": "en",
+                    "Type": "text/plain",
+                    "_content": "Self-injury behavior w/o suicide\n                        intent"
+                  }
+                ]
+              },
+              "CodeListRef": {
+                "CodeListOID": "CL.YesOnly"
+              }
+            },
+            {
+              "OID": "IT.Wish_to_be_dead_assessment",
+              "Name": "Wish to be dead",
+              "DataType": "text",
+              "Question": {
+                "TranslatedText": [
+                  {
+                    "lang": "en",
+                    "Type": "text/plain",
+                    "_content": "Wish to be dead"
+                  }
+                ]
+              },
+              "CodeListRef": {
+                "CodeListOID": "CL.YesOnly"
+              }
+            },
+            {
+              "OID": "IT.Suicidal_thoughts",
+              "Name": "Suicidal thoughts",
+              "DataType": "text",
+              "Question": {
+                "TranslatedText": [
+                  {
+                    "lang": "en",
+                    "Type": "text/plain",
+                    "_content": "Suicidal thoughts"
+                  }
+                ]
+              },
+              "CodeListRef": {
+                "CodeListOID": "CL.YesOnly"
+              }
+            },
+            {
+              "OID": "IT.Suicidal_thoughts_with_method",
+              "Name": "Suicidal thoughts with method (but without specific         plan or intent to act)",
+              "DataType": "text",
+              "Question": {
+                "TranslatedText": [
+                  {
+                    "lang": "en",
+                    "Type": "text/plain",
+                    "_content": "Suicidal thoughts with method (but without\n                        specific plan or intent to act)"
+                  }
+                ]
+              },
+              "CodeListRef": {
+                "CodeListOID": "CL.YesOnly"
+              }
+            },
+            {
+              "OID": "IT.Suicidal_intent",
+              "Name": "Suicidal intent",
+              "DataType": "text",
+              "Question": {
+                "TranslatedText": [
+                  {
+                    "lang": "en",
+                    "Type": "text/plain",
+                    "_content": "Suicidal intent"
+                  }
+                ]
+              },
+              "CodeListRef": {
+                "CodeListOID": "CL.YesOnly"
+              }
+            },
+            {
+              "OID": "IT.Suicidal_intent_with_specific_plan",
+              "Name": "Suicidal intent with specific plan",
+              "DataType": "text",
+              "Question": {
+                "TranslatedText": [
+                  {
+                    "lang": "en",
+                    "Type": "text/plain",
+                    "_content": "Suicidal intent with specific\n                        plan"
+                  }
+                ]
+              },
+              "CodeListRef": {
+                "CodeListOID": "CL.YesOnly"
+              }
+            },
+            {
+              "OID": "IT.Recent_loss_or_other_significant_negative_event",
+              "Name": "Recent loss or other significant negative event",
+              "DataType": "text",
+              "Question": {
+                "TranslatedText": [
+                  {
+                    "lang": "en",
+                    "Type": "text/plain",
+                    "_content": "Recent loss or other significant negative\n                        event"
+                  }
+                ]
+              },
+              "CodeListRef": {
+                "CodeListOID": "CL.YesOnly"
+              }
+            },
+            {
+              "OID": "IT.Recent_loss_or_other_significant_negative_event_Description",
+              "Name": "Recent loss or other significant negative event description",
+              "DataType": "text",
+              "Question": {
+                "TranslatedText": [
+                  {
+                    "lang": "en",
+                    "Type": "text/plain",
+                    "_content": "Describe: "
+                  }
+                ]
+              }
+            },
+            {
+              "OID": "IT.Pending_incarceration_or_homelessness",
+              "Name": "Pending incarceration or homelessness",
+              "DataType": "text",
+              "Question": {
+                "TranslatedText": [
+                  {
+                    "lang": "en",
+                    "Type": "text/plain",
+                    "_content": "Pending incarceration or\n                        homelessness"
+                  }
+                ]
+              },
+              "CodeListRef": {
+                "CodeListOID": "CL.YesOnly"
+              }
+            },
+            {
+              "OID": "IT.Current_or_pending_isolation_or_feeling_alone",
+              "Name": "Pending incarceration or homelessness",
+              "DataType": "text",
+              "Question": {
+                "TranslatedText": [
+                  {
+                    "lang": "en",
+                    "Type": "text/plain",
+                    "_content": "Pending incarceration or\n                        homelessness"
+                  }
+                ]
+              },
+              "CodeListRef": {
+                "CodeListOID": "CL.YesOnly"
+              }
+            },
+            {
+              "OID": "IT.Previous_psychiatric_diagnoses_and_treatments",
+              "Name": "Previous psychiatric diagnoses and treatments",
+              "DataType": "text",
+              "Question": {
+                "TranslatedText": [
+                  {
+                    "lang": "en",
+                    "Type": "text/plain",
+                    "_content": "Previous psychiatric diagnoses and\n                        treatments"
+                  }
+                ]
+              },
+              "CodeListRef": {
+                "CodeListOID": "CL.YesOnly"
+              }
+            },
+            {
+              "OID": "IT.Hopeless_or_dissatisfied_with_treatment",
+              "Name": "Hopeless or dissatisfied with treatment",
+              "DataType": "text",
+              "Question": {
+                "TranslatedText": [
+                  {
+                    "lang": "en",
+                    "Type": "text/plain",
+                    "_content": "Hopeless or dissatisfied with\n                        treatment"
+                  }
+                ]
+              },
+              "CodeListRef": {
+                "CodeListOID": "CL.YesOnly"
+              }
+            },
+            {
+              "OID": "IT.Noncompliant_with_treatment",
+              "Name": "Noncompliant with treatment",
+              "DataType": "text",
+              "Question": {
+                "TranslatedText": [
+                  {
+                    "lang": "en",
+                    "Type": "text/plain",
+                    "_content": "Noncompliant with treatment"
+                  }
+                ]
+              },
+              "CodeListRef": {
+                "CodeListOID": "CL.YesOnly"
+              }
+            },
+            {
+              "OID": "IT.Not_receiving_treatment",
+              "Name": "Not receiving treatment",
+              "DataType": "text",
+              "Question": {
+                "TranslatedText": [
+                  {
+                    "lang": "en",
+                    "Type": "text/plain",
+                    "_content": "Not receiving treatment"
+                  }
+                ]
+              },
+              "CodeListRef": {
+                "CodeListOID": "CL.YesOnly"
+              }
+            },
+            {
+              "OID": "IT.Other_Risk_Factors",
+              "Name": "Other Risk Factors",
+              "DataType": "text",
+              "Question": {
+                "TranslatedText": [
+                  {
+                    "lang": "en",
+                    "Type": "text/plain",
+                    "_content": "Other Risk Factors"
+                  }
+                ]
+              },
+              "CodeListRef": {
+                "CodeListOID": "CL.YesOnly"
+              }
+            },
+            {
+              "OID": "IT.Other_Risk_Factors_Description",
+              "Name": "Other Risk Factors Description",
+              "DataType": "text",
+              "Question": {
+                "TranslatedText": [
+                  {
+                    "lang": "en",
+                    "Type": "text/plain",
+                    "_content": "Describe:"
+                  }
+                ]
+              }
+            },
+            {
+              "OID": "IT.Hopelessness",
+              "Name": "Hopelessness",
+              "DataType": "text",
+              "Question": {
+                "TranslatedText": [
+                  {
+                    "lang": "en",
+                    "Type": "text/plain",
+                    "_content": "Hopelessness"
+                  }
+                ]
+              },
+              "CodeListRef": {
+                "CodeListOID": "CL.YesOnly"
+              }
+            },
+            {
+              "OID": "IT.Helplessness",
+              "Name": "Helplessness",
+              "DataType": "text",
+              "Question": {
+                "TranslatedText": [
+                  {
+                    "lang": "en",
+                    "Type": "text/plain",
+                    "_content": "Helplessness"
+                  }
+                ]
+              },
+              "CodeListRef": {
+                "CodeListOID": "CL.YesOnly"
+              }
+            },
+            {
+              "OID": "IT.Feeling_Trapped",
+              "Name": "Feeling Trapped",
+              "DataType": "text",
+              "Question": {
+                "TranslatedText": [
+                  {
+                    "lang": "en",
+                    "Type": "text/plain",
+                    "_content": "Feeling Trapped"
+                  }
+                ]
+              },
+              "CodeListRef": {
+                "CodeListOID": "CL.YesOnly"
+              }
+            },
+            {
+              "OID": "IT.Major_depressive_episode",
+              "Name": "Major depressive episode",
+              "DataType": "text",
+              "Question": {
+                "TranslatedText": [
+                  {
+                    "lang": "en",
+                    "Type": "text/plain",
+                    "_content": "Major depressive episode"
+                  }
+                ]
+              },
+              "CodeListRef": {
+                "CodeListOID": "CL.YesOnly"
+              }
+            },
+            {
+              "OID": "IT.Mixed_affective_episode",
+              "Name": "Mixed affective episode",
+              "DataType": "text",
+              "Question": {
+                "TranslatedText": [
+                  {
+                    "lang": "en",
+                    "Type": "text/plain",
+                    "_content": "Mixed affective episode"
+                  }
+                ]
+              },
+              "CodeListRef": {
+                "CodeListOID": "CL.YesOnly"
+              }
+            },
+            {
+              "OID": "IT.Command_hallucinations_to_hurt_self",
+              "Name": "Command hallucinations to hurt self",
+              "DataType": "text",
+              "Question": {
+                "TranslatedText": [
+                  {
+                    "lang": "en",
+                    "Type": "text/plain",
+                    "_content": "Command hallucinations to hurt\n                        self"
+                  }
+                ]
+              },
+              "CodeListRef": {
+                "CodeListOID": "CL.YesOnly"
+              }
+            },
+            {
+              "OID": "IT.Highly_impulsive_behavior",
+              "Name": "Highly impulsive behavior",
+              "DataType": "text",
+              "Question": {
+                "TranslatedText": [
+                  {
+                    "lang": "en",
+                    "Type": "text/plain",
+                    "_content": "Highly impulsive behavior"
+                  }
+                ]
+              },
+              "CodeListRef": {
+                "CodeListOID": "CL.YesOnly"
+              }
+            },
+            {
+              "OID": "IT.Substance_abuse_or_dependence",
+              "Name": "Substance abuse or dependence",
+              "DataType": "text",
+              "Question": {
+                "TranslatedText": [
+                  {
+                    "lang": "en",
+                    "Type": "text/plain",
+                    "_content": "Substance abuse or dependence"
+                  }
+                ]
+              },
+              "CodeListRef": {
+                "CodeListOID": "CL.YesOnly"
+              }
+            },
+            {
+              "OID": "IT.Agitation_or_severe_anxiety",
+              "Name": "Agitation or severe anxiety",
+              "DataType": "text",
+              "Question": {
+                "TranslatedText": [
+                  {
+                    "lang": "en",
+                    "Type": "text/plain",
+                    "_content": "Agitation or severe anxiety"
+                  }
+                ]
+              },
+              "CodeListRef": {
+                "CodeListOID": "CL.YesOnly"
+              }
+            },
+            {
+              "OID": "IT.Perceived_burden_on_family_or_others",
+              "Name": "Perceived burden on family or others",
+              "DataType": "text",
+              "Question": {
+                "TranslatedText": [
+                  {
+                    "lang": "en",
+                    "Type": "text/plain",
+                    "_content": "Perceived burden on family or\n                        others"
+                  }
+                ]
+              },
+              "CodeListRef": {
+                "CodeListOID": "CL.YesOnly"
+              }
+            },
+            {
+              "OID": "IT.Chronic_physical_pain",
+              "Name": "Chronic physical pain",
+              "DataType": "text",
+              "Question": {
+                "TranslatedText": [
+                  {
+                    "lang": "en",
+                    "Type": "text/plain",
+                    "_content": "Chronic physical pain or other acute medical\n                        problem (AIDS, COPD, cancer, etc.)"
+                  }
+                ]
+              },
+              "CodeListRef": {
+                "CodeListOID": "CL.YesOnly"
+              }
+            },
+            {
+              "OID": "IT.Homicidal_ideation",
+              "Name": "Homicidal ideation",
+              "DataType": "text",
+              "Question": {
+                "TranslatedText": [
+                  {
+                    "lang": "en",
+                    "Type": "text/plain",
+                    "_content": "Homicidal ideation"
+                  }
+                ]
+              },
+              "CodeListRef": {
+                "CodeListOID": "CL.YesOnly"
+              }
+            },
+            {
+              "OID": "IT.Aggressive_behavior_towards_others",
+              "Name": "Aggressive behavior towards others",
+              "DataType": "text",
+              "Question": {
+                "TranslatedText": [
+                  {
+                    "lang": "en",
+                    "Type": "text/plain",
+                    "_content": "Aggressive behavior towards\n                        others"
+                  }
+                ]
+              },
+              "CodeListRef": {
+                "CodeListOID": "CL.YesOnly"
+              }
+            },
+            {
+              "OID": "IT.Method_for_suicide_available",
+              "Name": "Method for suicide available (gun, pills, etc.)",
+              "DataType": "text",
+              "Question": {
+                "TranslatedText": [
+                  {
+                    "lang": "en",
+                    "Type": "text/plain",
+                    "_content": "Method for suicide available (gun, pills,\n                        etc.)"
+                  }
+                ]
+              },
+              "CodeListRef": {
+                "CodeListOID": "CL.YesOnly"
+              }
+            },
+            {
+              "OID": "IT.Refuses_or_feels_unable_to_agree_to_safety_plan",
+              "Name": "Refuses or feels unable to agree to safety plan",
+              "DataType": "text",
+              "Question": {
+                "TranslatedText": [
+                  {
+                    "lang": "en",
+                    "Type": "text/plain",
+                    "_content": "Refuses or feels unable to agree to safety\n                        plan"
+                  }
+                ]
+              },
+              "CodeListRef": {
+                "CodeListOID": "CL.YesOnly"
+              }
+            },
+            {
+              "OID": "IT.Sexual_abuse_lifetime",
+              "Name": "Sexual abuse (lifetime)",
+              "DataType": "text",
+              "Question": {
+                "TranslatedText": [
+                  {
+                    "lang": "en",
+                    "Type": "text/plain",
+                    "_content": "Sexual abuse (lifetime)"
+                  }
+                ]
+              },
+              "CodeListRef": {
+                "CodeListOID": "CL.YesOnly"
+              }
+            },
+            {
+              "OID": "IT.Family_history_of_suicide",
+              "Name": "Family history of suicide (lifetime)",
+              "DataType": "text",
+              "Question": {
+                "TranslatedText": [
+                  {
+                    "lang": "en",
+                    "Type": "text/plain",
+                    "_content": "Family history of suicide\n                        (lifetime)"
+                  }
+                ]
+              },
+              "CodeListRef": {
+                "CodeListOID": "CL.YesOnly"
+              }
+            },
+            {
+              "OID": "IT.Identifies_reasons_for_living",
+              "Name": "Identifies reasons for living",
+              "DataType": "text",
+              "Question": {
+                "TranslatedText": [
+                  {
+                    "lang": "en",
+                    "Type": "text/plain",
+                    "_content": "Identifies reasons for living"
+                  }
+                ]
+              },
+              "CodeListRef": {
+                "CodeListOID": "CL.YesOnly"
+              }
+            },
+            {
+              "OID": "IT.Responsibility_to_family_or_others",
+              "Name": "Responsibility to family or others",
+              "DataType": "text",
+              "Question": {
+                "TranslatedText": [
+                  {
+                    "lang": "en",
+                    "Type": "text/plain",
+                    "_content": "Responsibility to family or others; living with\n                        family"
+                  }
+                ]
+              },
+              "CodeListRef": {
+                "CodeListOID": "CL.YesOnly"
+              }
+            },
+            {
+              "OID": "IT.Supportive_social_network_or_family",
+              "Name": "Supportive social network or family",
+              "DataType": "text",
+              "Question": {
+                "TranslatedText": [
+                  {
+                    "lang": "en",
+                    "Type": "text/plain",
+                    "_content": "Supportive social network or\n                        family"
+                  }
+                ]
+              },
+              "CodeListRef": {
+                "CodeListOID": "CL.YesOnly"
+              }
+            },
+            {
+              "OID": "IT.Fear_of_death",
+              "Name": "Fear of death or dying due to pain and suffering",
+              "DataType": "text",
+              "Question": {
+                "TranslatedText": [
+                  {
+                    "lang": "en",
+                    "Type": "text/plain",
+                    "_content": "Fear of death or dying due to pain and\n                        suffering"
+                  }
+                ]
+              },
+              "CodeListRef": {
+                "CodeListOID": "CL.YesOnly"
+              }
+            },
+            {
+              "OID": "IT.Belief_that_suicide_is_immoral",
+              "Name": "Belief that suicide is immoral, high spirituality",
+              "DataType": "text",
+              "Question": {
+                "TranslatedText": [
+                  {
+                    "lang": "en",
+                    "Type": "text/plain",
+                    "_content": "Belief that suicide is immoral, high\n                        spirituality"
+                  }
+                ]
+              },
+              "CodeListRef": {
+                "CodeListOID": "CL.YesOnly"
+              }
+            },
+            {
+              "OID": "IT.Engaged_in_work_or_school",
+              "Name": "Engaged in work or school",
+              "DataType": "text",
+              "Question": {
+                "TranslatedText": [
+                  {
+                    "lang": "en",
+                    "Type": "text/plain",
+                    "_content": "Engaged in work or school"
+                  }
+                ]
+              },
+              "CodeListRef": {
+                "CodeListOID": "CL.YesOnly"
+              }
+            },
+            {
+              "OID": "IT.Engaged_with_Phone_Worker",
+              "Name": "Engaged with Phone Worker",
+              "DataType": "text",
+              "Question": {
+                "TranslatedText": [
+                  {
+                    "lang": "en",
+                    "Type": "text/plain",
+                    "_content": "Engaged with Phone Worker"
+                  }
+                ]
+              },
+              "CodeListRef": {
+                "CodeListOID": "CL.YesOnly"
+              }
+            },
+            {
+              "OID": "IT.Other_Protective_Factors",
+              "Name": "Other Protective Factors",
+              "DataType": "text",
+              "Question": {
+                "TranslatedText": [
+                  {
+                    "lang": "en",
+                    "Type": "text/plain",
+                    "_content": "Other Protective Factors"
+                  }
+                ]
+              },
+              "CodeListRef": {
+                "CodeListOID": "CL.YesOnly"
+              }
+            },
+            {
+              "OID": "IT.Other_Protective_Factors_Description",
+              "Name": "Other Protective Factors Description",
+              "DataType": "text",
+              "Question": {
+                "TranslatedText": [
+                  {
+                    "lang": "en",
+                    "Type": "text/plain",
+                    "_content": "Describe:"
+                  }
+                ]
+              }
+            },
+            {
+              "OID": "IT.Any_suicidal_self-injury_or_aggressive_behavior",
+              "Name": "Any suicida self-injury or aggressive behavior",
+              "DataType": "text",
+              "Question": {
+                "TranslatedText": [
+                  {
+                    "lang": "en",
+                    "Type": "text/plain",
+                    "_content": "Describe any suicidal, self-injury or aggressive\n                        behavior (include dates):"
+                  }
+                ]
+              }
+            },
+            {
+              "OID": "IT.1.Wish_to_be_Dead",
+              "Name": "1. Wish to be Dead",
+              "DataType": "text",
+              "Description": {
+                "TranslatedText": [
+                  {
+                    "lang": "en",
+                    "Type": "text/plain",
+                    "_content": "Subject endorses thoughts about a wish to be dead\n                        or not alive anymore, or wish to fall asleep and not wake\n                        up."
+                  }
+                ]
+              },
+              "Question": {
+                "TranslatedText": [
+                  {
+                    "lang": "en",
+                    "Type": "text/plain",
+                    "_content": "Have you wished you were dead or wished you could\n                        go to sleep and not wake up?"
+                  }
+                ]
+              },
+              "CodeListRef": {
+                "CodeListOID": "CL.YesNo"
+              }
+            },
+            {
+              "OID": "IT.1.Wish_to_be_Dead_Description",
+              "Name": "1. Wish to be Dead - Description",
+              "DataType": "text",
+              "Question": {
+                "TranslatedText": [
+                  {
+                    "lang": "en",
+                    "Type": "text/plain",
+                    "_content": "If yes, describe:"
+                  }
+                ]
+              }
+            },
+            {
+              "OID": "IT.2.Non-Specific_Active_Suicidal_Thoughts",
+              "Name": "2. Non-Specific Active Suicidal Thoughts",
+              "DataType": "text",
+              "Description": {
+                "TranslatedText": [
+                  {
+                    "lang": "en",
+                    "Type": "text/plain",
+                    "_content": "General non-specific thoughts of wanting to end\n                        one’s life/commit suicide (e.g., “I’ve thought about killing myself”)\n                        without thoughts of ways to kill oneself/associated methods, intent, or plan\n                        during the assessment period."
+                  }
+                ]
+              },
+              "Question": {
+                "TranslatedText": [
+                  {
+                    "lang": "en",
+                    "Type": "text/plain",
+                    "_content": "Have you actually had any thoughts of killing\n                        yourself?"
+                  }
+                ]
+              },
+              "CodeListRef": {
+                "CodeListOID": "CL.YesNo"
+              }
+            },
+            {
+              "OID": "IT.2.Non-Specific_Active_Suicidal_Thoughts_Description",
+              "Name": "2. Non-Specific Active Suicidal Thoughts - Description",
+              "DataType": "text",
+              "Question": {
+                "TranslatedText": [
+                  {
+                    "lang": "en",
+                    "Type": "text/plain",
+                    "_content": "If yes, describe:"
+                  }
+                ]
+              }
+            },
+            {
+              "OID": "IT.3.Active_Suicidal_Ideation_with_Any_Methods",
+              "Name": "3. Active Suicidal Ideation with Any Methods (Not Plan) without Intent to Act",
+              "DataType": "text",
+              "Description": {
+                "TranslatedText": [
+                  {
+                    "lang": "en",
+                    "Type": "text/plain",
+                    "_content": "Subject endorses thoughts of suicide and has\n                        thought of at least one method during the assessment period. This is\n                        different than a specific plan with time, place or method details worked out\n                        (e.g., thought of method to kill self but not a specific plan). Includes\n                        person who would say, “I thought about taking an overdose but I never made a\n                        specific plan as to when, where or how I would actually do it…and I would\n                        never go through with it.”"
+                  }
+                ]
+              },
+              "Question": {
+                "TranslatedText": [
+                  {
+                    "lang": "en",
+                    "Type": "text/plain",
+                    "_content": "Have you been thinking about how you might do\n                        this?"
+                  }
+                ]
+              },
+              "CodeListRef": {
+                "CodeListOID": "CL.YesNo"
+              }
+            },
+            {
+              "OID": "IT.3.Active_Suicidal_Ideation_with_Any_Methods_Description",
+              "Name": "3. Active Suicidal Ideation with Any Methods (Not Plan) without Intent to Act - Description",
+              "DataType": "text",
+              "Question": {
+                "TranslatedText": [
+                  {
+                    "lang": "en",
+                    "Type": "text/plain",
+                    "_content": "If yes, describe:"
+                  }
+                ]
+              }
+            },
+            {
+              "OID": "IT.4.Active_Suicidal_Ideation_with_Some_Intent",
+              "Name": "4. Active Suicidal Ideation with Some Intent to Act, without Specific Plan",
+              "DataType": "text",
+              "Description": {
+                "TranslatedText": [
+                  {
+                    "lang": "en",
+                    "Type": "text/plain",
+                    "_content": "Active suicidal thoughts of killing oneself and\n                        subject reports having some intent to act on such thoughts, as opposed to 'I\n                        have the thoughts but I definitely will not do anything about\n                        them.'"
+                  }
+                ]
+              },
+              "Question": {
+                "TranslatedText": [
+                  {
+                    "lang": "en",
+                    "Type": "text/plain",
+                    "_content": "Have you had these thoughts and had some intention\n                        of acting on them?"
+                  }
+                ]
+              }
+            },
+            {
+              "OID": "IT.4.Active_Suicidal_Ideation_with_Some_Intent_Description",
+              "Name": "4. Active Suicidal Ideation with Some Intent to Act, without Specific Plan - Description",
+              "DataType": "text",
+              "Question": {
+                "TranslatedText": [
+                  {
+                    "lang": "en",
+                    "Type": "text/plain",
+                    "_content": "If yes, describe:"
+                  }
+                ]
+              }
+            },
+            {
+              "OID": "IT.5.Active_Suicidal_Ideation_with_Specific_Plan_and_Intent",
+              "Name": "5. Active Suicidal Ideation with Specific Plan and Intent",
+              "DataType": "text",
+              "Description": {
+                "TranslatedText": [
+                  {
+                    "lang": "en",
+                    "Type": "text/plain",
+                    "_content": "Thoughts of killing oneself with details of plan\n                        fully or partially worked out and subject has some intent to carry it\n                        out."
+                  }
+                ]
+              },
+              "Question": {
+                "TranslatedText": [
+                  {
+                    "lang": "en",
+                    "Type": "text/plain",
+                    "_content": "Have you started to work out or worked out the\n                        details of how to kill yourself? Do you intend to carry out this\n                        plan?"
+                  }
+                ]
+              }
+            },
+            {
+              "OID": "IT.5.Active_Suicidal_Ideation_with_Specific_Plan_and_Intent_Description",
+              "Name": "5. Active Suicidal Ideation with Specific Plan and Intent - Description",
+              "DataType": "text",
+              "Question": {
+                "TranslatedText": [
+                  {
+                    "lang": "en",
+                    "Type": "text/plain",
+                    "_content": "If yes, describe:"
+                  }
+                ]
+              }
+            },
+            {
+              "OID": "IT.Most_Severe_Ideation_Lifetime",
+              "Name": "Most Severe Ideation - Lifetime",
+              "DataType": "integer",
+              "Question": {
+                "TranslatedText": [
+                  {
+                    "lang": "en",
+                    "Type": "text/plain",
+                    "_content": "Most Severe Ideation:"
+                  }
+                ]
+              },
+              "RangeCheck": [
+                {
+                  "Comparator": "GE",
+                  "SoftHard": "Hard",
+                  "CheckValue": [
+                    {
+                      "_content": "1"
+                    }
+                  ]
+                },
+                {
+                  "Comparator": "LE",
+                  "SoftHard": "Hard",
+                  "CheckValue": [
+                    {
+                      "_content": "5"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "OID": "IT.Most_Severe_Ideation_Lifetime_Description",
+              "Name": "Most Severe Ideation - Description",
+              "DataType": "text",
+              "Question": {
+                "TranslatedText": [
+                  {
+                    "lang": "en",
+                    "Type": "text/plain",
+                    "_content": "Description of Ideation"
+                  }
+                ]
+              }
+            },
+            {
+              "OID": "IT.Most_Severe_Ideation_Recent",
+              "Name": "Most Severe Ideation - Recent",
+              "DataType": "integer",
+              "Question": {
+                "TranslatedText": [
+                  {
+                    "lang": "en",
+                    "Type": "text/plain",
+                    "_content": "Recent - Most Severe Ideation:"
+                  }
+                ]
+              },
+              "RangeCheck": [
+                {
+                  "Comparator": "GE",
+                  "SoftHard": "Hard",
+                  "CheckValue": [
+                    {
+                      "_content": "1"
+                    }
+                  ]
+                },
+                {
+                  "Comparator": "LE",
+                  "SoftHard": "Hard",
+                  "CheckValue": [
+                    {
+                      "_content": "5"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "OID": "IT.Most_Severe_Ideation_Recent_Description",
+              "Name": "Most Severe Ideation - Recent - Description",
+              "DataType": "text",
+              "Question": {
+                "TranslatedText": [
+                  {
+                    "lang": "en",
+                    "Type": "text/plain",
+                    "_content": "Description of Ideation"
+                  }
+                ]
+              }
+            },
+            {
+              "OID": "IT.Intensity_of_Ideation_Frequency",
+              "Name": "Intensity of Ideation Frequency",
+              "DataType": "integer",
+              "Description": {
+                "TranslatedText": [
+                  {
+                    "lang": "en",
+                    "Type": "text/plain",
+                    "_content": "Frequency"
+                  }
+                ]
+              },
+              "Question": {
+                "TranslatedText": [
+                  {
+                    "lang": "en",
+                    "Type": "text/plain",
+                    "_content": "How many times have you had these\n                        thoughts?"
+                  }
+                ]
+              },
+              "CodeListRef": {
+                "CodeListOID": "CL.Thoughts_Frequency"
+              }
+            },
+            {
+              "OID": "IT.Intensity_Ideation_Duration",
+              "Name": "Ideation duration",
+              "DataType": "integer",
+              "Description": {
+                "TranslatedText": [
+                  {
+                    "lang": "en",
+                    "Type": "text/plain",
+                    "_content": "Duration"
+                  }
+                ]
+              },
+              "Question": {
+                "TranslatedText": [
+                  {
+                    "lang": "en",
+                    "Type": "text/plain",
+                    "_content": "When you have the thoughts how long do they\n                        last?"
+                  }
+                ]
+              },
+              "CodeListRef": {
+                "CodeListOID": "CL.Thoughts_Duration"
+              }
+            },
+            {
+              "OID": "IT.Controllability",
+              "Name": "Controllability",
+              "DataType": "integer",
+              "Description": {
+                "TranslatedText": [
+                  {
+                    "lang": "en",
+                    "Type": "text/plain",
+                    "_content": "Controllability"
+                  }
+                ]
+              },
+              "Question": {
+                "TranslatedText": [
+                  {
+                    "lang": "en",
+                    "Type": "text/plain",
+                    "_content": "Could/can you stop thinking about killing\n                        yourself or wanting to die if you want to?"
+                  }
+                ]
+              },
+              "CodeListRef": {
+                "CodeListOID": "CL.Controllability"
+              }
+            },
+            {
+              "OID": "IT.Deterrents",
+              "Name": "Deterrents",
+              "DataType": "integer",
+              "Description": {
+                "TranslatedText": [
+                  {
+                    "lang": "en",
+                    "Type": "text/plain",
+                    "_content": "Deterrents"
+                  }
+                ]
+              },
+              "Question": {
+                "TranslatedText": [
+                  {
+                    "lang": "en",
+                    "Type": "text/plain",
+                    "_content": "Are there things - anyone or anything (e.g.,\n                        family, religion, pain of death) - that stopped you from wanting to die or\n                        acting on thoughts of committing suicide?"
+                  }
+                ]
+              },
+              "CodeListRef": {
+                "CodeListOID": "CL.Deterrents"
+              }
+            },
+            {
+              "OID": "IT.Reasons_for_Ideation",
+              "Name": "Reasons for Ideation",
+              "DataType": "integer",
+              "Description": {
+                "TranslatedText": [
+                  {
+                    "lang": "en",
+                    "Type": "text/plain",
+                    "_content": "Reasons for Ideation"
+                  }
+                ]
+              },
+              "Question": {
+                "TranslatedText": [
+                  {
+                    "lang": "en",
+                    "Type": "text/plain",
+                    "_content": "What sort of reasons did you have for thinking\n                        about wanting to die or killing yourself? Was it to end the pain or stop the\n                        way you were feeling (in other words you couldn’t go on living with this\n                        pain or how you were feeling) or was it to get attention, revenge or a\n                        reaction from others? Or both?"
+                  }
+                ]
+              },
+              "CodeListRef": {
+                "CodeListOID": "CL.Reasons_for_Ideation"
+              }
+            },
+            {
+              "OID": "IT.Made_a_suicide_attempt",
+              "Name": "Have you made a suicide attempt",
+              "DataType": "text",
+              "Question": {
+                "TranslatedText": [
+                  {
+                    "lang": "en",
+                    "Type": "text/plain",
+                    "_content": "Have you made a suicide attempt?"
+                  }
+                ]
+              },
+              "CodeListRef": {
+                "CodeListOID": "CL.YesNo"
+              }
+            },
+            {
+              "OID": "IT.Done_anything_to_harm_yourself",
+              "Name": "Have you done anything to harm yourself",
+              "DataType": "text",
+              "Question": {
+                "TranslatedText": [
+                  {
+                    "lang": "en",
+                    "Type": "text/plain",
+                    "_content": "Have you done anything to harm\n                        yourself?"
+                  }
+                ]
+              },
+              "CodeListRef": {
+                "CodeListOID": "CL.YesNo"
+              }
+            },
+            {
+              "OID": "IT.Done_anything_dangerous",
+              "Name": "Have you done anything dangerous where you could have died",
+              "DataType": "text",
+              "Question": {
+                "TranslatedText": [
+                  {
+                    "lang": "en",
+                    "Type": "text/plain",
+                    "_content": "Have you done anything dangerous where you could\n                        have died?"
+                  }
+                ]
+              },
+              "CodeListRef": {
+                "CodeListOID": "CL.YesNo"
+              }
+            },
+            {
+              "OID": "IT.Number_of_attempts",
+              "Name": "Number of attempts",
+              "DataType": "integer",
+              "Question": {
+                "TranslatedText": [
+                  {
+                    "lang": "en",
+                    "Type": "text/plain",
+                    "_content": "Total # of Attempts"
+                  }
+                ]
+              }
+            },
+            {
+              "OID": "IT.What_did_you_do",
+              "Name": "What did you do",
+              "DataType": "text",
+              "Question": {
+                "TranslatedText": [
+                  {
+                    "lang": "en",
+                    "Type": "text/plain",
+                    "_content": "What did you do?"
+                  }
+                ]
+              }
+            },
+            {
+              "OID": "IT.Way_to_end_your_life_1",
+              "Name": "Did you xxx as a way to end your life",
+              "DataType": "text",
+              "Question": {
+                "TranslatedText": [
+                  {
+                    "lang": "en",
+                    "Type": "text/plain",
+                    "_content": "Did you xxx as a way to end your life?"
+                  }
+                ]
+              },
+              "CodeListRef": {
+                "CodeListOID": "CL.YesNo"
+              }
+            },
+            {
+              "OID": "IT.Way_to_end_your_life_2",
+              "Name": "Did you want to die (even a little) when you xxx",
+              "DataType": "text",
+              "Question": {
+                "TranslatedText": [
+                  {
+                    "lang": "en",
+                    "Type": "text/plain",
+                    "_content": "Did you want to die (even a little) when you\n                        xxx?"
+                  }
+                ]
+              },
+              "CodeListRef": {
+                "CodeListOID": "CL.YesNo"
+              }
+            },
+            {
+              "OID": "IT.Way_to_end_your_life_3",
+              "Name": "Were you trying to end your life when you xxx",
+              "DataType": "text",
+              "Question": {
+                "TranslatedText": [
+                  {
+                    "lang": "en",
+                    "Type": "text/plain",
+                    "_content": "Were you trying to end your life when you\n                        xxx?"
+                  }
+                ]
+              },
+              "CodeListRef": {
+                "CodeListOID": "CL.YesNo"
+              }
+            },
+            {
+              "OID": "IT.Way_to_end_your_life_4",
+              "Name": "Or Did you think it was possible you could have died from xxx",
+              "DataType": "text",
+              "Question": {
+                "TranslatedText": [
+                  {
+                    "lang": "en",
+                    "Type": "text/plain",
+                    "_content": "Or Did you think it was possible you could have\n                        died from xxx?"
+                  }
+                ]
+              },
+              "CodeListRef": {
+                "CodeListOID": "CL.YesNo"
+              }
+            },
+            {
+              "OID": "IT.Way_to_end_your_life_5",
+              "Name": "Or did you do it purely for other reasons",
+              "DataType": "text",
+              "Question": {
+                "TranslatedText": [
+                  {
+                    "lang": "en",
+                    "Type": "text/plain",
+                    "_content": "Or did you do it purely for other reasons /\n                        without ANY intention of killing yourself (like to relieve stress, feel\n                        better, get sympathy, or get something else to happen)??"
+                  }
+                ]
+              },
+              "CodeListRef": {
+                "CodeListOID": "CL.YesNo"
+              }
+            },
+            {
+              "OID": "IT.Way_to_end_your_life_5_Description",
+              "Name": "Way to end your life description",
+              "DataType": "text",
+              "Question": {
+                "TranslatedText": [
+                  {
+                    "lang": "en",
+                    "Type": "text/plain",
+                    "_content": "If yes, describe"
+                  }
+                ]
+              }
+            },
+            {
+              "OID": "IT.Subject_engaged_in_Non-Suicidal_Self-Injurious_Behavior",
+              "Name": "subject engaged in Non-Suicidal Self-Injurious Behavior",
+              "DataType": "text",
+              "Question": {
+                "TranslatedText": [
+                  {
+                    "lang": "en",
+                    "Type": "text/plain",
+                    "_content": "Has subject engaged in Non-Suicidal Self-Injurious\n                        Behavior?"
+                  }
+                ]
+              },
+              "CodeListRef": {
+                "CodeListOID": "CL.YesNo"
+              }
+            },
+            {
+              "OID": "IT.Time_starting_something_to_end_life",
+              "Name": "Time when you started to do something to end your life",
+              "DataType": "text",
+              "Question": {
+                "TranslatedText": [
+                  {
+                    "lang": "en",
+                    "Type": "text/plain",
+                    "_content": "Has there been a time when you started to do\n                        something to end your life but someone or something stopped you before you\n                        actually did anything?"
+                  }
+                ]
+              },
+              "CodeListRef": {
+                "CodeListOID": "CL.YesNo"
+              }
+            },
+            {
+              "OID": "IT.Time_starting_something_to_end_life_description",
+              "Name": "Description of Time when you started to do something to end your life",
+              "DataType": "text",
+              "Question": {
+                "TranslatedText": [
+                  {
+                    "lang": "en",
+                    "Type": "text/plain",
+                    "_content": "If yes, describe:"
+                  }
+                ]
+              }
+            },
+            {
+              "OID": "IT.Interrupted_attemps_number",
+              "Name": "Total # of interrupted",
+              "DataType": "integer",
+              "Question": {
+                "TranslatedText": [
+                  {
+                    "lang": "en",
+                    "Type": "text/plain",
+                    "_content": "Total # of interrupted"
+                  }
+                ]
+              }
+            },
+            {
+              "OID": "IT.Aborted_or_self-interrupted_attempt",
+              "Name": "Aborted or Self-Interrupted Attempt",
+              "DataType": "text",
+              "Question": {
+                "TranslatedText": [
+                  {
+                    "lang": "en",
+                    "Type": "text/plain",
+                    "_content": "Has there been a time when you started to do\n                        something to try to end your life but you stopped yourself before you\n                        actually did anything?"
+                  }
+                ]
+              },
+              "CodeListRef": {
+                "CodeListOID": "CL.YesNo"
+              }
+            },
+            {
+              "OID": "IT.Aborted_attempt_description",
+              "Name": "Description Aborted or Self-Interrupted Attempt",
+              "DataType": "text",
+              "Question": {
+                "TranslatedText": [
+                  {
+                    "lang": "en",
+                    "Type": "text/plain",
+                    "_content": "If yes, describe:"
+                  }
+                ]
+              }
+            },
+            {
+              "OID": "IT.Self_interrupted_attemps_number",
+              "Name": "Total # of aborted or selfinterrupted",
+              "DataType": "integer",
+              "Question": {
+                "TranslatedText": [
+                  {
+                    "lang": "en",
+                    "Type": "text/plain",
+                    "_content": "Total # of aborted or\n                        selfinterrupted"
+                  }
+                ]
+              }
+            },
+            {
+              "OID": "IT.Steps_towards_making_suicide_attempt",
+              "Name": "Steps towards making a suicide attempt",
+              "DataType": "text",
+              "Question": {
+                "TranslatedText": [
+                  {
+                    "lang": "en",
+                    "Type": "text/plain",
+                    "_content": "Have you taken any steps towards making a suicide\n                        attempt or preparing to kill yourself (such as collecting pills, getting a\n                        gun, giving valuables away or writing a suicide note)?"
+                  }
+                ]
+              },
+              "CodeListRef": {
+                "CodeListOID": "CL.YesNo"
+              }
+            },
+            {
+              "OID": "IT.Steps_towards_making_suicide_attempt_description",
+              "Name": "Description of Steps towards making a suicide attempt",
+              "DataType": "text",
+              "Question": {
+                "TranslatedText": [
+                  {
+                    "lang": "en",
+                    "Type": "text/plain",
+                    "_content": "If yes, describe:"
+                  }
+                ]
+              }
+            },
+            {
+              "OID": "IT.Steps_towards_making_suicide_attempt_total_number",
+              "Name": "Total number of Steps towards making a suicide attempt",
+              "DataType": "integer",
+              "Question": {
+                "TranslatedText": [
+                  {
+                    "lang": "en",
+                    "Type": "text/plain",
+                    "_content": "Total # of preparatory acts"
+                  }
+                ]
+              }
+            },
+            {
+              "OID": "IT.Attempt_date",
+              "Name": "Attempt date",
+              "DataType": "date",
+              "Question": {
+                "TranslatedText": [
+                  {
+                    "lang": "en",
+                    "Type": "text/plain",
+                    "_content": "Date:"
+                  }
+                ]
+              }
+            },
+            {
+              "OID": "IT.Actual_Lethality",
+              "Name": "Actual Lethality/Medical Damage",
+              "DataType": "integer",
+              "Question": {
+                "TranslatedText": [
+                  {
+                    "lang": "en",
+                    "Type": "text/plain",
+                    "_content": "Enter Code"
+                  }
+                ]
+              },
+              "CodeListRef": {
+                "CodeListOID": "CL.Actual_Damage"
+              }
+            },
+            {
+              "OID": "IT.Actual_Lethality_Date",
+              "Name": "Date",
+              "DataType": "date",
+              "Question": {
+                "TranslatedText": [
+                  {
+                    "lang": "en",
+                    "Type": "text/plain",
+                    "_content": "Date"
+                  }
+                ]
+              }
+            },
+            {
+              "OID": "IT.Potential_Lethality",
+              "Name": "Potential Lethality",
+              "DataType": "text",
+              "Question": {
+                "TranslatedText": [
+                  {
+                    "lang": "en",
+                    "Type": "text/plain",
+                    "_content": "Enter Code"
+                  }
+                ]
+              },
+              "CodeListRef": {
+                "CodeListOID": "CL.Potential_Lethality"
+              }
+            },
+            {
+              "OID": "IT.Potential_Lethality_Date",
+              "Name": "Date",
+              "DataType": "date",
+              "Question": {
+                "TranslatedText": [
+                  {
+                    "lang": "en",
+                    "Type": "text/plain",
+                    "_content": "Date"
+                  }
+                ]
+              }
+            },
+            {
+              "OID": "IT.Lethality_Type",
+              "Name": "Lethality Attempt Type",
+              "DataType": "text",
+              "CodeListRef": {
+                "CodeListOID": "CL.Lethality_Type"
+              }
+            }
+          ],
+          "CodeList": [
+            {
+              "OID": "CL.YesNo",
+              "Name": "Yes-No CodeList",
+              "DataType": "text",
+              "CodeListItem": [
+                {
+                  "CodedValue": "Y",
+                  "Decode": {
+                    "TranslatedText": [
+                      {
+                        "lang": "en",
+                        "Type": "text/plain",
+                        "_content": "Yes"
+                      },
+                      {
+                        "lang": "de",
+                        "Type": "text/plain",
+                        "_content": "Ja"
+                      },
+                      {
+                        "lang": "fr",
+                        "Type": "text/plain",
+                        "_content": "Oui"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "CodedValue": "N",
+                  "Decode": {
+                    "TranslatedText": [
+                      {
+                        "lang": "en",
+                        "Type": "text/plain",
+                        "_content": "No"
+                      },
+                      {
+                        "lang": "de",
+                        "Type": "text/plain",
+                        "_content": "Nein"
+                      },
+                      {
+                        "lang": "fr",
+                        "Type": "text/plain",
+                        "_content": "Non"
+                      }
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "OID": "CL.YesOnly",
+              "Name": "Yes only",
+              "DataType": "text",
+              "CodeListItem": [
+                {
+                  "CodedValue": "Y",
+                  "Decode": {
+                    "TranslatedText": [
+                      {
+                        "lang": "en",
+                        "Type": "text/plain",
+                        "_content": "Yes"
+                      },
+                      {
+                        "lang": "de",
+                        "Type": "text/plain",
+                        "_content": "Ja"
+                      },
+                      {
+                        "lang": "fr",
+                        "Type": "text/plain",
+                        "_content": "Oui"
+                      }
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "OID": "CL.Past_week_Lifetime",
+              "Name": "Codelist for 'Lifetime' and 'Past 1 Week'",
+              "DataType": "text",
+              "CodeListItem": [
+                {
+                  "CodedValue": "PAST_WEEK",
+                  "Decode": {
+                    "TranslatedText": [
+                      {
+                        "lang": "en",
+                        "Type": "text/plain",
+                        "_content": "Past week"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "CodedValue": "LIFETIME",
+                  "Decode": {
+                    "TranslatedText": [
+                      {
+                        "lang": "en",
+                        "Type": "text/plain",
+                        "_content": "Lifetime"
+                      }
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "OID": "CL.Lifetime_Past_1_Month",
+              "Name": "Codelist for 'Lifetime' and 'Past 1 Month'",
+              "DataType": "text",
+              "CodeListItem": [
+                {
+                  "CodedValue": "LIFETIME",
+                  "Decode": {
+                    "TranslatedText": [
+                      {
+                        "lang": "en",
+                        "Type": "text/plain",
+                        "_content": "Lifetime: Time He/She Felt Most\n                            Suicidal"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "CodedValue": "PAST_1_MONTH",
+                  "Decode": {
+                    "TranslatedText": [
+                      {
+                        "lang": "en",
+                        "Type": "text/plain",
+                        "_content": "Past 1 month"
+                      }
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "OID": "CL.Lifetime_Past_3_Months",
+              "Name": "Codelist for 'Lifetime' and 'Past 1 Month'",
+              "DataType": "text",
+              "CodeListItem": [
+                {
+                  "CodedValue": "LIFETIME",
+                  "Decode": {
+                    "TranslatedText": [
+                      {
+                        "lang": "en",
+                        "Type": "text/plain",
+                        "_content": "Lifetime"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "CodedValue": "PAST_3_MONTHS",
+                  "Decode": {
+                    "TranslatedText": [
+                      {
+                        "lang": "en",
+                        "Type": "text/plain",
+                        "_content": "Past 3 months"
+                      }
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "OID": "CL.Thoughts_Frequency",
+              "Name": "Frequency of thoughts",
+              "DataType": "integer",
+              "Description": {
+                "TranslatedText": [
+                  {
+                    "lang": "en",
+                    "Type": "text/plain",
+                    "_content": "Frequency of thoughts"
+                  }
+                ]
+              },
+              "CodeListItem": [
+                {
+                  "CodedValue": "1",
+                  "Decode": {
+                    "TranslatedText": [
+                      {
+                        "lang": "en",
+                        "Type": "text/plain",
+                        "_content": "Less than once a week"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "CodedValue": "2",
+                  "Decode": {
+                    "TranslatedText": [
+                      {
+                        "lang": "en",
+                        "Type": "text/plain",
+                        "_content": "Once a week"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "CodedValue": "3",
+                  "Decode": {
+                    "TranslatedText": [
+                      {
+                        "lang": "en",
+                        "Type": "text/plain",
+                        "_content": "2-5 times in week"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "CodedValue": "4",
+                  "Decode": {
+                    "TranslatedText": [
+                      {
+                        "lang": "en",
+                        "Type": "text/plain",
+                        "_content": "Daily or almost daily"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "CodedValue": "5",
+                  "Decode": {
+                    "TranslatedText": [
+                      {
+                        "lang": "en",
+                        "Type": "text/plain",
+                        "_content": "Many times each day"
+                      }
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "OID": "CL.Thoughts_Duration",
+              "Name": "Duration of thoughts",
+              "DataType": "integer",
+              "Description": {
+                "TranslatedText": [
+                  {
+                    "lang": "en",
+                    "Type": "text/plain",
+                    "_content": "Duration of thoughts"
+                  }
+                ]
+              },
+              "CodeListItem": [
+                {
+                  "CodedValue": "1",
+                  "Decode": {
+                    "TranslatedText": [
+                      {
+                        "lang": "en",
+                        "Type": "text/plain",
+                        "_content": "Fleeting - few seconds or\n                            minutes"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "CodedValue": "2",
+                  "Decode": {
+                    "TranslatedText": [
+                      {
+                        "lang": "en",
+                        "Type": "text/plain",
+                        "_content": "Less than 1 hour/some of the\n                            time"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "CodedValue": "3",
+                  "Decode": {
+                    "TranslatedText": [
+                      {
+                        "lang": "en",
+                        "Type": "text/plain",
+                        "_content": "1-4 hours/a lot of time"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "CodedValue": "4",
+                  "Decode": {
+                    "TranslatedText": [
+                      {
+                        "lang": "en",
+                        "Type": "text/plain",
+                        "_content": "4-8 hours/most of day"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "CodedValue": "5",
+                  "Decode": {
+                    "TranslatedText": [
+                      {
+                        "lang": "en",
+                        "Type": "text/plain",
+                        "_content": "More than 8 hours/persistent or\n                            continuous"
+                      }
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "OID": "CL.Controllability",
+              "DataType": "integer",
+              "Name": "Controllability of thoughts",
+              "Description": {
+                "TranslatedText": [
+                  {
+                    "lang": "en",
+                    "Type": "text/plain",
+                    "_content": "Controllability of thoughts"
+                  }
+                ]
+              },
+              "CodeListItem": [
+                {
+                  "CodedValue": "1",
+                  "Decode": {
+                    "TranslatedText": [
+                      {
+                        "lang": "en",
+                        "Type": "text/plain",
+                        "_content": "Easily able to control thoughts"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "CodedValue": "2",
+                  "Decode": {
+                    "TranslatedText": [
+                      {
+                        "lang": "en",
+                        "Type": "text/plain",
+                        "_content": "Can control thoughts with little difficulty"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "CodedValue": "3",
+                  "Decode": {
+                    "TranslatedText": [
+                      {
+                        "lang": "en",
+                        "Type": "text/plain",
+                        "_content": "Can control thoughts with some difficulty"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "CodedValue": "4",
+                  "Decode": {
+                    "TranslatedText": [
+                      {
+                        "lang": "en",
+                        "Type": "text/plain",
+                        "_content": "Can control thoughts with a lot of difficulty"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "CodedValue": "5",
+                  "Decode": {
+                    "TranslatedText": [
+                      {
+                        "lang": "en",
+                        "Type": "text/plain",
+                        "_content": "Unable to control thoughts"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "CodedValue": "0",
+                  "Decode": {
+                    "TranslatedText": [
+                      {
+                        "lang": "en",
+                        "Type": "text/plain",
+                        "_content": "Does not attempt to control\n                            thoughts"
+                      }
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "OID": "CL.Deterrents",
+              "Name": "Deterrents",
+              "DataType": "integer",
+              "Description": {
+                "TranslatedText": [
+                  {
+                    "lang": "en",
+                    "Type": "text/plain",
+                    "_content": "Deterrents"
+                  }
+                ]
+              },
+              "CodeListItem": [
+                {
+                  "CodedValue": "1",
+                  "Decode": {
+                    "TranslatedText": [
+                      {
+                        "lang": "en",
+                        "Type": "text/plain",
+                        "_content": "Deterrents definitely stopped you from\n                            attempting suicide"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "CodedValue": "2",
+                  "Decode": {
+                    "TranslatedText": [
+                      {
+                        "lang": "en",
+                        "Type": "text/plain",
+                        "_content": "Deterrents probably stopped\n                            you"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "CodedValue": "3",
+                  "Decode": {
+                    "TranslatedText": [
+                      {
+                        "lang": "en",
+                        "Type": "text/plain",
+                        "_content": "Uncertain that deterrents stopped\n                            you"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "CodedValue": "4",
+                  "Decode": {
+                    "TranslatedText": [
+                      {
+                        "lang": "en",
+                        "Type": "text/plain",
+                        "_content": "Deterrents most likely did not stop\n                            you"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "CodedValue": "5",
+                  "Decode": {
+                    "TranslatedText": [
+                      {
+                        "lang": "en",
+                        "Type": "text/plain",
+                        "_content": "Deterrents definitely did not stop\n                            you"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "CodedValue": "0",
+                  "Decode": {
+                    "TranslatedText": [
+                      {
+                        "lang": "en",
+                        "Type": "text/plain",
+                        "_content": "Does not apply"
+                      }
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "OID": "CL.Reasons_for_Ideation",
+              "Name": "Reasons for Ideation",
+              "DataType": "integer",
+              "Description": {
+                "TranslatedText": [
+                  {
+                    "lang": "en",
+                    "Type": "text/plain",
+                    "_content": "Reasons for Ideation"
+                  }
+                ]
+              },
+              "CodeListItem": [
+                {
+                  "CodedValue": "1",
+                  "Decode": {
+                    "TranslatedText": [
+                      {
+                        "lang": "en",
+                        "Type": "text/plain",
+                        "_content": "Completely to get attention, revenge or a\n                            reaction from others"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "CodedValue": "2",
+                  "Decode": {
+                    "TranslatedText": [
+                      {
+                        "lang": "en",
+                        "Type": "text/plain",
+                        "_content": "Mostly to get attention, revenge or a reaction\n                            from others"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "CodedValue": "3",
+                  "Decode": {
+                    "TranslatedText": [
+                      {
+                        "lang": "en",
+                        "Type": "text/plain",
+                        "_content": "Equally to get attention, revenge or a\n                            reaction from others"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "CodedValue": "4",
+                  "Decode": {
+                    "TranslatedText": [
+                      {
+                        "lang": "en",
+                        "Type": "text/plain",
+                        "_content": "Mostly to end or stop the pain (you couldn’t\n                            go on with the pain or how you were feeling)"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "CodedValue": "5",
+                  "Decode": {
+                    "TranslatedText": [
+                      {
+                        "lang": "en",
+                        "Type": "text/plain",
+                        "_content": "Completely to end or stop the pain (you\n                            couldn’t go on living with the pain or how you were\n                            feeling)"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "CodedValue": "0",
+                  "Decode": {
+                    "TranslatedText": [
+                      {
+                        "lang": "en",
+                        "Type": "text/plain",
+                        "_content": "Does not apply"
+                      }
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "OID": "CL.Actual_Damage",
+              "Name": "Actual Lethality/Medical Damage",
+              "DataType": "integer",
+              "Description": {
+                "TranslatedText": [
+                  {
+                    "lang": "en",
+                    "Type": "text/plain",
+                    "_content": "Actual Lethality/Medical Damage"
+                  }
+                ]
+              },
+              "CodeListItem": [
+                {
+                  "CodedValue": "0",
+                  "Decode": {
+                    "TranslatedText": [
+                      {
+                        "lang": "en",
+                        "Type": "text/plain",
+                        "_content": "No physical damage or very minor physical\n                            damage (e.g., surface scratches)"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "CodedValue": "1",
+                  "Decode": {
+                    "TranslatedText": [
+                      {
+                        "lang": "en",
+                        "Type": "text/plain",
+                        "_content": "Minor physical damage (e.g., lethargic speech;\n                            first-degree burns; mild bleeding; sprains)"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "CodedValue": "2",
+                  "Decode": {
+                    "TranslatedText": [
+                      {
+                        "lang": "en",
+                        "Type": "text/plain",
+                        "_content": "Moderate physical damage; medical attention\n                            needed (e.g., conscious but sleepy, somewhat responsive; second-degree\n                            burns; bleeding of major vessel)"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "CodedValue": "3",
+                  "Decode": {
+                    "TranslatedText": [
+                      {
+                        "lang": "en",
+                        "Type": "text/plain",
+                        "_content": "Moderately severe physical damage; medical\n                            hospitalization and likely intensive care required (e.g., comatose with\n                            reflexes intact; third-degree burns less than 20% of body; extensive\n                            blood loss but can recover; major fractures)"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "CodedValue": "4",
+                  "Decode": {
+                    "TranslatedText": [
+                      {
+                        "lang": "en",
+                        "Type": "text/plain",
+                        "_content": "Severe physical damage; medical\n                            hospitalization with intensive care required (e.g., comatose without\n                            reflexes; third-degree burns over 20% of body; extensive blood loss with\n                            unstable vital signs; major damage to a vital area)"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "CodedValue": "5",
+                  "Decode": {
+                    "TranslatedText": [
+                      {
+                        "lang": "en",
+                        "Type": "text/plain",
+                        "_content": "Death"
+                      }
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "OID": "CL.Lethality_Type",
+              "Name": "Lethality Type",
+              "DataType": "text",
+              "CodeListItem": [
+                {
+                  "CodedValue": "Most Recent Attempt"
+                },
+                {
+                  "CodedValue": "Most Lethal Attempt"
+                },
+                {
+                  "CodedValue": "Initial/First Attempt"
+                }
+              ]
+            },
+            {
+              "OID": "CL.Potential_Lethality",
+              "Name": "Potential Lethality",
+              "DataType": "text",
+              "Description": {
+                "TranslatedText": [
+                  {
+                    "lang": "en",
+                    "Type": "text/plain",
+                    "_content": "Potential Lethality"
+                  }
+                ]
+              },
+              "CodeListItem": [
+                {
+                  "CodedValue": "0",
+                  "Decode": {
+                    "TranslatedText": [
+                      {
+                        "lang": "en",
+                        "Type": "text/plain",
+                        "_content": "Behavior not likely to result in\n                            injury"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "CodedValue": "1",
+                  "Decode": {
+                    "TranslatedText": [
+                      {
+                        "lang": "en",
+                        "Type": "text/plain",
+                        "_content": "Behavior likely to result in injury but not\n                            likely to cause death"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "CodedValue": "2",
+                  "Decode": {
+                    "TranslatedText": [
+                      {
+                        "lang": "en",
+                        "Type": "text/plain",
+                        "_content": "Behavior likely to result in death despite\n                            available medical care"
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+          ],
+          "ConditionDef": [
+            {
+              "OID": "COND.Wish_to_be_dead_yes",
+              "Name": "Condition for moving to question 'Description of whishing to be dead'",
+              "Description": {
+                "TranslatedText": [
+                  {
+                    "lang": "en",
+                    "Type": "text/plain",
+                    "_content": "If question 'Wish to be dead' is answered with 'Yes', go to question 'Description of wishing to be dead'"
+                  }
+                ]
+              },
+              "MethodSignature": {},
+              "FormalExpression": [
+                {
+                  "Context": "ODMPath",
+                  "Code": {
+                    "_content": "ItemGroupData.where(ItemGroupOID='IG.Wish_to_bed_Dead_Group_with_Description').ItemGroupData.where(ItemGroupOID='IG.Wish_to_be_Dead').ItemData.where(ItemOID='ItemOID='IT.1.Wish_to_be_Dead' and Value='Y')"
+                  }
+                },
+                {
+                  "Context": "XPath",
+                  "Code": {
+                    "_content": "../ItemData[@ItemOID='IT.1.Wish_to_be_Dead']/@Value='Y'"
+                  }
+                }
+              ]
+            },
+            {
+              "OID": "COND.Questions_1_and_2_negative",
+              "Name": "Condition for moving to page/section 'Suicidal Behavior' after questions 1 and 2 of 'Suicidal Iedation'",
+              "Description": {
+                "TranslatedText": [
+                  {
+                    "lang": "en",
+                    "Type": "text/plain",
+                    "_content": "If both questions 1 and 2 of section 'Suicidal Ideation' are negative, proceed to section/page 'Suicidal behavior'"
+                  }
+                ]
+              },
+              "MethodSignature": {},
+              "FormalExpression": [
+                {
+                  "Context": "XPath",
+                  "Code": {
+                    "_content": "../ItemData[@ItemOID='IT.1.Wish_to_be_Dead']/@Value='N' and ../ItemData[@ItemOID='IT.2.Non-Specific_Active_Suicidal_Thoughts']/@Value='N'"
+                  }
+                }
+              ]
+            },
+            {
+              "OID": "COND.Way_to_end_your_life_5_Description",
+              "Name": "Condition for skipping the question 'If yes, describe', after question 'Or did you do it purely for other reasons / without ANY intention of killing yourself ...'",
+              "Description": {
+                "TranslatedText": [
+                  {
+                    "lang": "en",
+                    "Type": "text/plain",
+                    "_content": "Do not collect when the question 'Or did you do it\n                        purely for other reasons / without ANY intention of killing yourself ...'\n                        was answered with \"No\""
+                  }
+                ]
+              },
+              "MethodSignature": {},
+              "FormalExpression": [
+                {
+                  "Context": "XPath",
+                  "Code": {
+                    "_content": "../ItemData[@ItemOID='IT.Way_to_end_your_life_5']/@Value='N'"
+                  }
+                }
+              ]
+            },
+            {
+              "OID": "COND.Time_starting_something_to_end_life_description",
+              "Name": "Condition for skipping the question 'If yes, describe', after question 'Has there been a time when you started to do something to end your life but someone stopped you ...'",
+              "Description": {
+                "TranslatedText": [
+                  {
+                    "lang": "en",
+                    "Type": "text/plain",
+                    "_content": "Do not collect when the question 'Has there been a\n                        time when you started to do something to end your life but someone or\n                        something stopped you ...' was answered with \"No\""
+                  }
+                ]
+              },
+              "MethodSignature": {},
+              "FormalExpression": [
+                {
+                  "Context": "XPath",
+                  "Code": {
+                    "_content": "../ItemData[@ItemOID='IT.Time_starting_something_to_end_life']/@Value='N'"
+                  }
+                }
+              ]
+            },
+            {
+              "OID": "COND.Aborted_attempt_description",
+              "Name": "Condition for skipping the question 'If yes, describe', after question 'Has there been a time when you started to do something to try to end your life but you stopped yourself ...'",
+              "Description": {
+                "TranslatedText": [
+                  {
+                    "lang": "en",
+                    "Type": "text/plain",
+                    "_content": "Do not collect when the question 'Has there been a\n                        time when you started to do something to try to end your life but you\n                        stopped yourself ...' was answered with \"No\""
+                  }
+                ]
+              },
+              "MethodSignature": {},
+              "FormalExpression": [
+                {
+                  "Context": "XPath",
+                  "Code": {
+                    "_content": "../ItemData[@ItemOID='IT.Aborted_attempt']/@Value='N'"
+                  }
+                }
+              ]
+            },
+            {
+              "OID": "COND.Steps_towards_making_suicide_attempt_description",
+              "Name": "Condition for skipping the question 'If yes, describe', after question 'Have you taken any steps towards making a suicide attempt or preparing to kill yourself ...'",
+              "Description": {
+                "TranslatedText": [
+                  {
+                    "lang": "en",
+                    "Type": "text/plain",
+                    "_content": "Do not collect when the question 'Have you taken\n                        any steps towards making a suicide attempt or preparing to kill yourself\n                        ...' was answered with \"No\""
+                  }
+                ]
+              },
+              "MethodSignature": {},
+              "FormalExpression": [
+                {
+                  "Context": "XPath",
+                  "Code": {
+                    "_content": "../ItemData[@ItemOID='Steps_towards_making_suicide_attempt']/@Value='N'"
+                  }
+                }
+              ]
+            },
+            {
+              "OID": "COND.Potential_Lethality",
+              "Name": "Condition for skipping question group 'Potential Lethality: Only Answer if Actual Lethality=0'",
+              "Description": {
+                "TranslatedText": [
+                  {
+                    "lang": "en",
+                    "Type": "text/plain",
+                    "_content": "Do not collect when the collected value for the\n                        question 'Actual Lethality/Medical Damage' is 0"
+                  }
+                ]
+              },
+              "MethodSignature": {},
+              "FormalExpression": [
+                {
+                  "Context": "XPath",
+                  "Code": {
+                    "_content": "../../ItemGroupData[@ItemGroupOID='IG.Actual_Lethality']/ItemData[@ItemOID='IT.Actual_Lethality']/@Value=0"
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "ClinicalData": [
+    {
+      "StudyOID": "STUDY.CSSRS",
+      "MetaDataVersionOID": "MV.CSSRS.001",
+      "SubjectData": [
+        {
+          "SubjectKey": "001",
+          "StudyEventData": [
+            {
+              "StudyEventOID": "SE.CSSRS",
+              "ItemGroupData": [
+                {
+                  "ItemGroupOID": "FO.C-SSRS_Form",
+                  "ItemGroupData": [
+                    {
+                      "ItemGroupOID": "IG.Risk_assessment",
+                      "ItemGroupData": [
+                        {
+                          "ItemGroupOID": "IG.Suicidal_and_Self-Injury_Behavior",
+                          "ItemGroupData": [
+                            {
+                              "ItemGroupOID": "IG.Actual_suicide_attempt_with_Lifetime",
+                              "ItemData": [
+                                {
+                                  "ItemOID": "IT.Actual_suicide_attempt",
+                                  "Value": [
+                                    {
+                                      "_content": "Y"
+                                    }
+                                  ]
+                                },
+                                {
+                                  "ItemOID": "IT.PAST_WEEK_LIFETIME",
+                                  "Value": [
+                                    {
+                                      "_content": "PAST_WEEK"
+                                    }
+                                  ]
+                                }
+                              ]
+                            },
+                            {
+                              "ItemGroupOID": "IG.Aborted_attempt_with_Lifetime",
+                              "ItemData": [
+                                {
+                                  "ItemOID": "IT.Aborted_attempt",
+                                  "Value": [
+                                    {
+                                      "_content": "Y"
+                                    }
+                                  ]
+                                },
+                                {
+                                  "ItemOID": "IT.PAST_WEEK_LIFETIME",
+                                  "Value": [
+                                    {
+                                      "_content": "LIFETIME"
+                                    }
+                                  ]
+                                }
+                              ]
+                            },
+                            {
+                              "ItemGroupOID": "IG.Self-injury_behavior",
+                              "ItemData": [
+                                {
+                                  "ItemOID": "IT.Self-injury_behavior",
+                                  "Value": [
+                                    {
+                                      "_content": "Y"
+                                    }
+                                  ]
+                                },
+                                {
+                                  "ItemOID": "IT.PAST_WEEK_LIFETIME",
+                                  "Value": [
+                                    {
+                                      "_content": "LIFETIME"
+                                    }
+                                  ]
+                                }
+                              ]
+                            }
+                          ]
+                        },
+                        {
+                          "ItemGroupOID": "IG.Suicidal_Ideation",
+                          "ItemData": [
+                            {
+                              "ItemOID": "IT.Suicidal_thoughts",
+                              "Value": [
+                                {
+                                  "_content": "Y"
+                                }
+                              ]
+                            },
+                            {
+                              "ItemOID": "IT.Suicidal_intent_with_specific_plan",
+                              "Value": [
+                                {
+                                  "_content": "Y"
+                                }
+                              ]
+                            }
+                          ]
+                        },
+                        {
+                          "ItemGroupOID": "IG.Activating_Events_Recent",
+                          "ItemData": [
+                            {
+                              "ItemOID": "IT.Recent_loss_or_other_significant_negative_event",
+                              "Value": [
+                                {
+                                  "_content": "1"
+                                }
+                              ]
+                            },
+                            {
+                              "ItemOID": "IT.Recent_loss_or_other_significant_negative_event_Description",
+                              "Value": [
+                                {
+                                  "_content": "Dog died"
+                                }
+                              ]
+                            },
+                            {
+                              "ItemOID": "IT.Current_or_pending_isolation_or_feeling_alone",
+                              "Value": [
+                                {
+                                  "_content": "Y"
+                                }
+                              ]
+                            }
+                          ]
+                        },
+                        {
+                          "ItemGroupOID": "IG.Treatment_History",
+                          "ItemData": [
+                            {
+                              "ItemOID": "IT.Noncompliant_with_treatment",
+                              "Value": [
+                                {
+                                  "_content": "Y"
+                                }
+                              ]
+                            }
+                          ]
+                        },
+                        {
+                          "ItemGroupOID": "IT.Other_Risk_Factors",
+                          "ItemData": [
+                            {
+                              "ItemOID": "IT.Other_Risk_Factors",
+                              "Value": [
+                                {
+                                  "_content": "Y"
+                                }
+                              ]
+                            },
+                            {
+                              "ItemOID": "IT.Other_Risk_Factors_Description",
+                              "Value": [
+                                {
+                                  "_content": "Mountaineering and skiing"
+                                }
+                              ]
+                            }
+                          ]
+                        },
+                        {
+                          "ItemGroupOID": "IG.Clinical_Status_Recent",
+                          "ItemData": [
+                            {
+                              "ItemOID": "IT.Highly_impulsive_behavior",
+                              "Value": [
+                                {
+                                  "_content": "Y"
+                                }
+                              ]
+                            },
+                            {
+                              "ItemOID": "IT.Any_suicidal_self-injury_or_aggressive_behavior",
+                              "Value": [
+                                {
+                                  "_content": "Y"
+                                }
+                              ]
+                            }
+                          ]
+                        },
+                        {
+                          "ItemGroupOID": "IG.Protective_factors",
+                          "ItemData": [
+                            {
+                              "ItemOID": "IT.Fear_of_death",
+                              "Value": [
+                                {
+                                  "_content": "Y"
+                                }
+                              ]
+                            }
+                          ]
+                        },
+                        {
+                          "ItemGroupOID": "IG.Other_Protective_Factors",
+                          "ItemData": [
+                            {
+                              "ItemOID": "IT.Other_Protective_Factors",
+                              "Value": [
+                                {
+                                  "_content": "Y"
+                                }
+                              ]
+                            },
+                            {
+                              "ItemOID": "IT.Other_Protective_Factors_Description",
+                              "Value": [
+                                {
+                                  "_content": "wearing protector when skiing"
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

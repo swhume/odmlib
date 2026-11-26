@@ -1,0 +1,632 @@
+{
+  "generated_by": "scripts/sync_odm_v2_fixtures.py",
+  "source": {
+    "repository": "odm-v2 (Claude Code skill)",
+    "path": ".claude/skills/odm-v2/examples",
+    "commit": "5511e4fbffb311dbb14a1031ff461aac15c6b02b",
+    "dirty": false,
+    "label": "ODM v2.0, CDISC wiki export 2026-10-16/18"
+  },
+  "ref_targets": {
+    "path": "ref_targets.json",
+    "source_path": "../model/odm-v2.0.json",
+    "sha256": "a2bddd4f7dc8c1c83531896b2ab09f5d7d5c7c7e3bcd83ca09c6158bdc239c52"
+  },
+  "fixtures": [
+    {
+      "id": "clinical-data-snapshot",
+      "origin": "templates",
+      "title": "clinical-data-snapshot",
+      "root": "ODM",
+      "has_clinical_data": true,
+      "status": "verbatim",
+      "fixes": [],
+      "json_produced_by": "odm_json.py",
+      "licence": "MIT (odm-v2, Copyright (c) 2022-2026 Sam Hume)",
+      "files": [
+        {
+          "path": "templates/clinical-data-snapshot.xml",
+          "source_path": "templates/clinical-data-snapshot.xml",
+          "sha256": "e288a2d86b5dd10c24e58c4a1d2107704827a3cf43d06d374edfe037354b35aa"
+        },
+        {
+          "path": "templates/clinical-data-snapshot.json",
+          "source_path": "templates/clinical-data-snapshot.json",
+          "sha256": "24e7f636ddced483100c7c052bfeee056979035b2f11ff33b95d23642d79c51f"
+        }
+      ]
+    },
+    {
+      "id": "clinical-data-transactional",
+      "origin": "templates",
+      "title": "clinical-data-transactional",
+      "root": "ODM",
+      "has_clinical_data": true,
+      "status": "verbatim",
+      "fixes": [],
+      "json_produced_by": "odm_json.py",
+      "licence": "MIT (odm-v2, Copyright (c) 2022-2026 Sam Hume)",
+      "files": [
+        {
+          "path": "templates/clinical-data-transactional.xml",
+          "source_path": "templates/clinical-data-transactional.xml",
+          "sha256": "899b4215ecc0904de4259948f32cb5da8b3529a5ef2a3a3ebbb5a65df62cffb5"
+        },
+        {
+          "path": "templates/clinical-data-transactional.json",
+          "source_path": "templates/clinical-data-transactional.json",
+          "sha256": "5292b058e5f37eab874745d895574f2a1ba38ce7944cc9a4266c60692dc7efc4"
+        }
+      ]
+    },
+    {
+      "id": "study-design",
+      "origin": "templates",
+      "title": "study-design",
+      "root": "ODM",
+      "has_clinical_data": false,
+      "status": "verbatim",
+      "fixes": [],
+      "json_produced_by": "odmlib",
+      "licence": "MIT (odm-v2, Copyright (c) 2022-2026 Sam Hume)",
+      "files": [
+        {
+          "path": "templates/study-design.xml",
+          "source_path": "templates/study-design.xml",
+          "sha256": "e8a790397568042d0e3ecb4d187559c9995251315220f9bd379bc27d6d150fc0"
+        },
+        {
+          "path": "templates/study-design.json",
+          "source_path": "templates/study-design.json",
+          "sha256": "85363b9cbd720777ef35f44a09c40f0c22db02ebe05b0e3250b84a4ce1b75711"
+        }
+      ]
+    },
+    {
+      "id": "study-metadata",
+      "origin": "templates",
+      "title": "study-metadata",
+      "root": "ODM",
+      "has_clinical_data": false,
+      "status": "verbatim",
+      "fixes": [],
+      "json_produced_by": "odmlib",
+      "licence": "MIT (odm-v2, Copyright (c) 2022-2026 Sam Hume)",
+      "files": [
+        {
+          "path": "templates/study-metadata.xml",
+          "source_path": "templates/study-metadata.xml",
+          "sha256": "54784922885b122735ee361a42802dd19d8faafa39475c7f1855ac2ee7728d62"
+        },
+        {
+          "path": "templates/study-metadata.json",
+          "source_path": "templates/study-metadata.json",
+          "sha256": "388aec2ab1e92789da9e0e35c19e2befb103d4d5b0d17927315e03be563a077e"
+        }
+      ]
+    },
+    {
+      "id": "multiple-selection-using-nested-itemgroupdef",
+      "origin": "examples",
+      "title": "Multiple Selection Using Nested ItemGroupDef",
+      "root": "ODM",
+      "has_clinical_data": true,
+      "status": "corrected",
+      "fixes": [
+        "Added the required `Study/@ProtocolName`"
+      ],
+      "json_produced_by": "odm_json.py",
+      "licence": "CDISC ODM v2.0 specification example, used with attribution (see PROVENANCE.md); corrections and JSON are MIT (odm-v2)",
+      "files": [
+        {
+          "path": "spec/multiple-selection-using-nested-itemgroupdef.xml",
+          "source_path": "spec/multiple-selection-using-nested-itemgroupdef.xml",
+          "sha256": "07852ef3721dc887c2a49780854f3452aaf4d6153435ed117a9d4710f017930b"
+        },
+        {
+          "path": "spec/multiple-selection-using-nested-itemgroupdef.json",
+          "source_path": "spec/multiple-selection-using-nested-itemgroupdef.json",
+          "sha256": "c29f6a8987e3f47d60a9d4e5a6e52ddb60e34eccf628dac8509f728be157739e"
+        }
+      ],
+      "appears_in": [
+        "examples › Multiple Selection Using Nested ItemGroupDef (Code block 21 Multiple Selection Using Nested ItemGroupDefs)",
+        "general-elements › ItemGroupData (Code block 44 Multiple Selection Using Nested ItemGroupDefs)"
+      ]
+    },
+    {
+      "id": "clinical-data-query-examples-opening-a-query",
+      "origin": "examples",
+      "title": "Clinical Data Query Examples - Opening a Query",
+      "root": "ODM",
+      "has_clinical_data": true,
+      "status": "verbatim",
+      "fixes": [],
+      "json_produced_by": "odm_json.py",
+      "licence": "CDISC ODM v2.0 specification example, used with attribution (see PROVENANCE.md); corrections and JSON are MIT (odm-v2)",
+      "files": [
+        {
+          "path": "spec/clinical-data-query-examples-opening-a-query.xml",
+          "source_path": "spec/clinical-data-query-examples-opening-a-query.xml",
+          "sha256": "7967eeb38cb756b3108ac6f2ebc6c2debd67ddea3e1bf79e594cffe1778317c6"
+        },
+        {
+          "path": "spec/clinical-data-query-examples-opening-a-query.json",
+          "source_path": "spec/clinical-data-query-examples-opening-a-query.json",
+          "sha256": "5a3cc737feffe06d5634366acd67cba743914593c5a611cb17fc4c4bb091a9c0"
+        }
+      ],
+      "appears_in": [
+        "examples › Clinical Data Query Examples - Opening a Query (Code block 45 Opening a Query)",
+        "general-elements › Query Sources (Code block 46 Opening a Query)"
+      ]
+    },
+    {
+      "id": "clinical-data-query-examples-transaction-history",
+      "origin": "examples",
+      "title": "Clinical Data Query Examples - Transaction History",
+      "root": "ODM",
+      "has_clinical_data": true,
+      "status": "verbatim",
+      "fixes": [],
+      "json_produced_by": "odm_json.py",
+      "licence": "CDISC ODM v2.0 specification example, used with attribution (see PROVENANCE.md); corrections and JSON are MIT (odm-v2)",
+      "files": [
+        {
+          "path": "spec/clinical-data-query-examples-transaction-history.xml",
+          "source_path": "spec/clinical-data-query-examples-transaction-history.xml",
+          "sha256": "ac82af35ee814ad1102872bac6bf9ca79b2449973066c212f58004e3c1813518"
+        },
+        {
+          "path": "spec/clinical-data-query-examples-transaction-history.json",
+          "source_path": "spec/clinical-data-query-examples-transaction-history.json",
+          "sha256": "0d01b4f0003b20650161b7c996a0edf3cebc8dab7ad66f8cdbc427837368b44e"
+        }
+      ],
+      "appears_in": [
+        "examples › Clinical Data Query Examples - Transaction History (Code block 46 Query with Transaction History)",
+        "general-elements › Query Sources (Code block 47 Query with Transaction History)"
+      ]
+    },
+    {
+      "id": "hl7-fhir-integration",
+      "origin": "examples",
+      "title": "HL7 FHIR Integration",
+      "root": "ODM",
+      "has_clinical_data": false,
+      "status": "verbatim",
+      "fixes": [],
+      "json_produced_by": "odmlib",
+      "licence": "CDISC ODM v2.0 specification example, used with attribution (see PROVENANCE.md); corrections and JSON are MIT (odm-v2)",
+      "files": [
+        {
+          "path": "spec/hl7-fhir-integration.xml",
+          "source_path": "spec/hl7-fhir-integration.xml",
+          "sha256": "0b89ab2f2895b00f0afea20ef6899ed599a0d1632d17566ebad7f3bd5d114000"
+        },
+        {
+          "path": "spec/hl7-fhir-integration.json",
+          "source_path": "spec/hl7-fhir-integration.json",
+          "sha256": "9e078db41d4822f1ac3ccdbad98cbb2bbc0a654971c23e838dc41e0fffb1ddba"
+        }
+      ],
+      "appears_in": [
+        "examples › HL7 FHIR Integration (Code block 30 HL7 FHIR eSource Example)",
+        "general-elements › Origin (Code block 30 HL7 FHIR eSource Example)"
+      ]
+    },
+    {
+      "id": "file-conformity-xml-file-conformity",
+      "origin": "examples",
+      "title": "Code block 1 Example of prolog and top-level ODM v2.0 XML element",
+      "root": "ODM",
+      "has_clinical_data": false,
+      "status": "corrected",
+      "fixes": [
+        "The example is only an ODM start tag; closed it as an empty element so it is well-formed",
+        "Removed `ODM/@Description`: ODM has no Description attribute in v2.0 (it is a child element)"
+      ],
+      "json_produced_by": "odmlib",
+      "licence": "CDISC ODM v2.0 specification example, used with attribution (see PROVENANCE.md); corrections and JSON are MIT (odm-v2)",
+      "files": [
+        {
+          "path": "spec/file-conformity-xml-file-conformity.xml",
+          "source_path": "spec/file-conformity-xml-file-conformity.xml",
+          "sha256": "d047d1f74e7416ef0d4c5b75ddc4d0e5d252f75acaf5a7ce6cc2bcbb663d991b"
+        },
+        {
+          "path": "spec/file-conformity-xml-file-conformity.json",
+          "source_path": "spec/file-conformity-xml-file-conformity.json",
+          "sha256": "0f547991b2653fd3f774a760b3029e8fd29d74dcd1c92939341c6f2137e986bc"
+        }
+      ],
+      "appears_in": [
+        "file-conformity › XML File Conformity (Code block 1 Example of prolog and top-level ODM v2.0 XML element)"
+      ]
+    },
+    {
+      "id": "atlas-rs-atlas-qs-odmv2",
+      "origin": "github",
+      "title": "Atlas_RS/Atlas_QS_ODMv2.xml",
+      "root": "ODM",
+      "has_clinical_data": true,
+      "status": "verbatim",
+      "fixes": [],
+      "json_produced_by": "odm_json.py",
+      "licence": "MIT (cdisc-org/DataExchange-ODM, Copyright (c) 2022 cdisc); JSON is MIT (odm-v2)",
+      "files": [
+        {
+          "path": "github/Atlas_RS/Atlas_QS_ODMv2.xml",
+          "source_path": "github/Atlas_RS/Atlas_QS_ODMv2.xml",
+          "sha256": "ed0b634c763d2937c4a262f56f30c63eb501b6d7dbe90606828679409b3a5961"
+        },
+        {
+          "path": "github/Atlas_RS/Atlas_QS_ODMv2.json",
+          "source_path": "github/Atlas_RS/Atlas_QS_ODMv2.json",
+          "sha256": "2609e572729b930668aad0ed29bfcc2ed26357d72e5527b65a8fa4ade3edc071"
+        }
+      ],
+      "upstream": "cdisc-org/DataExchange-ODM: examples/Atlas_RS/Atlas_QS_ODMv2.xml"
+    },
+    {
+      "id": "chronic-low-back-pain-chronic-low-back-pain-example",
+      "origin": "github",
+      "title": "Chronic_Low_Back_Pain/Chronic_Low_Back_Pain_example.xml",
+      "root": "ODM",
+      "has_clinical_data": true,
+      "status": "verbatim",
+      "fixes": [],
+      "json_produced_by": "odm_json.py",
+      "licence": "MIT (cdisc-org/DataExchange-ODM, Copyright (c) 2022 cdisc); JSON is MIT (odm-v2)",
+      "files": [
+        {
+          "path": "github/Chronic_Low_Back_Pain/Chronic_Low_Back_Pain_example.xml",
+          "source_path": "github/Chronic_Low_Back_Pain/Chronic_Low_Back_Pain_example.xml",
+          "sha256": "5a9df32d28db60521c88e307c481bd2429e36e470c73b2c6ae748bf695e6770e"
+        },
+        {
+          "path": "github/Chronic_Low_Back_Pain/Chronic_Low_Back_Pain_example.json",
+          "source_path": "github/Chronic_Low_Back_Pain/Chronic_Low_Back_Pain_example.json",
+          "sha256": "53236eff030a6a2070c37e28fd22c4b19215189a3b3cf4db7c8e1d26d8f2252f"
+        }
+      ],
+      "upstream": "cdisc-org/DataExchange-ODM: examples/Chronic_Low_Back_Pain/Chronic_Low_Back_Pain_example.xml"
+    },
+    {
+      "id": "columbia-suicidal-scale-columbia-suicide-severity-scale-odmv2",
+      "origin": "github",
+      "title": "Columbia_Suicidal_Scale/Columbia-Suicide_Severity_Scale_ODMv2.xml",
+      "root": "ODM",
+      "has_clinical_data": true,
+      "status": "verbatim",
+      "fixes": [],
+      "json_produced_by": "odm_json.py",
+      "licence": "MIT (cdisc-org/DataExchange-ODM, Copyright (c) 2022 cdisc); JSON is MIT (odm-v2)",
+      "files": [
+        {
+          "path": "github/Columbia_Suicidal_Scale/Columbia-Suicide_Severity_Scale_ODMv2.xml",
+          "source_path": "github/Columbia_Suicidal_Scale/Columbia-Suicide_Severity_Scale_ODMv2.xml",
+          "sha256": "ffe755d246d1d6a943b9cdc50467d982843bb8744b30357445b1910d58567e8d"
+        },
+        {
+          "path": "github/Columbia_Suicidal_Scale/Columbia-Suicide_Severity_Scale_ODMv2.json",
+          "source_path": "github/Columbia_Suicidal_Scale/Columbia-Suicide_Severity_Scale_ODMv2.json",
+          "sha256": "42edbc5e17dcd0b82be05b4024a0977a4b01de2b533fd02b5f8683a82bd224b6"
+        }
+      ],
+      "upstream": "cdisc-org/DataExchange-ODM: examples/Columbia_Suicidal_Scale/Columbia-Suicide_Severity_Scale_ODMv2.xml"
+    },
+    {
+      "id": "conditional-repeats-conditional-repeats",
+      "origin": "github",
+      "title": "Conditional_Repeats/Conditional_Repeats.xml",
+      "root": "MetaDataVersion",
+      "has_clinical_data": false,
+      "status": "verbatim",
+      "fixes": [],
+      "json_produced_by": "odmlib",
+      "licence": "MIT (cdisc-org/DataExchange-ODM, Copyright (c) 2022 cdisc); JSON is MIT (odm-v2)",
+      "files": [
+        {
+          "path": "github/Conditional_Repeats/Conditional_Repeats.xml",
+          "source_path": "github/Conditional_Repeats/Conditional_Repeats.xml",
+          "sha256": "b200b8619078650968d9fe3c7eafa36e922997879d61ef3e603e3db5c5c543f5"
+        },
+        {
+          "path": "github/Conditional_Repeats/Conditional_Repeats.json",
+          "source_path": "github/Conditional_Repeats/Conditional_Repeats.json",
+          "sha256": "7ea35698811c1b16fd847ad76f2ec6aa4cbb4fd2b6653328bea1b5e9950c4573"
+        }
+      ],
+      "upstream": "cdisc-org/DataExchange-ODM: examples/Conditional_Repeats/Conditional_Repeats.xml"
+    },
+    {
+      "id": "crossover-studydesign-crossover-studydesign",
+      "origin": "github",
+      "title": "Crossover_Studydesign/Crossover_Studydesign.xml",
+      "root": "MetaDataVersion",
+      "has_clinical_data": false,
+      "status": "verbatim",
+      "fixes": [],
+      "json_produced_by": "odmlib",
+      "licence": "MIT (cdisc-org/DataExchange-ODM, Copyright (c) 2022 cdisc); JSON is MIT (odm-v2)",
+      "files": [
+        {
+          "path": "github/Crossover_Studydesign/Crossover_Studydesign.xml",
+          "source_path": "github/Crossover_Studydesign/Crossover_Studydesign.xml",
+          "sha256": "ee535f3d33ba8eb72467b3f42e78089071fa68938d1d869be53f5504b7a094dd"
+        },
+        {
+          "path": "github/Crossover_Studydesign/Crossover_Studydesign.json",
+          "source_path": "github/Crossover_Studydesign/Crossover_Studydesign.json",
+          "sha256": "6394bfbf0202b6f9658eeb98d578b09ecf7275ab0079ed3e1f0786019b510b1e"
+        }
+      ],
+      "upstream": "cdisc-org/DataExchange-ODM: examples/Crossover_Studydesign/Crossover_Studydesign.xml"
+    },
+    {
+      "id": "data-collection-repeatingig-uc-d-example",
+      "origin": "github",
+      "title": "Data-Collection/RepeatingIG-UC-D-Example.xml",
+      "root": "ODM",
+      "has_clinical_data": true,
+      "status": "verbatim",
+      "fixes": [],
+      "json_produced_by": "odm_json.py",
+      "licence": "MIT (cdisc-org/DataExchange-ODM, Copyright (c) 2022 cdisc); JSON is MIT (odm-v2)",
+      "files": [
+        {
+          "path": "github/Data-Collection/RepeatingIG-UC-D-Example.xml",
+          "source_path": "github/Data-Collection/RepeatingIG-UC-D-Example.xml",
+          "sha256": "ce6155f1fffbcff9c20aad53920c276741f6d9cb3b89f9426634596537bc73a2"
+        },
+        {
+          "path": "github/Data-Collection/RepeatingIG-UC-D-Example.json",
+          "source_path": "github/Data-Collection/RepeatingIG-UC-D-Example.json",
+          "sha256": "922383d3bbee652de6843ad5eae6c9812be2292a440e1486d10a01fbc14a87e8"
+        }
+      ],
+      "upstream": "cdisc-org/DataExchange-ODM: examples/Data-Collection/RepeatingIG-UC-D-Example.xml"
+    },
+    {
+      "id": "demographics-race-demographics-race-check-all-that-apply",
+      "origin": "github",
+      "title": "Demographics_RACE/Demographics_RACE_check_all_that_apply.xml",
+      "root": "ODM",
+      "has_clinical_data": true,
+      "status": "verbatim",
+      "fixes": [],
+      "json_produced_by": "odm_json.py",
+      "licence": "MIT (cdisc-org/DataExchange-ODM, Copyright (c) 2022 cdisc); JSON is MIT (odm-v2)",
+      "files": [
+        {
+          "path": "github/Demographics_RACE/Demographics_RACE_check_all_that_apply.xml",
+          "source_path": "github/Demographics_RACE/Demographics_RACE_check_all_that_apply.xml",
+          "sha256": "2a5523f81554becfdc476349857a2205a6eb26ddebb1ad83a411e6add96b1a97"
+        },
+        {
+          "path": "github/Demographics_RACE/Demographics_RACE_check_all_that_apply.json",
+          "source_path": "github/Demographics_RACE/Demographics_RACE_check_all_that_apply.json",
+          "sha256": "20249930ee2fb93e28fcd5505ea9c07b93611e220a63fbcd392d775d9ed23ad8"
+        }
+      ],
+      "upstream": "cdisc-org/DataExchange-ODM: examples/Demographics_RACE/Demographics_RACE_check_all_that_apply.xml"
+    },
+    {
+      "id": "fhir-fhir-example",
+      "origin": "github",
+      "title": "FHIR/fhir-example.xml",
+      "root": "ODM",
+      "has_clinical_data": false,
+      "status": "verbatim",
+      "fixes": [],
+      "json_produced_by": "odmlib",
+      "licence": "MIT (cdisc-org/DataExchange-ODM, Copyright (c) 2022 cdisc); JSON is MIT (odm-v2)",
+      "files": [
+        {
+          "path": "github/FHIR/fhir-example.xml",
+          "source_path": "github/FHIR/fhir-example.xml",
+          "sha256": "2aa0f6f7227f042adb12e8084f635881810b7c6d5fbda28a8b9a14adcb543c15"
+        },
+        {
+          "path": "github/FHIR/fhir-example.json",
+          "source_path": "github/FHIR/fhir-example.json",
+          "sha256": "1eb99f339648b425526c9560dd62783fc51ac7a5ba0da1c52a861c31b0d92658"
+        }
+      ],
+      "upstream": "cdisc-org/DataExchange-ODM: examples/FHIR/fhir-example.xml"
+    },
+    {
+      "id": "inclusion-exclusion-criteria-workflow-inclusion-exclusion-simple-workflow",
+      "origin": "github",
+      "title": "Inclusion_Exclusion_Criteria_Workflow/Inclusion_Exclusion_Simple_Workflow.xml",
+      "root": "MetaDataVersion",
+      "has_clinical_data": false,
+      "status": "verbatim",
+      "fixes": [],
+      "json_produced_by": "odmlib",
+      "licence": "MIT (cdisc-org/DataExchange-ODM, Copyright (c) 2022 cdisc); JSON is MIT (odm-v2)",
+      "files": [
+        {
+          "path": "github/Inclusion_Exclusion_Criteria_Workflow/Inclusion_Exclusion_Simple_Workflow.xml",
+          "source_path": "github/Inclusion_Exclusion_Criteria_Workflow/Inclusion_Exclusion_Simple_Workflow.xml",
+          "sha256": "cdb0ee1ff93a9983d19f6f8ac749544c9796160ceaebc5f139237598109e6a01"
+        },
+        {
+          "path": "github/Inclusion_Exclusion_Criteria_Workflow/Inclusion_Exclusion_Simple_Workflow.json",
+          "source_path": "github/Inclusion_Exclusion_Criteria_Workflow/Inclusion_Exclusion_Simple_Workflow.json",
+          "sha256": "6b9adb2dfc74c2845ab2d01b5b2d0a89c9218c73a26f941580319d4579339e53"
+        }
+      ],
+      "upstream": "cdisc-org/DataExchange-ODM: examples/Inclusion_Exclusion_Criteria_Workflow/Inclusion_Exclusion_Simple_Workflow.xml"
+    },
+    {
+      "id": "matrix-crf-from-taug-dyslipidemia-1-0-hypercholesterolemia-cv-risk-factors-fh-crf-alternative-valuelists",
+      "origin": "github",
+      "title": "Matrix_CRF_From_TAUG_Dyslipidemia_1_0/Hypercholesterolemia_CV_Risk_factors_FH_CRF_alternative_ValueLists.xml",
+      "root": "ODM",
+      "has_clinical_data": true,
+      "status": "verbatim",
+      "fixes": [],
+      "json_produced_by": "odm_json.py",
+      "licence": "MIT (cdisc-org/DataExchange-ODM, Copyright (c) 2022 cdisc); JSON is MIT (odm-v2)",
+      "files": [
+        {
+          "path": "github/Matrix_CRF_From_TAUG_Dyslipidemia_1_0/Hypercholesterolemia_CV_Risk_factors_FH_CRF_alternative_ValueLists.xml",
+          "source_path": "github/Matrix_CRF_From_TAUG_Dyslipidemia_1_0/Hypercholesterolemia_CV_Risk_factors_FH_CRF_alternative_ValueLists.xml",
+          "sha256": "e777642c32fdca707f30b7ad013c7a740a66517f1dc33e5cd47e923b3c6bb1fc"
+        },
+        {
+          "path": "github/Matrix_CRF_From_TAUG_Dyslipidemia_1_0/Hypercholesterolemia_CV_Risk_factors_FH_CRF_alternative_ValueLists.json",
+          "source_path": "github/Matrix_CRF_From_TAUG_Dyslipidemia_1_0/Hypercholesterolemia_CV_Risk_factors_FH_CRF_alternative_ValueLists.json",
+          "sha256": "d95550deba7f5cb0b7c8120368a1a18f13b8b4c610bbd6706d5d2d8d92088e33"
+        }
+      ],
+      "upstream": "cdisc-org/DataExchange-ODM: examples/Matrix_CRF_From_TAUG_Dyslipidemia_1_0/Hypercholesterolemia_CV_Risk_factors_FH_CRF_alternative_ValueLists.xml"
+    },
+    {
+      "id": "physio-underwater-therapy-workflow-physio-underwater-therapy-bpmn-to-odmv2-workflow-2019-10-18-result",
+      "origin": "github",
+      "title": "Physio_Underwater_Therapy_workflow/Physio_Underwater_Therapy_BPMN_to_ODMv2_Workflow_2019-10-18_result.xml",
+      "root": "MetaDataVersion",
+      "has_clinical_data": false,
+      "status": "verbatim",
+      "fixes": [],
+      "json_produced_by": "odmlib",
+      "licence": "MIT (cdisc-org/DataExchange-ODM, Copyright (c) 2022 cdisc); JSON is MIT (odm-v2)",
+      "files": [
+        {
+          "path": "github/Physio_Underwater_Therapy_workflow/Physio_Underwater_Therapy_BPMN_to_ODMv2_Workflow_2019-10-18_result.xml",
+          "source_path": "github/Physio_Underwater_Therapy_workflow/Physio_Underwater_Therapy_BPMN_to_ODMv2_Workflow_2019-10-18_result.xml",
+          "sha256": "a5c71b8ffdb8d95c15d391bb1ccd45964433449ac52020480e8443cd3de3099d"
+        },
+        {
+          "path": "github/Physio_Underwater_Therapy_workflow/Physio_Underwater_Therapy_BPMN_to_ODMv2_Workflow_2019-10-18_result.json",
+          "source_path": "github/Physio_Underwater_Therapy_workflow/Physio_Underwater_Therapy_BPMN_to_ODMv2_Workflow_2019-10-18_result.json",
+          "sha256": "0f8df78fef30905497f7ae8e3525a596280876743329b5edde35a2ef8895d618"
+        }
+      ],
+      "upstream": "cdisc-org/DataExchange-ODM: examples/Physio_Underwater_Therapy_workflow/Physio_Underwater_Therapy_BPMN_to_ODMv2_Workflow_2019-10-18_result.xml"
+    },
+    {
+      "id": "physio-underwater-therapy-workflow-physio-underwater-therapy-bpmn-to-odmv2-workflow-result",
+      "origin": "github",
+      "title": "Physio_Underwater_Therapy_workflow/Physio_Underwater_Therapy_BPMN_to_ODMv2_Workflow_result.xml",
+      "root": "MetaDataVersion",
+      "has_clinical_data": false,
+      "status": "verbatim",
+      "fixes": [],
+      "json_produced_by": "odmlib",
+      "licence": "MIT (cdisc-org/DataExchange-ODM, Copyright (c) 2022 cdisc); JSON is MIT (odm-v2)",
+      "files": [
+        {
+          "path": "github/Physio_Underwater_Therapy_workflow/Physio_Underwater_Therapy_BPMN_to_ODMv2_Workflow_result.xml",
+          "source_path": "github/Physio_Underwater_Therapy_workflow/Physio_Underwater_Therapy_BPMN_to_ODMv2_Workflow_result.xml",
+          "sha256": "d3c26375649ba05d979b0c43cadd05af27bb717cea9c830e542e6ac16265b1c4"
+        },
+        {
+          "path": "github/Physio_Underwater_Therapy_workflow/Physio_Underwater_Therapy_BPMN_to_ODMv2_Workflow_result.json",
+          "source_path": "github/Physio_Underwater_Therapy_workflow/Physio_Underwater_Therapy_BPMN_to_ODMv2_Workflow_result.json",
+          "sha256": "7783082135d9ccf42b1d7b941507f72137344584b7d222a67637498a4c618e01"
+        }
+      ],
+      "upstream": "cdisc-org/DataExchange-ODM: examples/Physio_Underwater_Therapy_workflow/Physio_Underwater_Therapy_BPMN_to_ODMv2_Workflow_result.xml"
+    },
+    {
+      "id": "protocol-to-workflow-result-odmv2",
+      "origin": "github",
+      "title": "Protocol_to_Workflow/Result_ODMv2.xml",
+      "root": "ODM",
+      "has_clinical_data": false,
+      "status": "verbatim",
+      "fixes": [],
+      "json_produced_by": "odmlib",
+      "licence": "MIT (cdisc-org/DataExchange-ODM, Copyright (c) 2022 cdisc); JSON is MIT (odm-v2)",
+      "files": [
+        {
+          "path": "github/Protocol_to_Workflow/Result_ODMv2.xml",
+          "source_path": "github/Protocol_to_Workflow/Result_ODMv2.xml",
+          "sha256": "b0447370e7bae19f9832b79ef6903ad91bc3a045ef47da3d677f4ae6e00826a1"
+        },
+        {
+          "path": "github/Protocol_to_Workflow/Result_ODMv2.json",
+          "source_path": "github/Protocol_to_Workflow/Result_ODMv2.json",
+          "sha256": "1ff142ef21c583ad61e6e160590cab57e5ee5e6430f5ca90b12390d763f8b35a"
+        }
+      ],
+      "upstream": "cdisc-org/DataExchange-ODM: examples/Protocol_to_Workflow/Result_ODMv2.xml"
+    },
+    {
+      "id": "repeating-itemgroup-cdash-1-1-stroke-lungdisease-ibd-cancerhistory-crf-cdash-1-1-mh-example-stroke-lungdisease-ibd-cancerhistory",
+      "origin": "github",
+      "title": "Repeating_ItemGroup_CDASH_1-1_Stroke_LungDisease_IBD_CancerHistory_CRF/CDASH_1-1_MH_Example_Stroke_LungDisease_IBD_CancerHistory.xml",
+      "root": "ODM",
+      "has_clinical_data": true,
+      "status": "verbatim",
+      "fixes": [],
+      "json_produced_by": "odm_json.py",
+      "licence": "MIT (cdisc-org/DataExchange-ODM, Copyright (c) 2022 cdisc); JSON is MIT (odm-v2)",
+      "files": [
+        {
+          "path": "github/Repeating_ItemGroup_CDASH_1-1_Stroke_LungDisease_IBD_CancerHistory_CRF/CDASH_1-1_MH_Example_Stroke_LungDisease_IBD_CancerHistory.xml",
+          "source_path": "github/Repeating_ItemGroup_CDASH_1-1_Stroke_LungDisease_IBD_CancerHistory_CRF/CDASH_1-1_MH_Example_Stroke_LungDisease_IBD_CancerHistory.xml",
+          "sha256": "776aa0264254f0e1ea78bd6d4b6fd08929652b1ba958f14c48825b39c93c017f"
+        },
+        {
+          "path": "github/Repeating_ItemGroup_CDASH_1-1_Stroke_LungDisease_IBD_CancerHistory_CRF/CDASH_1-1_MH_Example_Stroke_LungDisease_IBD_CancerHistory.json",
+          "source_path": "github/Repeating_ItemGroup_CDASH_1-1_Stroke_LungDisease_IBD_CancerHistory_CRF/CDASH_1-1_MH_Example_Stroke_LungDisease_IBD_CancerHistory.json",
+          "sha256": "1c1a6b80a2c97a7836e6dd98c3943ce7cd70cb7edeef082b5a215bd26a5f5941"
+        }
+      ],
+      "upstream": "cdisc-org/DataExchange-ODM: examples/Repeating_ItemGroup_CDASH_1-1_Stroke_LungDisease_IBD_CancerHistory_CRF/CDASH_1-1_MH_Example_Stroke_LungDisease_IBD_CancerHistory.xml"
+    },
+    {
+      "id": "simpletimingconstraints-simpletimingconstraints",
+      "origin": "github",
+      "title": "SimpleTimingConstraints/SimpleTimingConstraints.xml",
+      "root": "MetaDataVersion",
+      "has_clinical_data": false,
+      "status": "verbatim",
+      "fixes": [],
+      "json_produced_by": "odmlib",
+      "licence": "MIT (cdisc-org/DataExchange-ODM, Copyright (c) 2022 cdisc); JSON is MIT (odm-v2)",
+      "files": [
+        {
+          "path": "github/SimpleTimingConstraints/SimpleTimingConstraints.xml",
+          "source_path": "github/SimpleTimingConstraints/SimpleTimingConstraints.xml",
+          "sha256": "f0d581ef1d43ce1d3a74cf4da105d034b50fe1615361abab40350a2ad18a6021"
+        },
+        {
+          "path": "github/SimpleTimingConstraints/SimpleTimingConstraints.json",
+          "source_path": "github/SimpleTimingConstraints/SimpleTimingConstraints.json",
+          "sha256": "120f501bd56238c2a932f018753cf67eba92186b752fc79d55da21738b9ea780"
+        }
+      ],
+      "upstream": "cdisc-org/DataExchange-ODM: examples/SimpleTimingConstraints/SimpleTimingConstraints.xml"
+    },
+    {
+      "id": "timing-lzzt-timing-lzzt-example-odm",
+      "origin": "github",
+      "title": "Timing_LZZT/Timing_LZZT_Example_ODM.xml",
+      "root": "MetaDataVersion",
+      "has_clinical_data": false,
+      "status": "verbatim",
+      "fixes": [],
+      "json_produced_by": "odmlib",
+      "licence": "MIT (cdisc-org/DataExchange-ODM, Copyright (c) 2022 cdisc); JSON is MIT (odm-v2)",
+      "files": [
+        {
+          "path": "github/Timing_LZZT/Timing_LZZT_Example_ODM.xml",
+          "source_path": "github/Timing_LZZT/Timing_LZZT_Example_ODM.xml",
+          "sha256": "fd52fd4669a3505f4a02eee0aefe562976d9216e7bd241cd2df2ac9dab0e0e57"
+        },
+        {
+          "path": "github/Timing_LZZT/Timing_LZZT_Example_ODM.json",
+          "source_path": "github/Timing_LZZT/Timing_LZZT_Example_ODM.json",
+          "sha256": "45489fecca3cdacfaa5e83289c01bc91fdcfd956c782250a131d71560fe1f695"
+        }
+      ],
+      "upstream": "cdisc-org/DataExchange-ODM: examples/Timing_LZZT/Timing_LZZT_Example_ODM.xml"
+    }
+  ]
+}

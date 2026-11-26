@@ -3,12 +3,18 @@ import odmlib.odm_loader as OL
 import odmlib.loader as LD
 import os
 import json
+import tempfile
 
 
 class TestJsonFromXml(TestCase):
     def setUp(self) -> None:
         self.odm_file = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'data', 'cdash-odm-test.xml')
         self.loader = LD.ODMLoader(OL.XMLODMLoader())
+        # Generated output goes to a throw-away directory, never over the tracked
+        # tests/data/cdash_odm_test.json fixture that other modules read.
+        tmp_dir = tempfile.TemporaryDirectory()
+        self.addCleanup(tmp_dir.cleanup)
+        self.tmp_dir = tmp_dir.name
 
     def test_open_odm_document(self):
         root = self.loader.open_odm_document(self.odm_file)
@@ -20,7 +26,7 @@ class TestJsonFromXml(TestCase):
         root = self.loader.open_odm_document(self.odm_file)
         odm = self.loader.create_odmlib(root)
         odm_json = odm.to_json()
-        odm_json_file = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'data', 'cdash_odm_test.json')
+        odm_json_file = os.path.join(self.tmp_dir, 'cdash_odm_test.json')
         with open(odm_json_file, "w") as odm_in:
             odm_in.write(odm_json)
         odm_dict = json.loads(odm_json)

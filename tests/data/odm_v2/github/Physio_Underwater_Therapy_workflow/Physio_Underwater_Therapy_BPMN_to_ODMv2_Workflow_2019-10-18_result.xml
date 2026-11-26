@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<odm:MetaDataVersion xmlns:odm="http://www.cdisc.org/ns/odm/v2.0" xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" OID="MV.001" Name="MetaDataVersion 1">
+	<odm:WorkflowDef OID="WF1" Name="Workflow">
+		<odm:WorkflowStart StartOID="SE_0imo8x1" />
+		<odm:Transition OID="TR.SequenceFlow_00de882" Name="Transition from Visit 1 to Arm Branching" SourceOID="SE_0imo8x1" TargetOID="ExclusiveGateway_19rvqwk"/>
+		<odm:Transition OID="TR.SequenceFlow_1sm9dlo" Name="Physio+underwater therapy arm" SourceOID="ExclusiveGateway_19rvqwk" TargetOID="ParallelGateway_12qduy7"/>
+		<odm:Transition OID="TR.SequenceFlow_1hk2z8h" Name="Physiotherapy Arm" SourceOID="ExclusiveGateway_19rvqwk" TargetOID="SE_0m6x4je"/>
+		<odm:Transition OID="TR.SequenceFlow_0z0iuws" Name="Underwater therapy arm" SourceOID="ExclusiveGateway_19rvqwk" TargetOID="SE_0stubbd"/>
+		<odm:Transition OID="TR.SequenceFlow_0ao0p7m" Name="Transition from Physio+underwater therapy in parallel to Physiotherapy" SourceOID="ParallelGateway_12qduy7" TargetOID="SE_0m6x4je"/>
+		<odm:Transition OID="TR.SequenceFlow_0dnupty" Name="Transition from Physio+underwater therapy in parallel to Underwater therapy" SourceOID="ParallelGateway_12qduy7" TargetOID="SE_0stubbd"/>
+		<odm:Transition OID="TR.SequenceFlow_0mxsfta" Name="Transition from Physiotherapy to Visit 2: Evaluation" SourceOID="SE_0m6x4je" TargetOID="SE_0ltgyb8"/>
+		<odm:Transition OID="TR.SequenceFlow_0ecqyq5" Name="Transition from Underwater therapy to Visit 2: Evaluation" SourceOID="SE_0stubbd" TargetOID="SE_0ltgyb8"/>
+		<!--Branching definition-->
+		<odm:Branching OID="ExclusiveGateway_19rvqwk" Name="Arm Branching" Type="Exclusive">
+			<odm:TargetTransition TargetTransitionOID="TR.SequenceFlow_1sm9dlo" ConditionOID="COND.SequenceFlow_1sm9dlo"/>
+			<odm:TargetTransition TargetTransitionOID="TR.SequenceFlow_1hk2z8h" ConditionOID="COND.SequenceFlow_1hk2z8h"/>
+			<odm:TargetTransition TargetTransitionOID="TR.SequenceFlow_0z0iuws" ConditionOID="COND.SequenceFlow_0z0iuws"/>
+		</odm:Branching>
+		<odm:Branching OID="ParallelGateway_12qduy7" Name="Physio+underwater therapy in parallel" Type="Parallel">
+			<!--Remark that there is no Condition reference for parallel execution-->
+			<odm:TargetTransition TargetTransitionOID="TR.SequenceFlow_0ao0p7m"/>
+			<!--Remark that there is no Condition reference for parallel execution-->
+			<odm:TargetTransition TargetTransitionOID="TR.SequenceFlow_0dnupty"/>
+		</odm:Branching>
+		<odm:WorkflowEnd EndOID="SE_0ltgyb8" />
+	</odm:WorkflowDef>
+	<!--We model all the tasks as StudyEvents-->
+	<!--For a repeating task, we would set @Repeating='Yes'-->
+	<!--Start- and end-events of BPMN2 are not translated into StudyEvents-->
+	<odm:StudyEventDef OID="SE_0imo8x1" Name="Visit 1" Repeating="No" Type="Scheduled"/>
+	<odm:StudyEventDef OID="SE_0m6x4je" Name="Physiotherapy" Repeating="No" Type="Scheduled"/>
+	<odm:StudyEventDef OID="SE_0stubbd" Name="Underwater therapy" Repeating="No" Type="Scheduled"/>
+	<odm:StudyEventDef OID="SE_0ltgyb8" Name="Visit 2: Evaluation" Repeating="No" Type="Scheduled"/>
+	<!--Important: Note that BPMN2 does not have a mechanism to describe the condition in a machine-readable way-->
+	<odm:ConditionDef OID="COND.SequenceFlow_1sm9dlo" Name="Condition for Physio+underwater therapy arm">
+		<odm:Description>
+			<odm:TranslatedText Type="text/plain">Condition for Physio+underwater therapy arm</odm:TranslatedText>
+		</odm:Description>
+		<odm:MethodSignature />
+	</odm:ConditionDef>
+	<!--Important: Note that BPMN2 does not have a mechanism to describe the condition in a machine-readable way-->
+	<odm:ConditionDef OID="COND.SequenceFlow_1hk2z8h" Name="Condition for Physiotherapy Arm">
+		<odm:Description>
+			<odm:TranslatedText Type="text/plain">Condition for Physiotherapy Arm</odm:TranslatedText>
+		</odm:Description>
+		<odm:MethodSignature />
+	</odm:ConditionDef>
+	<!--Important: Note that BPMN2 does not have a mechanism to describe the condition in a machine-readable way-->
+	<odm:ConditionDef OID="COND.SequenceFlow_0z0iuws" Name="Condition for Underwater therapy arm">
+		<odm:Description>
+			<odm:TranslatedText Type="text/plain">Condition for Underwater therapy arm</odm:TranslatedText>
+		</odm:Description>
+		<odm:MethodSignature />
+	</odm:ConditionDef>
+</odm:MetaDataVersion>

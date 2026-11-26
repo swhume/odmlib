@@ -1,0 +1,36 @@
+<MetaDataVersion xmlns="http://www.cdisc.org/ns/odm/v2.0" OID="MV.001" Name="MetaDataVersion 1">
+	<!-- This example is about conditional repeats (cycles) in an ODMv2 workflow -->
+    <!-- We model all the tasks as StudyEvents -->
+    <Protocol>
+        <StudyTimings>
+            <!-- There must always be 7 days between two cycles of radiotherapy -->
+            <StudyTiming OID="Timings" Name="Study timings">
+                <TransitionTimingConstraint OID="TIM.1" Name="Duration between two radiotherapies" 
+                    TransitionOID="TR.2_REPEAT" TimepointTarget="P7D" TimepointPreWindow="P1D" TimepointPostWindow="P2D">
+                    <Description>
+                        <TranslatedText xml:lang="en" Type="text/plain">There must always be 7 days between two cycles of radiotherapy</TranslatedText>
+                        <TranslatedText xml:lang="de" Type="text/plain">Zwischen zwei Radiotherapie Behandlungen muss es immer 7 Tagen geben</TranslatedText>
+                    </Description>
+                </TransitionTimingConstraint>
+            </StudyTiming>
+        </StudyTimings>
+    </Protocol>
+    <!-- Workflow definition -->
+    <WorkflowDef OID="WF.RADIOTHERARPY_WORKFLOW" Name="Radiotherapy workflow">
+        <WorkflowStart StartOID="SE.1"/>
+        <Transition OID="TR.1-2" Name="Transition from start to radiation therapy" 
+            SourceOID="SE.1" TargetOID="SE.2"/>
+        <Transition OID="TR.Branch" SourceOID="SE.2" Name="Transition from radiation therapy to repeat test" TargetOID="BR.BRANCH"/>
+        <Branching OID="BR.BRANCH" Name="repeat test" Type="Exclusive">
+            <TargetTransition TargetTransitionOID="TR.2_REPEAT" ConditionOID="COND.NUMREPEATS"/>
+            <DefaultTransition TargetTransitionOID="TR.2-3"/>
+        </Branching> 
+        <Transition OID="TR.2_REPEAT" Name="Loop back to radiotherapy" SourceOID="BR.BRANCH" TargetOID="SE.2"/>
+        <Transition OID="TR.2-3" Name="Transition to end of radiotherapy" SourceOID="BR.BRANCH" TargetOID="SE.3"/>
+        <WorkflowEnd EndOID="SE.3"/>
+    </WorkflowDef>
+    <!--For a repeating task, we would set @Repeating='Yes'-->
+    <StudyEventDef OID="SE.1" Name="Start of Therapy" Repeating="No" Type="Scheduled"/>
+    <StudyEventDef OID="SE.2" Name="Radiation Therapy" Repeating="Yes" Type="Scheduled"/>
+    <StudyEventDef OID="SE.3" Name="End of Therapy" Repeating="No" Type="Scheduled"/>
+</MetaDataVersion>

@@ -1,0 +1,1565 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<ODM xmlns="http://www.cdisc.org/ns/odm/v2.0" CreationDateTime="2009-09-07T18:19:28+01:00" FileOID="CES_001" FileType="Transactional" Granularity="Metadata" SourceSystem="XML4Pharma CDISC ODM Study Designer" SourceSystemVersion="2008R2" ODMVersion="2.0">
+	<Description>
+		<TranslatedText Type="text/plain">A simple trial to demonstrate the end-to-end application of the CDISC Standards from D.I.H extended by J.A.</TranslatedText>
+	</Description>
+	<Study OID="CES" StudyName="CDISC Example Study" ProtocolName="CDISC Example Study">
+		<MetaDataVersion Name="CDISC Example Study Metadata" OID="CES_MDV_V1">
+			<Description>
+				<TranslatedText Type="text/plain">CDISC Example Study Metadata</TranslatedText>
+			</Description>
+			<WorkflowDef OID="WF.MAIN" Name="Protocol main workflow">
+				<Description>
+					<TranslatedText Type="text/plain" xml:lang="en">Linear workflow generated from ODM 1.3 'Protocol' element for 'Scheduled' StudyEvents</TranslatedText>
+				</Description>
+				<WorkflowStart StartOID="BASELINE"/>
+				<Transition OID="TR.BASELINE.WEEK_1" Name="Transition between StudyEvent Baseline Visit and StudyEvent Week 1 Visit" SourceOID="BASELINE" TargetOID="WEEK_1"/>
+				<Transition OID="TR.WEEK_1.WEEK_2" Name="Transition between StudyEvent Week 1 Visit and StudyEvent Week 2 Visit" SourceOID="WEEK_1" TargetOID="WEEK_2"/>
+				<Transition OID="TR.WEEK_2.DIARY" Name="Transition between StudyEvent Week 2 Visit and StudyEvent Patient Diary Event" SourceOID="WEEK_2" TargetOID="DIARY"/>
+				<WorkflowEnd EndOID="DIARY"/>
+			</WorkflowDef>
+			<StudyEventDef Name="Baseline Visit" OID="BASELINE" Repeating="No" Type="Scheduled">
+				<Description>
+					<TranslatedText xml:lang="en" Type="text/plain">Baseline</TranslatedText>
+					<TranslatedText xml:lang="de" Type="text/plain">Basislinie</TranslatedText>
+				</Description>
+				<ItemGroupRef Mandatory="Yes" OrderNumber="1" ItemGroupOID="F_BASELINE"/>
+				<ItemGroupRef Mandatory="Yes" OrderNumber="2" ItemGroupOID="F_CM"/>
+				<ItemGroupRef Mandatory="Yes" OrderNumber="3" ItemGroupOID="F_LAB"/>
+				<ItemGroupRef CollectionExceptionConditionOID="COND.FORMUSE.SMOKING_COMPLAINTS" Mandatory="No" OrderNumber="4" ItemGroupOID="F_COMPLAINTS_REL_SMOKING"/>
+				<Alias Context="TEST" Name="Baseline Alias"/>
+			</StudyEventDef>
+			<StudyEventDef Name="Week 1 Visit" OID="WEEK_1" Repeating="No" Type="Scheduled">
+				<Description>
+					<TranslatedText xml:lang="en" Type="text/plain">Week 1 Visit</TranslatedText>
+					<TranslatedText xml:lang="de" Type="text/plain">Woche 1 Visite</TranslatedText>
+				</Description>
+				<ItemGroupRef Mandatory="Yes" OrderNumber="1" ItemGroupOID="F_WEEK_1_2"/>
+				<ItemGroupRef Mandatory="Yes" OrderNumber="2" ItemGroupOID="F_LAB"/>
+			</StudyEventDef>
+			<StudyEventDef Name="Week 2 Visit" OID="WEEK_2" Repeating="No" Type="Scheduled">
+				<Description>
+					<TranslatedText xml:lang="en" Type="text/plain">Week 2 Visit</TranslatedText>
+					<TranslatedText xml:lang="de" Type="text/plain">Woche 2 Visite</TranslatedText>
+				</Description>
+				<ItemGroupRef Mandatory="Yes" OrderNumber="1" ItemGroupOID="F_WEEK_1_2"/>
+				<ItemGroupRef Mandatory="Yes" OrderNumber="2" ItemGroupOID="F_LAB"/>
+			</StudyEventDef>
+			<StudyEventDef Name="Patient Diary Event" OID="DIARY" Repeating="Yes" Type="Scheduled">
+				<Description>
+					<TranslatedText xml:lang="en" Type="text/plain">Patient diary is returned</TranslatedText>
+				</Description>
+				<ItemGroupRef Mandatory="Yes" OrderNumber="1" ItemGroupOID="F_DIARY"/>
+			</StudyEventDef>
+			<StudyEventDef Name="Adverse Event" OID="AE" Repeating="No" Type="Common">
+				<ItemGroupRef Mandatory="No" OrderNumber="1" ItemGroupOID="F_AE"/>
+				<ItemGroupRef Mandatory="No" OrderNumber="2" ItemGroupOID="F_CM"/>
+			</StudyEventDef>
+			<ItemGroupDef Name="Baseline Visit Form" OID="F_BASELINE" Repeating="No" Type="Form">
+				<Description>
+					<TranslatedText xml:lang="en" Type="text/plain">Baseline</TranslatedText>
+					<TranslatedText xml:lang="fr" Type="text/plain">Ligne de base</TranslatedText>
+					<TranslatedText xml:lang="de" Type="text/plain">Basislinie</TranslatedText>
+					<TranslatedText xml:lang="ko" Type="text/plain">기준선</TranslatedText>
+				</Description>
+				<ItemGroupRef ItemGroupOID="IG_COMMON" Mandatory="Yes" OrderNumber="1"/>
+				<ItemGroupRef ItemGroupOID="IG_DM" Mandatory="Yes" OrderNumber="2"/>
+				<ItemGroupRef ItemGroupOID="IG_SH" Mandatory="Yes" OrderNumber="3"/>
+				<ItemGroupRef ItemGroupOID="IG_DH" Mandatory="Yes" OrderNumber="5"/>
+				<ItemGroupRef ItemGroupOID="IG_PE_BASE" Mandatory="Yes" OrderNumber="6"/>
+				<ItemGroupRef ItemGroupOID="IG_XRAY" Mandatory="Yes" OrderNumber="7"/>
+				<ItemGroupRef CollectionExceptionConditionOID="COND.IGUSE.SMOKING_COMPLAINTS" ItemGroupOID="IG_SMOKING_COMPLAINTS" Mandatory="No" OrderNumber="4"/>
+				<Alias Context="TEST" Name="Baseline Form Alias"/>
+			</ItemGroupDef>
+			<ItemGroupDef Name="Week 1 and 2 Form" OID="F_WEEK_1_2" Repeating="No" Type="Form">
+				<Description>
+					<TranslatedText xml:lang="en" Type="text/plain">Week 1 and 2</TranslatedText>
+					<TranslatedText xml:lang="fr" Type="text/plain">Semaine 1 et 2</TranslatedText>
+					<TranslatedText xml:lang="de" Type="text/plain">Woche 1 und 2</TranslatedText>
+					<TranslatedText xml:lang="ko" Type="text/plain">주 1과 2</TranslatedText>
+				</Description>
+				<ItemGroupRef ItemGroupOID="IG_COMMON" Mandatory="Yes" OrderNumber="1"/>
+				<ItemGroupRef ItemGroupOID="IG_PE_WEEK" Mandatory="Yes" OrderNumber="2"/>
+			</ItemGroupDef>
+			<ItemGroupDef Name="Diary Form" OID="F_DIARY" Repeating="No" Type="Form">
+				<Description>
+					<TranslatedText xml:lang="en" Type="text/plain">Diary</TranslatedText>
+					<TranslatedText xml:lang="fr" Type="text/plain">Journal</TranslatedText>
+					<TranslatedText xml:lang="de" Type="text/plain">Tagesbuch</TranslatedText>
+					<TranslatedText xml:lang="ko" Type="text/plain">일기</TranslatedText>
+				</Description>
+				<ItemGroupRef ItemGroupOID="IG_COMMON" Mandatory="Yes" OrderNumber="1"/>
+				<ItemGroupRef ItemGroupOID="IG_PD" Mandatory="Yes" OrderNumber="2"/>
+			</ItemGroupDef>
+			<ItemGroupDef Name="Adverse Event Form (ACRO)" OID="F_AE" Repeating="Simple" Type="Form">
+				<Description>
+					<TranslatedText xml:lang="en" Type="text/plain">Adverse Events</TranslatedText>
+					<TranslatedText xml:lang="fr" Type="text/plain">Evénements défavorables</TranslatedText>
+					<TranslatedText xml:lang="de" Type="text/plain">Unerwünschte Vorfälle</TranslatedText>
+					<TranslatedText xml:lang="ko" Type="text/plain"/>
+				</Description>
+				<ItemGroupRef ItemGroupOID="IG_COMMON" Mandatory="Yes" OrderNumber="1"/>
+				<ItemGroupRef ItemGroupOID="IG_AE_OCCURRED" Mandatory="Yes" OrderNumber="2"/>
+				<ItemGroupRef CollectionExceptionConditionOID="COND.IGUSE.ADVERSE_EVENTS" ItemGroupOID="IG_AE" Mandatory="Yes" OrderNumber="3"/>
+			</ItemGroupDef>
+			<ItemGroupDef Name="Prior or Concomitant Medications (ACRO)" OID="F_CM" Repeating="Simple" Type="Form">
+				<Description>
+					<TranslatedText xml:lang="en" Type="text/plain">Prior or Concomitant Medications</TranslatedText>
+					<TranslatedText xml:lang="fr" Type="text/plain">Médications précédentes</TranslatedText>
+					<TranslatedText xml:lang="de" Type="text/plain">Vorherige Medikationen</TranslatedText>
+					<TranslatedText xml:lang="ko" Type="text/plain"/>
+				</Description>
+				<ItemGroupRef ItemGroupOID="IG_COMMON" Mandatory="Yes" OrderNumber="1"/>
+				<ItemGroupRef ItemGroupOID="IG_CM_TAKEN" Mandatory="Yes" OrderNumber="2"/>
+				<ItemGroupRef CollectionExceptionConditionOID="COND.IGUSE.CM" ItemGroupOID="IG_CM" Mandatory="Yes" OrderNumber="3"/>
+			</ItemGroupDef>
+			<ItemGroupDef Name="Laboratory" OID="F_LAB" Repeating="No" Type="Form">
+				<Description>
+					<TranslatedText xml:lang="en" Type="text/plain">Laboratory</TranslatedText>
+					<TranslatedText xml:lang="de" Type="text/plain">Laboratorium</TranslatedText>
+					<TranslatedText xml:lang="fr" Type="text/plain">Laboratoire</TranslatedText>
+					<TranslatedText xml:lang="ko" Type="text/plain"/>
+				</Description>
+				<ItemGroupRef ItemGroupOID="IG_COMMON" Mandatory="Yes" OrderNumber="1"/>
+				<ItemGroupRef ItemGroupOID="IG_LB_HEMATOLOGY" Mandatory="Yes" OrderNumber="3"/>
+			</ItemGroupDef>
+			<ItemGroupDef Name="Complaints related to smoking" OID="F_COMPLAINTS_REL_SMOKING" Repeating="No" Type="Form">
+				<Description>
+					<TranslatedText xml:lang="en" Type="text/plain">Complaints related to smoking - Do NOT use this form when the subject is a non-smoker</TranslatedText>
+					<TranslatedText xml:lang="fr" Type="text/plain">Plaintes en relation avec le fumage - N'utilisez pas ce formulaire quand le sujet est non-fumeur</TranslatedText>
+					<TranslatedText xml:lang="de" Type="text/plain">Klagen in beziehung zum rauchen - Benützen sie diesen Formular nicht wenn der Patient nicht-raucher ist.</TranslatedText>
+					<TranslatedText xml:lang="ko" Type="text/plain"/>
+				</Description>
+				<ItemGroupRef ItemGroupOID="IG_SMOKING_COMPLAINTS" Mandatory="Yes" OrderNumber="1"/>
+			</ItemGroupDef>
+			<ItemGroupDef Domain="all" Name="Common" OID="IG_COMMON" Repeating="No" DatasetName="COMMON" Type="Section">
+				<Description>
+					<TranslatedText xml:lang="en" Type="text/plain">Common</TranslatedText>
+					<TranslatedText xml:lang="fr" Type="text/plain">General</TranslatedText>
+					<TranslatedText xml:lang="de" Type="text/plain">Algemein</TranslatedText>
+					<TranslatedText xml:lang="ko" Type="text/plain"/>
+				</Description>
+				<ItemRef ItemOID="I_SITE" Mandatory="Yes" OrderNumber="1"/>
+				<ItemRef ItemOID="I_SUBJECTID" Mandatory="Yes" OrderNumber="2"/>
+				<ItemRef ItemOID="I_VISIT" Mandatory="Yes" OrderNumber="3"/>
+				<ItemRef ItemOID="I_VISITTIME" Mandatory="Yes" OrderNumber="4"/>
+				<Alias Context="TEST" Name="Common ItemGroup Alias"/>
+			</ItemGroupDef>
+			<ItemGroupDef Domain="DM" Name="Demographics" OID="IG_DM" Repeating="No" DatasetName="DEMOG" Type="Section">
+				<Description>
+					<TranslatedText xml:lang="en" Type="text/plain">Demographics</TranslatedText>
+					<TranslatedText xml:lang="fr" Type="text/plain">Demographie</TranslatedText>
+					<TranslatedText xml:lang="de" Type="text/plain">Demografie</TranslatedText>
+					<TranslatedText xml:lang="ko" Type="text/plain"/>
+				</Description>
+				<ItemRef ItemOID="I_BRTHDT" Mandatory="Yes" OrderNumber="1"/>
+				<ItemRef ItemOID="I_SEX" Mandatory="Yes" OrderNumber="2"/>
+				<ItemRef ItemOID="I_RACE" Mandatory="No" OrderNumber="3"/>
+				<Alias Context="SDTM" Name="DM"/>
+			</ItemGroupDef>
+			<ItemGroupDef Domain="SU" Name="Smoking History" OID="IG_SH" Repeating="No" DatasetName="SMOKE" Type="Section">
+				<Description>
+					<TranslatedText xml:lang="en" Type="text/plain">Smoking History</TranslatedText>
+					<TranslatedText xml:lang="fr" Type="text/plain">Histoire consommation du tabac</TranslatedText>
+					<TranslatedText xml:lang="de" Type="text/plain">Vergangenheit i.B.a. Rauchen</TranslatedText>
+					<TranslatedText xml:lang="ko" Type="text/plain"/>
+				</Description>
+				<ItemRef ItemOID="I_SMOKING" Mandatory="Yes" OrderNumber="1"/>
+				<ItemRef CollectionExceptionConditionOID="COND.SMOKING" ItemOID="I_NR_CIGARETTES" Mandatory="No" OrderNumber="2"/>
+			</ItemGroupDef>
+			<ItemGroupDef Domain="SU" Name="Drinking History" OID="IG_DH" Repeating="No" DatasetName="DRINK" Type="Section">
+				<Description>
+					<TranslatedText xml:lang="en" Type="text/plain">Drinking history</TranslatedText>
+					<TranslatedText xml:lang="fr" Type="text/plain">Histoire consommation de l'alcool</TranslatedText>
+					<TranslatedText xml:lang="de" Type="text/plain">Vergangenheit i.B.a. Alkoholverbrauch</TranslatedText>
+					<TranslatedText xml:lang="ko" Type="text/plain"/>
+				</Description>
+				<ItemRef ItemOID="I_DRINKING" Mandatory="Yes" OrderNumber="1"/>
+			</ItemGroupDef>
+			<ItemGroupDef Domain="VS" Name="Physical Exam" OID="IG_PE_BASE" Repeating="No" DatasetName="PHYEXBAS" Type="Section">
+				<Description>
+					<TranslatedText xml:lang="en" Type="text/plain">Physical examination: Base</TranslatedText>
+					<TranslatedText xml:lang="fr" Type="text/plain">Examination du corps: Base</TranslatedText>
+					<TranslatedText xml:lang="de" Type="text/plain">Körperuntersuchung: Basis</TranslatedText>
+					<TranslatedText xml:lang="ko" Type="text/plain"/>
+				</Description>
+				<ItemRef ItemOID="I_HEIGHT" Mandatory="Yes" OrderNumber="1"/>
+				<ItemRef ItemOID="I_WEIGHT" Mandatory="Yes" OrderNumber="2"/>
+				<ItemRef ItemOID="I_SYSBP" Mandatory="No" OrderNumber="3"/>
+				<ItemRef ItemOID="I_DIABP" Mandatory="Yes" MethodOID="METH.001" OrderNumber="4"/>
+				<ItemRef CollectionExceptionConditionOID="COND.DBP.DIZZY" ItemOID="I_DIZZY" Mandatory="Yes" OrderNumber="5"/>
+			</ItemGroupDef>
+			<ItemGroupDef Name="XRay" OID="IG_XRAY" Repeating="No" Type="Section">
+				<Description>
+					<TranslatedText xml:lang="en" Type="text/plain">X-Ray</TranslatedText>
+					<TranslatedText xml:lang="fr" Type="text/plain">Rayons X</TranslatedText>
+					<TranslatedText xml:lang="de" Type="text/plain">Röntgenbild</TranslatedText>
+					<TranslatedText xml:lang="ko" Type="text/plain"/>
+				</Description>
+				<ItemRef ItemOID="I_XRAY" Mandatory="Yes" OrderNumber="1"/>
+			</ItemGroupDef>
+			<ItemGroupDef Domain="VS" Name="Physical Exam" OID="IG_PE_WEEK" Repeating="No" DatasetName="PHYEX" Type="Section">
+				<Description>
+					<TranslatedText xml:lang="en" Type="text/plain">Physical Examination: Week</TranslatedText>
+					<TranslatedText xml:lang="fr" Type="text/plain">Examination du corps: Semaine</TranslatedText>
+					<TranslatedText Type="text/plain">Körperuntersuchung: Woche</TranslatedText>
+					<TranslatedText xml:lang="ko" Type="text/plain"/>
+				</Description>
+				<ItemRef ItemOID="I_WEIGHT" Mandatory="Yes" OrderNumber="1"/>
+				<ItemRef ItemOID="I_SYSBP" Mandatory="Yes" OrderNumber="2"/>
+				<ItemRef ItemOID="I_DIABP" Mandatory="Yes" OrderNumber="3"/>
+			</ItemGroupDef>
+			<ItemGroupDef Domain="QS" Name="Patient Diary" OID="IG_PD" Repeating="Simple" DatasetName="DIARY" Type="Section">
+				<Description>
+					<TranslatedText xml:lang="en" Type="text/plain">Patient diary</TranslatedText>
+					<TranslatedText xml:lang="fr" Type="text/plain">Journal du patient</TranslatedText>
+					<TranslatedText xml:lang="de" Type="text/plain">Patient Tagesbuch</TranslatedText>
+					<TranslatedText xml:lang="ko" Type="text/plain"/>
+				</Description>
+				<ItemRef ItemOID="I_DAY" Mandatory="Yes" OrderNumber="1"/>
+				<ItemRef ItemOID="I_DATE" Mandatory="Yes" OrderNumber="2"/>
+				<ItemRef ItemOID="I_DIARY" Mandatory="Yes" OrderNumber="3"/>
+			</ItemGroupDef>
+			<ItemGroupDef Domain="AE" Name="Adverse Events Occurred" OID="IG_AE_OCCURRED" Repeating="No" DatasetName="AEOCCUR" Type="Section">
+				<Description>
+					<TranslatedText xml:lang="en" Type="text/plain">Adverse events</TranslatedText>
+					<TranslatedText xml:lang="fr" Type="text/plain">Evénements défavorables</TranslatedText>
+					<TranslatedText xml:lang="de" Type="text/plain">Unerwünschte Vorfälle</TranslatedText>
+					<TranslatedText xml:lang="ko" Type="text/plain"/>
+				</Description>
+				<ItemRef ItemOID="I_AE_OCCURRED" Mandatory="Yes" OrderNumber="1"/>
+			</ItemGroupDef>
+			<ItemGroupDef Domain="AE" Name="Adverse Event" OID="IG_AE" Repeating="Simple" DatasetName="AEEVENT" Type="Section">
+				<Description>
+					<TranslatedText xml:lang="en" Type="text/plain">Adverse events</TranslatedText>
+					<TranslatedText xml:lang="de" Type="text/plain">Unerwünschte Vorfälle</TranslatedText>
+					<TranslatedText xml:lang="fr" Type="text/plain">Evénement défavorables</TranslatedText>
+					<TranslatedText xml:lang="ko" Type="text/plain"/>
+				</Description>
+				<ItemRef ItemOID="I_AE_EVENT" Mandatory="Yes" OrderNumber="1"/>
+				<ItemRef ItemOID="I_AE_TERM" Mandatory="Yes" OrderNumber="2"/>
+				<ItemRef ItemOID="I_AE_START" Mandatory="Yes" OrderNumber="3"/>
+				<ItemRef ItemOID="I_AE_CONTINUES" Mandatory="No" OrderNumber="4"/>
+				<ItemRef CollectionExceptionConditionOID="COND.AESTOP.STOPPED" ItemOID="I_AE_STOP" Mandatory="No" OrderNumber="5"/>
+				<ItemRef CollectionExceptionConditionOID="COND.AESTOP.STOPPED" ItemOID="I_AE_DURATION" Mandatory="No" OrderNumber="6"/>
+				<ItemRef ItemOID="I_AE_SERIOUS" Mandatory="Yes" OrderNumber="7"/>
+				<ItemRef CollectionExceptionConditionOID="COND.AE_SEVERITY.AE_SERIOUS" ItemOID="I_AE_SEVERITY" Mandatory="Yes" OrderNumber="8"/>
+				<ItemRef ItemOID="I_AE_RELATED" Mandatory="Yes" OrderNumber="9"/>
+				<ItemRef ItemOID="I_AE_ACTION" Mandatory="Yes" OrderNumber="10"/>
+				<ItemRef ItemOID="I_AE_OUTCOME" Mandatory="Yes" OrderNumber="11"/>
+			</ItemGroupDef>
+			<ItemGroupDef Domain="CM" Name="Non-study Medications Taken" OID="IG_CM_TAKEN" Repeating="No" DatasetName="NSMEDTK" Type="Section">
+				<Description>
+					<TranslatedText xml:lang="fr" Type="text/plain">Medicaments non-relatéé à l'étude</TranslatedText>
+					<TranslatedText xml:lang="de" Type="text/plain">Medikamente ohne Beziehung zum Studium</TranslatedText>
+					<TranslatedText xml:lang="en" Type="text/plain">Non-study related medication</TranslatedText>
+					<TranslatedText xml:lang="ko" Type="text/plain"/>
+				</Description>
+				<ItemRef ItemOID="I_CM_TAKEN" Mandatory="Yes" OrderNumber="1"/>
+			</ItemGroupDef>
+			<ItemGroupDef Domain="CM" Name="Prior or Concomitant Medications" OID="IG_CM" Repeating="Simple" DatasetName="CONMED" Type="Section">
+				<Description>
+					<TranslatedText xml:lang="fr" Type="text/plain">Médications précédentes</TranslatedText>
+					<TranslatedText xml:lang="en" Type="text/plain">Concomittant medication</TranslatedText>
+					<TranslatedText xml:lang="de" Type="text/plain">Vorherige Medikationen</TranslatedText>
+					<TranslatedText xml:lang="ko" Type="text/plain"/>
+				</Description>
+				<ItemRef ItemOID="I_CM_NUMBER" Mandatory="Yes" OrderNumber="1"/>
+				<ItemRef ItemOID="I_CM_NAME" Mandatory="Yes" OrderNumber="2"/>
+				<ItemRef ItemOID="I_CM_DOSE" Mandatory="Yes" OrderNumber="3"/>
+				<ItemRef ItemOID="I_CM_DOSEUNIT" Mandatory="Yes" OrderNumber="4"/>
+				<ItemRef ItemOID="I_CM_DOSEFREQ" Mandatory="Yes" OrderNumber="5"/>
+				<ItemRef ItemOID="I_CM_START" Mandatory="Yes" OrderNumber="6"/>
+				<ItemRef ItemOID="I_CM_CONTINUES" Mandatory="Yes" OrderNumber="7"/>
+				<ItemRef CollectionExceptionConditionOID="COND.CMSTOP.STOP_DATE" ItemOID="I_CM_STOP" Mandatory="Yes" OrderNumber="8"/>
+				<ItemRef ItemOID="I_CM_IEXISTING" Mandatory="Yes" OrderNumber="9"/>
+				<ItemRef ItemOID="I_CM_IAE" Mandatory="Yes" OrderNumber="10"/>
+				<ItemRef ItemOID="I_CM_IPROP" Mandatory="Yes" OrderNumber="11"/>
+				<ItemRef CollectionExceptionConditionOID="COND.PROHYLAXIS" ItemOID="I_CM_IPROPDESC" Mandatory="Yes" OrderNumber="12"/>
+			</ItemGroupDef>
+			<ItemGroupDef Domain="LB" Name="Hematology" OID="IG_LB_HEMATOLOGY" Repeating="No" DatasetName="LAB" Type="Section">
+				<Description>
+					<TranslatedText xml:lang="en" Type="text/plain">Hematology Lab</TranslatedText>
+					<TranslatedText xml:lang="fr" Type="text/plain">Hématologie Laboratoire</TranslatedText>
+					<TranslatedText xml:lang="de" Type="text/plain">Hematologie Laboratorium</TranslatedText>
+					<TranslatedText xml:lang="ko" Type="text/plain"/>
+				</Description>
+				<ItemRef ItemOID="I_LB_NAME" Mandatory="Yes" OrderNumber="1"/>
+				<ItemRef ItemOID="I_LB_ID" Mandatory="Yes" OrderNumber="2"/>
+				<ItemRef ItemOID="I_LB_ACCESSION" Mandatory="Yes" OrderNumber="3"/>
+				<ItemRef ItemOID="I_LB_RBC_NOTDONE" Mandatory="Yes" OrderNumber="4"/>
+				<ItemRef CollectionExceptionConditionOID="COND.LB_RBC" ItemOID="I_LB_RBC" Mandatory="Yes" OrderNumber="5"/>
+				<ItemRef CollectionExceptionConditionOID="COND.LB_RBC" ItemOID="I_LB_RBC_LO" Mandatory="Yes" OrderNumber="6"/>
+				<ItemRef CollectionExceptionConditionOID="COND.LB_RBC" ItemOID="I_LB_RBC_HI" Mandatory="Yes" OrderNumber="7"/>
+				<ItemRef ItemOID="I_LB_WBC_NOTDONE" Mandatory="Yes" OrderNumber="8"/>
+				<ItemRef CollectionExceptionConditionOID="COND.LB_WBC" ItemOID="I_LB_WBC" Mandatory="Yes" OrderNumber="9"/>
+				<ItemRef CollectionExceptionConditionOID="COND.LB_WBC" ItemOID="I_LB_WBC_LO" Mandatory="Yes" OrderNumber="10"/>
+				<ItemRef CollectionExceptionConditionOID="COND.LB_WBC" ItemOID="I_LB_WBC_HI" Mandatory="Yes" OrderNumber="11"/>
+			</ItemGroupDef>
+			<ItemGroupDef Name="Complaints due to smoking" OID="IG_SMOKING_COMPLAINTS" Repeating="No" Type="Section">
+				<Description>
+					<TranslatedText xml:lang="en" Type="text/plain">Complaints related to smoking</TranslatedText>
+					<TranslatedText xml:lang="fr" Type="text/plain">Plaintes en relation avec la consommation de tabac</TranslatedText>
+					<TranslatedText xml:lang="de" Type="text/plain">Klagen in beziehung zum Rauchen</TranslatedText>
+					<TranslatedText xml:lang="ko" Type="text/plain"/>
+				</Description>
+				<ItemRef ItemOID="I_BREATHING" Mandatory="No" OrderNumber="1"/>
+				<ItemRef ItemOID="I_COUGHING" Mandatory="No" OrderNumber="2"/>
+				<ItemRef ItemOID="I_HEART_COMPLAINTS" Mandatory="No" OrderNumber="3"/>
+				<ItemRef ItemOID="I_ILNESS_DAYS_LAST_YEAR" Mandatory="No" OrderNumber="4"/>
+				<ItemRef ItemOID="I_BRONCHITS" Mandatory="No" OrderNumber="5"/>
+				<ItemRef ItemOID="I_PNEUMONIA" Mandatory="No" OrderNumber="6"/>
+			</ItemGroupDef>
+			<ItemDef DataType="integer" Name="Site Number" OID="I_SITE">
+				<Description>
+					<TranslatedText xml:lang="en" Type="text/plain">Site Number as assigned by CRO</TranslatedText>
+				</Description>
+				<Question>
+					<TranslatedText xml:lang="en" Type="text/plain">Site number</TranslatedText>
+					<TranslatedText xml:lang="fr" Type="text/plain">Numéro de la clinique</TranslatedText>
+					<TranslatedText xml:lang="de" Type="text/plain">Klinik Nummer</TranslatedText>
+					<TranslatedText xml:lang="ko" Type="text/plain"/>
+				</Question>
+				<Alias Context="SDTM" Name="SITEID"/>
+			</ItemDef>
+			<ItemDef DataType="text" Length="11" Name="Subject ID" OID="I_SUBJECTID">
+				<Question>
+					<TranslatedText xml:lang="en" Type="text/plain">Subject ID</TranslatedText>
+					<TranslatedText xml:lang="de" Type="text/plain">ID des Patienten</TranslatedText>
+					<TranslatedText xml:lang="fr" Type="text/plain">ID du Sujet</TranslatedText>
+					<TranslatedText xml:lang="ko" Type="text/plain"/>
+				</Question>
+				<Alias Context="SDTM" Name="USUBJID"/>
+			</ItemDef>
+			<ItemDef DataType="text" Length="3" Name="Subject Initials" OID="I_SUBJECTINITIALS">
+				<Question>
+					<TranslatedText xml:lang="en" Type="text/plain">Subject Initials</TranslatedText>
+					<TranslatedText xml:lang="fr" Type="text/plain">Initiales du Sujet</TranslatedText>
+					<TranslatedText xml:lang="de" Type="text/plain">Initialen des Patienten</TranslatedText>
+					<TranslatedText xml:lang="ko" Type="text/plain"/>
+				</Question>
+			</ItemDef>
+			<ItemDef DataType="date" Name="Visit Date" OID="I_VISIT">
+				<Question>
+					<TranslatedText xml:lang="en" Type="text/plain">Visit Date</TranslatedText>
+					<TranslatedText xml:lang="fr" Type="text/plain">Date de Visite</TranslatedText>
+					<TranslatedText xml:lang="de" Type="text/plain">Besuchsdatum</TranslatedText>
+					<TranslatedText xml:lang="ko" Type="text/plain"/>
+				</Question>
+				<Alias Context="SDTM" Name="RFSTDTC"/>
+			</ItemDef>
+			<ItemDef DataType="time" Name="Visit Time" OID="I_VISITTIME">
+				<Question>
+					<TranslatedText xml:lang="en" Type="text/plain">Visit Start Time</TranslatedText>
+					<TranslatedText xml:lang="fr" Type="text/plain">Temps de Visite</TranslatedText>
+					<TranslatedText xml:lang="de" Type="text/plain">Besuchszeit</TranslatedText>
+					<TranslatedText xml:lang="ko" Type="text/plain"/>
+				</Question>
+			</ItemDef>
+			<ItemDef DataType="date" Name="Date of Birth" OID="I_BRTHDT">
+				<Question>
+					<TranslatedText xml:lang="en" Type="text/plain">Date of Birth</TranslatedText>
+					<TranslatedText xml:lang="fr" Type="text/plain">Date de Naissance</TranslatedText>
+					<TranslatedText xml:lang="de" Type="text/plain">Geburtsdatum</TranslatedText>
+					<TranslatedText xml:lang="ko" Type="text/plain"/>
+				</Question>
+				<Alias Context="SDTM" Name="BRTHDTC"/>
+			</ItemDef>
+			<ItemDef DataType="text" Length="1" Name="DM - Sex" OID="I_SEX">
+				<Question>
+					<TranslatedText xml:lang="en" Type="text/plain">Sex</TranslatedText>
+					<TranslatedText xml:lang="fr" Type="text/plain">Genre</TranslatedText>
+					<TranslatedText xml:lang="de" Type="text/plain">Geschlecht</TranslatedText>
+					<TranslatedText xml:lang="ko" Type="text/plain"/>
+				</Question>
+				<CodeListRef CodeListOID="CL_SEX"/>
+				<Alias Context="SDTM" Name="SEX"/>
+			</ItemDef>
+			<ItemDef DataType="text" Length="20" Name="DM - Race" OID="I_RACE">
+				<Question>
+					<TranslatedText xml:lang="en" Type="text/plain">Race</TranslatedText>
+					<TranslatedText xml:lang="fr" Type="text/plain">Appartenance ethnique</TranslatedText>
+					<TranslatedText xml:lang="de" Type="text/plain">Ethnischer Ursprung</TranslatedText>
+					<TranslatedText xml:lang="ko" Type="text/plain"/>
+				</Question>
+				<CodeListRef CodeListOID="CL_RACE"/>
+				<Alias Context="SDTM" Name="RACE"/>
+			</ItemDef>
+			<ItemDef DataType="boolean" Name="Smoking" OID="I_SMOKING">
+				<Question>
+					<TranslatedText xml:lang="en" Type="text/plain">Check when the subject is a smoker</TranslatedText>
+					<TranslatedText xml:lang="fr" Type="text/plain">Marquez quand le sujet est fumeur</TranslatedText>
+					<TranslatedText xml:lang="de" Type="text/plain">Markieren wenn der Patient Raucher ist</TranslatedText>
+					<TranslatedText xml:lang="ko" Type="text/plain"/>
+				</Question>
+				<Alias Context="SDTM" Name="SUDOSE"/>
+			</ItemDef>
+			<ItemDef DataType="text" Length="6" Name="Number of cigarettes per day" OID="I_NR_CIGARETTES">
+				<Question>
+					<TranslatedText xml:lang="en" Type="text/plain">Number of cigarettes per day</TranslatedText>
+					<TranslatedText xml:lang="fr" Type="text/plain">Nombre de cigarettes par jour</TranslatedText>
+					<TranslatedText xml:lang="de" Type="text/plain">Zahl der Zigaretten pro Tag</TranslatedText>
+					<TranslatedText xml:lang="ko" Type="text/plain"/>
+				</Question>
+				<CodeListRef CodeListOID="CL_SMOKING"/>
+			</ItemDef>
+			<ItemDef DataType="text" Length="20" Name="Drinking" OID="I_DRINKING">
+				<Question>
+					<TranslatedText xml:lang="en" Type="text/plain">Number of alcoholic drinks per day</TranslatedText>
+					<TranslatedText xml:lang="fr" Type="text/plain">Nombre de boissons alcoolique par jour</TranslatedText>
+					<TranslatedText xml:lang="de" Type="text/plain">Zahl der alkoholische Getränke pro Tag</TranslatedText>
+					<TranslatedText xml:lang="ko" Type="text/plain"/>
+				</Question>
+				<CodeListRef CodeListOID="CL_DRINKING"/>
+				<Alias Context="SDTM" Name="SUDOSE"/>
+			</ItemDef>
+			<ItemDef DataType="integer" Length="3" Name="Systolic BP" OID="I_SYSBP">
+				<Question>
+					<TranslatedText xml:lang="en" Type="text/plain">Systolic blood pressure</TranslatedText>
+					<TranslatedText xml:lang="fr" Type="text/plain">Tension artérielle systolique</TranslatedText>
+					<TranslatedText xml:lang="de" Type="text/plain">Systolischer Blutdruck</TranslatedText>
+					<TranslatedText xml:lang="ko" Type="text/plain"/>
+				</Question>
+				<RangeCheck Comparator="LT" SoftHard="Hard">
+					<CheckValue>180</CheckValue>
+					<ErrorMessage>
+						<TranslatedText xml:lang="en" Type="text/plain">The value should be below 180</TranslatedText>
+						<TranslatedText xml:lang="fr" Type="text/plain">La valeur doit être en dessous de 180</TranslatedText>
+						<TranslatedText xml:lang="de" Type="text/plain">Der Wert sollte unter 180 sein</TranslatedText>
+						<TranslatedText xml:lang="ko" Type="text/plain"/>
+					</ErrorMessage>
+				</RangeCheck>
+				<Alias Context="SDTM" Name="VSORRES where VSTESTCD=SYSBP"/>
+				<Alias Context="CDASH" Name="SYSBP"/>
+			</ItemDef>
+			<ItemDef DataType="integer" Length="3" Name="Diastolic BP" OID="I_DIABP">
+				<Question>
+					<TranslatedText xml:lang="en" Type="text/plain">Diastolic blood pressure</TranslatedText>
+					<TranslatedText xml:lang="fr" Type="text/plain">Tension artérielle diastolique</TranslatedText>
+					<TranslatedText xml:lang="de" Type="text/plain">Diastolischer Blutdruck</TranslatedText>
+					<TranslatedText xml:lang="ko" Type="text/plain"/>
+				</Question>
+				<RangeCheck Comparator="LT" SoftHard="Hard">
+					<CheckValue>120</CheckValue>
+					<ErrorMessage>
+						<TranslatedText xml:lang="en" Type="text/plain">The value should be below 120</TranslatedText>
+						<TranslatedText xml:lang="fr" Type="text/plain">La valeur doit être en dessous de 120</TranslatedText>
+						<TranslatedText xml:lang="de" Type="text/plain">Der Wert sollte unter 120 sein</TranslatedText>
+						<TranslatedText xml:lang="ko" Type="text/plain"/>
+					</ErrorMessage>
+				</RangeCheck>
+				<Alias Context="SDTM" Name="VSORRES where VSTESTCD=DIABP"/>
+			</ItemDef>
+			<ItemDef DataType="URI" Length="3" Name="Link to XRay" OID="I_XRAY">
+				<Question>
+					<TranslatedText xml:lang="en" Type="text/plain">Server or File location of X-Ray photograph</TranslatedText>
+					<TranslatedText xml:lang="fr" Type="text/plain">Location (fichier ou URL) de la photographie rayons X</TranslatedText>
+					<TranslatedText xml:lang="de" Type="text/plain">Datei oder URL des Röntgenbilds</TranslatedText>
+					<TranslatedText xml:lang="ko" Type="text/plain"/>
+				</Question>
+			</ItemDef>
+			<ItemDef DataType="integer" Length="3" Name="Height" OID="I_HEIGHT">
+				<Question>
+					<TranslatedText xml:lang="en" Type="text/plain">Height</TranslatedText>
+					<TranslatedText xml:lang="fr" Type="text/plain">Taille</TranslatedText>
+					<TranslatedText xml:lang="de" Type="text/plain">Größe</TranslatedText>
+					<TranslatedText xml:lang="ko" Type="text/plain"/>
+				</Question>
+				<RangeCheck Comparator="LT" SoftHard="Hard">
+					<CheckValue>220</CheckValue>
+					<ErrorMessage>
+						<TranslatedText xml:lang="en" Type="text/plain">The height value should be below 220 cm</TranslatedText>
+						<TranslatedText xml:lang="fr" Type="text/plain">La valeur de la taille doit être en dessous de 220 cm</TranslatedText>
+						<TranslatedText xml:lang="de" Type="text/plain">Der Länge sollte unter 220 cm liegen</TranslatedText>
+						<TranslatedText xml:lang="ko" Type="text/plain"/>
+					</ErrorMessage>
+				</RangeCheck>
+				<RangeCheck Comparator="LT" SoftHard="Hard">
+					<CheckValue>90</CheckValue>
+					<ErrorMessage>
+						<TranslatedText xml:lang="en" Type="text/plain">The height value should be below 90 inches</TranslatedText>
+						<TranslatedText xml:lang="fr" Type="text/plain">La valeur de la taille doit être en dessous de 90 pouces</TranslatedText>
+						<TranslatedText xml:lang="de" Type="text/plain">Der Länge sollte unter 90 Zoll liegen</TranslatedText>
+						<TranslatedText xml:lang="ko" Type="text/plain"/>
+					</ErrorMessage>
+				</RangeCheck>
+				<Alias Context="SDTM" Name="VSORRES where VSTESTCD=HEIGHT"/>
+			</ItemDef>
+			<ItemDef DataType="integer" Length="3" Name="Weight" OID="I_WEIGHT">
+				<Question>
+					<TranslatedText xml:lang="en" Type="text/plain">Weight</TranslatedText>
+					<TranslatedText xml:lang="fr" Type="text/plain">Poids</TranslatedText>
+					<TranslatedText xml:lang="de" Type="text/plain">Gewicht</TranslatedText>
+					<TranslatedText xml:lang="ko" Type="text/plain"/>
+				</Question>
+				<RangeCheck Comparator="LT" SoftHard="Hard">
+					<CheckValue>150</CheckValue>
+					<ErrorMessage>
+						<TranslatedText xml:lang="en" Type="text/plain">The weight value should be below 150 kg</TranslatedText>
+						<TranslatedText xml:lang="fr" Type="text/plain">La valeur du poids doit être en dessous de 150 kilo</TranslatedText>
+						<TranslatedText xml:lang="de" Type="text/plain">das Gewicht sollte unter 150 Kg liegen</TranslatedText>
+						<TranslatedText xml:lang="ko" Type="text/plain"/>
+					</ErrorMessage>
+				</RangeCheck>
+				<RangeCheck Comparator="LT" SoftHard="Hard">
+					<CheckValue>300</CheckValue>
+					<ErrorMessage>
+						<TranslatedText xml:lang="en" Type="text/plain">The weight should be below 300 Pounds</TranslatedText>
+						<TranslatedText xml:lang="fr" Type="text/plain">La valeur du poids doit être en dessous de 300 livres</TranslatedText>
+						<TranslatedText xml:lang="de" Type="text/plain">das Gewicht sollte unter 300 Pfund liegen</TranslatedText>
+						<TranslatedText xml:lang="ko" Type="text/plain"/>
+					</ErrorMessage>
+				</RangeCheck>
+				<Alias Context="SDTM" Name="VSORRES where VSTESTCD=WEIGHT"/>
+			</ItemDef>
+			<ItemDef DataType="integer" Length="1" Name="Diary Day" OID="I_DAY">
+				<Question>
+					<TranslatedText xml:lang="en" Type="text/plain">Day</TranslatedText>
+					<TranslatedText xml:lang="fr" Type="text/plain">Jour</TranslatedText>
+					<TranslatedText xml:lang="de" Type="text/plain">Tag</TranslatedText>
+					<TranslatedText xml:lang="ko" Type="text/plain"/>
+				</Question>
+				<CodeListRef CodeListOID="CL_DIARY_DAY"/>
+				<Alias Context="SDTM" Name="QSDY"/>
+			</ItemDef>
+			<ItemDef DataType="date" Name="Diary Date" OID="I_DATE">
+				<Question>
+					<TranslatedText xml:lang="en" Type="text/plain">Date</TranslatedText>
+					<TranslatedText xml:lang="fr" Type="text/plain">Date</TranslatedText>
+					<TranslatedText xml:lang="de" Type="text/plain">Datum</TranslatedText>
+					<TranslatedText xml:lang="ko" Type="text/plain"/>
+				</Question>
+				<Alias Context="SDTM" Name="QSDTC"/>
+			</ItemDef>
+			<ItemDef DataType="integer" Length="1" Name="Scale" OID="I_DIARY">
+				<Question>
+					<TranslatedText xml:lang="en" Type="text/plain">Discomfort Severity</TranslatedText>
+					<TranslatedText xml:lang="de" Type="text/plain">Höhe der Beschwerten</TranslatedText>
+					<TranslatedText xml:lang="fr" Type="text/plain">Niveau de décomfort</TranslatedText>
+					<TranslatedText xml:lang="ko" Type="text/plain"/>
+				</Question>
+				<CodeListRef CodeListOID="CL_DIARY"/>
+				<Alias Context="SDTM" Name="QSORRES"/>
+			</ItemDef>
+			<ItemDef DataType="integer" Length="1" Name="Adverse Event Experienced" OID="I_AE_OCCURRED">
+				<Question>
+					<TranslatedText xml:lang="en" Type="text/plain">Has the subject experienced any adverse events</TranslatedText>
+					<TranslatedText xml:lang="fr" Type="text/plain">Est ce que le sujet a eu des événements défavorables</TranslatedText>
+					<TranslatedText xml:lang="de" Type="text/plain">Hat der Patient unerwünschte Vorfälle</TranslatedText>
+					<TranslatedText xml:lang="ko" Type="text/plain"/>
+				</Question>
+				<CodeListRef CodeListOID="CL_NOYES"/>
+			</ItemDef>
+			<ItemDef DataType="integer" Length="3" Name="Adverse Event Number" OID="I_AE_EVENT">
+				<Question>
+					<TranslatedText xml:lang="en" Type="text/plain">Event No.</TranslatedText>
+					<TranslatedText xml:lang="fr" Type="text/plain">Numéro de l'événement</TranslatedText>
+					<TranslatedText xml:lang="de" Type="text/plain">Zahl des Vorfalls</TranslatedText>
+					<TranslatedText xml:lang="ko" Type="text/plain"/>
+				</Question>
+				<Alias Context="SDTM" Name="AESPID"/>
+			</ItemDef>
+			<ItemDef DataType="text" Length="255" Name="Adverse Event Term" OID="I_AE_TERM">
+				<Question>
+					<TranslatedText xml:lang="en" Type="text/plain">Adverse event</TranslatedText>
+					<TranslatedText xml:lang="fr" Type="text/plain">Evénement défavorable</TranslatedText>
+					<TranslatedText xml:lang="de" Type="text/plain">Vorfall</TranslatedText>
+					<TranslatedText xml:lang="ko" Type="text/plain"/>
+				</Question>
+				<Alias Context="SDTM" Name="AETERM"/>
+			</ItemDef>
+			<ItemDef DataType="date" Name="Adverse Event Start Date" OID="I_AE_START">
+				<Question>
+					<TranslatedText xml:lang="en" Type="text/plain">Start Date</TranslatedText>
+					<TranslatedText xml:lang="fr" Type="text/plain">Date du début</TranslatedText>
+					<TranslatedText xml:lang="de" Type="text/plain">Anfangsdatum</TranslatedText>
+					<TranslatedText xml:lang="ko" Type="text/plain"/>
+				</Question>
+				<Alias Context="SDTM" Name="AESTDTC"/>
+			</ItemDef>
+			<ItemDef DataType="date" Name="Adverse Event Stop Date" OID="I_AE_STOP">
+				<Question>
+					<TranslatedText xml:lang="en" Type="text/plain">Stop Date</TranslatedText>
+					<TranslatedText xml:lang="fr" Type="text/plain">Date de la fin</TranslatedText>
+					<TranslatedText xml:lang="de" Type="text/plain">Datum des Endes</TranslatedText>
+					<TranslatedText xml:lang="ko" Type="text/plain"/>
+				</Question>
+				<Alias Context="SDTM" Name="AEENDTC"/>
+			</ItemDef>
+			<ItemDef DataType="durationDatetime" Name="AE duration" OID="I_AE_DURATION">
+				<Question>
+					<TranslatedText xml:lang="en" Type="text/plain">Duration of the adverse event</TranslatedText>
+					<TranslatedText xml:lang="fr" Type="text/plain">Durée de l'événement défavorable</TranslatedText>
+					<TranslatedText xml:lang="de" Type="text/plain">Dauer des Vorfalls</TranslatedText>
+					<TranslatedText xml:lang="ko" Type="text/plain"/>
+				</Question>
+			</ItemDef>
+			<ItemDef DataType="integer" Length="1" Name="Adverse Event Continues" OID="I_AE_CONTINUES">
+				<Question>
+					<TranslatedText xml:lang="en" Type="text/plain">Is the adverse event still continuing</TranslatedText>
+					<TranslatedText xml:lang="fr" Type="text/plain">Est ce que l'événement continue toujours</TranslatedText>
+					<TranslatedText xml:lang="de" Type="text/plain">Ist der Vorfall heute noch kontinuierend</TranslatedText>
+					<TranslatedText xml:lang="ko" Type="text/plain"/>
+				</Question>
+				<CodeListRef CodeListOID="CL_NOYES"/>
+				<Alias Context="SDTM" Name="AEENRF"/>
+			</ItemDef>
+			<ItemDef DataType="integer" Length="1" Name="Adverse Event Serious" OID="I_AE_SERIOUS">
+				<Question>
+					<TranslatedText xml:lang="en" Type="text/plain">Was event serious</TranslatedText>
+					<TranslatedText xml:lang="fr" Type="text/plain">Est ce que l'événement était sérieux</TranslatedText>
+					<TranslatedText xml:lang="de" Type="text/plain">War der Vorfall ernsthaft</TranslatedText>
+					<TranslatedText xml:lang="ko" Type="text/plain"/>
+				</Question>
+				<CodeListRef CodeListOID="CL_NOYES"/>
+				<Alias Context="SDTM" Name="AESER"/>
+			</ItemDef>
+			<ItemDef DataType="integer" Length="1" Name="Adverse Event Severity" OID="I_AE_SEVERITY">
+				<Question>
+					<TranslatedText xml:lang="en" Type="text/plain">Severity</TranslatedText>
+					<TranslatedText xml:lang="fr" Type="text/plain">Sévérité</TranslatedText>
+					<TranslatedText xml:lang="de" Type="text/plain">Ernsthaftigkeit</TranslatedText>
+					<TranslatedText xml:lang="ko" Type="text/plain"/>
+				</Question>
+				<CodeListRef CodeListOID="CL_AE_SEVERITY"/>
+				<Alias Context="SDTM" Name="AESEV"/>
+			</ItemDef>
+			<ItemDef DataType="integer" Length="1" Name="Adverse Event Related" OID="I_AE_RELATED">
+				<Question>
+					<TranslatedText xml:lang="en" Type="text/plain">Is there a reasonable possibility that the AE may have been caused by the study drug</TranslatedText>
+					<TranslatedText xml:lang="fr" Type="text/plain">Est ce que il y a une possibilité raisonnable que l' événement défavorable a pu avoir été provoqué par la drogue de l'étude</TranslatedText>
+					<TranslatedText xml:lang="de" Type="text/plain">Gibt es eine angemessene Möglichkeit, dass der Vorfall durch das Medikament des Studiums verursacht werdet</TranslatedText>
+					<TranslatedText xml:lang="ko" Type="text/plain"/>
+				</Question>
+				<CodeListRef CodeListOID="CL_NOYES"/>
+				<Alias Context="SDTM" Name="AEREL"/>
+			</ItemDef>
+			<ItemDef DataType="integer" Length="1" Name="Adverse Event Action Taken" OID="I_AE_ACTION">
+				<Question>
+					<TranslatedText xml:lang="en" Type="text/plain">Action taken with study drug</TranslatedText>
+					<TranslatedText xml:lang="fr" Type="text/plain">Mesure prise avec le medicament de l'étude</TranslatedText>
+					<TranslatedText xml:lang="de" Type="text/plain">Ergriffene Maßnahmen mit Medikament des Studiums</TranslatedText>
+					<TranslatedText xml:lang="ko" Type="text/plain"/>
+				</Question>
+				<CodeListRef CodeListOID="CL_AE_ACTION"/>
+				<Alias Context="SDTM" Name="AEACN"/>
+			</ItemDef>
+			<ItemDef DataType="integer" Length="1" Name="Adverse Event Subject Outcome" OID="I_AE_OUTCOME">
+				<Question>
+					<TranslatedText xml:lang="en" Type="text/plain">Subject outcome</TranslatedText>
+					<TranslatedText xml:lang="fr" Type="text/plain">Résultats du sujet</TranslatedText>
+					<TranslatedText xml:lang="de" Type="text/plain">Patient Resultate</TranslatedText>
+					<TranslatedText xml:lang="ko" Type="text/plain"/>
+				</Question>
+				<CodeListRef CodeListOID="CL_AE_OUTCOME"/>
+				<Alias Context="SDTM" Name="AEOUT"/>
+			</ItemDef>
+			<ItemDef DataType="integer" Length="1" Name="Non-study Medications taken" OID="I_CM_TAKEN">
+				<Question>
+					<TranslatedText xml:lang="en" Type="text/plain">Were any non-study medications taken</TranslatedText>
+					<TranslatedText xml:lang="fr" Type="text/plain">Est ce que le sujet a pris des medicament non-relatéé à l'étude</TranslatedText>
+					<TranslatedText xml:lang="de" Type="text/plain">Hat der Patient Medikamente genommen, die keine Beziehung zum Studium haben</TranslatedText>
+					<TranslatedText xml:lang="ko" Type="text/plain"/>
+				</Question>
+				<CodeListRef CodeListOID="CL_NOYES"/>
+			</ItemDef>
+			<ItemDef DataType="integer" Length="3" Name="Medication Number" OID="I_CM_NUMBER">
+				<Question>
+					<TranslatedText xml:lang="en" Type="text/plain">Medication No.</TranslatedText>
+					<TranslatedText xml:lang="fr" Type="text/plain">No. du Médicament</TranslatedText>
+					<TranslatedText xml:lang="de" Type="text/plain">Nummer des Medikaments</TranslatedText>
+					<TranslatedText xml:lang="ko" Type="text/plain"/>
+				</Question>
+				<Alias Context="SDTM" Name="CMSPID"/>
+			</ItemDef>
+			<ItemDef DataType="text" Length="255" Name="Medication Name" OID="I_CM_NAME">
+				<Question>
+					<TranslatedText xml:lang="en" Type="text/plain">Drug Name (Brand or Generic)</TranslatedText>
+					<TranslatedText xml:lang="fr" Type="text/plain">Nom de la Drogue (Marque ou générique)</TranslatedText>
+					<TranslatedText xml:lang="de" Type="text/plain">Name des Medikaments (Marke oder Generisch)</TranslatedText>
+					<TranslatedText xml:lang="ko" Type="text/plain"/>
+				</Question>
+				<Alias Context="SDTM" Name="CMTRT"/>
+			</ItemDef>
+			<ItemDef DataType="text" Length="20" Name="Medication Dose" OID="I_CM_DOSE">
+				<Question>
+					<TranslatedText xml:lang="en" Type="text/plain">Total Dose Per Freqeuncy Checked</TranslatedText>
+					<TranslatedText xml:lang="fr" Type="text/plain">Dose totale par fréquence vérifié</TranslatedText>
+					<TranslatedText xml:lang="de" Type="text/plain">Totale Dosis per überprüfte Frequenz</TranslatedText>
+					<TranslatedText xml:lang="ko" Type="text/plain"/>
+				</Question>
+				<Alias Context="SDTM" Name="CMDOSE"/>
+			</ItemDef>
+			<ItemDef DataType="text" Length="20" Name="Medication Dose Units" OID="I_CM_DOSEUNIT">
+				<Question>
+					<TranslatedText xml:lang="en" Type="text/plain">Unit</TranslatedText>
+					<TranslatedText xml:lang="fr" Type="text/plain">Unité</TranslatedText>
+					<TranslatedText xml:lang="de" Type="text/plain">Einheit</TranslatedText>
+					<TranslatedText xml:lang="ko" Type="text/plain"/>
+				</Question>
+				<Alias Context="SDTM" Name="CMDOSEU"/>
+			</ItemDef>
+			<ItemDef DataType="integer" Length="1" Name="Medication Dose Frequency" OID="I_CM_DOSEFREQ">
+				<Question>
+					<TranslatedText xml:lang="en" Type="text/plain">Frequency</TranslatedText>
+					<TranslatedText xml:lang="fr" Type="text/plain">Fréquence</TranslatedText>
+					<TranslatedText xml:lang="de" Type="text/plain">Frequenz</TranslatedText>
+					<TranslatedText xml:lang="ko" Type="text/plain"/>
+				</Question>
+				<CodeListRef CodeListOID="CL_CM_FREQUENCY"/>
+				<Alias Context="SDTM" Name="CMDOSFRQ"/>
+			</ItemDef>
+			<ItemDef DataType="date" Name="Medication Start Date" OID="I_CM_START">
+				<Question>
+					<TranslatedText xml:lang="en" Type="text/plain">Start Date</TranslatedText>
+					<TranslatedText xml:lang="fr" Type="text/plain">Date du début</TranslatedText>
+					<TranslatedText xml:lang="de" Type="text/plain">Anfangsdatum</TranslatedText>
+					<TranslatedText xml:lang="ko" Type="text/plain"/>
+				</Question>
+				<Alias Context="SDTM" Name="CMSTDTC"/>
+			</ItemDef>
+			<ItemDef DataType="date" Name="Medication Stop Date" OID="I_CM_STOP">
+				<Question>
+					<TranslatedText xml:lang="en" Type="text/plain">Stop Date</TranslatedText>
+					<TranslatedText xml:lang="fr" Type="text/plain">Date de la fin</TranslatedText>
+					<TranslatedText xml:lang="de" Type="text/plain">Datum des Endes</TranslatedText>
+					<TranslatedText xml:lang="ko" Type="text/plain"/>
+				</Question>
+				<Alias Context="SDTM" Name="CMENDTC"/>
+			</ItemDef>
+			<ItemDef DataType="integer" Length="1" Name="Medication Continues" OID="I_CM_CONTINUES">
+				<Question>
+					<TranslatedText xml:lang="en" Type="text/plain">Is medication still continuing</TranslatedText>
+					<TranslatedText xml:lang="fr" Type="text/plain">Est ce que le médicament est utilisé à ce jour</TranslatedText>
+					<TranslatedText xml:lang="de" Type="text/plain">Benützt der Patient dieses Medikament noch immer</TranslatedText>
+					<TranslatedText xml:lang="ko" Type="text/plain"/>
+				</Question>
+				<CodeListRef CodeListOID="CL_NOYES"/>
+				<Alias Context="SDTM" Name="CMENRF"/>
+			</ItemDef>
+			<ItemDef DataType="integer" Length="3" Name="Pre-exisitng Illness" OID="I_CM_IEXISTING">
+				<Question>
+					<TranslatedText xml:lang="en" Type="text/plain">Pre-existing illness No.</TranslatedText>
+					<TranslatedText xml:lang="fr" Type="text/plain">No. Maladie se produisant avant</TranslatedText>
+					<TranslatedText xml:lang="de" Type="text/plain">Vorherige Krankheit Nummer</TranslatedText>
+				</Question>
+				<Alias Context="SDTM" Name="CMINDC"/>
+			</ItemDef>
+			<ItemDef DataType="integer" Length="3" Name="Adverse Event" OID="I_CM_IAE">
+				<Question>
+					<TranslatedText xml:lang="en" Type="text/plain">Adverse Event No.</TranslatedText>
+					<TranslatedText xml:lang="fr" Type="text/plain">No. de l'événement défavorable</TranslatedText>
+					<TranslatedText xml:lang="de" Type="text/plain">Vorfall Nummer</TranslatedText>
+					<TranslatedText xml:lang="ko" Type="text/plain"/>
+				</Question>
+				<Alias Context="SDTM" Name="CMINDC"/>
+			</ItemDef>
+			<ItemDef DataType="integer" Length="1" Name="Prophylaxis" OID="I_CM_IPROP">
+				<Question>
+					<TranslatedText xml:lang="en" Type="text/plain">Prophylaxis</TranslatedText>
+					<TranslatedText xml:lang="fr" Type="text/plain">Prophylaxie</TranslatedText>
+					<TranslatedText xml:lang="de" Type="text/plain">Prophylaxis</TranslatedText>
+					<TranslatedText xml:lang="ko" Type="text/plain"/>
+				</Question>
+				<CodeListRef CodeListOID="CL_NOYES"/>
+				<Alias Context="SDTM" Name="CMINDC"/>
+			</ItemDef>
+			<ItemDef DataType="text" Length="20" Name="Prophylaxis Description" OID="I_CM_IPROPDESC">
+				<Question>
+					<TranslatedText xml:lang="en" Type="text/plain">Prophylaxis, Specify</TranslatedText>
+					<TranslatedText xml:lang="fr" Type="text/plain">Prophylaxie, Description</TranslatedText>
+					<TranslatedText xml:lang="de" Type="text/plain">Prophylaxis, Beschreibung</TranslatedText>
+					<TranslatedText xml:lang="ko" Type="text/plain"/>
+				</Question>
+				<Alias Context="SDTM" Name="CMINDC"/>
+			</ItemDef>
+			<ItemDef DataType="text" Length="20" Name="Laboratory Name" OID="I_LB_NAME">
+				<Question>
+					<TranslatedText xml:lang="en" Type="text/plain">Laboratory Name</TranslatedText>
+					<TranslatedText xml:lang="fr" Type="text/plain">Nom du laboratoire</TranslatedText>
+					<TranslatedText xml:lang="de" Type="text/plain">Name des Labors</TranslatedText>
+					<TranslatedText xml:lang="ko" Type="text/plain"/>
+				</Question>
+				<Alias Context="SDTM" Name="LBNAM"/>
+			</ItemDef>
+			<ItemDef DataType="text" Length="5" Name="Laboratory ID" OID="I_LB_ID">
+				<Question>
+					<TranslatedText xml:lang="en" Type="text/plain">Laboratory ID</TranslatedText>
+					<TranslatedText xml:lang="fr" Type="text/plain">Identification du laboratoire</TranslatedText>
+					<TranslatedText xml:lang="de" Type="text/plain">Identifikation des Labors</TranslatedText>
+					<TranslatedText xml:lang="ko" Type="text/plain"/>
+				</Question>
+			</ItemDef>
+			<ItemDef DataType="integer" Length="5" Name="Accession Number" OID="I_LB_ACCESSION">
+				<Question>
+					<TranslatedText xml:lang="en" Type="text/plain">Accession #</TranslatedText>
+					<TranslatedText xml:lang="fr" Type="text/plain">Numéro de l'entréé</TranslatedText>
+					<TranslatedText xml:lang="de" Type="text/plain">Zugangszahl</TranslatedText>
+					<TranslatedText xml:lang="ko" Type="text/plain"/>
+				</Question>
+			</ItemDef>
+			<ItemDef DataType="float" Length="8" Name="RBC" OID="I_LB_RBC">
+				<Question>
+					<TranslatedText xml:lang="en" Type="text/plain">Red Blood Count</TranslatedText>
+					<TranslatedText xml:lang="fr" Type="text/plain">Compte des corps rouges dans le sang</TranslatedText>
+					<TranslatedText xml:lang="de" Type="text/plain">Zahl der roten Blutkörper</TranslatedText>
+					<TranslatedText xml:lang="ko" Type="text/plain"/>
+				</Question>
+				<RangeCheck Comparator="LE" SoftHard="Hard">
+					<CheckValue>8.0</CheckValue>
+					<ErrorMessage>
+						<TranslatedText xml:lang="en" Type="text/plain">The value should be between 2.0 and 8.0</TranslatedText>
+						<TranslatedText xml:lang="fr" Type="text/plain">La valuer doit être entre 2.0 et 8.0</TranslatedText>
+						<TranslatedText xml:lang="de" Type="text/plain">Der Wert sollte zwichen 2.0 und 8.0 sein</TranslatedText>
+						<TranslatedText xml:lang="ko" Type="text/plain"/>
+					</ErrorMessage>
+				</RangeCheck>
+				<RangeCheck Comparator="GE" SoftHard="Hard">
+					<CheckValue>2.0</CheckValue>
+					<ErrorMessage>
+						<TranslatedText xml:lang="en" Type="text/plain">The value should be between 2.0 and 8.0</TranslatedText>
+						<TranslatedText xml:lang="fr" Type="text/plain">La valuer doit être entre 2.0 et 8.0</TranslatedText>
+						<TranslatedText xml:lang="de" Type="text/plain">Der Wert sollte zwichen 2.0 und 8.0 sein</TranslatedText>
+						<TranslatedText xml:lang="ko" Type="text/plain"/>
+					</ErrorMessage>
+				</RangeCheck>
+				<RangeCheck Comparator="LE" SoftHard="Soft">
+					<CheckValue>6.5</CheckValue>
+					<ErrorMessage>
+						<TranslatedText xml:lang="en" Type="text/plain">The value should be between 4.0 and 6.5</TranslatedText>
+						<TranslatedText xml:lang="fr" Type="text/plain">La valuer doit être entre 4.0 et 6.5</TranslatedText>
+						<TranslatedText xml:lang="de" Type="text/plain">Der Wert sollte zwischen 4.0 und 6.5 sein</TranslatedText>
+						<TranslatedText xml:lang="ko" Type="text/plain"/>
+					</ErrorMessage>
+				</RangeCheck>
+				<RangeCheck Comparator="GE" SoftHard="Soft">
+					<CheckValue>4.0</CheckValue>
+					<ErrorMessage>
+						<TranslatedText xml:lang="en" Type="text/plain">The value should be between 4.0 and 6.5</TranslatedText>
+						<TranslatedText xml:lang="fr" Type="text/plain">La valuer doit être entre 4.0 et 6.5</TranslatedText>
+						<TranslatedText xml:lang="de" Type="text/plain">Der Wert sollte zwischen 4.0 und 6.5 sein</TranslatedText>
+						<TranslatedText xml:lang="ko" Type="text/plain"/>
+					</ErrorMessage>
+				</RangeCheck>
+				<Alias Context="SDTM" Name="LBORRES"/>
+			</ItemDef>
+			<ItemDef DataType="float" Length="8" Name="RBC Normal Range Lo" OID="I_LB_RBC_LO">
+				<Question>
+					<TranslatedText xml:lang="en" Type="text/plain">Red Blood Count, Normal Range, Low</TranslatedText>
+					<TranslatedText xml:lang="fr" Type="text/plain">Compte des corps rouges dans le sang, gamme normale, basse</TranslatedText>
+					<TranslatedText xml:lang="de" Type="text/plain">Zahl der roten Blutkörper, Normalniveau, Unten</TranslatedText>
+					<TranslatedText xml:lang="ko" Type="text/plain"/>
+				</Question>
+				<Alias Context="SDTM" Name="LBORNRLO"/>
+			</ItemDef>
+			<ItemDef DataType="float" Length="8" Name="RBC Normal Range Hi" OID="I_LB_RBC_HI">
+				<Question>
+					<TranslatedText xml:lang="en" Type="text/plain">Red Blood Count, Normal Range, High</TranslatedText>
+					<TranslatedText xml:lang="fr" Type="text/plain">Compte des corps rouges dans le sang, gamme normale, haute</TranslatedText>
+					<TranslatedText xml:lang="de" Type="text/plain">Zahl der roten Blutkörper, Normalniveau, Oben</TranslatedText>
+					<TranslatedText xml:lang="ko" Type="text/plain"/>
+				</Question>
+				<Alias Context="SDTM" Name="LBORNRHI"/>
+			</ItemDef>
+			<ItemDef DataType="boolean" Name="RBC Done" OID="I_LB_RBC_NOTDONE">
+				<Question>
+					<TranslatedText xml:lang="en" Type="text/plain">Check when not done</TranslatedText>
+					<TranslatedText xml:lang="fr" Type="text/plain">Marquez si ne pas faite</TranslatedText>
+					<TranslatedText xml:lang="de" Type="text/plain">Markieren wenn nicht ausgeführt</TranslatedText>
+					<TranslatedText xml:lang="ko" Type="text/plain"/>
+				</Question>
+				<Alias Context="SDTM" Name="LBSTAT"/>
+			</ItemDef>
+			<ItemDef DataType="float" Length="8" Name="WBC" OID="I_LB_WBC">
+				<Question>
+					<TranslatedText xml:lang="en" Type="text/plain">White Blood Count</TranslatedText>
+					<TranslatedText xml:lang="fr" Type="text/plain">Compte des corps blanches dang le sang</TranslatedText>
+					<TranslatedText xml:lang="de" Type="text/plain">Zahl der weisse Blutkörper</TranslatedText>
+					<TranslatedText xml:lang="ko" Type="text/plain"/>
+				</Question>
+				<RangeCheck Comparator="LE" SoftHard="Hard">
+					<CheckValue>15</CheckValue>
+					<ErrorMessage>
+						<TranslatedText xml:lang="en" Type="text/plain">The value should be between 2 and 15</TranslatedText>
+						<TranslatedText xml:lang="fr" Type="text/plain">La valuer doit être enter 2 et 15</TranslatedText>
+						<TranslatedText xml:lang="de" Type="text/plain">Der Wert sollte zwischen 2 und 15 sein</TranslatedText>
+						<TranslatedText xml:lang="ko" Type="text/plain"/>
+					</ErrorMessage>
+				</RangeCheck>
+				<RangeCheck Comparator="GE" SoftHard="Hard">
+					<CheckValue>2.0</CheckValue>
+					<ErrorMessage>
+						<TranslatedText xml:lang="en" Type="text/plain">The value should be between 2 and 15</TranslatedText>
+						<TranslatedText xml:lang="fr" Type="text/plain">La valuer doit être entre 2 et 15</TranslatedText>
+						<TranslatedText xml:lang="de" Type="text/plain">Der Wert sollte zwischen 2 and 15 sein</TranslatedText>
+						<TranslatedText xml:lang="ko" Type="text/plain"/>
+					</ErrorMessage>
+				</RangeCheck>
+				<RangeCheck Comparator="LE" SoftHard="Soft">
+					<CheckValue>12.0</CheckValue>
+					<ErrorMessage>
+						<TranslatedText xml:lang="en" Type="text/plain">The value should be between 3.5 and 12</TranslatedText>
+						<TranslatedText xml:lang="fr" Type="text/plain">La valuer dout être entre 3.5 et 12</TranslatedText>
+						<TranslatedText xml:lang="de" Type="text/plain">Der Wert sollte zwischen 3.5 und 12 sein</TranslatedText>
+						<TranslatedText xml:lang="ko" Type="text/plain"/>
+					</ErrorMessage>
+				</RangeCheck>
+				<RangeCheck Comparator="GE" SoftHard="Soft">
+					<CheckValue>3.5</CheckValue>
+					<ErrorMessage>
+						<TranslatedText xml:lang="en" Type="text/plain">The value should be between 3.5 and 12</TranslatedText>
+						<TranslatedText xml:lang="fr" Type="text/plain">La valuer doit être entre 3.5 et 12</TranslatedText>
+						<TranslatedText xml:lang="de" Type="text/plain">Der Wert sollte zwischen 3.5 und 12 sein</TranslatedText>
+						<TranslatedText xml:lang="ko" Type="text/plain"/>
+					</ErrorMessage>
+				</RangeCheck>
+				<Alias Context="SDTM" Name="LBORRES"/>
+			</ItemDef>
+			<ItemDef DataType="float" Length="8" Name="WBC Normal Range Lo" OID="I_LB_WBC_LO">
+				<Question>
+					<TranslatedText xml:lang="en" Type="text/plain">White Blood Count, Normal Range, Low</TranslatedText>
+					<TranslatedText xml:lang="fr" Type="text/plain">Compte des corps blanches dans le sang, gamme normale, basse</TranslatedText>
+					<TranslatedText xml:lang="de" Type="text/plain">Zahl der weissen Blutkörper, Normalniveau, Unten</TranslatedText>
+					<TranslatedText xml:lang="ko" Type="text/plain"/>
+				</Question>
+				<Alias Context="SDTM" Name="LBORNRLO"/>
+			</ItemDef>
+			<ItemDef DataType="float" Length="8" Name="WBC Normal Range Hi" OID="I_LB_WBC_HI">
+				<Question>
+					<TranslatedText xml:lang="en" Type="text/plain">White Blood Count, Normal Range, High</TranslatedText>
+					<TranslatedText xml:lang="fr" Type="text/plain">Compte des corps blanches dans le sang, gamme normale, haute</TranslatedText>
+					<TranslatedText xml:lang="de" Type="text/plain">Zahl der weissen Blutkörper, Normalniveau, Oben</TranslatedText>
+					<TranslatedText xml:lang="ko" Type="text/plain"/>
+				</Question>
+				<Alias Context="SDTM" Name="LBORNRHI"/>
+			</ItemDef>
+			<ItemDef DataType="boolean" Name="WBC Done" OID="I_LB_WBC_NOTDONE">
+				<Question>
+					<TranslatedText xml:lang="en" Type="text/plain">Check when not Done</TranslatedText>
+					<TranslatedText xml:lang="fr" Type="text/plain">Marquez si ne pas faite</TranslatedText>
+					<TranslatedText xml:lang="de" Type="text/plain">Markieren wenn nicht ausgeführt</TranslatedText>
+					<TranslatedText xml:lang="ko" Type="text/plain"/>
+				</Question>
+				<Alias Context="SDTM" Name="LBSTAT"/>
+			</ItemDef>
+			<ItemDef DataType="integer" Length="1" Name="Pregancy" OID="I_PREGNANCY">
+				<Question>
+					<TranslatedText xml:lang="en" Type="text/plain">Is the subject pregnant ?</TranslatedText>
+					<TranslatedText xml:lang="fr" Type="text/plain">Est ce que le patient est enceinte?</TranslatedText>
+					<TranslatedText xml:lang="de" Type="text/plain">Ist die Patientin schwanger ?</TranslatedText>
+					<TranslatedText xml:lang="ko" Type="text/plain"/>
+				</Question>
+				<CodeListRef CodeListOID="CL_NOYES"/>
+			</ItemDef>
+			<ItemDef DataType="integer" Length="1" Name="Breath complaints" OID="I_BREATHING">
+				<Question>
+					<TranslatedText xml:lang="en" Type="text/plain">Breathing</TranslatedText>
+					<TranslatedText xml:lang="fr" Type="text/plain">Respiration</TranslatedText>
+					<TranslatedText xml:lang="de" Type="text/plain">Atmung</TranslatedText>
+					<TranslatedText xml:lang="ko" Type="text/plain"/>
+				</Question>
+				<CodeListRef CodeListOID="CL_NOYES"/>
+			</ItemDef>
+			<ItemDef DataType="integer" Length="1" Name="Coughing problems" OID="I_COUGHING">
+				<Question>
+					<TranslatedText xml:lang="en" Type="text/plain">Coughing</TranslatedText>
+					<TranslatedText xml:lang="fr" Type="text/plain">Tousser</TranslatedText>
+					<TranslatedText xml:lang="de" Type="text/plain">Husten</TranslatedText>
+					<TranslatedText xml:lang="ko" Type="text/plain"/>
+				</Question>
+				<CodeListRef CodeListOID="CL_NOYES"/>
+			</ItemDef>
+			<ItemDef DataType="integer" Length="2" Name="No. of bronchitis illnesses" OID="I_BRONCHITS">
+				<Question>
+					<TranslatedText xml:lang="en" Type="text/plain">Number of bronchitis cases during the last year</TranslatedText>
+					<TranslatedText xml:lang="fr" Type="text/plain">Nombre de maladies bronchite dans la dernièrre annéé</TranslatedText>
+					<TranslatedText xml:lang="de" Type="text/plain">Zahl der Bronchitis Krankheiten letztes Jahr</TranslatedText>
+					<TranslatedText xml:lang="ko" Type="text/plain"/>
+				</Question>
+			</ItemDef>
+			<ItemDef DataType="integer" Length="2" Name="No. of pneunomia illnesses" OID="I_PNEUMONIA">
+				<Question>
+					<TranslatedText xml:lang="en" Type="text/plain">Number of pneumonia cases last year</TranslatedText>
+					<TranslatedText xml:lang="fr" Type="text/plain">Nombre de maladies pneunomie dans la dernièrre annéé</TranslatedText>
+					<TranslatedText xml:lang="de" Type="text/plain">Zahl der Lungenentzundungen letztes Jahr</TranslatedText>
+					<TranslatedText xml:lang="ko" Type="text/plain"/>
+				</Question>
+			</ItemDef>
+			<ItemDef DataType="integer" Length="1" Name="Hart complaints" OID="I_HEART_COMPLAINTS">
+				<Question>
+					<TranslatedText xml:lang="en" Type="text/plain">Heart</TranslatedText>
+					<TranslatedText xml:lang="fr" Type="text/plain">Coeur</TranslatedText>
+					<TranslatedText xml:lang="de" Type="text/plain">Herz</TranslatedText>
+					<TranslatedText xml:lang="ko" Type="text/plain"/>
+				</Question>
+				<CodeListRef CodeListOID="CL_NOYES"/>
+			</ItemDef>
+			<ItemDef DataType="integer" Length="3" Name="No. of illness days last year" OID="I_ILNESS_DAYS_LAST_YEAR">
+				<Question>
+					<TranslatedText xml:lang="en" Type="text/plain">No. of illness days last year</TranslatedText>
+					<TranslatedText xml:lang="fr" Type="text/plain">Nombre de jours de maladie dans la dernière annéé</TranslatedText>
+					<TranslatedText xml:lang="de" Type="text/plain">Zahl der Krankheitstage letztes Jahr</TranslatedText>
+					<TranslatedText xml:lang="ko" Type="text/plain"/>
+				</Question>
+			</ItemDef>
+			<ItemDef DataType="integer" Length="1" Name="Dizzyness at low DBP" OID="I_DIZZY">
+				<Question>
+					<TranslatedText xml:lang="en" Type="text/plain">Does the subject feel dizzy when standing up from a sitting position</TranslatedText>
+					<TranslatedText xml:lang="fr" Type="text/plain">Est ce que le patient se sent étourdi quand il se lève d'une position assise</TranslatedText>
+					<TranslatedText xml:lang="de" Type="text/plain">Fühlt der Patient sich schwindlich wenn er aufsteht aus eine sittende Position</TranslatedText>
+					<TranslatedText xml:lang="ko" Type="text/plain"/>
+				</Question>
+				<CodeListRef CodeListOID="CL_NOYES"/>
+			</ItemDef>
+			<CodeList DataType="text" Name="Sex" OID="CL_SEX">
+				<CodeListItem CodedValue="M">
+					<Decode>
+						<TranslatedText xml:lang="en" Type="text/plain">Male</TranslatedText>
+						<TranslatedText xml:lang="fr" Type="text/plain">Masculin</TranslatedText>
+						<TranslatedText xml:lang="de" Type="text/plain">Männlich</TranslatedText>
+						<TranslatedText xml:lang="ko" Type="text/plain"/>
+					</Decode>
+					<Alias Context="CDASH" Name="CL.SEX Male"/>
+					<Alias Context="SDTM" Name="DM.SEX=M"/>
+				</CodeListItem>
+				<CodeListItem CodedValue="F">
+					<Decode>
+						<TranslatedText xml:lang="en" Type="text/plain">Female</TranslatedText>
+						<TranslatedText xml:lang="fr" Type="text/plain">Féminin</TranslatedText>
+						<TranslatedText xml:lang="de" Type="text/plain">Weiblich</TranslatedText>
+						<TranslatedText xml:lang="ko" Type="text/plain"/>
+					</Decode>
+					<Alias Context="CDASH" Name="CL.SEX Female"/>
+					<Alias Context="SDTM" Name="DM.SEX=F"/>
+				</CodeListItem>
+				<Alias Context="CDASH" Name="CL.SEX"/>
+			</CodeList>
+			<CodeList DataType="text" Name="Race" OID="CL_RACE">
+				<CodeListItem CodedValue="CAUCASIAN">
+					<Decode>
+						<TranslatedText xml:lang="en" Type="text/plain">Caucasian</TranslatedText>
+						<TranslatedText xml:lang="fr" Type="text/plain">Caucasien</TranslatedText>
+						<TranslatedText xml:lang="de" Type="text/plain">Kaukasisch</TranslatedText>
+						<TranslatedText xml:lang="ko" Type="text/plain"/>
+					</Decode>
+				</CodeListItem>
+				<CodeListItem CodedValue="BLACK">
+					<Decode>
+						<TranslatedText xml:lang="en" Type="text/plain">Black</TranslatedText>
+						<TranslatedText xml:lang="fr" Type="text/plain">Noire</TranslatedText>
+						<TranslatedText xml:lang="de" Type="text/plain">Schwarz</TranslatedText>
+						<TranslatedText xml:lang="ko" Type="text/plain"/>
+					</Decode>
+				</CodeListItem>
+				<CodeListItem CodedValue="ASIAN">
+					<Decode>
+						<TranslatedText xml:lang="en" Type="text/plain">Asian</TranslatedText>
+						<TranslatedText xml:lang="fr" Type="text/plain">Asiate</TranslatedText>
+						<TranslatedText xml:lang="de" Type="text/plain">Asiatisch</TranslatedText>
+						<TranslatedText xml:lang="ko" Type="text/plain"/>
+					</Decode>
+				</CodeListItem>
+				<CodeListItem CodedValue="OTHER">
+					<Decode>
+						<TranslatedText xml:lang="en" Type="text/plain">Other</TranslatedText>
+						<TranslatedText xml:lang="fr" Type="text/plain">Autre</TranslatedText>
+						<TranslatedText xml:lang="de" Type="text/plain">Sonstige</TranslatedText>
+						<TranslatedText xml:lang="ko" Type="text/plain"/>
+					</Decode>
+				</CodeListItem>
+			</CodeList>
+			<CodeList DataType="text" Name="Smoking" OID="CL_SMOKING">
+				<CodeListItem CodedValue="LT10">
+					<Decode>
+						<TranslatedText xml:lang="en" Type="text/plain">Less Than 10 cigarettes per day</TranslatedText>
+						<TranslatedText xml:lang="fr" Type="text/plain">Moins que 10 cigarettes par jour</TranslatedText>
+						<TranslatedText xml:lang="de" Type="text/plain">Weniger als 10 Zigaretten pro Tag</TranslatedText>
+						<TranslatedText xml:lang="ko" Type="text/plain"/>
+					</Decode>
+				</CodeListItem>
+				<CodeListItem CodedValue="10TO20">
+					<Decode>
+						<TranslatedText xml:lang="en" Type="text/plain">10 to 20 cigarettes per day</TranslatedText>
+						<TranslatedText xml:lang="fr" Type="text/plain">10 à 20 cigarettes par jour</TranslatedText>
+						<TranslatedText xml:lang="de" Type="text/plain">10 bis 20 Zigaretten pro Tag</TranslatedText>
+						<TranslatedText xml:lang="ko" Type="text/plain"/>
+					</Decode>
+				</CodeListItem>
+				<CodeListItem CodedValue="GT20">
+					<Decode>
+						<TranslatedText xml:lang="en" Type="text/plain">Greater Than 20 cigarettes per day</TranslatedText>
+						<TranslatedText xml:lang="fr" Type="text/plain">Plus de 20 cigarettes par jour</TranslatedText>
+						<TranslatedText xml:lang="de" Type="text/plain">Mehr als 20 Zigaretten pro Tag</TranslatedText>
+						<TranslatedText xml:lang="ko" Type="text/plain"/>
+					</Decode>
+				</CodeListItem>
+			</CodeList>
+			<CodeList DataType="text" Name="Drinking" OID="CL_DRINKING">
+				<CodeListItem CodedValue="LT1" OrderNumber="1">
+					<Decode>
+						<TranslatedText xml:lang="en" Type="text/plain">Less Than 1 drink per day</TranslatedText>
+						<TranslatedText xml:lang="fr" Type="text/plain">Moins que une boisson par jour</TranslatedText>
+						<TranslatedText xml:lang="de" Type="text/plain">Weniger als ein Getränk pro Tag</TranslatedText>
+					</Decode>
+				</CodeListItem>
+				<CodeListItem CodedValue="1TO2" OrderNumber="2">
+					<Decode>
+						<TranslatedText xml:lang="en" Type="text/plain">1 to 2 drinks per day</TranslatedText>
+						<TranslatedText xml:lang="fr" Type="text/plain">1 à 2 boissons par jour</TranslatedText>
+						<TranslatedText xml:lang="de" Type="text/plain">1 bis 2 Getränke pro Tag</TranslatedText>
+					</Decode>
+				</CodeListItem>
+				<CodeListItem CodedValue="GT2" OrderNumber="3">
+					<Decode>
+						<TranslatedText xml:lang="en" Type="text/plain">Greater Than 2 drinks per day</TranslatedText>
+						<TranslatedText xml:lang="fr" Type="text/plain">Plus que 2 boissons par jour</TranslatedText>
+						<TranslatedText xml:lang="de" Type="text/plain">Mehr als 2 Getränke pro Tag</TranslatedText>
+					</Decode>
+				</CodeListItem>
+			</CodeList>
+			<CodeList DataType="integer" Name="Diary" OID="CL_DIARY">
+				<CodeListItem CodedValue="1">
+					<Decode>
+						<TranslatedText xml:lang="en" Type="text/plain">None</TranslatedText>
+						<TranslatedText xml:lang="fr" Type="text/plain">Aucun</TranslatedText>
+						<TranslatedText xml:lang="de" Type="text/plain">Keine</TranslatedText>
+						<TranslatedText xml:lang="ko" Type="text/plain"/>
+					</Decode>
+				</CodeListItem>
+				<CodeListItem CodedValue="2">
+					<Decode>
+						<TranslatedText xml:lang="en" Type="text/plain">Mild</TranslatedText>
+						<TranslatedText xml:lang="fr" Type="text/plain">Doux</TranslatedText>
+						<TranslatedText xml:lang="de" Type="text/plain">Mild</TranslatedText>
+						<TranslatedText xml:lang="ko" Type="text/plain"/>
+					</Decode>
+				</CodeListItem>
+				<CodeListItem CodedValue="3">
+					<Decode>
+						<TranslatedText xml:lang="en" Type="text/plain">Moderate</TranslatedText>
+						<TranslatedText xml:lang="fr" Type="text/plain">Modéré</TranslatedText>
+						<TranslatedText xml:lang="de" Type="text/plain">Gemäßigt</TranslatedText>
+						<TranslatedText xml:lang="ko" Type="text/plain"/>
+					</Decode>
+				</CodeListItem>
+				<CodeListItem CodedValue="4">
+					<Decode>
+						<TranslatedText xml:lang="en" Type="text/plain">Severe</TranslatedText>
+						<TranslatedText xml:lang="fr" Type="text/plain">Grave</TranslatedText>
+						<TranslatedText xml:lang="de" Type="text/plain">Ernsthaft</TranslatedText>
+						<TranslatedText xml:lang="ko" Type="text/plain"/>
+					</Decode>
+				</CodeListItem>
+			</CodeList>
+			<CodeList DataType="integer" Name="Diary Day" OID="CL_DIARY_DAY">
+				<CodeListItem CodedValue="1">
+					<Decode>
+						<TranslatedText xml:lang="en" Type="text/plain">1</TranslatedText>
+						<TranslatedText xml:lang="fr" Type="text/plain">1</TranslatedText>
+						<TranslatedText xml:lang="de" Type="text/plain">1</TranslatedText>
+						<TranslatedText xml:lang="it" Type="text/plain">i</TranslatedText>
+						<TranslatedText xml:lang="ko" Type="text/plain"/>
+					</Decode>
+				</CodeListItem>
+				<CodeListItem CodedValue="2">
+					<Decode>
+						<TranslatedText xml:lang="en" Type="text/plain">2</TranslatedText>
+						<TranslatedText xml:lang="fr" Type="text/plain">2</TranslatedText>
+						<TranslatedText xml:lang="de" Type="text/plain">2</TranslatedText>
+						<TranslatedText xml:lang="it" Type="text/plain">ii</TranslatedText>
+						<TranslatedText xml:lang="ko" Type="text/plain"/>
+					</Decode>
+				</CodeListItem>
+				<CodeListItem CodedValue="3">
+					<Decode>
+						<TranslatedText xml:lang="en" Type="text/plain">3</TranslatedText>
+						<TranslatedText xml:lang="fr" Type="text/plain">3</TranslatedText>
+						<TranslatedText xml:lang="de" Type="text/plain">3</TranslatedText>
+						<TranslatedText xml:lang="it" Type="text/plain">iii</TranslatedText>
+						<TranslatedText xml:lang="ko" Type="text/plain"/>
+					</Decode>
+				</CodeListItem>
+				<CodeListItem CodedValue="4">
+					<Decode>
+						<TranslatedText xml:lang="en" Type="text/plain">4</TranslatedText>
+						<TranslatedText xml:lang="fr" Type="text/plain">4</TranslatedText>
+						<TranslatedText xml:lang="de" Type="text/plain">4</TranslatedText>
+						<TranslatedText xml:lang="it" Type="text/plain">iv</TranslatedText>
+						<TranslatedText xml:lang="ko" Type="text/plain"/>
+					</Decode>
+				</CodeListItem>
+				<CodeListItem CodedValue="5">
+					<Decode>
+						<TranslatedText xml:lang="en" Type="text/plain">5</TranslatedText>
+						<TranslatedText xml:lang="fr" Type="text/plain">5</TranslatedText>
+						<TranslatedText xml:lang="de" Type="text/plain">5</TranslatedText>
+						<TranslatedText xml:lang="it" Type="text/plain">v</TranslatedText>
+						<TranslatedText xml:lang="ko" Type="text/plain"/>
+					</Decode>
+				</CodeListItem>
+				<CodeListItem CodedValue="6">
+					<Decode>
+						<TranslatedText xml:lang="en" Type="text/plain">6</TranslatedText>
+						<TranslatedText xml:lang="fr" Type="text/plain">6</TranslatedText>
+						<TranslatedText xml:lang="de" Type="text/plain">6</TranslatedText>
+						<TranslatedText xml:lang="it" Type="text/plain">vi</TranslatedText>
+						<TranslatedText xml:lang="ko" Type="text/plain"/>
+					</Decode>
+				</CodeListItem>
+				<CodeListItem CodedValue="7">
+					<Decode>
+						<TranslatedText xml:lang="en" Type="text/plain">7</TranslatedText>
+						<TranslatedText xml:lang="fr" Type="text/plain">7</TranslatedText>
+						<TranslatedText xml:lang="de" Type="text/plain">7</TranslatedText>
+						<TranslatedText xml:lang="it" Type="text/plain">vii</TranslatedText>
+						<TranslatedText xml:lang="ko" Type="text/plain"/>
+					</Decode>
+				</CodeListItem>
+			</CodeList>
+			<CodeList DataType="integer" Name="No Yes" OID="CL_NOYES">
+				<CodeListItem CodedValue="0">
+					<Decode>
+						<TranslatedText xml:lang="en" Type="text/plain">No</TranslatedText>
+						<TranslatedText xml:lang="fr" Type="text/plain">Non</TranslatedText>
+						<TranslatedText xml:lang="de" Type="text/plain">Nein</TranslatedText>
+						<TranslatedText xml:lang="ko" Type="text/plain"/>
+					</Decode>
+				</CodeListItem>
+				<CodeListItem CodedValue="1">
+					<Decode>
+						<TranslatedText xml:lang="en" Type="text/plain">Yes</TranslatedText>
+						<TranslatedText xml:lang="fr" Type="text/plain">Oui</TranslatedText>
+						<TranslatedText xml:lang="de" Type="text/plain">Ja</TranslatedText>
+						<TranslatedText xml:lang="ko" Type="text/plain"/>
+					</Decode>
+				</CodeListItem>
+			</CodeList>
+			<CodeList DataType="integer" Name="Adverse Event Severity" OID="CL_AE_SEVERITY">
+				<CodeListItem CodedValue="1">
+					<Decode>
+						<TranslatedText xml:lang="en" Type="text/plain">Mild</TranslatedText>
+						<TranslatedText xml:lang="fr" Type="text/plain">Doux</TranslatedText>
+						<TranslatedText xml:lang="de" Type="text/plain">Mild</TranslatedText>
+						<TranslatedText xml:lang="ko" Type="text/plain"/>
+					</Decode>
+				</CodeListItem>
+				<CodeListItem CodedValue="2">
+					<Decode>
+						<TranslatedText xml:lang="en" Type="text/plain">Moderate</TranslatedText>
+						<TranslatedText xml:lang="fr" Type="text/plain">Modéré</TranslatedText>
+						<TranslatedText xml:lang="de" Type="text/plain">Gemäßigt</TranslatedText>
+						<TranslatedText xml:lang="ko" Type="text/plain"/>
+					</Decode>
+				</CodeListItem>
+				<CodeListItem CodedValue="3">
+					<Decode>
+						<TranslatedText xml:lang="en" Type="text/plain">Severe</TranslatedText>
+						<TranslatedText xml:lang="fr" Type="text/plain">Grave</TranslatedText>
+						<TranslatedText xml:lang="de" Type="text/plain">Ernsthaft</TranslatedText>
+						<TranslatedText xml:lang="ko" Type="text/plain"/>
+					</Decode>
+				</CodeListItem>
+			</CodeList>
+			<CodeList DataType="integer" Name="Adverse Event Action Taken" OID="CL_AE_ACTION">
+				<CodeListItem CodedValue="1">
+					<Decode>
+						<TranslatedText xml:lang="en" Type="text/plain">None</TranslatedText>
+						<TranslatedText xml:lang="fr" Type="text/plain">Aucun</TranslatedText>
+						<TranslatedText xml:lang="de" Type="text/plain">Keine</TranslatedText>
+						<TranslatedText xml:lang="ko" Type="text/plain"/>
+					</Decode>
+				</CodeListItem>
+				<CodeListItem CodedValue="2">
+					<Decode>
+						<TranslatedText xml:lang="en" Type="text/plain">Study drug regimen changed</TranslatedText>
+						<TranslatedText xml:lang="fr" Type="text/plain">Regime de l'étude changé</TranslatedText>
+						<TranslatedText xml:lang="de" Type="text/plain">Regime des Studiums geändert</TranslatedText>
+						<TranslatedText xml:lang="ko" Type="text/plain"/>
+					</Decode>
+				</CodeListItem>
+				<CodeListItem CodedValue="3">
+					<Decode>
+						<TranslatedText xml:lang="en" Type="text/plain">Temporarily stopped study drug</TranslatedText>
+						<TranslatedText xml:lang="fr" Type="text/plain">Etude arreté temporairement</TranslatedText>
+						<TranslatedText xml:lang="de" Type="text/plain">Studium temporär unterbrochen</TranslatedText>
+						<TranslatedText xml:lang="ko" Type="text/plain"/>
+					</Decode>
+				</CodeListItem>
+				<CodeListItem CodedValue="4">
+					<Decode>
+						<TranslatedText xml:lang="en" Type="text/plain">Study drug discontinued</TranslatedText>
+						<TranslatedText xml:lang="fr" Type="text/plain">Etude du medicament discontinué</TranslatedText>
+						<TranslatedText xml:lang="de" Type="text/plain">Studium des Medikaments diskontinuiert</TranslatedText>
+						<TranslatedText xml:lang="ko" Type="text/plain"/>
+					</Decode>
+				</CodeListItem>
+			</CodeList>
+			<CodeList DataType="integer" Name="Adverse Event Action Taken" OID="CL_AE_OUTCOME">
+				<CodeListItem CodedValue="1">
+					<Decode>
+						<TranslatedText xml:lang="en" Type="text/plain">Subject remains in study</TranslatedText>
+						<TranslatedText xml:lang="fr" Type="text/plain">Sujet reste dans l'étude</TranslatedText>
+						<TranslatedText xml:lang="de" Type="text/plain">Patient bleibt in dem Studium</TranslatedText>
+						<TranslatedText xml:lang="ko" Type="text/plain"/>
+					</Decode>
+				</CodeListItem>
+				<CodeListItem CodedValue="2">
+					<Decode>
+						<TranslatedText xml:lang="en" Type="text/plain">Withdrawn from study</TranslatedText>
+						<TranslatedText xml:lang="fr" Type="text/plain">Retraité de l'étude</TranslatedText>
+						<TranslatedText xml:lang="de" Type="text/plain">Vom Studium ausgeschlossen</TranslatedText>
+						<TranslatedText xml:lang="ko" Type="text/plain"/>
+					</Decode>
+				</CodeListItem>
+				<CodeListItem CodedValue="3">
+					<Decode>
+						<TranslatedText xml:lang="en" Type="text/plain">Lost to follow-up</TranslatedText>
+						<TranslatedText xml:lang="fr" Type="text/plain">Perdu au follow-up</TranslatedText>
+						<TranslatedText xml:lang="de" Type="text/plain">Verloren an follow-up</TranslatedText>
+						<TranslatedText xml:lang="ko" Type="text/plain"/>
+					</Decode>
+				</CodeListItem>
+				<CodeListItem CodedValue="4">
+					<Decode>
+						<TranslatedText xml:lang="en" Type="text/plain">Death</TranslatedText>
+						<TranslatedText xml:lang="fr" Type="text/plain">Mort</TranslatedText>
+						<TranslatedText xml:lang="de" Type="text/plain">Tot</TranslatedText>
+						<TranslatedText xml:lang="ko" Type="text/plain"/>
+					</Decode>
+				</CodeListItem>
+			</CodeList>
+			<CodeList DataType="integer" Name="Medications Frequency" OID="CL_CM_FREQUENCY">
+				<CodeListItem CodedValue="1">
+					<Decode>
+						<TranslatedText xml:lang="en" Type="text/plain">Single Dose</TranslatedText>
+						<TranslatedText xml:lang="fr" Type="text/plain">Une dose</TranslatedText>
+						<TranslatedText xml:lang="de" Type="text/plain">Eine Dosis</TranslatedText>
+						<TranslatedText xml:lang="ko" Type="text/plain"/>
+					</Decode>
+				</CodeListItem>
+				<CodeListItem CodedValue="2">
+					<Decode>
+						<TranslatedText xml:lang="en" Type="text/plain">Daily</TranslatedText>
+						<TranslatedText xml:lang="fr" Type="text/plain">Quotidien</TranslatedText>
+						<TranslatedText xml:lang="de" Type="text/plain">Täglich</TranslatedText>
+						<TranslatedText xml:lang="ko" Type="text/plain"/>
+					</Decode>
+				</CodeListItem>
+				<CodeListItem CodedValue="3">
+					<Decode>
+						<TranslatedText xml:lang="en" Type="text/plain">Weekly</TranslatedText>
+						<TranslatedText xml:lang="fr" Type="text/plain">Hebdomadaire</TranslatedText>
+						<TranslatedText xml:lang="de" Type="text/plain">Wöchentlich</TranslatedText>
+						<TranslatedText xml:lang="ko" Type="text/plain"/>
+					</Decode>
+				</CodeListItem>
+				<CodeListItem CodedValue="4">
+					<Decode>
+						<TranslatedText xml:lang="en" Type="text/plain">Monthly</TranslatedText>
+						<TranslatedText xml:lang="fr" Type="text/plain">Mensuel</TranslatedText>
+						<TranslatedText xml:lang="de" Type="text/plain">Monatlich</TranslatedText>
+						<TranslatedText xml:lang="ko" Type="text/plain"/>
+					</Decode>
+				</CodeListItem>
+				<CodeListItem CodedValue="5">
+					<Decode>
+						<TranslatedText xml:lang="en" Type="text/plain">PRN</TranslatedText>
+						<TranslatedText xml:lang="fr" Type="text/plain">PRN</TranslatedText>
+						<TranslatedText xml:lang="de" Type="text/plain">PRN</TranslatedText>
+						<TranslatedText xml:lang="ko" Type="text/plain"/>
+					</Decode>
+				</CodeListItem>
+				<CodeListItem CodedValue="99">
+					<Decode>
+						<TranslatedText xml:lang="en" Type="text/plain">Other</TranslatedText>
+						<TranslatedText xml:lang="fr" Type="text/plain">Autre</TranslatedText>
+						<TranslatedText xml:lang="de" Type="text/plain">Sonstige</TranslatedText>
+						<TranslatedText xml:lang="ko" Type="text/plain"/>
+					</Decode>
+				</CodeListItem>
+			</CodeList>
+			<CodeList DataType="text" Name="Not Done" OID="CL_NOTDONEE">
+				<CodeListItem CodedValue="NOT DONE">
+					<Decode>
+						<TranslatedText xml:lang="en" Type="text/plain">NOT DONE</TranslatedText>
+						<TranslatedText xml:lang="ko" Type="text/plain"/>
+					</Decode>
+				</CodeListItem>
+			</CodeList>
+			<ConditionDef Name="Smoking condition" OID="COND.SMOKING">
+				<Description>
+					<TranslatedText xml:lang="en" Type="text/plain">Only to be collected if the subject is smoking</TranslatedText>
+					<TranslatedText xml:lang="fr" Type="text/plain">Ne doit etre collecte si le sujet est fumeur.</TranslatedText>
+					<TranslatedText xml:lang="de" Type="text/plain">Nur zu erfassen wenn der Patient Raucher ist.</TranslatedText>
+					<TranslatedText xml:lang="ko" Type="text/plain"/>
+				</Description>
+				<MethodSignature/>
+				<FormalExpression Context="XPath">
+					<Code>../ItemData[@ItemOID='I_SMOKING'][@Value='false']</Code>
+				</FormalExpression>
+				<Alias Context="CDASH" Name="CDASH alias"/>
+			</ConditionDef>
+			<ConditionDef Name="Condition whether the subject is male" OID="COND.SEX.MALE">
+				<Description>
+					<TranslatedText xml:lang="en" Type="text/plain">Only to be collected when the subject is female.</TranslatedText>
+					<TranslatedText xml:lang="fr" Type="text/plain">Ne doit etre collecte si le sujet est feminin.</TranslatedText>
+					<TranslatedText xml:lang="de" Type="text/plain">Nur zu erfassen wenn der Patient weiblich ist.</TranslatedText>
+					<TranslatedText xml:lang="ko" Type="text/plain"/>
+				</Description>
+				<MethodSignature/>
+				<FormalExpression Context="XPath">
+					<Code>../ItemData[@ItemOID='I_SEX'][@Value='M']</Code>
+				</FormalExpression>
+			</ConditionDef>
+			<ConditionDef Name="Usage of form about smoking complaints" OID="COND.FORMUSE.SMOKING_COMPLAINTS">
+				<Description>
+					<TranslatedText xml:lang="en" Type="text/plain">Use this form only if in the BaseLine form it is marked that the subject is smoking.</TranslatedText>
+					<TranslatedText xml:lang="fr" Type="text/plain">Utilisez ce formulaire dans le cas que dans le formulaire Ligne de Base il est marque que le sujet est fumeur.</TranslatedText>
+					<TranslatedText xml:lang="de" Type="text/plain">Benützen sie diese Formular nur wenn is das Formular BasisLinie angegeben ist das der Patient Raucher ist.</TranslatedText>
+					<TranslatedText xml:lang="ko" Type="text/plain"/>
+				</Description>
+				<MethodSignature/>
+				<FormalExpression Context="XPath">
+					<Code>../FormData[@FormOID='F_BASELINE']/ItemGroupData[@ItemGroupOID='IG_SH']/ItemData[@ItemOID='I_SMOKING'][@Value='0']</Code>
+				</FormalExpression>
+			</ConditionDef>
+			<ConditionDef Name="Usage of itemgroup about smoking complaints" OID="COND.IGUSE.SMOKING_COMPLAINTS">
+				<Description>
+					<TranslatedText xml:lang="en" Type="text/plain">Use this group only if it is marked that the subject is smoking</TranslatedText>
+					<TranslatedText xml:lang="fr" Type="text/plain">Utilisez cette groupe dans le cas qu'il est marqué que le sujet est fumeur</TranslatedText>
+					<TranslatedText xml:lang="de" Type="text/plain">Benützen sie diese Gruppe nur wenn angegeben ist das der Patient Raucher ist</TranslatedText>
+					<TranslatedText xml:lang="ko" Type="text/plain"/>
+				</Description>
+				<MethodSignature/>
+				<FormalExpression Context="XPath">
+					<Code>../ItemGroupData[@ItemGroupOID='IG_SH']/ItemData[@ItemOID='I_SMOKING'][@Value='false']</Code>
+				</FormalExpression>
+			</ConditionDef>
+			<ConditionDef Name="Usage of itemgroup about details of adverse events" OID="COND.IGUSE.ADVERSE_EVENTS">
+				<Description>
+					<TranslatedText xml:lang="en" Type="text/plain">Use this group only if it is marked that an adverse event occurred</TranslatedText>
+					<TranslatedText xml:lang="fr" Type="text/plain">Utilisez cette groupe dans le cas qu'il est marqué qu'il y a un événement défavorable</TranslatedText>
+					<TranslatedText xml:lang="de" Type="text/plain">Benützen sie diese Gruppe nur wenn angegeben ist das es einen ungewünschte Erreignis statt gefunden hat</TranslatedText>
+					<TranslatedText xml:lang="ko" Type="text/plain"/>
+				</Description>
+				<MethodSignature/>
+				<FormalExpression Context="XPath">
+					<Code>../ItemGroupData[@ItemGroupOID='IG_AE_OCCURRED']/ItemData[@ItemOID='I_AE_OCCURRED'][@Value='0']</Code>
+				</FormalExpression>
+			</ConditionDef>
+			<ConditionDef Name="AE continuing condition" OID="COND.AESTOP.STOPPED">
+				<Description>
+					<TranslatedText xml:lang="en" Type="text/plain">Use this group only if it is marked that the adverse event is continueing</TranslatedText>
+					<TranslatedText xml:lang="fr" Type="text/plain">Utilisez cette groupe dans le cas qu'il est marqué qu'il y l'événement défavorable continue</TranslatedText>
+					<TranslatedText xml:lang="de" Type="text/plain">Benützen sie diese Gruppe nur wenn angegeben ist das einen ungewünschte Erreignis noch immer statt findet</TranslatedText>
+					<TranslatedText xml:lang="ko" Type="text/plain"/>
+				</Description>
+				<MethodSignature/>
+				<FormalExpression Context="XPath">
+					<Code>../ItemData[@ItemOID='I_AE_CONTINUES'][@Value='1']</Code>
+				</FormalExpression>
+			</ConditionDef>
+			<ConditionDef Name="Usage of ItemGroup about non-study medication" OID="COND.IGUSE.CM">
+				<Description>
+					<TranslatedText xml:lang="en" Type="text/plain">Use this group only if it is marked that concurrent medication has been taken</TranslatedText>
+					<TranslatedText xml:lang="fr" Type="text/plain">Utilisez cette groupe dans le cas qu'il est marqué que d'autres médicaments ont été prises</TranslatedText>
+					<TranslatedText xml:lang="de" Type="text/plain">Benützen sie diese Gruppe nur wenn angegeben ist das andere Medikamenten benützt sein</TranslatedText>
+					<TranslatedText xml:lang="ko" Type="text/plain"/>
+				</Description>
+				<MethodSignature/>
+				<FormalExpression Context="XPath">
+					<Code>../ItemGroupData[@ItemGroupOID='IG_CM_TAKEN']/ItemData[@ItemOID='I_CM_TAKEN'][@Value='0']</Code>
+				</FormalExpression>
+			</ConditionDef>
+			<ConditionDef Name="Condition of low systolic blood pressure" OID="COND.DBP.DIZZY">
+				<Description>
+					<TranslatedText xml:lang="en" Type="text/plain">Needs not be collected when the diastolic blood pressure is 90 or higher</TranslatedText>
+					<TranslatedText xml:lang="fr" Type="text/plain">Ne doit pas être collectée si la pression diastolique est 90 ou plus haut</TranslatedText>
+					<TranslatedText xml:lang="de" Type="text/plain">Sollte nicht eingesammelt werden wenn der Wert der diastolischer Blutdrück 90 oder höher ist</TranslatedText>
+					<TranslatedText xml:lang="ko" Type="text/plain"/>
+				</Description>
+				<MethodSignature/>
+				<FormalExpression Context="XPath">
+					<Code>../ItemData[@ItemOID='I_DIABP'][@Value &gt; 90]</Code>
+				</FormalExpression>
+			</ConditionDef>
+			<ConditionDef Name="CM continueing condition" OID="COND.CMSTOP.STOP_DATE">
+				<Description>
+					<TranslatedText xml:lang="en" Type="text/plain">Use this group only if it is marked that concurrent medication is ongoing</TranslatedText>
+					<TranslatedText xml:lang="fr" Type="text/plain">Utilisez cette groupe dans le cas qu'il est marqué que d'autres médicaments sont encore pris a ce temps</TranslatedText>
+					<TranslatedText xml:lang="de" Type="text/plain">Benützen sie diese Gruppe nur wenn angegeben ist das noch immer andere Medikamenten benützt werden</TranslatedText>
+					<TranslatedText xml:lang="ko" Type="text/plain"/>
+				</Description>
+				<MethodSignature/>
+				<FormalExpression Context="XPath">
+					<Code>../ItemData[@ItemOID='I_CM_CONTINUES'][@Value='1']</Code>
+				</FormalExpression>
+			</ConditionDef>
+			<ConditionDef Name="Profylaxis condition" OID="COND.PROHYLAXIS">
+				<Description>
+					<TranslatedText xml:lang="en" Type="text/plain">Use this group only if it is marked that there is prophylaxis</TranslatedText>
+					<TranslatedText xml:lang="fr" Type="text/plain">Utilisez cette groupe dans le cas qu'il est marqué qu'il y a du Prophylaxie</TranslatedText>
+					<TranslatedText xml:lang="de" Type="text/plain">Benützen sie diese Gruppe nur wenn angegeben ist das es Prophylaxis gibt</TranslatedText>
+					<TranslatedText xml:lang="ko" Type="text/plain"/>
+				</Description>
+				<MethodSignature/>
+				<FormalExpression Context="XPath">
+					<Code>../ItemData[@ItemOID='I_CM_IPROP'][@Value='0']</Code>
+				</FormalExpression>
+			</ConditionDef>
+			<ConditionDef Name="Red Blood Count Not-done condition" OID="COND.LB_RBC">
+				<Description>
+					<TranslatedText xml:lang="en" Type="text/plain">Not to be entered if marked that no Red Blood Count was done</TranslatedText>
+					<TranslatedText xml:lang="fr" Type="text/plain">Ne doit pas etre donné si'l est marqué que le nombre de corps rouges n'ont pas été collecté.</TranslatedText>
+					<TranslatedText xml:lang="de" Type="text/plain">Nicht einführen wenn angegeben ist das keine rote Blutkörper gezählt sind</TranslatedText>
+					<TranslatedText xml:lang="ko" Type="text/plain"/>
+				</Description>
+				<MethodSignature/>
+				<FormalExpression Context="XPath">
+					<Code>../ItemData[@ItemOID='I_LB_RBC_NOTDONE'][@Value='true']</Code>
+				</FormalExpression>
+			</ConditionDef>
+			<ConditionDef Name="White Blood Count Not-done condition" OID="COND.LB_WBC">
+				<Description>
+					<TranslatedText xml:lang="de" Type="text/plain">Nicht einführen wenn angegeben ist das keine weisse Blutkörper gezählt sind</TranslatedText>
+					<TranslatedText xml:lang="fr" Type="text/plain">Ne doit pas etre donné si'l est marqué que le nombre de corps blanches n'ont pas été collecté.</TranslatedText>
+					<TranslatedText xml:lang="en" Type="text/plain">Not to be entered if marked that no White Blood Count was done</TranslatedText>
+					<TranslatedText xml:lang="ko" Type="text/plain"/>
+				</Description>
+				<MethodSignature/>
+				<FormalExpression Context="XPath">
+					<Code>../ItemData[@ItemOID='I_LB_WBC_NOTDONE'][@Value='true']</Code>
+				</FormalExpression>
+			</ConditionDef>
+			<ConditionDef Name="AE Severity Condition" OID="COND.AE_SEVERITY.AE_SERIOUS">
+				<Description>
+					<TranslatedText xml:lang="de" Type="text/plain">Nicht einführen wenn angegeben ist das den Ungewünsche Vorfall nicht ernsthaft war</TranslatedText>
+					<TranslatedText xml:lang="fr" Type="text/plain">Ne doit pas etre donné si'l est marqué que l'événement défavorable n'était pas sérieux</TranslatedText>
+					<TranslatedText xml:lang="en" Type="text/plain">Not to be entered if marked that the AE was not serious</TranslatedText>
+					<TranslatedText xml:lang="ko" Type="text/plain"/>
+				</Description>
+				<MethodSignature/>
+				<FormalExpression Context="XPath">
+					<Code>../ItemData[@ItemOID='I_AE_SERIOUS'][@Value='0']</Code>
+				</FormalExpression>
+			</ConditionDef>
+			<MethodDef Name="Method definition" OID="METH.001">
+				<Description>
+					<TranslatedText xml:lang="en" Type="text/plain">English method description</TranslatedText>
+					<TranslatedText xml:lang="de" Type="text/plain">Deutsche Methode Beschreibung</TranslatedText>
+					<TranslatedText xml:lang="fr" Type="text/plain">Description Francaise de la Méthode</TranslatedText>
+					<TranslatedText xml:lang="ko" Type="text/plain"/>
+				</Description>
+				<MethodSignature/>
+				<FormalExpression Context="MyScriptingLanguage1">
+					<Code>Test Algorithm 1</Code>
+				</FormalExpression>
+				<FormalExpression Context="MyScriptingLanguage2">
+					<Code>Test Algorithm 2</Code>
+				</FormalExpression>
+				<Alias Context="CDASH" Name="CDASH alias"/>
+			</MethodDef>
+		</MetaDataVersion>
+	</Study>
+</ODM>

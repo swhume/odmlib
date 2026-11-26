@@ -1,0 +1,198 @@
+{
+  "FileType": "Snapshot",
+  "Granularity": "AllClinicalData",
+  "CreationDateTime": "2021-02-10T13:36:51.668-00:00",
+  "FileOID": "8ca17c08-5a6f-4fcb-bf82-b4fa46fe6d99",
+  "ODMVersion": "2.0",
+  "ClinicalData": [
+    {
+      "StudyOID": "EX001",
+      "MetaDataVersionOID": "1010",
+      "SubjectData": [
+        {
+          "SubjectKey": "1001",
+          "TransactionType": "Insert",
+          "SiteRef": {
+            "LocationOID": "WestWing"
+          },
+          "StudyEventData": [
+            {
+              "StudyEventOID": "Visit1",
+              "ItemGroupData": [
+                {
+                  "ItemGroupOID": "VISDT",
+                  "ItemGroupRepeatKey": "1",
+                  "ItemData": [
+                    {
+                      "ItemOID": "VISDT",
+                      "Value": [
+                        {
+                          "_content": "2020-10-01"
+                        }
+                      ],
+                      "AuditRecord": {
+                        "UserRef": {
+                          "UserOID": "CRC01"
+                        },
+                        "LocationRef": {
+                          "LocationOID": "TeaPot1"
+                        },
+                        "DateTimeStamp": {
+                          "_content": "2021-02-14T13:36:51.668-00:00"
+                        },
+                        "ReasonForChange": {
+                          "_content": "Entered 2020-10-01"
+                        }
+                      },
+                      "Query": [
+                        {
+                          "Source": "System",
+                          "Type": "System",
+                          "OID": "A529A2F2-F896-4AF7-AD4D-11B7110727BC",
+                          "State": "Closed",
+                          "LastUpdateDatetime": "2021-03-10T13:36:51.668-00:00",
+                          "Name": "VISDT_NOT_FUTURE",
+                          "Value": {
+                            "_content": "Value is in the future, please correct"
+                          },
+                          "AuditRecord": [
+                            {
+                              "UserRef": {
+                                "UserOID": "SYSTEM"
+                              },
+                              "LocationRef": {
+                                "LocationOID": "WestWing"
+                              },
+                              "DateTimeStamp": {
+                                "_content": "2021-02-10T13:36:51.668-00:00"
+                              },
+                              "ReasonForChange": {
+                                "_content": "Edit check raised"
+                              }
+                            },
+                            {
+                              "UserRef": {
+                                "UserOID": "CRC01"
+                              },
+                              "LocationRef": {
+                                "LocationOID": "TeaPot1"
+                              },
+                              "DateTimeStamp": {
+                                "_content": "2021-02-12T13:36:51.668-00:00"
+                              },
+                              "ReasonForChange": {
+                                "_content": "Reviewed"
+                              }
+                            },
+                            {
+                              "UserRef": {
+                                "UserOID": "CRC01"
+                              },
+                              "LocationRef": {
+                                "LocationOID": "TeaPot1"
+                              },
+                              "DateTimeStamp": {
+                                "_content": "2021-02-14T13:36:51.668-00:00"
+                              },
+                              "ReasonForChange": {
+                                "_content": "Updated value to 2021-10-01 [Status Changed to \"Answered\"]"
+                              }
+                            },
+                            {
+                              "UserRef": {
+                                "UserOID": "SYSTEM"
+                              },
+                              "LocationRef": {
+                                "LocationOID": "WestWing"
+                              },
+                              "DateTimeStamp": {
+                                "_content": "2021-02-14T13:37:51.668-00:00"
+                              },
+                              "ReasonForChange": {
+                                "_content": "Edit check raised [Status Changed to \"Open\"]"
+                              }
+                            },
+                            {
+                              "UserRef": {
+                                "UserOID": "CRC01"
+                              },
+                              "LocationRef": {
+                                "LocationOID": "TeaPot1"
+                              },
+                              "DateTimeStamp": {
+                                "_content": "2021-02-16T13:36:51.668-00:00"
+                              },
+                              "ReasonForChange": {
+                                "_content": "Reviewed"
+                              }
+                            },
+                            {
+                              "UserRef": {
+                                "UserOID": "CRC01"
+                              },
+                              "LocationRef": {
+                                "LocationOID": "TeaPot1"
+                              },
+                              "DateTimeStamp": {
+                                "_content": "2021-02-18T13:36:51.668-00:00"
+                              },
+                              "ReasonForChange": {
+                                "_content": "Updated value to 2020-10-01 [Status Changed to \"Answered\"]"
+                              }
+                            },
+                            {
+                              "UserRef": {
+                                "UserOID": "SYSTEM"
+                              },
+                              "LocationRef": {
+                                "LocationOID": "WestWing"
+                              },
+                              "DateTimeStamp": {
+                                "_content": "2021-02-18T13:36:51.668-00:00"
+                              },
+                              "ReasonForChange": {
+                                "_content": "Edit check resolved by response [Status Changed to \"Resolved\"]"
+                              }
+                            },
+                            {
+                              "UserRef": {
+                                "UserOID": "SYSTEM"
+                              },
+                              "LocationRef": {
+                                "LocationOID": "WestWing"
+                              },
+                              "DateTimeStamp": {
+                                "_content": "2021-02-25T13:36:51.668-00:00"
+                              },
+                              "ReasonForChange": {
+                                "_content": "Edit check auto-closed [Status Changed to \"Closed\"]"
+                              }
+                            },
+                            {
+                              "UserRef": {
+                                "UserOID": "INV01"
+                              },
+                              "LocationRef": {
+                                "LocationOID": "TeaPot1"
+                              },
+                              "DateTimeStamp": {
+                                "_content": "2021-03-10T13:36:51.668-00:00"
+                              },
+                              "ReasonForChange": {
+                                "_content": "Signed Subject CRF"
+                              }
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

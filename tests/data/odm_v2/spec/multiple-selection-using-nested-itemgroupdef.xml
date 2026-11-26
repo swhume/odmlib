@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ODM xmlns="http://www.cdisc.org/ns/odm/v2.0" FileOID="MyStudy_1" FileType="Snapshot" CreationDateTime="2019-03-11T17:33:17">
+    <Study OID="MyStudy" StudyName="My Study" ProtocolName="My Study">
+        <MetaDataVersion OID="MDV.MyStudy.001" Name="Study MyStudy 001, Data Definitions V-1">
+            <ItemGroupDef OID="ODM.IG.DM" Name="Demographics" Repeating="No" Type="Section">
+                <ItemRef ItemOID="IT.DM.BRTHYR" Mandatory="Yes"/>
+                <ItemRef ItemOID="IT.DM.BRTHMO" Mandatory="Yes"/>
+                <ItemRef ItemOID="IT.DM.BRTHDY" Mandatory="Yes"/>
+                <ItemRef ItemOID="IT.DM.SEX" Mandatory="Yes"/>
+                <ItemRef ItemOID="IT.DM.ETHNIC" Mandatory="Yes"/>
+                <ItemGroupRef ItemGroupOID="ODM.IG.RACE" Mandatory="Yes" />
+                <ItemGroupRef ItemGroupOID="ODM.IG.RACEOTH" Mandatory="No"/>
+            </ItemGroupDef>
+            <ItemGroupDef OID="ODM.IG.RACE" Name="Race" Repeating="Static" Type="Section">
+                <ItemRef ItemOID="IT.DM.RACE" Mandatory="Yes" />
+            </ItemGroupDef>
+            <ItemGroupDef OID="ODM.IG.RACEOTH" Name="Race Other(s)" Repeating="Simple" RepeatingLimit="2" Type="Section">
+                <ItemRef ItemOID="IT.DM.RACEOTH" Mandatory="No" Repeat="Yes"/>
+            </ItemGroupDef>
+            <ItemDef OID="IT.DM.RACE" Name="RACE" DataType="text" Length="41">
+                <Description>
+                    <TranslatedText xml:lang="en" Type="text/plain">Race</TranslatedText>
+                </Description>
+                <Question>
+                    <TranslatedText xml:lang="en" Type="text/plain">Race (Select all that apply)</TranslatedText>
+                </Question>
+                <CodeListRef CodeListOID="CL.RACE"/>
+            </ItemDef>
+            <ItemDef OID="IT.DM.RACEOTH" Name="RACEOTH" DataType="text" Length="41">
+                <Description>
+                    <TranslatedText xml:lang="en" Type="text/plain">Race Other</TranslatedText>
+                </Description>
+                <Question>
+                    <TranslatedText xml:lang="en" Type="text/plain">Other Race (Include maximum two other values not
+                        listed under RACE)</TranslatedText>
+                </Question>
+            </ItemDef>
+        </MetaDataVersion>
+    </Study>
+    <!-- Clinical Data -->
+    <ClinicalData StudyOID="MyStudy" MetaDataVersionOID="MDV.MyStudy.001">
+        <!-- Usually, the ItemGroupData is embedded within SubjectData-StudyEventData-(ItemGroupData).
+            This is however omitted here for clarity -->
+        <ItemGroupData ItemGroupOID="IG.DM" ItemGroupDataSeq="2">
+            <ItemData ItemOID="IT.STUDYID">
+                <Value>CDISC01</Value>
+            </ItemData>
+            <ItemData ItemOID="IT.DM.DOMAIN">
+                <Value>DM</Value>
+            </ItemData>
+            <ItemData ItemOID="IT.USUBJID">
+                <Value>CDISC01.100014</Value>
+            </ItemData>
+            <ItemData ItemOID="IT.DM.SUBJID">
+                <Value>100014</Value>
+            </ItemData>
+            <ItemData ItemOID="IT.DM.SITEID">
+                <Value>100</Value>
+            </ItemData>
+            <ItemData ItemOID="IT.DM.BRTHDTC">
+                <Value>1936-11-01</Value>
+            </ItemData>
+            <ItemData ItemOID="IT.DM.AGE">
+                <Value>66</Value>
+            </ItemData>
+            <ItemData ItemOID="IT.DM.AGEU">
+                <Value>YEARS</Value>
+            </ItemData>
+            <ItemData ItemOID="IT.DM.SEX">
+                <Value>F</Value>
+            </ItemData>
+            <ItemGroupData ItemGroupOID="ODM.IG.RACE" ItemGroupRepeatKey="1">
+                <ItemData ItemOID="IT.DM.RACE">
+                    <Value>NATIVE HAWAIIAN</Value>
+                </ItemData>
+            </ItemGroupData>
+            <ItemGroupData ItemGroupOID="ODM.IG.RACE" ItemGroupRepeatKey="2">
+                <ItemData ItemOID="IT.DM.RACE">
+                    <Value>ASIAN</Value>
+                </ItemData>
+            </ItemGroupData>
+            <ItemGroupData ItemGroupOID="ODM.IG.RACE" ItemGroupRepeatKey="3">
+                <ItemData ItemOID="IT.DM.RACE">
+                    <Value>WHITE</Value>
+                </ItemData>
+            </ItemGroupData>
+            <ItemGroupData ItemGroupOID="ODM.IG.RACEOTH" ItemGroupRepeatKey="1">
+                <ItemData ItemOID="IT.DM.RACEOTH">
+                    <Value>Other free text Race value"</Value>
+                </ItemData>
+            </ItemGroupData>
+            <ItemGroupData ItemGroupOID="ODM.IG.RACEOTH" ItemGroupRepeatKey="2">
+                <ItemData ItemOID="IT.DM.RACEOTH">
+                    <Value>Another free text Race value</Value>
+                </ItemData>
+            </ItemGroupData>
+        </ItemGroupData>
+    </ClinicalData>
+</ODM>

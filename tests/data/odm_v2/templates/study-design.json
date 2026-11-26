@@ -1,0 +1,538 @@
+{
+  "FileType": "Snapshot",
+  "Granularity": "Metadata",
+  "Context": "Exchange",
+  "ODMVersion": "2.0",
+  "FileOID": "ODM.EXAMPLE.DESIGN.1",
+  "CreationDateTime": "2026-01-01T09:00:00",
+  "Originator": "Example Sponsor",
+  "SourceSystem": "odmlib",
+  "Study": [
+    {
+      "OID": "ST.DESIGN",
+      "StudyName": "DESIGN-001",
+      "ProtocolName": "DESIGN-001",
+      "MetaDataVersion": [
+        {
+          "OID": "MDV.DESIGN.1",
+          "Name": "Design version 1",
+          "Protocol": {
+            "Description": {
+              "TranslatedText": [
+                {
+                  "lang": "en",
+                  "Type": "text/plain",
+                  "_content": "Randomized, two-arm, parallel-group study of Drug A versus placebo."
+                }
+              ]
+            },
+            "StudySummary": {
+              "StudyParameter": [
+                {
+                  "OID": "SP.AGEMIN",
+                  "Term": "Planned Minimum Age of Subjects",
+                  "ShortName": "AGEMIN",
+                  "ParameterValue": {
+                    "Value": "P18Y"
+                  },
+                  "Coding": [
+                    {
+                      "Code": "C49693",
+                      "System": "https://www.cdisc.org/standards/terminology",
+                      "SystemName": "CDISC/NCI CT"
+                    }
+                  ]
+                },
+                {
+                  "OID": "SP.PLANSUB",
+                  "Term": "Planned Number of Subjects",
+                  "ShortName": "PLANSUB",
+                  "ParameterValue": {
+                    "Value": "120"
+                  },
+                  "Coding": [
+                    {
+                      "Code": "C49692",
+                      "System": "https://www.cdisc.org/standards/terminology",
+                      "SystemName": "CDISC/NCI CT"
+                    }
+                  ]
+                }
+              ]
+            },
+            "StudyStructure": {
+              "Arm": [
+                {
+                  "OID": "ARM.A",
+                  "Name": "Drug A"
+                },
+                {
+                  "OID": "ARM.P",
+                  "Name": "Placebo"
+                }
+              ],
+              "Epoch": [
+                {
+                  "OID": "EP.SCREEN",
+                  "Name": "Screening",
+                  "SequenceNumber": 1
+                },
+                {
+                  "OID": "EP.TREAT",
+                  "Name": "Treatment",
+                  "SequenceNumber": 2
+                },
+                {
+                  "OID": "EP.FOLLOWUP",
+                  "Name": "Follow-up",
+                  "SequenceNumber": 3
+                }
+              ],
+              "WorkflowRef": {
+                "WorkflowOID": "WF.STUDY"
+              }
+            },
+            "TrialPhase": {
+              "Value": "PHASE II TRIAL"
+            },
+            "StudyTimings": {
+              "StudyTiming": [
+                {
+                  "OID": "STM.MAIN",
+                  "Name": "Visit schedule",
+                  "RelativeTimingConstraint": [
+                    {
+                      "OID": "RTC.SCR.BL",
+                      "Name": "Screening to baseline",
+                      "PredecessorOID": "SE.SCREENING",
+                      "SuccessorOID": "SE.BASELINE",
+                      "Type": "StartToStart",
+                      "TimepointRelativeTarget": "P14D",
+                      "TimepointPreWindow": "P2D",
+                      "TimepointPostWindow": "P2D"
+                    }
+                  ],
+                  "DurationTimingConstraint": [
+                    {
+                      "OID": "DTC.TREAT",
+                      "Name": "Treatment duration",
+                      "StructuralElementOID": "EP.TREAT",
+                      "DurationTarget": "P12W",
+                      "DurationPreWindow": "P3D",
+                      "DurationPostWindow": "P3D"
+                    }
+                  ]
+                }
+              ]
+            },
+            "StudyObjectives": {
+              "StudyObjective": [
+                {
+                  "OID": "OBJ.1",
+                  "Name": "Primary efficacy objective",
+                  "Level": "Primary",
+                  "Description": {
+                    "TranslatedText": [
+                      {
+                        "lang": "en",
+                        "Type": "text/plain",
+                        "_content": "To compare the change in HbA1c from baseline to week 12 between Drug A and placebo."
+                      }
+                    ]
+                  },
+                  "StudyEndPointRef": [
+                    {
+                      "StudyEndPointOID": "EPT.1"
+                    }
+                  ]
+                }
+              ]
+            },
+            "StudyEndPoints": {
+              "StudyEndPoint": [
+                {
+                  "OID": "EPT.1",
+                  "Name": "Change in HbA1c at week 12",
+                  "Level": "Primary",
+                  "Description": {
+                    "TranslatedText": [
+                      {
+                        "lang": "en",
+                        "Type": "text/plain",
+                        "_content": "Change from baseline in HbA1c (%) at week 12."
+                      }
+                    ]
+                  }
+                }
+              ]
+            },
+            "InclusionExclusionCriteria": {
+              "InclusionCriteria": {
+                "Criterion": [
+                  {
+                    "OID": "CRIT.IN.1",
+                    "Name": "Adult",
+                    "ConditionOID": "CD.ADULT",
+                    "Description": {
+                      "TranslatedText": [
+                        {
+                          "lang": "en",
+                          "Type": "text/plain",
+                          "_content": "Age 18 years or older at screening."
+                        }
+                      ]
+                    }
+                  }
+                ]
+              },
+              "ExclusionCriteria": {
+                "Criterion": [
+                  {
+                    "OID": "CRIT.EX.1",
+                    "Name": "Pregnancy",
+                    "ConditionOID": "CD.PREGNANT",
+                    "Description": {
+                      "TranslatedText": [
+                        {
+                          "lang": "en",
+                          "Type": "text/plain",
+                          "_content": "Pregnant or breastfeeding."
+                        }
+                      ]
+                    }
+                  }
+                ]
+              }
+            },
+            "StudyEventGroupRef": [
+              {
+                "StudyEventGroupOID": "SEG.A.SCREEN",
+                "Mandatory": "No",
+                "OrderNumber": 1
+              },
+              {
+                "StudyEventGroupOID": "SEG.P.SCREEN",
+                "Mandatory": "No",
+                "OrderNumber": 2
+              },
+              {
+                "StudyEventGroupOID": "SEG.A.TREAT",
+                "Mandatory": "No",
+                "OrderNumber": 3
+              },
+              {
+                "StudyEventGroupOID": "SEG.P.TREAT",
+                "Mandatory": "No",
+                "OrderNumber": 4
+              },
+              {
+                "StudyEventGroupOID": "SEG.A.FOLLOWUP",
+                "Mandatory": "No",
+                "OrderNumber": 5
+              },
+              {
+                "StudyEventGroupOID": "SEG.P.FOLLOWUP",
+                "Mandatory": "No",
+                "OrderNumber": 6
+              }
+            ]
+          },
+          "WorkflowDef": [
+            {
+              "OID": "WF.STUDY",
+              "Name": "Study flow",
+              "WorkflowStart": {
+                "StartOID": "SEG.E.SCREEN"
+              },
+              "Transition": [
+                {
+                  "OID": "TR.SCREEN.RAND",
+                  "Name": "Screening to randomization",
+                  "SourceOID": "SEG.E.SCREEN",
+                  "TargetOID": "BR.ARM"
+                },
+                {
+                  "OID": "TR.TO.A",
+                  "Name": "To Drug A treatment",
+                  "SourceOID": "BR.ARM",
+                  "TargetOID": "SEG.E.DRUGA"
+                },
+                {
+                  "OID": "TR.TO.P",
+                  "Name": "To placebo treatment",
+                  "SourceOID": "BR.ARM",
+                  "TargetOID": "SEG.E.PLACEBO"
+                },
+                {
+                  "OID": "TR.A.FU",
+                  "Name": "Drug A to follow-up",
+                  "SourceOID": "SEG.E.DRUGA",
+                  "TargetOID": "SEG.E.FOLLOWUP"
+                },
+                {
+                  "OID": "TR.P.FU",
+                  "Name": "Placebo to follow-up",
+                  "SourceOID": "SEG.E.PLACEBO",
+                  "TargetOID": "SEG.E.FOLLOWUP"
+                }
+              ],
+              "Branching": [
+                {
+                  "OID": "BR.ARM",
+                  "Name": "Randomized arm",
+                  "Type": "Exclusive",
+                  "TargetTransition": [
+                    {
+                      "TargetTransitionOID": "TR.TO.A",
+                      "ConditionOID": "CD.ARM.A"
+                    }
+                  ],
+                  "DefaultTransition": [
+                    {
+                      "TargetTransitionOID": "TR.TO.P"
+                    }
+                  ]
+                }
+              ],
+              "WorkflowEnd": [
+                {
+                  "EndOID": "SEG.E.FOLLOWUP"
+                }
+              ]
+            }
+          ],
+          "StudyEventGroupDef": [
+            {
+              "OID": "SEG.A.SCREEN",
+              "Name": "Drug A, screening",
+              "ArmOID": "ARM.A",
+              "EpochOID": "EP.SCREEN",
+              "StudyEventGroupRef": [
+                {
+                  "StudyEventGroupOID": "SEG.E.SCREEN",
+                  "Mandatory": "Yes"
+                }
+              ]
+            },
+            {
+              "OID": "SEG.P.SCREEN",
+              "Name": "Placebo, screening",
+              "ArmOID": "ARM.P",
+              "EpochOID": "EP.SCREEN",
+              "StudyEventGroupRef": [
+                {
+                  "StudyEventGroupOID": "SEG.E.SCREEN",
+                  "Mandatory": "Yes"
+                }
+              ]
+            },
+            {
+              "OID": "SEG.A.TREAT",
+              "Name": "Drug A, treatment",
+              "ArmOID": "ARM.A",
+              "EpochOID": "EP.TREAT",
+              "StudyEventGroupRef": [
+                {
+                  "StudyEventGroupOID": "SEG.E.DRUGA",
+                  "Mandatory": "Yes"
+                }
+              ]
+            },
+            {
+              "OID": "SEG.P.TREAT",
+              "Name": "Placebo, treatment",
+              "ArmOID": "ARM.P",
+              "EpochOID": "EP.TREAT",
+              "StudyEventGroupRef": [
+                {
+                  "StudyEventGroupOID": "SEG.E.PLACEBO",
+                  "Mandatory": "Yes"
+                }
+              ]
+            },
+            {
+              "OID": "SEG.A.FOLLOWUP",
+              "Name": "Drug A, follow-up",
+              "ArmOID": "ARM.A",
+              "EpochOID": "EP.FOLLOWUP",
+              "StudyEventGroupRef": [
+                {
+                  "StudyEventGroupOID": "SEG.E.FOLLOWUP",
+                  "Mandatory": "Yes"
+                }
+              ]
+            },
+            {
+              "OID": "SEG.P.FOLLOWUP",
+              "Name": "Placebo, follow-up",
+              "ArmOID": "ARM.P",
+              "EpochOID": "EP.FOLLOWUP",
+              "StudyEventGroupRef": [
+                {
+                  "StudyEventGroupOID": "SEG.E.FOLLOWUP",
+                  "Mandatory": "Yes"
+                }
+              ]
+            },
+            {
+              "OID": "SEG.E.SCREEN",
+              "Name": "Screening element",
+              "StudyEventRef": [
+                {
+                  "StudyEventOID": "SE.SCREENING",
+                  "Mandatory": "Yes",
+                  "OrderNumber": 1
+                },
+                {
+                  "StudyEventOID": "SE.BASELINE",
+                  "Mandatory": "Yes",
+                  "OrderNumber": 2
+                }
+              ]
+            },
+            {
+              "OID": "SEG.E.DRUGA",
+              "Name": "Drug A element",
+              "StudyEventRef": [
+                {
+                  "StudyEventOID": "SE.WEEK4",
+                  "Mandatory": "Yes",
+                  "OrderNumber": 1
+                },
+                {
+                  "StudyEventOID": "SE.WEEK12",
+                  "Mandatory": "Yes",
+                  "OrderNumber": 2
+                }
+              ]
+            },
+            {
+              "OID": "SEG.E.PLACEBO",
+              "Name": "Placebo element",
+              "StudyEventRef": [
+                {
+                  "StudyEventOID": "SE.WEEK4",
+                  "Mandatory": "Yes",
+                  "OrderNumber": 1
+                },
+                {
+                  "StudyEventOID": "SE.WEEK12",
+                  "Mandatory": "Yes",
+                  "OrderNumber": 2
+                }
+              ]
+            },
+            {
+              "OID": "SEG.E.FOLLOWUP",
+              "Name": "Follow-up element",
+              "StudyEventRef": [
+                {
+                  "StudyEventOID": "SE.FOLLOWUP",
+                  "Mandatory": "Yes",
+                  "OrderNumber": 1
+                }
+              ]
+            }
+          ],
+          "StudyEventDef": [
+            {
+              "OID": "SE.SCREENING",
+              "Name": "Screening",
+              "Repeating": "No",
+              "Type": "Scheduled"
+            },
+            {
+              "OID": "SE.BASELINE",
+              "Name": "Baseline / randomization",
+              "Repeating": "No",
+              "Type": "Scheduled"
+            },
+            {
+              "OID": "SE.WEEK4",
+              "Name": "Week 4",
+              "Repeating": "No",
+              "Type": "Scheduled"
+            },
+            {
+              "OID": "SE.WEEK12",
+              "Name": "Week 12",
+              "Repeating": "No",
+              "Type": "Scheduled"
+            },
+            {
+              "OID": "SE.FOLLOWUP",
+              "Name": "Follow-up",
+              "Repeating": "No",
+              "Type": "Scheduled"
+            }
+          ],
+          "ConditionDef": [
+            {
+              "OID": "CD.ADULT",
+              "Name": "Age 18 or older",
+              "Description": {
+                "TranslatedText": [
+                  {
+                    "lang": "en",
+                    "Type": "text/plain",
+                    "_content": "AGE is 18 or more."
+                  }
+                ]
+              },
+              "MethodSignature": {
+                "Parameter": [
+                  {
+                    "Name": "AGE",
+                    "DataType": "integer"
+                  }
+                ],
+                "ReturnValue": [
+                  {
+                    "Name": "RESULT",
+                    "DataType": "boolean"
+                  }
+                ]
+              },
+              "FormalExpression": [
+                {
+                  "Context": "Python 3",
+                  "Code": {
+                    "_content": "RESULT = AGE >= 18"
+                  }
+                }
+              ]
+            },
+            {
+              "OID": "CD.PREGNANT",
+              "Name": "Pregnant or breastfeeding",
+              "Description": {
+                "TranslatedText": [
+                  {
+                    "lang": "en",
+                    "Type": "text/plain",
+                    "_content": "The subject is pregnant or breastfeeding."
+                  }
+                ]
+              },
+              "MethodSignature": {}
+            },
+            {
+              "OID": "CD.ARM.A",
+              "Name": "Randomized to Drug A",
+              "Description": {
+                "TranslatedText": [
+                  {
+                    "lang": "en",
+                    "Type": "text/plain",
+                    "_content": "The randomization result is arm A."
+                  }
+                ]
+              },
+              "MethodSignature": {}
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

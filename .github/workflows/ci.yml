@@ -20,7 +20,7 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-latest, windows-latest, macos-latest]
-        python-version: ["3.10", "3.11", "3.12", "3.13"]
+        python-version: ["3.10", "3.11", "3.12", "3.13", "3.14"]
 
     steps:
       - uses: actions/checkout@v5
@@ -41,7 +41,7 @@ jobs:
 
       # The skill tests assert Python-level API facts, file checksums, and that
       # the bundled examples execute -- none of which is platform-specific, so
-      # one cell is enough. Running the 8 examples on all 12 adds cost, not signal.
+      # one cell is enough. Running the 8 examples on all 15 adds cost, not signal.
       - name: Skill checks
         if: matrix.python-version == '3.12' && matrix.os == 'ubuntu-latest'
         run: python -m pytest tests/test_skill_contract.py tests/test_skill_bundle.py tests/test_skill_examples.py -v --tb=short
@@ -57,7 +57,7 @@ jobs:
       - name: Check coverage threshold
         if: matrix.python-version == '3.12' && matrix.os == 'ubuntu-latest'
         run: |
-          python -m pytest tests/ --ignore-glob='*test_skill_*.py' --cov=odmlib --cov-fail-under=70
+          python -m pytest tests/ --ignore-glob='*test_skill_*.py' --cov=odmlib --cov-fail-under=90
 
       - name: Upload coverage
         if: matrix.python-version == '3.12' && matrix.os == 'ubuntu-latest'
@@ -65,3 +65,27 @@ jobs:
         with:
           name: coverage-report
           path: coverage.xml
+
+  # Type checking is reported but does not gate merges yet: the baseline has
+  # known errors (128 in 20 files when this job was added). Uses [tool.mypy]
+  # from pyproject.toml.
+  mypy:
+    name: mypy (non-blocking)
+    runs-on: ubuntu-latest
+    continue-on-error: true
+
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e ".[dev]"
+
+      - name: Run mypy
+        run: mypy odmlib

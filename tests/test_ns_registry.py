@@ -5,6 +5,7 @@ import xml.etree.ElementTree as ET
 import odmlib.define_loader as DL
 import odmlib.loader as LD
 import os
+import tempfile
 
 
 class TestNamespaceRegistry(TestCase):
@@ -106,7 +107,10 @@ class TestNamespaceRegistry(TestCase):
             nsr = NS.NamespaceRegistry(prefix="def", uri="www.cdisc.org/ns/def/v2.0")
 
     def test_odm_ns_attributes(self):
-        odm_test_file = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'data', 'test_odm_namespace.xml')
+        # Generated output goes to a throw-away directory, never into tracked tests/data/.
+        tmp_dir = tempfile.TemporaryDirectory()
+        self.addCleanup(tmp_dir.cleanup)
+        odm_test_file = os.path.join(tmp_dir.name, 'test_odm_namespace.xml')
         NS.NamespaceRegistry(prefix="def", uri="http://www.cdisc.org/ns/def/v2.0")
         NS.NamespaceRegistry(prefix="nciodm", uri="http://ncicb.nci.nih.gov/xml/odm/EVS/CDISC")
         NS.NamespaceRegistry(prefix="xsi", uri="http://www.w3.org/2001/XMLSchema-instance")

@@ -202,6 +202,36 @@ value that now fails can still be loaded in permissive mode.
   model's registrations. `test_define_builder.py::test_roundtrip_write_xml`, which checked
   only that the file was non-empty, now re-parses it.
 
+### Changed — test suite and CI groundwork for 0.3.0
+
+No library behaviour changes.
+
+- **Python 3.14** is in the CI matrix and the package classifiers.
+- **Coverage floor raised from 70% to 90%** (actual: 94%). A new **mypy** CI job reports
+  but does not gate. `[tool.mypy]` now excludes `odmlib/schemas/`, whose version-named
+  directories stopped mypy before it checked anything.
+- **A test module that fails to import now fails the run.** `--continue-on-collection-errors`
+  is gone from the pytest options. It had hidden `test_property_based.py`'s `NameError`
+  whenever hypothesis was missing; that module now skips via `pytest.importorskip`.
+- **Tests no longer write into `tests/data/`.** Nine modules that rewrote tracked fixtures
+  on every run now write to a temporary directory. A session fixture in `conftest.py` fails
+  the run if any file under `tests/data/` is created, changed or deleted. Twelve generated
+  outputs that no test read were removed from the repository.
+- **Vendored ODM v2.0 fixtures.** `tests/data/odm_v2/` holds 25 ODM v2.0 documents (XML +
+  JSON) from the odm-v2 skill: its templates, the specification's full examples and every
+  valid DataExchange-ODM example. Twelve of them contain ClinicalData. Also there: a
+  `MANIFEST.json` of hashes and provenance, a `PROVENANCE.md` with licences, and
+  `ref_targets.json`, a spec-derived oracle for `create_oid_checker("odm_2_0")`.
+  `scripts/sync_odm_v2_fixtures.py [--check]` maintains them.
+  `tests/test_vendored_fixtures.py` checks their hashes and XSD validity, compares the OID
+  checker with the oracle, and pins each file's known OID findings.
+- **`test_odm_2_0_xsd_alignment.py` is ready for the ClinicalData layer.** Adjacent repeated
+  refs (`Association`'s two `KeySet`s) merge into one list. Whether text content may be empty
+  is now decided by xmlschema's lexical space, which correctly rejects an empty
+  `DateTimeStamp`, `FlagValue` or `FlagType`. A new test requires `_content` wherever the
+  XSD forbids empty text. Neither change alters today's results.
+- Removed `odmlib/odmlib/schemas/`, a stray copy of 17 bundled XSDs that was never packaged.
+
 ## [0.2.1] - 2026-08-27
 
 ### Added — Claude Code skill

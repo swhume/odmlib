@@ -4,6 +4,7 @@ import odmlib.ns_registry as NS
 import datetime
 import xml.etree.ElementTree as ET
 import os
+import tempfile
 import odmlib.odm_loader as OL
 import odmlib.loader as LD
 
@@ -17,8 +18,11 @@ class TestODM(TestCase):
         NS.NamespaceRegistry(prefix="xml",   uri="http://www.w3.org/XML/1998/namespace")
         NS.NamespaceRegistry(prefix="xlink", uri="http://www.w3.org/1999/xlink")
         self.odm = self.add_root()
-        self.odm_test_file = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'data', 'test_odm_001.xml')
-        self.odm_writer_test_file = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'data', 'test_odm_002.xml')
+        # Generated output goes to a throw-away directory, never into tracked tests/data/.
+        tmp_dir = tempfile.TemporaryDirectory()
+        self.addCleanup(tmp_dir.cleanup)
+        self.odm_test_file = os.path.join(tmp_dir.name, 'test_odm_001.xml')
+        self.odm_writer_test_file = os.path.join(tmp_dir.name, 'test_odm_002.xml')
         self.loader = LD.ODMLoader(OL.XMLODMLoader())
 
     def test_odm_attributes(self):

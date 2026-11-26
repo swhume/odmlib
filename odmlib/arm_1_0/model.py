@@ -17,7 +17,26 @@ import odmlib.ns_registry as NS
 
 # arm is an extension namespace embedded in Define-XML documents whose default
 # namespace must remain ODM — it must never be registered as the default
-NS.NamespaceRegistry(prefix="arm", uri="http://www.cdisc.org/ns/arm/v1.0")
+#: Namespace prefixes this model uses besides its default ``odm`` namespace.
+AUXILIARY_NAMESPACES = {**DEF.AUXILIARY_NAMESPACES, "arm": "http://www.cdisc.org/ns/arm/v1.0"}
+
+
+def register_namespaces():
+    """Register the auxiliary namespace prefixes this model uses (not its default).
+
+    The model registers them once, when it is imported, and
+    ``NamespaceRegistry.reset()`` removes them again. The loaders call this from
+    ``create_document`` so that a document loaded after a reset still resolves
+    and declares these prefixes. Safe to call repeatedly. Registering the
+    default namespace is the loader's job.
+
+    .. versionadded:: 0.3.0
+    """
+    for prefix, uri in AUXILIARY_NAMESPACES.items():
+        NS.NamespaceRegistry(prefix=prefix, uri=uri)
+
+
+register_namespaces()
 
 
 # ---------------------------------------------------------------------------
@@ -390,7 +409,7 @@ class ProgrammingCode(OE.ODMElement):
         DocumentRef: References to external code documentation.
     """
     namespace = "arm"
-    Context = T.String
+    Context = T.String()
     Code = T.ODMObject(element_class=Code, namespace="arm")
     DocumentRef = T.ODMListObject(element_class=DocumentRef, namespace="def")
 

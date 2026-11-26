@@ -1464,7 +1464,7 @@ class TestPhase5WaiversV2(TestCase):
         tt = _tt("plain text")
         self.assertEqual(tt.to_xml().text, "plain text")
         self.assertEqual(list(tt.to_xml()), [])
-        marked = ODM2.TranslatedText(Type="text/html", lang="en", div="<div><p>Bold</p></div>")
+        marked = ODM2.TranslatedText(Type="application/xhtml+xml", lang="en", div="<div><p>Bold</p></div>")
         self.assertEqual([e.tag for e in marked.to_xml()], ["div"])
         self.assertNotIn("Known approximation", ODM2.TranslatedText.__doc__)
 

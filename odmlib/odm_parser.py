@@ -166,11 +166,31 @@ class BaseParser:
         for prefix, url in self.nsr.namespaces.items():
             ET.register_namespace(prefix, url)
 
+    def _freeze_namespaces(self):
+        """Record the namespaces in effect at parse time.
+
+        Lookups made later -- ``MetaDataVersion()``, ``Study()``, the dynamic
+        ``parser.<Element>(parent=...)`` methods -- use this copy, so opening another
+        document (which changes the process-wide registry) cannot change what this
+        parser finds. Before 0.3.0, opening an ODM 2.0 document made ``MetaDataVersion()``
+        on an already-open ODM 1.3.2 one fail with ``IndexError``.
+        """
+        self._parsed_namespaces = dict(self.nsr.namespaces)
+        self._parsed_default_namespace = dict(self.nsr.default_namespace)
+
     def __getattr__(self, item):
         """ enables the parser to dynamically parse any element given it's parent """
+        if item.startswith("_"):
+            raise AttributeError(item)
+
         def parse_method(*args, parent, ns_prefix="odm", **kwargs):
+            frozen = self.__dict__.get("_parsed_namespaces")
+            if frozen is not None and ns_prefix in frozen:
+                namespaces = {ns_prefix: frozen[ns_prefix]}
+            else:
+                namespaces = self.nsr.get_ns_entry_dict(ns_prefix)
             elem_list = []
-            for elem in parent.findall(ns_prefix + ":" + item, self.nsr.get_ns_entry_dict(ns_prefix)):
+            for elem in parent.findall(ns_prefix + ":" + item, namespaces):
                 elem_list.append({**elem.attrib, "elem": elem})
             return elem_list
         return parse_method
@@ -187,38 +207,40 @@ class ElementParser:
     def set_namespaces(self, ns_registry):
         self.nsr = ns_registry
 
+    def _default_ns(self):
+        """The default-namespace map for root-level lookups.
+
+        The one in effect when the document was parsed (see
+        ``BaseParser._freeze_namespaces``), else the registry's current default, else
+        ODM 1.3.
+        """
+        frozen = self.__dict__.get("_parsed_default_namespace")
+        if frozen:
+            return frozen
+        return self.nsr.default_namespace if self.nsr else ODM_NS
+
     def ODM(self):
         return self.root
 
     def Study(self):
-        if self.nsr:
-            study = self.root.findall(ODM_PREFIX + "Study", self.nsr.default_namespace)
-        else:
-            study = self.root.findall(ODM_PREFIX + "Study", ODM_NS)
-        return study
+        return self.root.findall(ODM_PREFIX + "Study", self._default_ns())
 
     def MetaDataVersion(self, idx=0):
-        if self.nsr:
-            study = self.root.findall(ODM_PREFIX + "Study", self.nsr.default_namespace)
-            self.mdv = study[idx].findall(ODM_PREFIX + "MetaDataVersion", self.nsr.default_namespace)
-        else:
-            study = self.root.findall(ODM_PREFIX + "Study", ODM_NS)
-            self.mdv = study[idx].findall(ODM_PREFIX + "MetaDataVersion", ODM_NS)
+        ns = self._default_ns()
+        study = self.root.findall(ODM_PREFIX + "Study", ns)
+        self.mdv = study[idx].findall(ODM_PREFIX + "MetaDataVersion", ns)
         return self.mdv
 
     def AdminData(self):
-        ns = self.nsr.default_namespace if self.nsr else ODM_NS
-        self.admin_data = self.root.findall(ODM_PREFIX + "AdminData", ns)
+        self.admin_data = self.root.findall(ODM_PREFIX + "AdminData", self._default_ns())
         return self.admin_data
 
     def ClinicalData(self):
-        ns = self.nsr.default_namespace if self.nsr else ODM_NS
-        self.clinical_data = self.root.findall(ODM_PREFIX + "ClinicalData", ns)
+        self.clinical_data = self.root.findall(ODM_PREFIX + "ClinicalData", self._default_ns())
         return self.clinical_data
 
     def ReferenceData(self):
-        ns = self.nsr.default_namespace if self.nsr else ODM_NS
-        self.reference_data = self.root.findall(ODM_PREFIX + "ReferenceData", ns)
+        self.reference_data = self.root.findall(ODM_PREFIX + "ReferenceData", self._default_ns())
         return self.reference_data
 
 
@@ -238,6 +260,7 @@ class ODMParser(BaseParser, ElementParser):
                 hint="Verify the file is well-formed XML.",
             ) from ex
         self.root = odm_tree.getroot()
+        self._freeze_namespaces()
         return self.root
 
     def parse_tree(self):
@@ -267,6 +290,7 @@ class ODMStringParser(BaseParser, ElementParser):
                 f"Unable to parse XML document from string: {ex}",
                 hint="Verify the string is well-formed XML.",
             ) from ex
+        self._freeze_namespaces()
         return self.root
 
     def parse_tree(self):

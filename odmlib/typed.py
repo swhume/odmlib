@@ -68,24 +68,43 @@ class Typed(DESC.Descriptor):
 class Integer(DESC.Descriptor):
     """Descriptor for integer-valued ODM attributes.
 
-    Accepts int values and strings that convert to int (e.g., "42").
-    Used for OrderNumber, KeySequence, and similar integer attributes.
+    Accepts ``int`` values and strings in the ``xs:integer`` lexical space (an optional
+    sign and ASCII digits; surrounding whitespace is ignored, as the XSD's whitespace
+    collapse does). Used for OrderNumber, KeySequence, and similar integer attributes.
+
+    .. versionchanged:: 0.3.0
+       Strings are checked against ``xs:integer`` before conversion. ``int()`` also
+       accepts ``"1_0"`` and non-ASCII digits (Arabic-Indic, for example), which the
+       XSD does not. ``bool`` is rejected although it is an ``int`` subclass. Floats were
+       already rejected, never truncated.
     """
 
     def __set__(self, instance, value):
+        if isinstance(value, bool):
+            if not _mode.is_permissive(_mode.ValidationMode.SKIP_TYPE):
+                raise OdmlibTypeError(
+                    f"Expected an integer for {self.name}, found the bool {value}",
+                    attribute=self.name,
+                    expected_type=str(int),
+                    actual_value=value,
+                    hint="Provide an integer, e.g., 1, not True",
+                )
         # in XML integers are presented as strings e.g. OrderNumber="1"
-        if isinstance(value, str):
-            try:
-                value = int(value)
-            except ValueError:
-                if not _mode.is_permissive(_mode.ValidationMode.SKIP_TYPE):
-                    raise OdmlibTypeError(
-                        f"Expected string to convert to integer for {self.name} with a value {str(value)}",
-                        attribute=self.name,
-                        actual_value=value,
-                        hint="Provide a string that represents a valid integer, e.g., '42'",
-                    )
-                # permissive: fall through — store the string as-is
+        elif isinstance(value, str):
+            collapsed = _xsd_collapse(value)
+            if _XS_INTEGER_PAT.fullmatch(collapsed):
+                try:
+                    value = int(collapsed)
+                except ValueError:       # more digits than int() will convert
+                    pass
+            if isinstance(value, str) and not _mode.is_permissive(_mode.ValidationMode.SKIP_TYPE):
+                raise OdmlibTypeError(
+                    f"Expected string to convert to integer for {self.name} with a value {str(value)}",
+                    attribute=self.name,
+                    actual_value=value,
+                    hint="Provide an xs:integer string: an optional sign and digits, e.g., '42'",
+                )
+            # permissive: fall through — store the string as-is
         odm_type = int
         if (value is not None) and not isinstance(value, odm_type):
             if not _mode.is_permissive(_mode.ValidationMode.SKIP_TYPE):
@@ -455,6 +474,7 @@ _XS_DURATION_PAT = re.compile(
     r"-?P(?=[0-9]|T[0-9])(?:[0-9]+Y)?(?:[0-9]+M)?(?:[0-9]+D)?"
     r"(?:T(?=[0-9])(?:[0-9]+H)?(?:[0-9]+M)?(?:[0-9]+(?:\.[0-9]+)?S)?)?", re.ASCII)
 _XS_DECIMAL_PAT = re.compile(r"[+-]?(?:[0-9]+(?:\.[0-9]*)?|\.[0-9]+)", re.ASCII)
+_XS_INTEGER_PAT = re.compile(r"[+-]?[0-9]+", re.ASCII)
 _XS_LANGUAGE_PAT = re.compile(r"[a-zA-Z]{1,8}(?:-[a-zA-Z0-9]{1,8})*", re.ASCII)
 _EMPTY_TAG_PAT = re.compile(r"[ ]?")                       # emptyTag: "" or one space
 _T_DURATION_PAT = re.compile(r"[+-]?P[0-9]+W", re.ASCII)   # tDuration (week form)
@@ -968,6 +988,25 @@ class XHTMLDiv(DESC.Descriptor):
                             hint="Provide a single well-formed xhtml:div element",
                         ) from ex
         super().__set__(instance, value)
+
+
+class SELF:
+    """Sentinel ``element_class`` for a child of the class being defined.
+
+    A class cannot name itself in its own body, so a recursive element passes
+    ``SELF`` instead; :class:`~odmlib.odm_element.ODMMeta` replaces it with the
+    new class as soon as the class exists. ODM 2.0 ``ItemGroupData`` nests
+    ``ItemGroupData``::
+
+        class ItemGroupData(OE.ODMElement):
+            ItemGroupData = T.ODMListObject(element_class=T.SELF)
+
+    Assigning the descriptor after the class body does not work: ``ODMMeta``
+    builds ``_elems`` only while creating the class, so such a field is never
+    registered or serialized.
+
+    .. versionadded:: 0.3.0
+    """
 
 
 class ODMObject(DESC.Descriptor):

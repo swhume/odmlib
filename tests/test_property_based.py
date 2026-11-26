@@ -9,6 +9,7 @@ Requires hypothesis>=6.0 (installed via ``pip install odmlib[test]`` or
 ``pip install odmlib[dev]``).
 """
 import json
+import re
 import pytest
 
 # The class bodies below evaluate @given(...) and st.* at import time, so the
@@ -28,6 +29,9 @@ import odmlib.ns_registry as NS  # noqa: E402
 # ---------------------------------------------------------------------------
 # Reusable strategies
 # ---------------------------------------------------------------------------
+
+_XS_INTEGER = re.compile(r"[+-]?[0-9]+")
+_XML_WHITESPACE = " \t\n\r"
 
 # Valid OID: starts with a letter, then alphanumeric / dot / underscore
 oid_strategy = st.from_regex(r"[A-Za-z][A-Za-z0-9._]{0,63}", fullmatch=True)
@@ -124,16 +128,15 @@ class TestIntegerDescriptor:
         assert ir.OrderNumber == value
 
     @given(value=st.text(min_size=1, max_size=10).filter(
-        # Reject anything Python's int() would parse: optional +/- sign,
-        # surrounding whitespace, then digits.  Previously missed leading
-        # "+" (e.g. "+0"), causing Hypothesis to find a false-positive
-        # falsifying example.
-        lambda s: s.strip() != "" and not s.strip().lstrip("+-").isdigit()
+        # Keep only strings outside the xs:integer lexical space: an optional
+        # sign and ASCII digits, after stripping XML whitespace. str.isdigit()
+        # is the wrong test -- it is true for Arabic-Indic digits and
+        # superscripts, which the XSD rejects -- and int() also accepts "1_0".
+        lambda s: not _XS_INTEGER.fullmatch(s.strip(_XML_WHITESPACE))
     ))
     @settings(max_examples=50, suppress_health_check=[HealthCheck.function_scoped_fixture])
     def test_non_numeric_string_raises(self, value):
-        """Non-numeric strings must raise OdmlibTypeError for integer fields."""
-        assume(not value.strip().lstrip("+-").isdigit())
+        """Strings outside xs:integer must raise OdmlibTypeError for integer fields."""
         with pytest.raises(OdmlibTypeError):
             ODM.ItemRef(ItemOID="IT.TEST", OrderNumber=value, Mandatory="Yes")
 

@@ -59,6 +59,19 @@ With optional Pandas support:
 pip install odmlib[dataframe]
 ```
 
+### Freezing an application with PyInstaller
+
+From 0.3.0, odmlib ships a PyInstaller hook that PyInstaller finds on its own. A plain
+`pyinstaller app.py` (onefile or onedir) bundles odmlib's value sets, its XSD schemas,
+and the model modules the loaders import by name.
+
+With odmlib 0.2.x, pass both flags. Collecting the data alone is not enough, because
+the model modules are imported dynamically:
+
+```bash
+pyinstaller --collect-data odmlib --collect-submodules odmlib app.py
+```
+
 ## Claude Code Skill
 
 odmlib ships a [Claude Code](https://claude.com/claude-code) skill that teaches Claude how to
@@ -476,7 +489,14 @@ text_items = mdv.find_all("ItemDef", "DataType", "text")
 
 # Multi-attribute match
 item = mdv.find_by("ItemDef", DataType="integer", Length=4)
+
+# 0.3.0+: a compiled pattern (must match the whole value) or a predicate
+ae_items = mdv.find_all("ItemDef", "OID", re.compile(r"IT\.AE\..+"))
+long_items = mdv.find_all("ItemDef", "Length", lambda v: v is not None and v > 8)
 ```
+
+These search the element's direct children only (here, the MetaDataVersion's
+`ItemDef` list), not the whole subtree. A plain string is compared exactly.
 
 ## Dataset-JSON
 

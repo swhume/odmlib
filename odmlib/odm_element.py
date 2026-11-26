@@ -17,7 +17,11 @@ import odmlib.typed as T
 import odmlib.ns_registry as NS
 import odmlib.oid_index as IDX
 from collections import OrderedDict
+from decimal import Decimal
 import json
+import math
+import re
+import sys
 import warnings
 import xml.etree.ElementTree as ET
 from odmlib.exceptions import (
@@ -39,6 +43,34 @@ import odmlib.xhtml as XH
 
 # xsi:* attributes are allowed on any element of an XSD-validated document
 _XSI_NS = "http://www.w3.org/2001/XMLSchema-instance"
+_XML_NS = "http://www.w3.org/XML/1998/namespace"
+
+
+def _attribute_namespace_uris(cls: type, prefix: str) -> set:
+    """The URIs an attribute declared with namespace *prefix* on *cls* may carry.
+
+    ``"odm"``, the default, means an unqualified attribute, which has no namespace.
+    For any other prefix the URI comes from the model the class belongs to (its
+    ``AUXILIARY_NAMESPACES``), the fixed bindings odmlib knows, and the registry. The
+    model's own binding is what matters: it is right even when another document has
+    since rebound the prefix in the shared registry (Define-XML 2.0 after 2.1).
+    """
+    if prefix == "odm":
+        return set()
+    uris = set()
+    if prefix == "xml":
+        uris.add(_XML_NS)
+    fixed = NS.FIXED_PREFIX_URIS.get(prefix)
+    if fixed:
+        uris.add(fixed)
+    module = sys.modules.get(cls.__module__)
+    model_uri = getattr(module, "AUXILIARY_NAMESPACES", {}).get(prefix)
+    if model_uri:
+        uris.add(model_uri)
+    registered = NS.NamespaceRegistry().namespaces.get(prefix)
+    if registered:
+        uris.add(registered)
+    return uris
 
 
 # ---------------------------------------------------------------------------
@@ -121,6 +153,36 @@ def _warn_if_checker_dirty(oid_checker):
         )
 
 
+def _value_matches(stored: Any, wanted: Any) -> bool:
+    """The comparison behind :meth:`ODMElement.find`, ``find_all`` and ``find_by``.
+
+    * a compiled ``re.Pattern`` must match the *whole* of ``str(stored)``; an unset
+      attribute (``None``) never matches;
+    * a callable that is not a ``str`` or a class is called with the stored value
+      (``None`` when unset) and matches when it returns something truthy;
+    * anything else, including a plain string, is compared with ``==``, so regex
+      metacharacters in a string have no special meaning.
+    """
+    if isinstance(wanted, re.Pattern):
+        return stored is not None and wanted.fullmatch(str(stored)) is not None
+    if callable(wanted) and not isinstance(wanted, (str, type)):
+        return bool(wanted(stored))
+    return bool(stored == wanted)
+
+
+def _attribute_text(value: Any) -> str:
+    """Return the XML lexical form of an attribute value.
+
+    Floats are written as ``xs:decimal``, with no exponent: ``str(1e-07)`` is
+    ``"1e-07"``, which the ``xs:decimal`` attributes odmlib stores as floats (``Rank``,
+    the ODM 2.0 ``GeoPosition`` coordinates) do not allow. ``repr`` gives the shortest
+    string that round-trips, so no digits are invented.
+    """
+    if isinstance(value, float) and math.isfinite(value):
+        return format(Decimal(repr(value)), "f")
+    return str(value)
+
+
 class ODMMeta(type):
     """Metaclass for all ODM element classes.
 
@@ -136,6 +198,11 @@ class ODMMeta(type):
     - Record markup descriptors (``_markup``), which are stored like attributes
       but serialized as child elements
     - Set the default ``namespace`` to "odm" if not specified
+    - Resolve the :class:`~odmlib.typed.SELF` sentinel on child descriptors to
+      the class being created (a recursive element such as ODM 2.0 ``ItemGroupData``)
+    - Reject a descriptor *class* assigned where an instance belongs
+      (``Context = T.String`` instead of ``T.String()``), which would otherwise
+      be silently ignored and leave the field unvalidated and unserialized
     """
 
     @classmethod
@@ -191,6 +258,13 @@ class ODMMeta(type):
         clsdict["_attrs"] = attrs
         clsdict["_attr_ns"] = attr_ns
         for key, val in clsdict.items():
+            if isinstance(val, type) and issubclass(val, DESC.Descriptor):
+                raise OdmlibTypeError(
+                    f"{clsname}.{key} is the descriptor class {val.__name__}, not an instance",
+                    attribute=key,
+                    element_type=clsname,
+                    hint=f"did you mean {key} = T.{val.__name__}()?",
+                )
             if isinstance(val, (T.ODMObject, T.ODMListObject)):
                 if key in fields:
                     fields.remove(key)
@@ -227,6 +301,10 @@ class ODMMeta(type):
                 clsdict["namespace"] = "odm"
 
         clsobj = super().__new__(cls, clsname, bases, dict(clsdict))
+        # a recursive child names the class being defined via the T.SELF sentinel
+        for val in elems.values():
+            if val.element_class is T.SELF:
+                val.element_class = val.obj_type = clsobj
         return clsobj
 
 
@@ -292,6 +370,17 @@ class ODMElement(metaclass=ODMMeta):
         - :meth:`children` -- child elements in serialization (document) order
     """
 
+    # Built for every class by ODMMeta; declared here (annotations only, no values)
+    # so type checkers know them. An annotation creates no class attribute.
+    _fields: List[str]
+    _elems: dict
+    _attrs: dict
+    _attr_ns: dict
+    _groups: dict
+    _group_of: dict
+    _markup: tuple
+    namespace: str
+
     def __init__(self, **kwargs: Any) -> None:
         """Initialize an ODM element with keyword arguments.
 
@@ -312,15 +401,25 @@ class ODMElement(metaclass=ODMMeta):
            the class does not model is ignored instead of raising: XML Schema allows
            those attributes on any element. A modelled one, such as ``ODM``'s
            ``schemaLocation``, is still set.
+
+        .. versionchanged:: 0.3.0
+           A namespaced attribute (Clark notation, ``{uri}name``, as the XML loaders
+           pass it) is set only when the class declares ``name`` in that namespace
+           (``xml:lang``, ``def:Structure``). Any other one is ignored with an
+           :class:`~odmlib.exceptions.OdmlibWarning`. It used to be reduced to its
+           local name, so a foreign ``{urn:vendor}Context`` overwrote the element's
+           own ``Context``, and an unmodelled one failed the load.
         """
         for name, val in kwargs.items():
-            if name not in self._fields and name not in self.__class__.__dict__:
-                # strip out non-default elementtree namespaces from the XML to work with just the name e.g. xml:lang
+            if name.startswith("{") and "}" in name:
+                # a namespaced attribute from the XML loaders, e.g. {...XML/1998/namespace}lang
+                field = self._namespaced_attribute(name)
+                if field is None:
+                    continue
+                name = field
+            elif name not in self._fields and name not in self.__class__.__dict__:
                 if "}" in name:
-                    uri = name[1:name.find('}')] if name.startswith("{") else ""
                     name = name[name.find('}') + 1:]
-                    if uri == _XSI_NS and name not in self._fields:
-                        continue
                 else:
                     if not _mode.is_permissive(_mode.ValidationMode.SKIP_TYPE):
                         raise OdmlibTypeError(
@@ -341,6 +440,28 @@ class ODMElement(metaclass=ODMMeta):
                         element_type=self.__class__.__name__,
                         hint=f"Attribute '{attr}' is required when constructing {self.__class__.__name__}",
                     )
+
+    def _namespaced_attribute(self, clark_name: str) -> Optional[str]:
+        """Map a ``{uri}name`` attribute to the field it sets, or None to ignore it.
+
+        The field is ``name`` only when this class declares an attribute of that name
+        in a namespace bound to ``uri``. An unmodelled ``xsi:*`` attribute is dropped
+        silently (XML Schema allows those on any element); anything else is dropped
+        with an :class:`~odmlib.exceptions.OdmlibWarning`.
+        """
+        uri, local = clark_name[1:].split("}", 1)
+        descriptor = self._attrs.get(local)
+        if descriptor is not None and uri in _attribute_namespace_uris(type(self), descriptor.namespace):
+            return local
+        if uri == _XSI_NS:
+            return None
+        warnings.warn(
+            f"{self.__class__.__name__}: ignored the attribute {{{uri}}}{local}, which is "
+            f"in a namespace this class does not model for it",
+            OdmlibWarning,
+            stacklevel=3,
+        )
+        return None
 
     def __setattr__(self, key, value):
         """Set an attribute, validating it belongs to this class.
@@ -419,9 +540,9 @@ class ODMElement(metaclass=ODMMeta):
                     and attr not in self._markup:
                 # add namespace if not the default namespace
                 if attr in self.__class__.__dict__["_attr_ns"]:
-                    attrs[self.__class__.__dict__["_attr_ns"][attr] + ":" + attr] = str(obj)
+                    attrs[self.__class__.__dict__["_attr_ns"][attr] + ":" + attr] = _attribute_text(obj)
                 else:
-                    attrs[attr] = str(obj)
+                    attrs[attr] = _attribute_text(obj)
 
         # create element
         if isinstance(parent_elem, ET.Element):
@@ -567,6 +688,11 @@ class ODMElement(metaclass=ODMMeta):
         transform odmlib object hierarchy into a Python dictionary and return it
 
         :return: dictionary serialization of odmlib hierarchy
+
+        .. versionchanged:: 0.3.0
+           An empty list is omitted, as an unset single child already was. Reading
+           an unset list attribute (``igd.ItemRef``) creates an empty one, which used
+           to appear as ``"ItemRef": []``.
         """
         # Note: namespaces used in the XML serialization are not part of the dictionary or json serializations
         property_dict = {}
@@ -575,7 +701,8 @@ class ODMElement(metaclass=ODMMeta):
                 if not DESC.is_pristine_auto_created(obj):
                     property_dict[attr] = obj.to_dict()                # element
             elif isinstance(obj, list):
-                property_dict[attr] = [o.to_dict() for o in obj]       # list of ELEMENTS
+                if obj:
+                    property_dict[attr] = [o.to_dict() for o in obj]   # list of ELEMENTS
             elif obj is not None:
                 property_dict[attr] = obj                              # attributes
         return property_dict
@@ -607,25 +734,37 @@ class ODMElement(metaclass=ODMMeta):
             return type(self).__name__ + "(" + args + ")"
 
     def find(self, obj_name: str, attr: str, val: Any) -> Optional[ODMElement]:
-        """Return the first odmlib object where attribute ``attr`` equals ``val``.
+        """Return the first odmlib object whose attribute ``attr`` matches ``val``.
 
-        Searches within the child element(s) named ``obj_name`` on this element.
-        For list elements (ODMListObject), returns the first match.
-        For single elements (ODMObject), returns the element if it matches.
+        Searches only the direct child element(s) named ``obj_name`` on this element,
+        not the whole subtree. For list elements (ODMListObject), returns the first
+        match. For single elements (ODMObject), returns the element if it matches.
+
+        ``val`` is compared with ``==``, unless it is a compiled regular expression
+        (it must match the whole value, converted with ``str()``; an unset attribute
+        never matches) or a callable (called with the stored value, ``None`` when
+        unset; truthy means a match)::
+
+            mdv.find("ItemDef", "OID", "IT.AGE")
+            mdv.find("ItemDef", "OID", re.compile(r"IT\\.AE\\..+"))
+            mdv.find("ItemDef", "Length", lambda v: v is not None and v > 8)
 
         :param obj_name: text name of the ODM Element (case sensitive)
         :param attr: text name of the ODM Element Attribute (case sensitive)
-        :param val: attribute value to search for
+        :param val: value, compiled pattern, or predicate to match
         :return: first matching odmlib object, or None if not found
+
+        .. versionchanged:: 0.3.0
+           ``val`` may be a compiled pattern or a callable.
         """
         obj_list = getattr(self, obj_name)
         if isinstance(obj_list, list):
             for o in obj_list:
-                if o.__dict__.get(attr) == val:
+                if _value_matches(o.__dict__.get(attr), val):
                     return o
             return None
         elif isinstance(obj_list, ODMElement):
-            if obj_list.__dict__.get(attr) == val:
+            if _value_matches(obj_list.__dict__.get(attr), val):
                 return obj_list
             return None
         else:
@@ -633,20 +772,25 @@ class ODMElement(metaclass=ODMMeta):
             return None
 
     def find_all(self, obj_name: str, attr: str, val: Any) -> List[ODMElement]:
-        """Return all odmlib objects where attribute ``attr`` equals ``val``.
+        """Return all odmlib objects whose attribute ``attr`` matches ``val``.
 
-        Like find(), but returns all matches instead of just the first.
+        Like :meth:`find`, but returns all matches instead of just the first. It
+        searches direct children only, and ``val`` may be a value, a compiled
+        pattern or a predicate, as in :meth:`find`.
 
         :param obj_name: text name of the ODM Element (case sensitive)
         :param attr: text name of the ODM Element Attribute (case sensitive)
-        :param val: attribute value to search for
+        :param val: value, compiled pattern, or predicate to match
         :return: list of matching odmlib objects (empty list if no matches)
+
+        .. versionchanged:: 0.3.0
+           ``val`` may be a compiled pattern or a callable.
         """
         obj_list = getattr(self, obj_name)
         if isinstance(obj_list, list):
-            return [o for o in obj_list if o.__dict__.get(attr) == val]
+            return [o for o in obj_list if _value_matches(o.__dict__.get(attr), val)]
         elif isinstance(obj_list, ODMElement):
-            if obj_list.__dict__.get(attr) == val:
+            if _value_matches(obj_list.__dict__.get(attr), val):
                 return [obj_list]
             return []
         else:
@@ -656,17 +800,24 @@ class ODMElement(metaclass=ODMMeta):
     def find_by(self, obj_name: str, **kwargs: Any) -> Optional[ODMElement]:
         """Return the first odmlib object matching all keyword criteria.
 
-        A more ergonomic alternative to find() for multi-attribute lookups.
+        A more ergonomic alternative to :meth:`find` for multi-attribute lookups. It
+        searches direct children only, and each value may be a value, a compiled
+        pattern or a predicate, as in :meth:`find`::
+
+            mdv.find_by("ItemDef", Name=re.compile("^AE", re.I), DataType="text")
 
         :param obj_name: text name of the ODM Element (case sensitive)
-        :param kwargs: attribute name=value pairs to match
+        :param kwargs: attribute name=value (or pattern, or predicate) pairs to match
         :return: first matching odmlib object, or None
+
+        .. versionchanged:: 0.3.0
+           Values may be compiled patterns or callables.
         """
         obj_list = getattr(self, obj_name)
         if not isinstance(obj_list, list):
             obj_list = [obj_list] if isinstance(obj_list, ODMElement) else []
         for o in obj_list:
-            if all(o.__dict__.get(k) == v for k, v in kwargs.items()):
+            if all(_value_matches(o.__dict__.get(k), v) for k, v in kwargs.items()):
                 return o
         return None
 

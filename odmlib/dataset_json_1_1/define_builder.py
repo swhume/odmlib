@@ -21,7 +21,8 @@ from typing import Any, Optional
 import odmlib.define_2_1.model as DEF
 from odmlib import mode as _mode
 from odmlib.dataset_json_1_1.model import DatasetJSON
-from odmlib.exceptions import OdmlibTypeError
+from odmlib.exceptions import OdmlibTypeError, OdmlibValidationError
+from odmlib.typed import _XS_INTEGER_PAT, _xsd_collapse
 
 
 # ------------------------------------------------------------------ #
@@ -44,24 +45,45 @@ def _split_ids(value: Optional[str]) -> list[str]:
 def _int_or_none(value: Any, field_name: Optional[str] = None) -> Optional[int]:
     """Convert to int, handling None and float-from-JSON.
 
+    JSON often delivers an integer as a float (``8.0``), which is converted. A
+    float with a fractional part (``3.7``) raises :exc:`OdmlibValidationError`
+    rather than being truncated, and a string must be an ``xs:integer`` (as
+    :class:`~odmlib.typed.Integer` requires). Anything else that is not an int,
+    including ``bool``, raises :exc:`OdmlibTypeError`.
+
     Under ``ValidationMode.SKIP_TYPE`` (permissive), returns the raw value
     unchanged when conversion fails so the descriptor can store it as-is.
-    Otherwise raises :exc:`OdmlibTypeError` for parity with descriptor errors.
+
+    .. versionchanged:: 0.3.0
+       A non-integral float was silently truncated (``3.7`` became ``3``).
     """
     if value is None:
         return None
-    try:
+    if isinstance(value, float) and value.is_integer():
         return int(value)
-    except (ValueError, TypeError):
-        if _mode.is_permissive(_mode.ValidationMode.SKIP_TYPE):
-            return value
-        raise OdmlibTypeError(
-            f"Expected integer for {field_name or 'attribute'} with value {value!r}",
+    if isinstance(value, int) and not isinstance(value, bool):
+        return value
+    if isinstance(value, str) and _XS_INTEGER_PAT.fullmatch(_xsd_collapse(value)):
+        try:
+            return int(_xsd_collapse(value))
+        except ValueError:       # more digits than int() will convert
+            pass
+    if _mode.is_permissive(_mode.ValidationMode.SKIP_TYPE):
+        return value
+    if isinstance(value, float):
+        raise OdmlibValidationError(
+            f"Expected integer for {field_name or 'attribute'}, found {value!r}",
             attribute=field_name,
-            expected_type="int",
             actual_value=value,
-            hint="Provide an integer or a string/float convertible to an integer",
+            hint="The value has a fractional part; odmlib will not truncate it",
         )
+    raise OdmlibTypeError(
+        f"Expected integer for {field_name or 'attribute'} with value {value!r}",
+        attribute=field_name,
+        expected_type="int",
+        actual_value=value,
+        hint="Provide an integer, an integral float such as 8.0, or an xs:integer string",
+    )
 
 
 def _float_or_none(value: Any, field_name: Optional[str] = None) -> Optional[float]:

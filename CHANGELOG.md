@@ -115,7 +115,7 @@ document that validates against the bundled XSD. With 0.2.1, four of them failed
   `_content`. Both round-trip through XML and JSON:
 
   ```python
-  TranslatedText(lang="en", Type="text/html",
+  TranslatedText(lang="en", Type="application/xhtml+xml",
                  div='<div xmlns="http://www.w3.org/1999/xhtml"><p>Systolic <b>BP</b></p></div>')
   ```
 
@@ -253,6 +253,10 @@ catches `OdmlibError` or one of its subclasses, and builds OID checkers with
 | Dataset-JSON raises `ValueError` or `json.JSONDecodeError` | `OdmlibValidationError` from `add_row()`; `OdmlibParsingError` when reading |
 | `NamespaceRegistry().set_odm_namespace_attributes_string(s)` | remove the call: `to_xml_string()` declares its own namespaces |
 | `odmlib.odm_2_0.valueset.ValueSet.value_set(attr)` | `odmlib.valueset.ValueSet.value_set(attr, version="odm_2_0")` |
+| An integer attribute accepted `"1_0"`, non-ASCII digits or `True` | `OdmlibTypeError`; fix the value, or load with `permissive()` |
+| `xml:lang` was unchecked outside ODM 2.0 | an invalid language code raises `OdmlibValidationError` in every model |
+| An unmodelled attribute in a foreign namespace failed the load | it is ignored with an `OdmlibWarning` |
+| `to_dict()` / `to_json()` wrote `"ItemRef": []` after an unset list was read | empty lists are omitted |
 
 ### Removed — APIs deprecated in 0.2.x (breaking)
 
@@ -295,6 +299,91 @@ catches `OdmlibError` or one of its subclasses, and builds OID checkers with
 - New `tests/test_exception_contract.py` scans the package and fails on any
   `raise ValueError`/`raise TypeError` outside `xhtml.py`. `tests/test_exceptions.py` now pins
   the new contract: no odmlib exception is a `ValueError` or `TypeError`.
+
+### Added — core machinery (0.3.0 plan, P2)
+
+- **`T.SELF`** lets a class declare a child of its own type
+  (`ItemGroupData = T.ODMListObject(element_class=T.SELF)`). `ODMMeta` resolves it once the
+  class exists. ODM 2.0 `ItemGroupData` needs it (P4).
+- **`find`, `find_all` and `find_by` accept a compiled pattern or a predicate.** A
+  `re.Pattern` must match the whole value (`str()` of it), and an unset attribute never
+  matches. A callable is called with the stored value (`None` when unset). Plain values are
+  still compared with `==`, so regex metacharacters in a string mean nothing. The docs now
+  say these methods search direct children, not the subtree.
+- **A PyInstaller hook (issue #37).** `odmlib.__pyinstaller`, registered through the
+  `pyinstaller40` entry point, collects `valuesets.json`, the bundled XSDs, and every
+  odmlib module (the loaders import models by name). A plain `pyinstaller app.py` now
+  works. A new CI job freezes `tests/pyinstaller/smoke.py` and runs it.
+- **`register_namespaces()` and `AUXILIARY_NAMESPACES` on every XML model package.**
+  They (re-)register the model's prefixes other than its default.
+
+### Changed — stricter, schema-aligned checks (0.3.0 plan, P2)
+
+Every value these reject was already invalid against the XSD, and `permissive()` still
+loads it.
+
+- **`T.Integer` (and `PositiveInteger`, `NonNegativeInteger`) checks the `xs:integer`
+  lexical form**: an optional sign and ASCII digits, surrounding whitespace ignored. `int()`
+  also accepted `"1_0"` and non-ASCII digits, and `bool` slipped through as an `int`
+  subclass. xmlschema 4.3 accepts those same strings as `xs:integer` because it uses
+  `int()`. odmlib follows XSD Part 2 §3.3.13, and `test_xsd_lexical_types.py` records the
+  disagreement.
+- **`xml:lang` is an `xs:language` code in every model.** ODM 1.3.2, Define-XML 2.0/2.1,
+  ARM and CT-XML used a plain string. ODM 1.3.2 `Presentation` now writes
+  `xml:lang` rather than an unprefixed `lang`, which its schema rejects.
+- **Floats are written as `xs:decimal`**, with no exponent: `Rank=1e-07` is written as
+  `0.0000001`, not `1e-07`. JSON keeps numbers.
+- **`DefineBuilder` no longer truncates** a fractional value in an integer column. It used
+  to turn `3.7` into `3` silently; it now raises `OdmlibValidationError`. An integral float
+  (`8.0`) still converts. Strings must be `xs:integer`, and `bool` is rejected.
+- **A descriptor class assigned where an instance belongs** (`Context = T.String`) raises
+  `OdmlibTypeError` when the model class is created, with the hint "did you mean
+  T.String()?". ARM `ProgrammingCode.Context` was the one such field: it sat outside
+  `_attrs` and was never validated.
+- **A namespaced attribute sets a field only in the field's own namespace.** The XML
+  loaders used to reduce `{uri}name` to `name`, so a foreign `v:Context` overwrote an
+  element's own `Context`, and an `xsi:type` could overwrite an unqualified `type`. Such an
+  attribute is now ignored, with an `OdmlibWarning` (unmodelled `xsi:*` attributes are still
+  ignored silently). A field's namespace is resolved from its own model, so a Define-XML 2.1
+  document's `def:` attributes still load after a 2.0 file has rebound `def`.
+- **`to_dict()` and `to_json()` omit empty lists**, as they already omitted unset single
+  children. The Cerberus conformance suites pass unchanged.
+- **ODM 2.0 examples use `Type="application/xhtml+xml"`** for marked-up `TranslatedText`:
+  the spec allows only that and `text/plain`, not `text/html`. The model still accepts any
+  value the XSD does.
+
+### Fixed — namespace and loader defects (0.3.0 plan, P2)
+
+- **JSON loaders register their model's namespaces.** After `NamespaceRegistry.reset()`, ODM
+  2.0 loaded from JSON was written with `xmlns=".../odm/v1.3"`, and Define-XML 2.1 from JSON
+  wrote `def:` undeclared. The JSON loaders now register the model's default and auxiliary
+  prefixes when a document is opened, as the XML loaders register theirs.
+- **XML loaders register their model's auxiliary prefixes.** CT-XML loaded with
+  `XMLODMLoader` after a reset failed on `nciodm:` children, and so did Define-XML loaded
+  through the ODM loader on `def:`.
+- **Opening a second document no longer changes how the first is read.** Child lookups read
+  the process-wide registry when an element was *loaded*, not when the document was
+  *opened*. Opening a Define-XML 2.0 file therefore emptied an open 2.1 document's `leaf`,
+  `ValueListDef` and `WhereClauseDef` lists, and opening an ODM 2.0 file made
+  `MetaDataVersion()` on an open ODM 1.3.2 one fail with `IndexError`. The loaders and the
+  parser now resolve against the namespaces captured when the document was opened.
+- **An unknown child prefix raises `OdmlibParsingError`**, naming the prefix, instead of
+  ElementTree's bare `SyntaxError`.
+- **`Borg.reset()` resets the registry.** `reset()` rebound the dictionaries on whichever
+  class it was called through, so `NamespaceRegistry.reset()` gave the subclass a private
+  copy that `Borg.reset()` could no longer clear.
+- **The Define-XML and ARM loaders keep whitespace-only text** (`<CheckValue> </CheckValue>`),
+  as `XMLODMLoader` already did.
+- **Resources are located without guesswork.** `schema_manager` dropped an
+  `importlib.resources` lookup that could never succeed: it asked for the package
+  `odmlib.schemas.odm.1.3.2`. Had it worked, it would have returned a path from an
+  `as_file()` context that had already closed. `valueset.py` reads `valuesets.json` through
+  `importlib.resources`.
+- `Coding.CommentOID` (ODM 2.0) documents its two typings: free text in the XSD, a
+  `CommentDef` reference in the spec. odmlib loads any value, and the OID checker applies
+  the spec. A test pins both.
+- mypy's known-error baseline shrank from 128 to 113. `ODMElement` now declares the
+  attributes `ODMMeta` builds, so type checkers see them.
 
 ## [0.2.1] - 2026-08-27
 

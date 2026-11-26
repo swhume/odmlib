@@ -128,9 +128,15 @@ class Borg:
 
         Should be called between tests or when reinitializing the registry
         from scratch to prevent cross-test state leakage.
+
+        .. versionchanged:: 0.3.0
+           Always rebinds ``Borg``'s own dictionaries. It used to rebind them on
+           whichever class it was called through, so ``NamespaceRegistry.reset()``
+           (and ``is_reset=True``) gave ``NamespaceRegistry`` a private copy that
+           ``Borg.reset()`` could no longer clear.
         """
-        cls.namespaces = {}
-        cls.default_namespace = {}
+        Borg.namespaces = {}
+        Borg.default_namespace = {}
 
 
 class NamespaceRegistry(Borg):

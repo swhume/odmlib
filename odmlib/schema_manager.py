@@ -1,6 +1,11 @@
 import os
-from importlib import resources
 from odmlib.exceptions import OdmlibValidationError
+
+# The bundled XSDs live beside this module, as ordinary files, in every way odmlib is
+# installed: a wheel, a source checkout, and PyInstaller's onedir and onefile builds
+# (onefile unpacks data files to a temporary directory and points __file__ there).
+# xmlschema needs those real paths so a root schema's xs:include/xs:import resolve.
+_SCHEMA_ROOT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "schemas")
 
 # Map main schema filenames by standard/version
 _MAIN_SCHEMA = {
@@ -14,19 +19,16 @@ _MAIN_SCHEMA = {
 
 
 def get_schema_dir(standard: str, version: str) -> str:
-    """Return absolute path to the directory that contains the schema files.
+    """Return the absolute path of the directory holding a standard's schema files.
 
-    This uses importlib.resources to resolve packaged data paths so that relative
-    imports inside the XSD can be resolved by the schema processor.
+    The path is a real directory, so the schema processor can resolve the relative
+    ``xs:include``/``xs:import`` locations inside the XSDs.
+
+    .. versionchanged:: 0.3.0
+       Resolved from this module's location only. An ``importlib.resources`` lookup
+       was tried first but added nothing for an on-disk package.
     """
-    try:
-        # resources.files available in Python 3.9+
-        files = resources.files("odmlib.schemas")  # type: ignore[attr-defined]
-        return str(files / standard / version)
-    except Exception:
-        # Fallback: build path relative to this file
-        base_path = os.path.dirname(__file__)
-        return os.path.join(base_path, "schemas", standard, version)
+    return os.path.join(_SCHEMA_ROOT, standard, version)
 
 
 def get_schema_path(standard: str, version: str, filename: str | None = None) -> str:
@@ -43,10 +45,8 @@ def get_schema_path(standard: str, version: str, filename: str | None = None) ->
                 hint=f"Valid combinations are: {list(_MAIN_SCHEMA.keys())}",
             ) from ex
 
-    package = f"odmlib.schemas.{standard}.{version}"
-    try:
-        with resources.as_file(resources.files(package) / filename) as p:  # type: ignore[attr-defined]
-            return str(p)
-    except Exception:
-        # Fallback to a direct filesystem join
-        return os.path.join(get_schema_dir(standard, version), filename)
+    # 0.3.0: no importlib.resources lookup. It asked for the package
+    # "odmlib.schemas.odm.1.3.2", which can never be imported (a version directory is
+    # not a valid package name), so it always fell through to this join -- and had it
+    # worked, it would have returned a path from an as_file() context already closed.
+    return os.path.join(get_schema_dir(standard, version), filename)

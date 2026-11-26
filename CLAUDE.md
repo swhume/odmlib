@@ -139,6 +139,11 @@ The metaclass `ODMMeta` automatically:
 - Separates attributes (`_attrs`) from child elements (`_elems`)
 - Tracks namespace information (`_attr_ns`)
 - Creates a `_fields` list of all properties
+- Resolves `element_class=T.SELF` to the class being defined, for a recursive element
+  (ODM 2.0 `ItemGroupData` holds `ItemGroupData`). Assigning a descriptor after the class
+  body registers nothing, so use `T.SELF`
+- Raises `OdmlibTypeError` for a descriptor *class* where an instance belongs
+  (`Context = T.String` instead of `T.String()`)
 
 ### Loader Architecture
 
@@ -201,6 +206,16 @@ loader binds the snapshot **recursively**, so nested elements reached by walking
 **Residual limitation:** an element constructed *after* the load and grafted in carries no
 snapshot and falls back to global state. Bind it explicitly:
 `NS.bind_document_namespaces(new_elem, NS.get_document_namespaces(root))`.
+
+**Loading reads its own namespaces too (0.3.0).** Each model package has
+`AUXILIARY_NAMESPACES` and a re-runnable `register_namespaces()` for its non-default prefixes.
+Every loader (XML and JSON) calls it from `create_document`, and registers the default
+namespace itself. The XML loaders and the parser then resolve child elements against the
+namespaces captured at `create_document` (`DocumentLoader._ns_map`), not the live registry.
+That way, opening a Define-XML 2.0 file cannot empty an open 2.1 document's `def:` lists.
+An unknown child prefix raises `OdmlibParsingError`. A namespaced attribute (`{uri}name`)
+sets a field only when `uri` belongs to that field's namespace, resolved from the field's
+own model. Anything else is ignored, with an `OdmlibWarning`.
 
 **Missing prefixes (0.3.0).** `set_odm_namespace_attributes()` declares every used prefix
 it finds in the registry/snapshot. A used prefix that is missing — typically after

@@ -52,6 +52,11 @@ dev = [
     "mypy>=1.0",
 ]
 
+# PyInstaller discovers odmlib's hook through this entry point (issue #37).
+# It adds no dependency on PyInstaller.
+[project.entry-points.pyinstaller40]
+hook-dirs = "odmlib.__pyinstaller:get_hook_dirs"
+
 [project.urls]
 Homepage = "https://github.com/swhume/odmlib"
 Documentation = "https://swhume.github.io/odmlib"

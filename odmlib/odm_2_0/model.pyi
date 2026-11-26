@@ -2,6 +2,10 @@ from __future__ import annotations
 from typing import Any, List, Optional
 from odmlib.odm_element import ODMElement
 
+AUXILIARY_NAMESPACES: dict[str, str]
+
+def register_namespaces() -> None: ...
+
 
 class TranslatedText(ODMElement):
     lang: Optional[str]

@@ -2,10 +2,31 @@ import odmlib.odm_element as OE
 import odmlib.typed as T
 import odmlib.ns_registry as NS
 
+#: Namespace prefixes this model uses besides its default ``odm`` namespace.
+AUXILIARY_NAMESPACES = {
+    "xs": "http://www.w3.org/2001/XMLSchema-instance",
+    "xml": "http://www.w3.org/XML/1998/namespace",
+    "xlink": "http://www.w3.org/1999/xlink",
+}
+
+
+def register_namespaces():
+    """Register the auxiliary namespace prefixes this model uses (not its default).
+
+    The model registers them once, when it is imported, and
+    ``NamespaceRegistry.reset()`` removes them again. The loaders call this from
+    ``create_document`` so that a document loaded after a reset still resolves
+    and declares these prefixes. Safe to call repeatedly. Registering the
+    default namespace is the loader's job.
+
+    .. versionadded:: 0.3.0
+    """
+    for prefix, uri in AUXILIARY_NAMESPACES.items():
+        NS.NamespaceRegistry(prefix=prefix, uri=uri)
+
+
 NS.NamespaceRegistry(prefix="odm", uri="http://www.cdisc.org/ns/odm/v2.0", is_default=True)
-NS.NamespaceRegistry(prefix="xs", uri="http://www.w3.org/2001/XMLSchema-instance")
-NS.NamespaceRegistry(prefix="xml", uri="http://www.w3.org/XML/1998/namespace")
-NS.NamespaceRegistry(prefix="xlink", uri="http://www.w3.org/1999/xlink")
+register_namespaces()
 
 
 class TranslatedText(OE.ODMElement):
@@ -16,7 +37,7 @@ class TranslatedText(OE.ODMElement):
     text before the div is ``_content``; the div, and any text after it, is
     held as one markup string in ``div``. Both round-trip through XML and JSON::
 
-        TranslatedText(lang="en", Type="text/html",
+        TranslatedText(lang="en", Type="application/xhtml+xml",
                        div='<div xmlns="http://www.w3.org/1999/xhtml"><p>Weight</p></div>')
 
     ``div`` is stored in a canonical form that declares its own XHTML namespace,
@@ -32,7 +53,9 @@ class TranslatedText(OE.ODMElement):
     Attributes:
         lang (str): BCP 47 language tag (xml:lang attribute), e.g. "en".
         Type (str, required): Media-type qualifier for the text (XSD type
-            ``text``, free-text, ``use="required"``), e.g. ``"text/plain"``.
+            ``text``, free-text, ``use="required"``). The spec allows only
+            ``"text/plain"`` and ``"application/xhtml+xml"`` (the latter for
+            text marked up with ``div``); odmlib accepts any XSD-valid value.
             Required by the ODM 2.0 schema.
         _content (str): The text content, or the text before ``div``.
         div (str): The ``xhtml:div`` child as markup, plus any text after it.
@@ -140,6 +163,27 @@ class CommentDef(OE.ODMElement):
 
 
 class Coding(OE.ODMElement):
+    """A code from an external coding system (MedDRA, SNOMED CT, LOINC, CDISC CT...).
+
+    .. note::
+       ``CommentOID`` is typed differently by the two ODM v2.0 sources. The XSD makes
+       it free ``text``, so odmlib loads any value, including ``""``. The specification
+       calls it a reference to a ``CommentDef``, so
+       :func:`~odmlib.oid_generator.create_oid_checker` checks it as one and
+       ``verify_oids`` reports a value that names no ``CommentDef``. odmlib keeps
+       both behaviours deliberately.
+
+    Attributes:
+        Code (str): The code value.
+        System (str, required): The coding system, e.g. a URI or name.
+        SystemName (str): Human-readable name of the system.
+        SystemVersion (str): Version of the system.
+        Label (str): Human-readable label for the code.
+        href (str): URL for the code or system.
+        ref (str): Reference to the code within the system.
+        CommentOID (str): The CommentDef that comments on this coding (see note).
+    """
+
     Code = T.String(required=False)
     System = T.String(required=True)
     SystemName = T.String()

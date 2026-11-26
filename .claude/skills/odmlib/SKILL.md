@@ -87,6 +87,9 @@ object and is broken — use `to_xml_string()`. See
 
    ODM 1.3.2 and ODM 2.0 differ structurally — see `references/models.md` before mixing
    them up. Define-XML 2.1 is itself an ODM extension, so it is loaded as Define, not ODM.
+   For what the ODM v2.0 *standard* allows and means (element rules, XSD structure,
+   enumerations, 1.3.2 → 2.0 changes, validated examples, and an XSD + OID-reference
+   validator), use the **odm-v2** skill alongside this one; this skill covers the library.
 3. Decide which API altitude fits the task (next section).
 4. **Validate** anything you create or modify before treating it as done (see Validation).
 

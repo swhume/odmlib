@@ -4,6 +4,7 @@ import odmlib.odm_1_3_2.rules.metadata_schema as METADATA
 import datetime
 import odmlib.typed as T
 import odmlib.odm_element as OE
+from odmlib.exceptions import OdmlibTypeError, OdmlibValidationError
 
 class TextModel(OE.ODMElement):
     Name = T.String(required=True)
@@ -34,11 +35,11 @@ class TestTyped(unittest.TestCase):
         self.assertEqual(cli.OrderNumber, 1)
         # test integer as float
         attrs = {"CodedValue": "HGB", "OrderNumber": 1.1}
-        with self.assertRaises(TypeError):
+        with self.assertRaises(OdmlibTypeError):
             cli = ODM.CodeListItem(**attrs)
         # test non-integer as
         attrs = {"CodedValue": "HGB", "OrderNumber": "a"}
-        with self.assertRaises(TypeError):
+        with self.assertRaises(OdmlibTypeError):
             cli = ODM.CodeListItem(**attrs)
 
     def test_float_type(self):
@@ -56,12 +57,12 @@ class TestTyped(unittest.TestCase):
         self.assertEqual(cli.Rank, 1.0)
         # test non-float as string
         attrs = {"CodedValue": "HGB", "Rank": "a"}
-        with self.assertRaises(TypeError):
+        with self.assertRaises(OdmlibTypeError):
             cli = ODM.CodeListItem(**attrs)
         # test object as float
         clr = ODM.CodeListRef(CodeListOID="CL.TEST")
         attrs = {"CodedValue": "HGB", "Rank": clr}
-        with self.assertRaises(TypeError):
+        with self.assertRaises(OdmlibTypeError):
             cli = ODM.CodeListItem(**attrs)
 
     def test_positive_type(self):
@@ -72,15 +73,15 @@ class TestTyped(unittest.TestCase):
         self.assertEqual(item.Length, 1)
         # testing Length = 0 as a positive integer
         attrs["Length"] = 0
-        with self.assertRaises(TypeError):
+        with self.assertRaises(OdmlibTypeError):
             item = ODM.ItemDef(**attrs)
         # testing Length = -1 as a positive integer
         attrs["Length"] = -1
-        with self.assertRaises(TypeError):
+        with self.assertRaises(OdmlibTypeError):
             item = ODM.ItemDef(**attrs)
         # testing Length = float as a positive integer
         attrs["Length"] = 1.0
-        with self.assertRaises(TypeError):
+        with self.assertRaises(OdmlibTypeError):
             item = ODM.ItemDef(**attrs)
 
     def test_non_negative_type(self):
@@ -95,11 +96,11 @@ class TestTyped(unittest.TestCase):
         self.assertEqual(item.SignificantDigits, 0)
         # testing SignificantDigits = -1 as a non-negative integer
         attrs["SignificantDigits"] = -1
-        with self.assertRaises(TypeError):
+        with self.assertRaises(OdmlibTypeError):
             item = ODM.ItemDef(**attrs)
         # testing SignificantDigits = float as a non-negative integer
         attrs["SignificantDigits"] = 1.0
-        with self.assertRaises(TypeError):
+        with self.assertRaises(OdmlibTypeError):
             item = ODM.ItemDef(**attrs)
 
     def test_add_undefined_content(self):
@@ -108,13 +109,13 @@ class TestTyped(unittest.TestCase):
                 "SDSVarName": "AEYN", "Origin": "CRF", "Comment": "Data management field", "SignificantDigits": 1}
         item = ODM.ItemDef(**attrs)
         clr = ODM.CodeListRef(CodeListOID="CL.TEST")
-        with self.assertRaises(TypeError):
+        with self.assertRaises(OdmlibTypeError):
             item.NewCodeList = clr
         # cannot add unknown attributes or elements during creation, but can afterwards; catch with conformance checks
         attrs = {"OID": "ODM.IT.AE.AEYN", "Name": "Any AEs?", "DataType": "text", "Length": 1, "SASFieldName": "AEYN",
                 "SDSVarName": "AEYN", "Origin": "CRF", "Comment": "Data management field", "SignificantDigits": 1}
         item = ODM.ItemDef(**attrs)
-        with self.assertRaises(TypeError):
+        with self.assertRaises(OdmlibTypeError):
             item.InSignificantDigits = 1
         # can add all objects during creation and they are validated
         attrs = {"OID": "ODM.IT.AE.AEYN", "Name": "Any AEs?", "DataType": "text", "Length": 1, "SASFieldName": "AEYN",
@@ -122,25 +123,25 @@ class TestTyped(unittest.TestCase):
         item = ODM.ItemDef(**attrs)
         self.assertEqual(item.CodeListRef, clr)
         attrs["CodeListReference"] = clr
-        with self.assertRaises(TypeError):
+        with self.assertRaises(OdmlibTypeError):
             # test shows that ItemDef fails the schema check because it has an unknown CodeListReference object
             item = ODM.ItemDef(**attrs)
         self.assertEqual(item.CodeListRef, clr)
         # test adding the wrong type of object to a list
         attrs = {"OID": "ODM.IT.AE.AEYN", "Name": "Any AEs?", "DataType": "text", "Length": 1, "SASFieldName": "AEYN",
                 "SDSVarName": "AEYN", "Origin": "CRF", "Comment": "Data management field", "Alias": [clr]}
-        with self.assertRaises(TypeError):
+        with self.assertRaises(OdmlibTypeError):
             item = ODM.ItemDef(**attrs)
         # test adding the wrong type of object to a list
         alias = ODM.Alias(Context="CDASH", Name="AEYN")
         attrs = {"OID": "ODM.IT.AE.AEYN", "Name": "Any AEs?", "DataType": "text", "Length": 1, "SASFieldName": "AEYN",
                 "SDSVarName": "AEYN", "Origin": "CRF", "Comment": "Data management field", "Alias": alias}
-        with self.assertRaises(TypeError):
+        with self.assertRaises(OdmlibTypeError):
             item = ODM.ItemDef(**attrs)
         # assign wrong type of object to an element
         attrs = {"OID": "ODM.IT.AE.AEYN", "Name": "Any AEs?", "DataType": "text", "Length": 1, "SASFieldName": "AEYN",
                 "SDSVarName": "AEYN", "Origin": "CRF", "Comment": "Data management field", "CodeListRef": alias}
-        with self.assertRaises(TypeError):
+        with self.assertRaises(OdmlibTypeError):
             item = ODM.ItemDef(**attrs)
 
     def test_email_type(self):
@@ -148,10 +149,10 @@ class TestTyped(unittest.TestCase):
         email = ODM.Email(_content="swhume@gmail.com")
         self.assertEqual(email._content, "swhume@gmail.com")
         # missing @
-        with self.assertRaises(ValueError):
+        with self.assertRaises(OdmlibValidationError):
             email = ODM.Email(_content="swhumegmail.com")
         # includes a space
-        with self.assertRaises(ValueError):
+        with self.assertRaises(OdmlibValidationError):
             email = ODM.Email(_content="swhume @gmail.com")
 
     def test_sasformat_type(self):
@@ -165,11 +166,11 @@ class TestTyped(unittest.TestCase):
         self.assertEqual(cl.SASFormatName, "_AETERM")
         # start with a number
         attrs["SASFormatName"] = "9AETERM"
-        with self.assertRaises(ValueError):
+        with self.assertRaises(OdmlibValidationError):
             cl = ODM.CodeList(**attrs)
         # end with a symbol
         attrs["SASFormatName"] = "AETERM%"
-        with self.assertRaises(ValueError):
+        with self.assertRaises(OdmlibValidationError):
             cl = ODM.CodeList(**attrs)
         # test with none - does not throw an error when value is None
         attrs["SASFormatName"] = None
@@ -188,11 +189,11 @@ class TestTyped(unittest.TestCase):
         self.assertEqual(item.SASFieldName, "_AETERM")
         # start with a number
         attrs["SASFieldName"] = "9AETERM"
-        with self.assertRaises(ValueError):
+        with self.assertRaises(OdmlibValidationError):
             item = ODM.ItemDef(**attrs)
         # end with a symbol
         attrs["SASFieldName"] = "AETERM%"
-        with self.assertRaises(ValueError):
+        with self.assertRaises(OdmlibValidationError):
             item = ODM.ItemDef(**attrs)
         # test with none - does not throw an error when value is None
         attrs["SASFieldName"] = None
@@ -212,7 +213,7 @@ class TestTyped(unittest.TestCase):
         self.assertIsInstance(odm, ODM.ODM)
         # date only
         attrs["AsOfDateTime"] = "2020-07-13"
-        with self.assertRaises(ValueError):
+        with self.assertRaises(OdmlibValidationError):
             odm = ODM.ODM(**attrs)
         # basic time
         attrs["AsOfDateTime"] = "2020-07-13T00:13:51"
@@ -220,7 +221,7 @@ class TestTyped(unittest.TestCase):
         self.assertEqual(odm.AsOfDateTime, "2020-07-13T00:13:51")
         # out of range time
         attrs["AsOfDateTime"] = "2020-07-13T00:13:61"
-        with self.assertRaises(ValueError):
+        with self.assertRaises(OdmlibValidationError):
             odm = ODM.ODM(**attrs)
 
     def set_datetime(self):
@@ -235,7 +236,7 @@ class TestTyped(unittest.TestCase):
         self.assertEqual(item.Origin, "CRF")
         # integer
         attrs["Origin"] = 1
-        with self.assertRaises(TypeError):
+        with self.assertRaises(OdmlibTypeError):
             item = ODM.ItemDef(**attrs)
         attrs["Origin"] = None
         item = ODM.ItemDef(**attrs)
@@ -245,34 +246,34 @@ class TestTyped(unittest.TestCase):
         sized = TextModel(Name="AETERM", Label="help")
         self.assertEqual(sized.Label, "help")
         # too long
-        with self.assertRaises(ValueError):
+        with self.assertRaises(OdmlibValidationError):
             sized = TextModel(Name="AETERM", Label="Verbatim Term")
 
     def test_regex_type(self):
         regex = TextModel(Name="AETERM", Label="help", Range="4-9")
         self.assertEqual(regex.Range, "4-9")
         # not a match
-        with self.assertRaises(ValueError):
+        with self.assertRaises(OdmlibValidationError):
             regex = TextModel(Name="AETERM", Label="help", Range="6-7")
 
     def test_url_type(self):
         url = TextModel(Name="AETERM", Label="help", Range="4-9", Link="https://cdisc.org")
         self.assertEqual(url.Link, "https://cdisc.org")
         # not a match
-        with self.assertRaises(ValueError):
+        with self.assertRaises(OdmlibValidationError):
             url = TextModel(Name="AETERM", Label="help", Range="4-9", Link="cdisc.org")
 
     def test_filename_type(self):
         archive = ODM.ArchiveLayout(OID="AL.AECRF", PdfFileName="ae_annotated_crf.pdf")
         self.assertEqual(archive.PdfFileName, "ae_annotated_crf.pdf")
         # with path
-        with self.assertRaises(ValueError):
+        with self.assertRaises(OdmlibValidationError):
             archive = ODM.ArchiveLayout(OID="AL.AECRF", PdfFileName="c:\\users\\shume\\ae_annotated_crf.pdf")
         # with space
         archive = ODM.ArchiveLayout(OID="AL.AECRF", PdfFileName="ae_annotated crf.pdf")
         self.assertEqual(archive.PdfFileName, "ae_annotated crf.pdf")
         # with invalid character
-        with self.assertRaises(ValueError):
+        with self.assertRaises(OdmlibValidationError):
             archive = ODM.ArchiveLayout(OID="AL.AECRF", PdfFileName="ae_annotated>crf.pdf")
 
     def test_incomplete_datetime_type(self):
@@ -282,7 +283,7 @@ class TestTyped(unittest.TestCase):
         idatetime = TextModel(Name="AETERM", Label="help", Range="4-9", TestDateTime="2004---15T-:05:-")
         self.assertEqual(idatetime.TestDateTime, "2004---15T-:05:-")
         # invalid incomplete datetime
-        with self.assertRaises(ValueError):
+        with self.assertRaises(OdmlibValidationError):
             idatetime = TextModel(Name="AETERM", Label="help", Range="4-7", TestDateTime="2004---15T-:05")
 
     def test_incomplete_date_type(self):
@@ -294,7 +295,7 @@ class TestTyped(unittest.TestCase):
         idate = TextModel(Name="AETERM", Label="help", Range="4-7", TestDate="-----")
         self.assertEqual(idate.TestDate, "-----")
         # invalid incomplete date
-        with self.assertRaises(ValueError):
+        with self.assertRaises(OdmlibValidationError):
             idate = TextModel(Name="AETERM", Label="help", Range="4-7", TestDate="----32")
 
     def test_incomplete_time_type(self):
@@ -304,7 +305,7 @@ class TestTyped(unittest.TestCase):
         itime = TextModel(Name="AETERM", Label="help", Range="4-9", TestTime="-:05:-")
         self.assertEqual(itime.TestTime, "-:05:-")
         # invalid incomplete datetime
-        with self.assertRaises(ValueError):
+        with self.assertRaises(OdmlibValidationError):
             itime = TextModel(Name="AETERM", Label="help", Range="4-7", TestTime="-:05")
 
     def test_partial_datetime_type(self):
@@ -316,7 +317,7 @@ class TestTyped(unittest.TestCase):
         pdatetime = PartialDateModel(Name="AETERM", TestDateTime="2004-12-05T12")
         self.assertEqual(pdatetime.TestDateTime, "2004-12-05T12")
         # invalid partial datetime
-        with self.assertRaises(ValueError):
+        with self.assertRaises(OdmlibValidationError):
             pdatetime = PartialDateModel(Name="AETERM", TestDateTime="2004---15T-:05")
 
     def test_partial_date_type(self):
@@ -328,9 +329,9 @@ class TestTyped(unittest.TestCase):
         pdate = PartialDateModel(Name="AETERM", TestDate="2004")
         self.assertEqual(pdate.TestDate, "2004")
         # invalid partial date
-        with self.assertRaises(ValueError):
+        with self.assertRaises(OdmlibValidationError):
             pdate = PartialDateModel(Name="AETERM", TestDate="----20")
-        with self.assertRaises(ValueError):
+        with self.assertRaises(OdmlibValidationError):
             pdate = PartialDateModel(Name="AETERM", TestDate="2004-13-20")
 
     def test_partial_time_type(self):
@@ -342,7 +343,7 @@ class TestTyped(unittest.TestCase):
         ptime = PartialDateModel(Name="AETERM", TestTime="12")
         self.assertEqual(ptime.TestTime, "12")
         # invalid partial datetime
-        with self.assertRaises(ValueError):
+        with self.assertRaises(OdmlibValidationError):
             ptime = PartialDateModel(Name="AETERM", TestTime="-:05")
 
 
@@ -367,9 +368,9 @@ class TestDurationDateTimeString(unittest.TestCase):
 
     def test_duration_invalid_spaces(self):
         """Strings with spaces must be rejected"""
-        with self.assertRaises(ValueError):
+        with self.assertRaises(OdmlibValidationError):
             DurationModel(Name="test", Dur="+ P1W")
-        with self.assertRaises(ValueError):
+        with self.assertRaises(OdmlibValidationError):
             DurationModel(Name="test", Dur=" -P1W")
 
     def test_duration_valid_iso8601(self):
@@ -386,7 +387,7 @@ class TestDurationDateTimeString(unittest.TestCase):
     def test_duration_invalid_format(self):
         """Various invalid formats rejected"""
         for val in ("1W", "PW", "P", "PT", "P1Y2W", "not-a-duration"):
-            with self.assertRaises(ValueError, msg=f"Should reject: {val!r}"):
+            with self.assertRaises(OdmlibValidationError, msg=f"Should reject: {val!r}"):
                 DurationModel(Name="test", Dur=val)
 
     def test_duration_none_accepted(self):

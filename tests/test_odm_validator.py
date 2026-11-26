@@ -1,6 +1,7 @@
 from unittest import TestCase
 import os
 import odmlib.odm_parser as P
+from odmlib.exceptions import OdmlibTypeError
 
 
 class TestODMValidator(TestCase):
@@ -144,8 +145,8 @@ class TestODMValidatorConstructorContract(TestCase):
     """
 
     def test_no_args_raises(self):
-        """No xsd_file, no standard, no version -> ValueError, not silent ODM 1.3.2."""
-        with self.assertRaises(ValueError) as cm:
+        """No xsd_file, no standard, no version -> OdmlibTypeError, not silent ODM 1.3.2."""
+        with self.assertRaises(OdmlibTypeError) as cm:
             P.ODMSchemaValidator()
         self.assertIn("xsd_file", str(cm.exception))
         self.assertIn("standard", str(cm.exception))
@@ -160,7 +161,7 @@ class TestODMValidatorConstructorContract(TestCase):
         may follow the hint, pass ``standard='odm'``, and silently validate
         against the wrong schema again.
         """
-        with self.assertRaises(ValueError) as cm:
+        with self.assertRaises(OdmlibTypeError) as cm:
             P.ODMSchemaValidator()
         msg = str(cm.exception)
         self.assertIn("xsd_file=", msg)
@@ -168,12 +169,12 @@ class TestODMValidatorConstructorContract(TestCase):
 
     def test_only_standard_raises(self):
         """Partial info (standard without version) is also rejected."""
-        with self.assertRaises(ValueError):
+        with self.assertRaises(OdmlibTypeError):
             P.ODMSchemaValidator(standard="odm")
 
     def test_only_version_raises(self):
         """Partial info (version without standard) is also rejected."""
-        with self.assertRaises(ValueError):
+        with self.assertRaises(OdmlibTypeError):
             P.ODMSchemaValidator(version="1.3.2")
 
     def test_explicit_standard_and_version_works(self):
@@ -199,7 +200,7 @@ class TestODMValidatorConstructorContract(TestCase):
         """When xsd_file is provided, standard/version aren't required."""
         import odmlib.schema_manager as SM
         xsd_path = SM.get_schema_path("odm", "1.3.2")
-        # No ValueError despite standard=None, version=None — xsd_file wins.
+        # No error despite standard=None, version=None — xsd_file wins.
         validator = P.ODMSchemaValidator(xsd_file=xsd_path)
         self.assertIsNotNone(validator.xsd)
 

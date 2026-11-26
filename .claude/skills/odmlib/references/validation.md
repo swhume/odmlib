@@ -90,9 +90,10 @@ the marker. It is ignored when `collect_errors=False`.
 ### Not every checker can enumerate
 
 Full OID enumeration requires a checker implementing the *collecting protocol*. The modern
-`DynamicOIDRef` from `create_oid_checker()` does; the deprecated `rules/oid_ref.py` `OIDRef`
-classes (removed in 0.3.0) do not, and contribute at most **one** error for the whole OID
-layer. Custom duck-typed checkers likewise degrade gracefully rather than breaking.
+`DynamicOIDRef` from `create_oid_checker()` does. A custom duck-typed checker without it
+degrades gracefully rather than breaking: it contributes at most **one** error for the whole
+OID layer. In 0.2.x the manual `rules/oid_ref.py` `OIDRef` classes behaved the same way;
+0.3.0 removed them.
 
 ```python
 from odmlib import is_collecting_checker

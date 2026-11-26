@@ -6,6 +6,7 @@ import xml.etree.ElementTree as ET
 import odmlib.ns_registry as NS
 import os
 import datetime
+from odmlib.exceptions import OdmlibRequiredAttributeError, OdmlibTypeError
 
 
 class TestItemGroupDef(TestCase):
@@ -47,11 +48,11 @@ class TestItemGroupDef(TestCase):
         self.assertEqual(self.igd.ItemRef[2].MethodOID, "MT.METHODFEX")
 
     def test_add_item_ref_missing_kwarg(self):
-        with self.assertRaises(ValueError):
+        with self.assertRaises(OdmlibRequiredAttributeError):
             self.igd.ItemRef = [DEFINE.ItemRef(Mandatory="Yes", OrderNumber=1)]
 
     def test_add_item_ref_invalid_kwarg(self):
-        with self.assertRaises(TypeError):
+        with self.assertRaises(OdmlibTypeError):
             self.igd.ItemRef = [DEFINE.ItemRef(ItemOID="IT.STUDYID", Mandatory="Yes", InValid="Yes")]
 
     def test_item_ref_exists(self):

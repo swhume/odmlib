@@ -444,8 +444,8 @@ errors = odm.validate(collect_errors=True, oid_checker=checker, max_errors=100)
 ```
 
 An OID checker accumulates every OID it sees, so use one per document or call
-`checker.reset()` between runs. The deprecated `rules/oid_ref.py` `OIDRef`
-classes do not support error collection and contribute at most one error.
+`checker.reset()` between runs. A custom checker that does not support error
+collection still works, but contributes at most one error.
 
 ### Element ordering
 

@@ -17,7 +17,10 @@ import tempfile
 import unittest
 
 from odmlib.dataset_json_1_1.model import DatasetJSON, Column, SourceSystem
-from odmlib.exceptions import OdmlibTypeError, OdmlibRequiredAttributeError
+from odmlib.exceptions import (
+    OdmlibParsingError, OdmlibRequiredAttributeError, OdmlibTypeError,
+    OdmlibValidationError,
+)
 
 
 class TestColumn(unittest.TestCase):
@@ -256,7 +259,7 @@ class TestDatasetJSON(unittest.TestCase):
         dsj = self._make_minimal()
         dsj.add_column(Column(itemOID="IT.X", name="X", label="X",
                                dataType="string"))
-        with self.assertRaises(ValueError) as ctx:
+        with self.assertRaises(OdmlibValidationError) as ctx:
             dsj.add_row(["val1", "extra"])
         self.assertIn("2 values", str(ctx.exception))
         self.assertIn("1 columns", str(ctx.exception))
@@ -473,8 +476,41 @@ class TestDatasetJSON(unittest.TestCase):
                                           mode="w") as f:
             tmpfile = f.name
         try:
-            with self.assertRaises(ValueError):
+            with self.assertRaises(OdmlibParsingError):
                 DatasetJSON.read_ndjson(tmpfile)
+        finally:
+            os.unlink(tmpfile)
+
+    def test_from_json_malformed_raises_parsing_error(self):
+        with self.assertRaises(OdmlibParsingError) as ctx:
+            DatasetJSON.from_json('{"name": "DM",')
+        self.assertIsInstance(ctx.exception.__cause__, json.JSONDecodeError)
+
+    def test_read_json_malformed_raises_parsing_error(self):
+        with tempfile.NamedTemporaryFile(suffix=".json", delete=False,
+                                          mode="w", encoding="utf-8") as f:
+            f.write("not json")
+            tmpfile = f.name
+        try:
+            with self.assertRaises(OdmlibParsingError) as ctx:
+                DatasetJSON.read_json(tmpfile)
+            self.assertIn(tmpfile, str(ctx.exception))
+        finally:
+            os.unlink(tmpfile)
+
+    def test_read_ndjson_malformed_row_names_the_line(self):
+        dsj = self._make_full()
+        with tempfile.NamedTemporaryFile(suffix=".ndjson", delete=False) as f:
+            tmpfile = f.name
+        try:
+            dsj.write_ndjson(tmpfile)
+            with open(tmpfile, "a", encoding="utf-8") as f:
+                f.write("[1, 2,\n")
+            with open(tmpfile, encoding="utf-8") as f:
+                bad_line = len(f.readlines())
+            with self.assertRaises(OdmlibParsingError) as ctx:
+                DatasetJSON.read_ndjson(tmpfile)
+            self.assertIn(f"line {bad_line}", str(ctx.exception))
         finally:
             os.unlink(tmpfile)
 

@@ -1,6 +1,7 @@
 from unittest import TestCase
 import json
 import odmlib.odm_1_3_2.model as ODM
+from odmlib.exceptions import OdmlibTypeError
 
 
 class TestFormDef(TestCase):
@@ -45,7 +46,7 @@ class TestFormDef(TestCase):
 
     def test_add_not_alias(self):
         item = ODM.ItemDef(OID="ODM.IT.VSPOS", Name="VS Position", DataType="text")
-        with self.assertRaises(TypeError):
+        with self.assertRaises(OdmlibTypeError):
             self.formdef.Alias = [item]
         self.formdef.Alias.append(ODM.Alias(Context="SDTMIG", Name="VS"))
         # list accepts invalid objects

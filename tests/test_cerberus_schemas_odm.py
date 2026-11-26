@@ -2,7 +2,7 @@ from unittest import TestCase
 import cerberus as C
 import odmlib.odm_1_3_2.model as ODM
 import odmlib.odm_1_3_2.rules.metadata_schema as METADATA
-import odmlib.odm_1_3_2.rules.oid_ref as OID
+from odmlib import create_oid_checker
 
 
 class CheckODM:
@@ -200,7 +200,7 @@ class TestCheckODM(TestCase):
         self.mdv.CodeList = self.add_CL()
         self.mdv.MethodDef = self.add_MD()
         self.mdv.ConditionDef = self.add_CD()
-        oid_checker = OID.OIDRef()
+        oid_checker = create_oid_checker("odm_1_3_2")
         self.mdv.verify_oids(oid_checker)
         self.assertTrue(oid_checker.check_oid_refs())
 
@@ -215,7 +215,7 @@ class TestCheckODM(TestCase):
         self.mdv.CodeList = self.add_CL()
         self.mdv.MethodDef = self.add_MD()
         self.mdv.ConditionDef = self.add_CD()
-        oid_checker = OID.OIDRef()
+        oid_checker = create_oid_checker("odm_1_3_2")
         self.mdv.verify_oids(oid_checker)
         orphans = oid_checker.check_unreferenced_oids()
         print(orphans)

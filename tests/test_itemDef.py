@@ -1,6 +1,7 @@
 from unittest import TestCase
 import json
 import odmlib.odm_1_3_2.model as ODM
+from odmlib.exceptions import OdmlibRequiredAttributeError, OdmlibTypeError
 
 
 class TestItemDef(TestCase):
@@ -49,7 +50,7 @@ class TestItemDef(TestCase):
         rc.MeasurementUnitRef = [ODM.MeasurementUnitRef(MeasurementUnitOID="ODM.MU.UNITS")]
         self.item.RangeCheck = [rc]
         # Description requires a Description object, not a RangeCheck object
-        with self.assertRaises(TypeError):
+        with self.assertRaises(OdmlibTypeError):
             self.item.Description = rc
 
     def test_add_description(self):
@@ -160,12 +161,12 @@ class TestItemDef(TestCase):
 
     def test_missing_itemdef_attributes(self):
         attrs = {"OID": "ODM.IT.AE.AEYN", "Name": "Any AEs?"}
-        with self.assertRaises(ValueError):
+        with self.assertRaises(OdmlibRequiredAttributeError):
             ODM.ItemDef(**attrs)
 
     def test_invalid_attribute_data_type(self):
         attrs = {"OID": "ODM.IT.AE.AEYN", "Name": "Any AEs?", "DataType": "text", "SignificantDigits": "A"}
-        with self.assertRaises(TypeError):
+        with self.assertRaises(OdmlibTypeError):
             self.item = ODM.ItemDef(**attrs)
 
     def set_item_attributes(self):

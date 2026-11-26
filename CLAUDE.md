@@ -214,17 +214,31 @@ Two-phase OID checking system (see `odm_element.py` methods):
    - Ref/Def integrity (references point to valid definitions)
    - Type matching (e.g., FormOID refs must point to FormDef)
 
-**OID Checkers:** Each model package has a `rules/oid_ref.py` with an `OIDRef` class that defines:
+**OID Checkers:** `create_oid_checker(model_package)` (`oid_generator.py`) builds a
+`DynamicOIDRef` by introspecting the model's classes, with per-model skip lists and
+overrides in `oid_generator_config.py`. It defines:
 - `ref_def`: Maps reference attributes (e.g., "FormOID") to definition elements (e.g., "FormDef")
 - `def_ref`: Reverse mapping for checking unreferenced definitions
 - `skip_attr` / `skip_elem`: Elements excluded from validation
 
-The dynamic checker (`create_oid_checker`, `oid_generator.py`) also has `ref_def_any_of`
-(0.3.0) for references that may point at several element types — ODM 2.0's workflow and
-timing references (`StartOID`, `SourceOID`, `TargetOID`, `EndOID`, `StructuralElementOID`,
+The manual `rules/oid_ref.py` `OIDRef` classes were removed in 0.3.0;
+`tests/test_oid_generator.py` keeps their `ref_def` tables as a frozen snapshot.
+
+The checker also has `ref_def_any_of` (0.3.0) for references that may point at several
+element types — ODM 2.0's workflow and timing references (`StartOID`, `SourceOID`, `TargetOID`, `EndOID`, `StructuralElementOID`,
 `PredecessorOID`, `SuccessorOID`), from `_REF_DEF_ANY_OF`. The target sets follow the ODM
 v2.0 spec as transcribed in the cdisc-org/DataExchange-ODM-LinkML model; for ODM 2.0 only
 `FileOID`/`PriorFileOID` are skipped.
+
+### Exceptions
+
+Every odmlib exception derives from `OdmlibError` (`exceptions.py`) and, since 0.3.0,
+from nothing else: `OdmlibValidationError` is not a `ValueError` and `OdmlibTypeError`
+is not a `TypeError`. Library code must raise an odmlib class, never a bare
+`ValueError`/`TypeError`; `tests/test_exception_contract.py` scans the source and fails
+otherwise. `xhtml.py` is the one allowlisted module, because its callers catch and wrap
+its `ValueError`. In tests, assert the specific class (`OdmlibRequiredAttributeError`,
+`OdmlibOIDError`, ...), not a builtin.
 
 ### Conformance Validation
 
@@ -269,7 +283,7 @@ Both `standard` and `version` are required — there is no default. Pass
 ODM requires specific element order in XML. odmlib enforces this:
 - `verify_order()`: Checks if elements match model declaration order
 - `reorder_object()`: Reorders instance dict to match model order
-- Order violations raise `ValueError`
+- Order violations raise `OdmlibElementOrderError`
 
 **Interleaved repeating groups** (`interleave.py`, 0.3.0). Where the XSD lets two child
 types alternate — ODM 2.0 `ItemGroupDef` (`ItemGroupRef`/`ItemRef`), `StudyEventGroupDef`
@@ -376,7 +390,6 @@ To create proprietary extensions:
 
 - **No ItemData[Type] support:** ItemData with typed elements (deprecated in ODM v2.0)
 - **No ds:Signature support:** Digital signatures not implemented
-- **Manual OID checks:** Ref/Def checks are manually coded, not auto-generated from models
 - **Single MetaDataVersion:** Loaders return first MDV by default; use `idx` parameter for others
 - **Order of declaration matters:** Elements must be declared in the order they appear in ODM spec
 

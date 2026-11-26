@@ -1,6 +1,7 @@
 from unittest import TestCase
 import json
 import odmlib.odm_1_3_2.model as ODM
+from odmlib.exceptions import OdmlibTypeError
 
 
 class TestStudyEventDef(TestCase):
@@ -19,7 +20,7 @@ class TestStudyEventDef(TestCase):
     def test_add_bad_attribute(self):
         attrs = self.set_attributes()
         attrs["Type"] = "Rescheduled"
-        with self.assertRaises(TypeError):
+        with self.assertRaises(OdmlibTypeError):
             self.sed = ODM.StudyEventDef(**attrs)
 
     def test_add_form_ref(self):

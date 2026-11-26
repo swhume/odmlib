@@ -7,7 +7,8 @@ import os
 import tempfile
 import datetime
 from odmlib.odm_1_3_2.rules import metadata_schema as METADATA
-from odmlib.odm_1_3_2.rules import oid_ref as OID
+from odmlib import create_oid_checker
+from odmlib.exceptions import OdmlibOIDError
 
 
 
@@ -179,16 +180,16 @@ class TestClinicalData(TestCase):
         loader = LD.ODMLoader(OL.XMLODMLoader(model_package="odm_1_3_2", ns_uri="http://www.cdisc.org/ns/odm/v1.3"))
         loader.open_odm_document(self.odm_test_file)
         odm = loader.load_odm()
-        oid_checker = OID.OIDRef()
+        oid_checker = create_oid_checker("odm_1_3_2")
         # this file has only clinical data so will fail the ref_def check
-        with self.assertRaises(ValueError):
+        with self.assertRaises(OdmlibOIDError):
             odm.verify_oids(oid_checker)
 
     def test_oid_ref_def_check_with_mdv(self):
         loader = LD.ODMLoader(OL.XMLODMLoader(model_package="odm_1_3_2", ns_uri="http://www.cdisc.org/ns/odm/v1.3"))
         loader.open_odm_document(self.odm_test_file2)
         odm = loader.load_odm()
-        oid_checker = OID.OIDRef()
+        oid_checker = create_oid_checker("odm_1_3_2")
         odm.verify_oids(oid_checker)
         self.assertTrue(oid_checker.check_oid_refs())
 
@@ -200,7 +201,7 @@ class TestClinicalData(TestCase):
         study_dict = odm.Study[0].to_dict()
         self.assertTrue(validator.check_conformance(study_dict, "Study"))
 
-        oid_checker = OID.OIDRef()
+        oid_checker = create_oid_checker("odm_1_3_2")
         odm.verify_oids(oid_checker)
         self.assertTrue(oid_checker.check_oid_refs())
 

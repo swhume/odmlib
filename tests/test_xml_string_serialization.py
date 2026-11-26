@@ -301,10 +301,7 @@ class TestToElement(TestCase):
         self.assertEqual(structure(self.define.to_element()), structure(from_file))
 
 
-class TestSetOdmNamespaceAttributesStringDeprecated(TestCase):
-    def test_emits_deprecation_warning(self):
-        from odmlib.exceptions import OdmlibDeprecationWarning
-
-        nsr = NS.NamespaceRegistry()
-        with self.assertWarns(OdmlibDeprecationWarning):
-            nsr.set_odm_namespace_attributes_string("<ODM FileOID='X'></ODM>")
+class TestSetOdmNamespaceAttributesStringRemoved(TestCase):
+    def test_removed_in_0_3_0(self):
+        """Deprecated in 0.2.1; to_xml_string() declares its own namespaces."""
+        self.assertFalse(hasattr(NS.NamespaceRegistry, "set_odm_namespace_attributes_string"))

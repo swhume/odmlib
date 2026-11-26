@@ -108,7 +108,7 @@ class TestGetSchemaPath(TestCase):
                             SM.get_schema_path("arm", "1.0-define2.1"))
 
     def test_unknown_arm_version_raises(self):
-        with self.assertRaises((OdmlibValidationError, ValueError)):
+        with self.assertRaises(OdmlibValidationError):
             SM.get_schema_path("arm", "9.9")
 
     def test_explicit_filename(self):
@@ -120,13 +120,8 @@ class TestGetSchemaPath(TestCase):
         with self.assertRaises(OdmlibValidationError):
             SM.get_schema_path("UNKNOWN", "9.9.9")
 
-    def test_unknown_standard_raises_value_error(self):
-        """OdmlibValidationError is also a ValueError for backward compat."""
-        with self.assertRaises(ValueError):
-            SM.get_schema_path("UNKNOWN", "9.9.9")
-
     def test_known_standard_wrong_version_raises(self):
-        with self.assertRaises((OdmlibValidationError, ValueError)):
+        with self.assertRaises(OdmlibValidationError):
             SM.get_schema_path("odm", "9.9.9")
 
     def test_error_message_contains_standard(self):

@@ -4,6 +4,7 @@ import odmlib.loader as LD
 import odmlib.ns_registry as NS
 import os
 import tempfile
+from odmlib.exceptions import OdmlibTypeError
 
 
 class TestODMLoader(TestCase):
@@ -25,7 +26,7 @@ class TestODMLoader(TestCase):
         self.tmp_dir = tmp_dir.name
 
     def test_unknown_loader(self):
-        with self.assertRaises(TypeError):
+        with self.assertRaises(OdmlibTypeError):
             loader = LD.ODMLoader(self.test_mdv_find_by_OID())
 
     def test_open_odm_document(self):

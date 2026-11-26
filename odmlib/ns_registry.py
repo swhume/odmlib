@@ -20,8 +20,7 @@ Example::
 import validators
 import warnings
 import weakref
-from odmlib.exceptions import (OdmlibDeprecationWarning, OdmlibInteroperabilityWarning,
-                               OdmlibNamespaceError)
+from odmlib.exceptions import OdmlibInteroperabilityWarning, OdmlibNamespaceError
 
 
 # Side table associating loaded document roots with the namespace state in
@@ -360,44 +359,6 @@ class NamespaceRegistry(Borg):
                 OdmlibInteroperabilityWarning,
                 stacklevel=3,
             )
-
-    def set_odm_namespace_attributes_string(self, odm_str):
-        """Add xmlns attributes to an ODM XML string.
-
-        .. deprecated:: 0.2.1
-            :meth:`ODMElement.to_xml_string` has declared its own namespaces since
-            0.2.1, so this string-patching helper is a no-op on any string it would
-            normally be handed. It has no callers in odmlib and will be removed in
-            0.3.0. Remove the call; no replacement is needed.
-
-        Replaces the opening ``<ODM`` tag in ``odm_str`` with a version
-        that includes all registered namespace declarations.
-
-        Args:
-            odm_str (str): An ODM XML string whose root element is ``<ODM>``.
-
-        Returns:
-            str: The modified XML string with xmlns attributes injected.
-        """
-        warnings.warn(
-            "NamespaceRegistry.set_odm_namespace_attributes_string() is deprecated and "
-            "will be removed in 0.3.0. to_xml_string() already emits its own xmlns "
-            "declarations, so this call is a no-op for strings it produces.",
-            OdmlibDeprecationWarning,
-            stacklevel=2,
-        )
-        # no-op when the root element already declares a namespace (e.g. a
-        # string produced by to_xml_string(), which is now self-contained)
-        root_tag_end = odm_str.find(">", odm_str.find("<ODM"))
-        if root_tag_end != -1 and "xmlns" in odm_str[:root_tag_end]:
-            return odm_str
-        default_prefix, default_uri = self._require_default()
-        ns_str = "<ODM xmlns=\"" + default_uri + "\""
-        for prefix, uri in self.namespaces.items():
-            if prefix != default_prefix:
-                ns_str += " xmlns:" + prefix + "=\"" + uri + "\""
-        odm_ns_str = odm_str.replace("<ODM", ns_str)
-        return odm_ns_str
 
     def _update_registry(self, prefix, uri, is_default):
         """Add or update an entry in the shared namespace registry.

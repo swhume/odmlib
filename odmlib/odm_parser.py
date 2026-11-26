@@ -6,7 +6,7 @@ from abc import ABC, abstractmethod
 from typing import Optional
 import json
 from . import schema_manager as SM
-from odmlib.exceptions import OdmlibParsingError
+from odmlib.exceptions import OdmlibParsingError, OdmlibTypeError
 from odmlib.exceptions import OdmlibSchemaValidationError  # noqa: F401  re-exported
 
 ODM_NS = {'odm': 'http://www.cdisc.org/ns/odm/v1.3'}
@@ -118,19 +118,23 @@ class ODMSchemaValidator(SchemaValidator):
                 together with ``standard`` when ``xsd_file`` is omitted.
 
         Raises:
-            ValueError: If ``xsd_file`` is not provided and ``standard``
+            OdmlibTypeError: If ``xsd_file`` is not provided and ``standard``
                 and ``version`` are not both provided. Previously this
                 silently fell back to ODM 1.3.2, which could mask schema
                 version mismatches; an explicit choice is now required.
+
+        .. versionchanged:: 0.3.0
+            Raises :class:`~odmlib.exceptions.OdmlibTypeError` instead of
+            ``ValueError``.
         """
         if xsd_file is None:
             if standard is None or version is None:
-                raise ValueError(
+                raise OdmlibTypeError(
                     "ODMSchemaValidator requires either an 'xsd_file' path, "
                     "or both 'standard' and 'version' to look up a packaged "
                     "schema. Got xsd_file=None, "
-                    f"standard={standard!r}, version={version!r}. "
-                    "Hint: for a packaged schema pass e.g. "
+                    f"standard={standard!r}, version={version!r}.",
+                    hint="For a packaged schema pass e.g. "
                     "standard='odm', version='1.3.2' (ODM 1.3.2) or "
                     "standard='define', version='2.1' (Define-XML 2.1). "
                     "For a custom or local schema not bundled with odmlib, "

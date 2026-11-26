@@ -236,9 +236,11 @@ Two things to know when relying on this:
 - **`max_errors=N` caps the list.** Collection stops as soon as the cap is hit — enforced
   inside each layer, not by truncating afterwards — and a final `OdmlibErrorLimitError` is
   appended, so the list holds at most `N + 1` entries. Useful on badly broken documents.
-- **The deprecated `rules/oid_ref.py` `OIDRef` classes do not enumerate.** They contribute
-  at most one error for the whole OID layer. Use `create_oid_checker(...)` to get full
-  reporting; `is_collecting_checker(checker)` tells you which kind you have.
+- **A checker without the collecting protocol does not enumerate.** A custom checker of
+  that kind (or, in 0.2.x, the manual `rules/oid_ref.py` `OIDRef` classes, removed in
+  0.3.0) contributes at most one error for the whole OID layer. Use
+  `create_oid_checker(...)` to get full reporting; `is_collecting_checker(checker)` tells
+  you which kind you have.
 
 `collect_errors=False` (the default) is unchanged: fail-fast, returns `True` or raises the
 first error. Only `OdmlibError` subclasses are collected — a bug in a custom checker or an
@@ -335,9 +337,9 @@ created, and the API rewards it differently:
   mode `validate()` warns (`OdmlibWarning`) when handed a checker that still holds state,
   so you get a nudge rather than a wall of bogus duplicates.
 - **Catch `odmlib` exceptions, not bare `ValueError`/`TypeError`.** Use `OdmlibError` (or a
-  specific subclass like `OdmlibOIDError`, `OdmlibConformanceError`). In 0.2.x they still
-  also inherit `ValueError`/`TypeError` for compatibility, but that dual inheritance is being
-  removed in 0.3.0, so write `except OdmlibError` now to stay future-proof.
+  specific subclass like `OdmlibOIDError`, `OdmlibConformanceError`). Since 0.3.0 they do
+  not inherit `ValueError`/`TypeError`, so `except ValueError` no longer catches them; in
+  0.2.x it still did. `except OdmlibError` works in both.
 
 ### Serializing to a string, not a file
 

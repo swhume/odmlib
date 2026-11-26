@@ -3,7 +3,7 @@ import odmlib.odm_1_3_2.model as ODM
 import odmlib.typed as T
 import odmlib.odm_element as OE
 import odmlib.mode as mode
-from odmlib.exceptions import OdmlibRequiredAttributeError
+from odmlib.exceptions import OdmlibRequiredAttributeError, OdmlibTypeError
 
 
 class TextModel(OE.ODMElement):
@@ -16,7 +16,7 @@ class TestDescriptor(unittest.TestCase):
     def test_assignment(self):
         test = TextModel(Name="test name", OrderNumber="1")
         self.assertEqual(test.Name, "test name")
-        with self.assertRaises(TypeError):
+        with self.assertRaises(OdmlibTypeError):
             test.OID = None
         TextModel.Name = "VariableOne"
         self.assertEqual(TextModel.Name, "VariableOne")
@@ -39,7 +39,7 @@ class TestDescriptor(unittest.TestCase):
         self.assertIsNone(result)
         itd.Alias.append(itd.CodeListRef)
         self.assertListEqual(itd.Alias, [None])
-        with self.assertRaises(TypeError):
+        with self.assertRaises(OdmlibTypeError):
             itd.new_thing = "hello"
 
     def test_required_attr_get_raises(self):

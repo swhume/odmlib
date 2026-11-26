@@ -1,18 +1,31 @@
 """
 odmlib exception hierarchy.
 
-All odmlib-specific exceptions inherit from OdmlibError, which itself
-inherits from Exception. During the v0.2.x transition period, validation
-and type exceptions also inherit from ValueError/TypeError respectively
-so that existing except clauses continue to work.
+Every odmlib exception inherits from :class:`OdmlibError`, which inherits
+from ``Exception`` and nothing else. Catch ``OdmlibError`` for any odmlib
+failure, or a subclass for one kind::
 
-Deprecation schedule:
-    v0.2.x: New exceptions dual-inherit from ValueError/TypeError.
-            All existing ``except ValueError`` and ``except TypeError``
-            clauses continue to work unchanged.
-    v0.3.0: Remove the ValueError/TypeError base classes.
-            Update ``except ValueError`` → ``except OdmlibValidationError``
-            and ``except TypeError`` → ``except OdmlibTypeError``.
+    OdmlibError
+    ├── OdmlibValidationError
+    │   ├── OdmlibRequiredAttributeError
+    │   ├── OdmlibOIDError
+    │   ├── OdmlibConformanceError
+    │   ├── OdmlibElementOrderError
+    │   ├── OdmlibErrorLimitError
+    │   └── OdmlibSchemaValidationError
+    ├── OdmlibTypeError
+    ├── OdmlibParsingError
+    │   └── OdmlibLoaderStateError
+    ├── OdmlibSerializationError
+    └── OdmlibNamespaceError
+
+.. versionchanged:: 0.3.0
+    ``OdmlibValidationError``, ``OdmlibLoaderStateError`` and
+    ``OdmlibNamespaceError`` no longer inherit from ``ValueError``, and
+    ``OdmlibTypeError`` no longer inherits from ``TypeError``. In 0.2.x they
+    did, so that existing ``except`` clauses kept working. Replace
+    ``except ValueError`` with ``except OdmlibValidationError`` (or the
+    specific class) and ``except TypeError`` with ``except OdmlibTypeError``.
 """
 import contextlib
 import warnings
@@ -37,10 +50,10 @@ class _ErrorLimitReached(Exception):
 
 
 # ---------------------------------------------------------------------------
-# Validation errors (currently raised as ValueError)
+# Validation errors
 # ---------------------------------------------------------------------------
 
-class OdmlibValidationError(OdmlibError, ValueError):
+class OdmlibValidationError(OdmlibError):
     """Raised when an element fails conformance, OID, or schema validation.
 
     Attributes:
@@ -199,10 +212,10 @@ class OdmlibSchemaValidationError(OdmlibValidationError):
 
 
 # ---------------------------------------------------------------------------
-# Type errors (currently raised as TypeError)
+# Type errors
 # ---------------------------------------------------------------------------
 
-class OdmlibTypeError(OdmlibError, TypeError):
+class OdmlibTypeError(OdmlibError):
     """Raised when a value has the wrong type for an attribute.
 
     Attributes:
@@ -250,12 +263,8 @@ class OdmlibParsingError(OdmlibError):
         super().__init__("\n".join(parts))
 
 
-class OdmlibLoaderStateError(OdmlibParsingError, ValueError):
-    """Raised when a loader method is called before the document is opened.
-
-    Also inherits from ValueError for backward compatibility with code that
-    catches ValueError from loader calls.
-    """
+class OdmlibLoaderStateError(OdmlibParsingError):
+    """Raised when a loader method is called before the document is opened."""
 
 
 # ---------------------------------------------------------------------------
@@ -270,7 +279,7 @@ class OdmlibSerializationError(OdmlibError):
 # Namespace errors
 # ---------------------------------------------------------------------------
 
-class OdmlibNamespaceError(OdmlibError, ValueError):
+class OdmlibNamespaceError(OdmlibError):
     """Raised for namespace registration or lookup failures."""
 
     def __init__(self, message, *, hint=None):

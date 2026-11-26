@@ -20,6 +20,21 @@ from typing import Any, Optional, List
 
 import odmlib.odm_element as OE
 import odmlib.typed as T
+from odmlib.exceptions import OdmlibParsingError, OdmlibValidationError
+
+
+def _loads(text: str, source: str) -> Any:
+    """``json.loads`` that reports malformed JSON as :class:`OdmlibParsingError`.
+
+    *source* names where the text came from (a file, or a file and line) for
+    the error message.
+    """
+    try:
+        return json.loads(text)
+    except json.JSONDecodeError as ex:
+        raise OdmlibParsingError(
+            f"Invalid JSON in {source}: {ex}",
+            hint="Dataset-JSON must be well-formed JSON (RFC 8259)") from ex
 
 
 class DatasetJSONElement(OE.ODMElement):
@@ -271,14 +286,17 @@ class DatasetJSON(DatasetJSONElement):
                 missing values.
 
         Raises:
-            ValueError: If ``len(values)`` does not match ``len(columns)``.
+            OdmlibValidationError: If ``len(values)`` does not match
+                ``len(columns)``.
         """
         if self.__dict__.get("rows") is None:
             self.rows = []
         n_cols = len(self.columns)
         if len(values) != n_cols:
-            raise ValueError(
-                f"Row has {len(values)} values but dataset has {n_cols} columns"
+            raise OdmlibValidationError(
+                f"Row has {len(values)} values but dataset has {n_cols} columns",
+                actual_value=values,
+                hint="Supply one value per column, in column order; use None for a missing value",
             )
         self.rows.append(values)
         self.records = len(self.rows)
@@ -371,8 +389,11 @@ class DatasetJSON(DatasetJSONElement):
 
         Returns:
             DatasetJSON: Constructed instance.
+
+        Raises:
+            OdmlibParsingError: If ``json_string`` is not well-formed JSON.
         """
-        return cls.from_dict(json.loads(json_string))
+        return cls.from_dict(_loads(json_string, "Dataset-JSON string"))
 
     @classmethod
     def read_json(cls, filename: str) -> DatasetJSON:
@@ -383,9 +404,13 @@ class DatasetJSON(DatasetJSONElement):
 
         Returns:
             DatasetJSON: Constructed instance.
+
+        Raises:
+            OdmlibParsingError: If the file is not well-formed JSON.
         """
         with open(filename, "r", encoding="utf-8") as f:
-            return cls.from_dict(json.load(f))
+            text = f.read()
+        return cls.from_dict(_loads(text, filename))
 
     @classmethod
     def read_ndjson(cls, filename: str) -> DatasetJSON:
@@ -399,13 +424,20 @@ class DatasetJSON(DatasetJSONElement):
 
         Returns:
             DatasetJSON: Constructed instance.
+
+        Raises:
+            OdmlibParsingError: If the file is empty, or any non-blank line
+                is not well-formed JSON (the message names the line).
         """
         with open(filename, "r", encoding="utf-8") as f:
             lines = f.readlines()
         if not lines:
-            raise ValueError("Empty NDJSON file")
-        metadata = json.loads(lines[0])
-        rows = [json.loads(line) for line in lines[1:] if line.strip()]
+            raise OdmlibParsingError(
+                f"Empty NDJSON file: {filename}",
+                hint="Line 1 must hold the dataset metadata as a JSON object")
+        metadata = _loads(lines[0], f"{filename}, line 1")
+        rows = [_loads(line, f"{filename}, line {number}")
+                for number, line in enumerate(lines[1:], start=2) if line.strip()]
         if rows:
             metadata["rows"] = rows
             if "records" not in metadata:

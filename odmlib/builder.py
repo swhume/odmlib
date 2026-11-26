@@ -29,6 +29,7 @@ import importlib
 
 import odmlib.odm_element as OE
 import odmlib.typed as T
+from odmlib.exceptions import OdmlibTypeError
 
 
 class ODMBuilder:
@@ -712,7 +713,7 @@ class ODMBuilder:
 
     def _attach(self, parent: Any, element: Any) -> None:
         if not isinstance(element, OE.ODMElement):
-            raise TypeError(
+            raise OdmlibTypeError(
                 f"attach() expects an ODMElement, got "
                 f"{type(element).__name__}")
         match = self._find_elem_field(parent, element)
@@ -721,7 +722,7 @@ class ODMBuilder:
                 d.element_class.__name__
                 for d in type(parent)._elems.values()
                 if getattr(d, "element_class", None) is not None})
-            raise TypeError(
+            raise OdmlibTypeError(
                 f"{type(parent).__name__} cannot hold "
                 f"{type(element).__name__}. Accepted child elements: "
                 f"{', '.join(accepted)}")
@@ -743,7 +744,7 @@ class ODMBuilder:
             (e.g. a value returned via :attr:`current`).
         :param element: A pre-built ODMElement to attach.
         :returns: self, for chaining.
-        :raises TypeError: if *element* is not an ODMElement or *parent*
+        :raises OdmlibTypeError: if *element* is not an ODMElement or *parent*
             has no child field able to hold it.
         """
         self._attach(parent, element)
@@ -758,7 +759,7 @@ class ODMBuilder:
 
         :param element: A pre-built ODMElement to attach.
         :returns: self, for chaining.
-        :raises TypeError: if no active element can hold *element*.
+        :raises OdmlibTypeError: if no active element can hold *element*.
         """
         for parent in (self._current_item_def, self._current_form_def,
                        self._current_sed, self._current_igd,
@@ -767,7 +768,7 @@ class ODMBuilder:
                     self._find_elem_field(parent, element) is not None:
                 self._attach(parent, element)
                 return self
-        raise TypeError(
+        raise OdmlibTypeError(
             f"No active element can hold {type(element).__name__}; "
             f"use attach(parent, element) with an explicit parent.")
 

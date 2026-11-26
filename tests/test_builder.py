@@ -11,6 +11,7 @@ import os
 import tempfile
 from unittest import TestCase
 from odmlib.builder import ODMBuilder
+from odmlib.exceptions import OdmlibTypeError
 
 
 class TestODMBuilderMinimal(TestCase):
@@ -711,7 +712,7 @@ class TestODMBuilderEscapeHatch(TestCase):
 
     def test_attach_non_odmelement_raises(self):
         b = self._base()
-        with self.assertRaises(TypeError):
+        with self.assertRaises(OdmlibTypeError):
             b.attach_to_current({"not": "an element"})
 
     def test_attach_to_incompatible_parent_raises(self):
@@ -720,7 +721,7 @@ class TestODMBuilderEscapeHatch(TestCase):
              .add_item_group_def(OID="IG.DM", Name="DM", Repeating="No")
              .add_item_def(OID="IT.X", Name="X", DataType="text"))
         # ItemDef cannot hold a CodeList; explicit attach must reject it.
-        with self.assertRaises(TypeError):
+        with self.assertRaises(OdmlibTypeError):
             b.attach(b.current["item_def"],
                      M.CodeList(OID="CL.1", Name="C", DataType="text"))
 

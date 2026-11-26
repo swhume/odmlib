@@ -4,6 +4,7 @@ import odmlib.define_loader as DL
 import odmlib.loader as LD
 import os
 import odmlib.oid_index as IDX
+from odmlib.exceptions import OdmlibOIDError
 
 
 class TestOIDIndex(unittest.TestCase):
@@ -43,10 +44,10 @@ class TestOIDIndex(unittest.TestCase):
 
     def test_without_oid_index_build(self):
         idx = IDX.OIDIndex()
-        with self.assertRaises(ValueError):
+        with self.assertRaises(OdmlibOIDError):
             found = idx.find_all("ODM.CL.NY_SUB_Y_N")
 
     def test_not_found(self):
         idx = self.odm.build_oid_index()
-        with self.assertRaises(ValueError):
+        with self.assertRaises(OdmlibOIDError):
             found = idx.find_all("ODM.CL.XXXX")

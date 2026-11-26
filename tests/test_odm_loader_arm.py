@@ -5,6 +5,7 @@ import odmlib.ns_registry as NS
 import os
 import json
 import tempfile
+from odmlib.exceptions import OdmlibTypeError
 
 
 def _tmp_dir(test_case):
@@ -29,7 +30,7 @@ class TestODMLoader(TestCase):
         self.tmp_dir = _tmp_dir(self)
 
     def test_unknown_loader(self):
-        with self.assertRaises(TypeError):
+        with self.assertRaises(OdmlibTypeError):
             loader = LD.ODMLoader(self.test_mdv_find_by_OID())
 
     def test_open_odm_document(self):

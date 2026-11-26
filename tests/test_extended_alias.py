@@ -1,4 +1,5 @@
 import unittest
+from odmlib.exceptions import OdmlibTypeError
 try:
     from . import model_extended as ODM
 except ImportError:
@@ -11,7 +12,7 @@ class TestExtendedAlias(unittest.TestCase):
         self.assertEqual(ODM.Alias.Standard, "CDASHIG")
 
     def test_invalid_standard_attribute(self):
-        with self.assertRaises(TypeError):
+        with self.assertRaises(OdmlibTypeError):
             ODM.Alias = ODM.Alias(Context="CDASH", Name="AEYN", Standard="HL7 FHIR")
 
 

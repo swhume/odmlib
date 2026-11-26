@@ -1,6 +1,7 @@
 from unittest import TestCase
 import json
 import odmlib.odm_1_3_2.model as ODM
+from odmlib.exceptions import OdmlibRequiredAttributeError, OdmlibTypeError
 
 
 class TestCodeListItem(TestCase):
@@ -23,14 +24,14 @@ class TestCodeListItem(TestCase):
     def test_missing_attribute(self):
         # missing coded value
         attrs1 = {"OrderNumber": 1}
-        with self.assertRaises(ValueError):
+        with self.assertRaises(OdmlibRequiredAttributeError):
             cli = ODM.CodeListItem(**attrs1)
         attrs2 = {"CodedValue": "HGB", "OrderNumber": 1}
         cli = ODM.CodeListItem(**attrs2)
         self.assertEqual(cli.CodedValue, "HGB")
         attrs3 = {"DeCodedValue": "HGB", "OrderNumber": 1}
         # invalid attribute
-        with self.assertRaises(TypeError):
+        with self.assertRaises(OdmlibTypeError):
             cli = ODM.CodeListItem(**attrs3)
 
     def test_missing_element(self):

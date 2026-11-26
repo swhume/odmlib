@@ -207,9 +207,13 @@ value that now fails can still be loaded in permissive mode.
 No library behaviour changes.
 
 - **Python 3.14** is in the CI matrix and the package classifiers.
-- **Coverage floor raised from 70% to 90%** (actual: 94%). A new **mypy** CI job reports
-  but does not gate. `[tool.mypy]` now excludes `odmlib/schemas/`, whose version-named
-  directories stopped mypy before it checked anything.
+- **Coverage floor raised from 70% to 90%** (actual: 94%).
+- **A new mypy CI job** checks for new type errors but does not gate merges. odmlib's known
+  mypy errors (128) are listed in `scripts/mypy_baseline.txt`. The job runs
+  `scripts/mypy_baseline.py` with mypy pinned to 2.4.1, and fails only when a change adds an
+  error that is not on that list; one that no longer occurs is reported, and `--update`
+  removes it. `[tool.mypy]` now excludes `odmlib/schemas/`, whose version-named directories
+  stopped mypy before it checked anything.
 - **A test module that fails to import now fails the run.** `--continue-on-collection-errors`
   is gone from the pytest options. It had hidden `test_property_based.py`'s `NameError`
   whenever hypothesis was missing; that module now skips via `pytest.importorskip`.

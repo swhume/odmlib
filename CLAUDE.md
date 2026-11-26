@@ -95,6 +95,16 @@ python -m unittest discover tests -v
 python -m unittest tests.test_odm_loader.TestODMLoader.test_odm_to_xml -v
 ```
 
+### Type checking
+
+odmlib has known mypy errors, listed in `scripts/mypy_baseline.txt`. Check for *new* ones
+with the version CI pins (`pip install "mypy==2.4.1"`):
+
+```bash
+python scripts/mypy_baseline.py            # exit 1 only on errors not in the baseline
+python scripts/mypy_baseline.py --update   # after fixing errors, shrink the baseline and commit it
+```
+
 ## Architecture
 
 ### Core Design Pattern: Metaclass + Descriptors

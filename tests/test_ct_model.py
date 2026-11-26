@@ -7,6 +7,7 @@ import json
 from unittest import TestCase
 import odmlib.ct_1_1_1.model as CT
 import odmlib.ns_registry as NS
+from odmlib.exceptions import OdmlibTypeError
 
 
 def _setup_ct_namespaces():
@@ -337,7 +338,7 @@ class TestCTCodeList(TestCase):
         self.assertIn("DataType", d)
 
     def test_invalid_data_type_raises(self):
-        with self.assertRaises((TypeError, ValueError)):
+        with self.assertRaises(OdmlibTypeError):
             CT.CodeList(
                 OID="CL.BAD", Name="Bad", DataType="bad_type",
                 ExtCodeID="C00000", CodeListExtensible="No",
@@ -345,7 +346,7 @@ class TestCTCodeList(TestCase):
             )
 
     def test_invalid_extensible_raises(self):
-        with self.assertRaises((TypeError, ValueError)):
+        with self.assertRaises(OdmlibTypeError):
             CT.CodeList(
                 OID="CL.BAD", Name="Bad", DataType="text",
                 ExtCodeID="C00000", CodeListExtensible="Maybe",

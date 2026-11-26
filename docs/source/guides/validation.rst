@@ -130,19 +130,11 @@ Using the Dynamic OID Checker (recommended)
     for oid in unreferenced:
         print(f"Unreferenced: {oid}")
 
-Using the Manual OID Checker (deprecated)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-.. code-block:: python
-
-    import odmlib.odm_1_3_2.rules.oid_ref as OR
-    import warnings
-
-    with warnings.catch_warnings():
-        warnings.simplefilter("ignore", DeprecationWarning)
-        checker = OR.OIDRef()
-
-    is_valid = odm.verify_oids(checker)
+.. versionchanged:: 0.3.0
+   The manual ``OIDRef`` classes in ``odmlib/<model>/rules/oid_ref.py``, deprecated
+   since 0.2.0, were removed. Replace ``OIDRef()`` with
+   ``create_oid_checker("<model_package>")``; it has the same interface and also
+   supports collect mode.
 
 Conformance Validation
 -----------------------
@@ -246,9 +238,8 @@ mode when it is handed a checker that still holds state.
 
 .. note::
 
-   The deprecated ``rules/oid_ref.py`` ``OIDRef`` classes (removed in v0.3.0)
-   do not implement the collecting protocol and contribute at most **one**
-   error for the whole OID layer.  Use
+   A custom checker that does not implement the collecting protocol still
+   works, but contributes at most **one** error for the whole OID layer.  Use
    :func:`~odmlib.oid_generator.create_oid_checker` to get full reporting.
    :func:`~odmlib.exceptions.is_collecting_checker` tells you which you have.
 
@@ -372,3 +363,13 @@ odmlib uses a custom exception hierarchy:
      - Loader used before document opened
    * - :exc:`~odmlib.exceptions.OdmlibNamespaceError`
      - Invalid namespace URI or unregistered prefix
+
+Catch :exc:`~odmlib.exceptions.OdmlibError` to handle any odmlib failure, or one of
+the classes above for a single kind.
+
+.. versionchanged:: 0.3.0
+   No odmlib exception inherits from ``ValueError`` or ``TypeError`` any more. In
+   0.2.x the validation, loader-state and namespace errors were also ``ValueError``
+   and ``OdmlibTypeError`` was also a ``TypeError``. Replace ``except ValueError``
+   with ``except OdmlibValidationError`` (or a narrower class) and ``except
+   TypeError`` with ``except OdmlibTypeError``.

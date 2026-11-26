@@ -6,15 +6,13 @@
 - DynamicOIDRef.add_oid returned for skip_elem element types before the
   uniqueness check, so duplicate ItemGroupDef OIDs in Define-XML were
   never detected.
-- The deprecated manual ODM 1.3.2 OIDRef crashed with raw KeyError on
-  attributes it did not pre-register (SignatureOID) and on defined
-  element types missing from def_ref.
+- The manual ODM 1.3.2 OIDRef (removed in 0.3.0) crashed with raw KeyError
+  on attributes it did not pre-register and on defined element types missing
+  from def_ref. The same inputs are pinned against ``create_oid_checker``.
 """
-import warnings
 from unittest import TestCase
 
 import odmlib.define_2_1.model as DEFINE
-import odmlib.odm_1_3_2.rules.oid_ref as ODM_OID_REF
 from odmlib.exceptions import OdmlibOIDError
 from odmlib.oid_generator import create_oid_checker
 
@@ -78,18 +76,18 @@ class TestDuplicateOIDDetection(TestCase):
         self.assertTrue(mdv.verify_oids(checker))
 
 
-class TestManualCheckerCrashGuards(TestCase):
+class TestCheckerCrashGuards(TestCase):
+    """Inputs that crashed the removed manual OIDRef with a raw KeyError."""
+
     def setUp(self):
-        with warnings.catch_warnings():
-            warnings.simplefilter("ignore")
-            self.checker = ODM_OID_REF.OIDRef()
+        self.checker = create_oid_checker("odm_1_3_2")
 
     def test_unregistered_oid_ref_attr_does_not_crash(self):
-        # SignatureOID is not pre-registered in _init_oid_ref; this raised KeyError
-        self.checker.add_oid_ref("SIG.001", "SignatureOID")
+        self.checker.add_oid_ref("X.001", "NotAReferenceOID")
+        self.assertNotIn("NotAReferenceOID", self.checker.oid_ref)
 
     def test_unreferenced_check_handles_unknown_def_element(self):
-        # element types missing from def_ref raised KeyError
-        self.checker.oid["SD.001"] = "SignatureDef"
+        # an element type that no reference attribute targets
+        self.checker.oid["X.001"] = "UnmodelledElement"
         orphans = self.checker.check_unreferenced_oids()
-        self.assertNotIn("SD.001", orphans)
+        self.assertEqual(orphans["X.001"], "UnmodelledElement")

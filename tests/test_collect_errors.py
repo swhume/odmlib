@@ -12,7 +12,6 @@ from unittest import TestCase
 
 import odmlib.odm_1_3_2.model as ODM
 import odmlib.odm_1_3_2.rules.metadata_schema as MS
-import odmlib.odm_1_3_2.rules.oid_ref as OID_REF
 from odmlib.mode import permissive, ValidationMode
 from odmlib.oid_generator import create_oid_checker
 from odmlib.exceptions import (
@@ -21,7 +20,6 @@ from odmlib.exceptions import (
     OdmlibOIDError,
     OdmlibConformanceError,
     OdmlibErrorLimitError,
-    OdmlibDeprecationWarning,
     OdmlibWarning,
     ErrorCollector,
     is_collecting_checker,
@@ -67,11 +65,40 @@ def _misordered_itemdef(oid):
     return itd
 
 
-def _deprecated_checker():
-    """Build a deprecated manual OIDRef without polluting the warning log."""
-    with warnings.catch_warnings():
-        warnings.simplefilter("ignore", OdmlibDeprecationWarning)
-        return OID_REF.OIDRef()
+class _FailFastChecker:
+    """An OID checker without the collecting protocol, as a third-party one may be.
+
+    It raises on the first problem it finds, as the manual ``OIDRef`` classes
+    removed in 0.3.0 did, so ``validate()`` can only collect one error from it.
+    """
+
+    def __init__(self):
+        self.oid = {}
+        self.oid_ref = {"ItemOID": set()}
+        self.ref_def = {"ItemOID": "ItemDef"}
+
+    def add_oid(self, oid, element):
+        if oid in self.oid:
+            raise OdmlibOIDError(f"OID {oid} is not unique - element {element}",
+                                 attribute="OID")
+        self.oid[oid] = element
+
+    def add_oid_ref(self, oid, attr):
+        if attr in self.oid_ref:
+            self.oid_ref[attr].add(oid)
+
+    def check_oid_refs(self):
+        for attr, oids in self.oid_ref.items():
+            for oid in sorted(oids):
+                if oid not in self.oid:
+                    raise OdmlibOIDError(
+                        f"OID {oid} referenced in the attribute {attr} is not found.",
+                        attribute=attr)
+                if self.oid[oid] != self.ref_def[attr]:
+                    raise OdmlibOIDError(
+                        f"OID reference for attribute {attr} element types do not match: "
+                        f"{self.ref_def[attr]} and {self.oid[oid]}", attribute=attr)
+        return True
 
 
 class TestValidateFailFast(TestCase):
@@ -367,11 +394,11 @@ class TestCheckerProtocol(TestCase):
     def test_dynamic_checker_supports_protocol(self):
         self.assertTrue(is_collecting_checker(create_oid_checker("odm_1_3_2")))
 
-    def test_deprecated_oidref_does_not_support_protocol(self):
-        self.assertFalse(is_collecting_checker(_deprecated_checker()))
+    def test_fail_fast_checker_does_not_support_protocol(self):
+        self.assertFalse(is_collecting_checker(_FailFastChecker()))
 
-    def test_deprecated_oidref_degrades_to_single_error(self):
-        checker = _deprecated_checker()
+    def test_fail_fast_checker_degrades_to_single_error(self):
+        checker = _FailFastChecker()
         mdv = ODM.MetaDataVersion(OID="MDV.1", Name="M")
         mdv.ItemDef = [ODM.ItemDef(OID="IT.DUP", Name="a", DataType="text"),
                        ODM.ItemDef(OID="IT.DUP", Name="b", DataType="text"),
@@ -412,8 +439,8 @@ class TestCheckerProtocol(TestCase):
         with self.assertRaises(RuntimeError):
             _make_minimal_mdv().validate(collect_errors=True, oid_checker=Boom())
 
-    def test_collect_includes_oid_error_deprecated_checker(self):
-        checker = _deprecated_checker()
+    def test_collect_includes_oid_error_fail_fast_checker(self):
+        checker = _FailFastChecker()
         # Deliberately pre-seed a bad ref/def mapping to force a check failure
         checker.oid["IT.MISSING"] = "WRONG_TYPE"
         checker.oid_ref["ItemOID"].add("IT.MISSING")

@@ -1,6 +1,7 @@
 from unittest import TestCase
 import json
 import odmlib.define_2_0.model as DEFINE
+from odmlib.exceptions import OdmlibRequiredAttributeError, OdmlibTypeError
 
 
 class TestItemDef(TestCase):
@@ -37,10 +38,10 @@ class TestItemDef(TestCase):
         rc.CheckValue = [DEFINE.CheckValue(_content="DIABP")]
         # Define-XML ItemDef deliberately drops ODM's RangeCheck child; the
         # assignment previously succeeded silently but never serialized
-        with self.assertRaises(TypeError):
+        with self.assertRaises(OdmlibTypeError):
             self.item.RangeCheck = [rc]
         # Description requires a Description object, not a RangeCheck object
-        with self.assertRaises(TypeError):
+        with self.assertRaises(OdmlibTypeError):
             self.item.Description = rc
 
     def test_add_description(self):
@@ -121,12 +122,12 @@ class TestItemDef(TestCase):
 
     def test_missing_itemdef_attributes(self):
         attrs = {"OID": "ODM.IT.AE.AEYN", "Name": "Any AEs?"}
-        with self.assertRaises(ValueError):
+        with self.assertRaises(OdmlibRequiredAttributeError):
             DEFINE.ItemDef(**attrs)
 
     def test_invalid_attribute_data_type(self):
         attrs = {"OID": "ODM.IT.AE.AEYN", "Name": "Any AEs?", "DataType": "text", "SignificantDigits": "A"}
-        with self.assertRaises(TypeError):
+        with self.assertRaises(OdmlibTypeError):
             self.item = DEFINE.ItemDef(**attrs)
 
     def set_item_attributes(self):

@@ -728,10 +728,12 @@ class ODMElement(metaclass=ODMMeta):
         return
 
     def verify_oids(self, oid_checker: Any) -> bool:
-        """
-        checks all the OIDs for uniqueness and Def/Ref integrity; oid_checker throws a ValueError on failure
+        """Check every OID for uniqueness and ref/def integrity, failing fast.
 
-        :param oid_checker: object that performs that checks OID uniqueness and Def/Ref checks
+        :param oid_checker: the checker that records OIDs and checks references,
+            normally from :func:`~odmlib.oid_generator.create_oid_checker`
+        :returns: ``True`` when every check passes
+        :raises OdmlibOIDError: on the first duplicate OID or bad reference
         """
         self._init_oid_check(oid_checker)
         return oid_checker.check_oid_refs()
@@ -742,8 +744,9 @@ class ODMElement(metaclass=ODMMeta):
         Calls :meth:`verify_oids` first if OIDs have not yet been verified.
 
         Args:
-            oid_checker: An ``OIDRef`` instance (from ``rules/oid_ref.py``)
-                or a ``DynamicOIDRef`` instance.
+            oid_checker: A :class:`~odmlib.oid_generator.DynamicOIDRef` from
+                :func:`~odmlib.oid_generator.create_oid_checker`, or a custom
+                checker with the same interface.
 
         Returns:
             dict: Mapping of ``oid_value -> ref_attr_name`` for each OID that
@@ -916,8 +919,8 @@ class ODMElement(metaclass=ODMMeta):
                 failure. Defaults to False (fail-fast, existing behaviour).
             oid_checker: Optional OID checker — a
                 :class:`~odmlib.oid_generator.DynamicOIDRef` from
-                :func:`~odmlib.oid_generator.create_oid_checker`, or a
-                deprecated ``rules.oid_ref.OIDRef``. Checkers that do not
+                :func:`~odmlib.oid_generator.create_oid_checker`, or a custom
+                checker with the same interface. Checkers that do not
                 implement the collecting protocol (see
                 :func:`~odmlib.exceptions.is_collecting_checker`) still work,
                 but contribute at most one error to the list.

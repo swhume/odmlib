@@ -1,6 +1,7 @@
 import unittest
 import odmlib.odm_1_3_2.model as ODM
 import odmlib.odm_1_3_2.rules.metadata_schema as METADATA
+from odmlib.exceptions import OdmlibElementOrderError, OdmlibTypeError
 
 
 class TestAttributeOrder(unittest.TestCase):
@@ -10,13 +11,13 @@ class TestAttributeOrder(unittest.TestCase):
     def test_study_invalid_study_object(self):
         study = ODM.Study(OID="ST.001.Test")
         # StudyName is a child of GLobalVariables, not of Study
-        with self.assertRaises(TypeError):
+        with self.assertRaises(OdmlibTypeError):
             study.StudyName = ODM.StudyName(_content="The ODM study name")
 
     def test_study_invalid_study_object_assignment(self):
         study = ODM.Study(OID="ST.001.Test")
         study.GlobalVariables = ODM.GlobalVariables()
-        with self.assertRaises(TypeError):
+        with self.assertRaises(OdmlibTypeError):
             study.GlobalVariables.StudyName = ODM.ProtocolName(_content="The ODM protocol name")
 
     def test_valid_order_study_objects(self):
@@ -33,7 +34,7 @@ class TestAttributeOrder(unittest.TestCase):
         study.GlobalVariables.ProtocolName = ODM.ProtocolName(_content="The ODM protocol name")
         study.GlobalVariables.StudyName = ODM.StudyName(_content="The ODM study name")
         study.GlobalVariables.StudyDescription = ODM.StudyDescription(_content="The description of the ODM study")
-        with self.assertRaises(ValueError):
+        with self.assertRaises(OdmlibElementOrderError):
             study.verify_order()
 
     def test_odm_order_incomplete(self):
@@ -99,7 +100,7 @@ class TestAttributeOrder(unittest.TestCase):
         itd.Question = ODM.Question()
         itd.Question.TranslatedText.append(ODM.TranslatedText(_content="Birth Year", lang="en"))
         odm.Study[0].MetaDataVersion[0].ItemDef.append(itd)
-        with self.assertRaises(ValueError):
+        with self.assertRaises(OdmlibElementOrderError):
             self.assertTrue(odm.Study[0].MetaDataVersion[0].verify_order())
 
     def test_reordering_object(self):
@@ -110,7 +111,7 @@ class TestAttributeOrder(unittest.TestCase):
         itd.Description.TranslatedText.append(ODM.TranslatedText(_content="Year of the subject's birth", lang="en"))
         itd.Question = ODM.Question()
         itd.Question.TranslatedText.append(ODM.TranslatedText(_content="Birth Year", lang="en"))
-        with self.assertRaises(ValueError):
+        with self.assertRaises(OdmlibElementOrderError):
             itd.verify_order()
         itd.reorder_object()
         self.assertTrue(itd.verify_order())
@@ -121,7 +122,7 @@ class TestAttributeOrder(unittest.TestCase):
         study.GlobalVariables.ProtocolName = ODM.ProtocolName(_content="The ODM protocol name")
         study.GlobalVariables.StudyName = ODM.StudyName(_content="The ODM study name")
         study.GlobalVariables.StudyDescription = ODM.StudyDescription(_content="The description of the ODM study")
-        with self.assertRaises(ValueError):
+        with self.assertRaises(OdmlibElementOrderError):
             study.verify_order()
         study.GlobalVariables.reorder_object()
         self.assertTrue(study.verify_order())
@@ -139,7 +140,7 @@ class TestAttributeOrder(unittest.TestCase):
         mdv2.ItemDef = self.add_ITD()
         mdv2.ItemGroupDef = self.add_IGD()
         mdv2.FormDef = self.add_FD()
-        with self.assertRaises(ValueError):
+        with self.assertRaises(OdmlibElementOrderError):
             mdv2.verify_order()
         mdv2.reorder_object()
         self.assertTrue(mdv2.verify_order())
@@ -155,11 +156,11 @@ class TestAttributeOrder(unittest.TestCase):
         mdv.ItemGroupDef = self.add_IGD()
         mdv.ItemDef = self.add_ITD()
         # test mdv order
-        with self.assertRaises(ValueError):
+        with self.assertRaises(OdmlibElementOrderError):
             mdv.verify_order()
         mdv.reorder_object()
         # test protocol order
-        with self.assertRaises(ValueError):
+        with self.assertRaises(OdmlibElementOrderError):
             mdv.verify_order()
         mdv.Protocol.reorder_object()
         self.assertTrue(mdv.verify_order())

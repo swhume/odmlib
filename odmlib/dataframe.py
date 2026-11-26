@@ -59,6 +59,8 @@ from __future__ import annotations
 import warnings
 from typing import Any, Optional
 
+from odmlib.exceptions import OdmlibError
+
 try:
     import pandas as pd
     HAS_PANDAS = True
@@ -468,7 +470,7 @@ def dataframe_to_items(
                     kwargs[attr_name] = val
         try:
             elements.append(cls(**kwargs))
-        except (TypeError, ValueError, AttributeError) as ex:
+        except (OdmlibError, AttributeError) as ex:
             # skipped rows must be visible: silent drops made the returned
             # list shorter than the DataFrame with no signal to the caller
             warnings.warn(

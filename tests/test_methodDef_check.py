@@ -2,6 +2,7 @@ from unittest import TestCase
 import json
 import odmlib.odm_1_3_2.model as ODM
 import odmlib.odm_1_3_2.rules.metadata_schema as METADATA
+from odmlib.exceptions import OdmlibConformanceError
 
 
 class TestMethodDefCheck(TestCase):
@@ -16,7 +17,7 @@ class TestMethodDefCheck(TestCase):
 
         self.methoddef.FormalExpression = [ODM.FormalExpression(Context="Python 3.7", _content="print('hello world')")]
         self.assertEqual(self.methoddef.FormalExpression[0]._content, "print('hello world')")
-        with self.assertRaises(ValueError):
+        with self.assertRaises(OdmlibConformanceError):
             results = self.methoddef.verify_conformance(validator)
 
     def test_add_description(self):

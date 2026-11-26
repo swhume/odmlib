@@ -2,10 +2,10 @@
 
 Validates that:
 - Model introspection functions produce the expected results.
-- Dynamic mappings are consistent with (or better than) the manual oid_ref.py
-  mappings.
-- The DynamicOIDRef checker is a drop-in replacement for the manual OIDRef
-  classes, raising the same exceptions on the same inputs.
+- Dynamic mappings agree with the ref_def tables of the manual ``OIDRef``
+  classes that 0.3.0 removed (frozen below as ``MANUAL_REF_DEF_SNAPSHOT``),
+  except where the manual table was wrong.
+- The DynamicOIDRef checker raises the expected exceptions on bad input.
 - End-to-end OID validation on real documents works correctly.
 """
 import os
@@ -198,8 +198,8 @@ class TestBuildRefDefMapping(unittest.TestCase):
         self.assertEqual(ref_def.get("LocationOID"), "Location")
         self.assertEqual(ref_def.get("PresentationOID"), "Presentation")
         # ArchiveLayoutOID is not declared in any ODM 1.3.2 model class attribute,
-        # so the dynamic checker correctly omits it (unlike the manual oid_ref.py
-        # which hard-coded it). ArchiveLayout exists as a class (OID-carrying
+        # so the dynamic checker correctly omits it (unlike the removed manual
+        # OIDRef, which hard-coded it). ArchiveLayout exists as a class (OID-carrying
         # element) but ArchiveLayoutOID does not appear as a ref attribute.
         self.assertIsNone(ref_def.get("ArchiveLayoutOID"))
 
@@ -277,20 +277,20 @@ class TestDynamicOIDRefBasicBehaviour(unittest.TestCase):
 
     def test_duplicate_oid_raises(self):
         self.checker.add_oid("IT.AGE", "ItemDef")
-        with self.assertRaises(ValueError):
+        with self.assertRaises(OdmlibOIDError):
             self.checker.add_oid("IT.AGE", "ItemDef")
 
     def test_missing_ref_raises(self):
         # Add a reference to an OID that was never defined.
         self.checker.add_oid_ref("IT.MISSING", "ItemOID")
-        with self.assertRaises(ValueError):
+        with self.assertRaises(OdmlibOIDError):
             self.checker.check_oid_refs()
 
     def test_type_mismatch_raises(self):
         # CL.SEX is a CodeList OID, but ItemOID should reference ItemDef.
         self.checker.add_oid("CL.SEX", "CodeList")
         self.checker.add_oid_ref("CL.SEX", "ItemOID")
-        with self.assertRaises(ValueError):
+        with self.assertRaises(OdmlibOIDError):
             self.checker.check_oid_refs()
 
     def test_skip_attr_ignores_ref(self):
@@ -555,30 +555,6 @@ class TestEndToEndODM132(unittest.TestCase):
         result = checker.check_oid_refs()
         self.assertTrue(result)
 
-    def test_dynamic_collects_same_oids_as_manual(self):
-        """Dynamic checker should register the same OID set as the manual checker."""
-        import warnings
-        from odmlib.oid_generator import create_oid_checker
-
-        # --- manual checker ---
-        with warnings.catch_warnings():
-            warnings.simplefilter("ignore")
-            import odmlib.odm_1_3_2.rules.oid_ref as MANUAL
-            manual_checker = MANUAL.OIDRef()
-
-        self._build_simple_mdv().verify_oids(manual_checker)
-
-        # --- dynamic checker ---
-        dynamic_checker = create_oid_checker("odm_1_3_2")
-        self._build_simple_mdv().verify_oids(dynamic_checker)
-
-        # Both should have registered the same OID definitions.
-        self.assertEqual(
-            set(manual_checker.oid.keys()),
-            set(dynamic_checker.oid.keys()),
-            "Dynamic and manual checkers collected different OID sets.",
-        )
-
 
 class TestEndToEndDefine21(unittest.TestCase):
     """End-to-end OID validation using a programmatic Define-XML 2.1 MetaDataVersion.
@@ -627,29 +603,6 @@ class TestEndToEndDefine21(unittest.TestCase):
         mdv.verify_oids(checker)
         result = checker.check_oid_refs()
         self.assertTrue(result)
-
-    def test_dynamic_collects_same_oids_as_manual(self):
-        """Dynamic and manual checkers should register the same OID set."""
-        import warnings
-        from odmlib.oid_generator import create_oid_checker
-
-        # --- manual checker ---
-        with warnings.catch_warnings():
-            warnings.simplefilter("ignore")
-            import odmlib.define_2_1.rules.oid_ref as MANUAL
-            manual_checker = MANUAL.OIDRef()
-
-        self._build_simple_define_mdv().verify_oids(manual_checker)
-
-        # --- dynamic checker ---
-        dynamic_checker = create_oid_checker("define_2_1")
-        self._build_simple_define_mdv().verify_oids(dynamic_checker)
-
-        self.assertEqual(
-            set(manual_checker.oid.keys()),
-            set(dynamic_checker.oid.keys()),
-            "Dynamic and manual Define-XML 2.1 checkers collected different OID sets.",
-        )
 
 
 class TestEndToEndDefine20(unittest.TestCase):
@@ -703,47 +656,114 @@ class TestEndToEndODM20(unittest.TestCase):
 
 
 # ---------------------------------------------------------------------------
-# Deprecation warning tests for manual OIDRef
+# The manual OIDRef classes (removed in 0.3.0)
 # ---------------------------------------------------------------------------
 
-class TestManualOIDRefDeprecation(unittest.TestCase):
-    """Verify that the legacy manual OIDRef classes emit deprecation warnings."""
+#: ``ref_def`` of each manual ``rules/oid_ref.py`` ``OIDRef`` class, frozen
+#: verbatim before 0.3.0 deleted them. ``create_oid_checker()`` replaced them, so
+#: it must honour every entry except those in MANUAL_REF_DEF_DIVERGENCES.
+MANUAL_REF_DEF_SNAPSHOT: dict[str, dict[str, str]] = {
+    "odm_1_3_2": {
+        "ArchiveLayoutOID": "ArchiveLayout",
+        "CodeListOID": "CodeList",
+        "CollectionExceptionConditionOID": "ConditionDef",
+        "FormOID": "FormDef",
+        "ItemGroupOID": "ItemGroupDef",
+        "ItemOID": "ItemDef",
+        "LocationOID": "Location",
+        "MeasurementUnitOID": "MeasurementUnit",
+        "MetaDataVersionOID": "MetaDataVersion",
+        "MethodOID": "MethodDef",
+        "PresentationOID": "Presentation",
+        "SignatureOID": "Signature",
+        "StudyEventOID": "StudyEventDef",
+        "StudyOID": "Study",
+        "UserOID": "User",
+    },
+    "define_2_0": {
+        "ArchiveLocationID": "leaf",
+        "CodeListOID": "CodeList",
+        "CommentOID": "CommentDef",
+        "ItemOID": "ItemDef",
+        "MethodOID": "MethodDef",
+        "ValueListOID": "ValueListDef",
+        "WhereClauseOID": "WhereClauseDef",
+        "leafID": "leaf",
+    },
+    "define_2_1": {
+        "ArchiveLocationID": "leaf",
+        "CodeListOID": "CodeList",
+        "CommentOID": "CommentDef",
+        "ItemOID": "ItemDef",
+        "MethodOID": "MethodDef",
+        "StandardOID": "Standard",
+        "ValueListOID": "ValueListDef",
+        "WhereClauseOID": "WhereClauseDef",
+        "leafID": "leaf",
+    },
+}
 
-    def setUp(self):
-        _make_odm_132_namespace()
+#: ``skip_attr`` of the same classes, frozen alongside.
+MANUAL_SKIP_ATTR_SNAPSHOT: dict[str, list[str]] = {
+    "odm_1_3_2": ["FileOID", "PriorFileOID"],
+    "define_2_0": ["FileOID", "PriorFileOID", "StudyOID", "MetaDataVersionOID", "ItemGroupOID"],
+    "define_2_1": ["FileOID", "PriorFileOID", "StudyOID", "MetaDataVersionOID", "ItemGroupOID"],
+}
 
-    def test_odm_132_oid_ref_warns(self):
-        import warnings
-        # Force warning to fire even if already seen in this process.
-        with warnings.catch_warnings(record=True) as caught:
-            warnings.simplefilter("always")
-            import odmlib.odm_1_3_2.rules.oid_ref as OID_REF
-            OID_REF.OIDRef()
-        dep_warnings = [w for w in caught if issubclass(w.category, DeprecationWarning)]
-        self.assertTrue(
-            len(dep_warnings) > 0,
-            "Expected a DeprecationWarning when instantiating the manual OIDRef.",
-        )
+#: Entries where the manual table was wrong and the dynamic checker differs on purpose.
+MANUAL_REF_DEF_DIVERGENCES: dict[tuple[str, str], str] = {
+    ("odm_1_3_2", "ArchiveLayoutOID"):
+        "unreachable: the attribute is on FormData/ArchiveLayoutRef, which odmlib's "
+        "ODM 1.3.2 model does not have, so no loaded document can carry it",
+    ("odm_1_3_2", "SignatureOID"):
+        "SignatureRef/@SignatureOID names an AdminData SignatureDef; ClinicalData's "
+        "Signature has no OID. The dynamic checker maps it to SignatureDef",
+}
 
-    def test_define_21_oid_ref_warns(self):
-        import warnings
-        _make_define_21_namespace()
-        with warnings.catch_warnings(record=True) as caught:
-            warnings.simplefilter("always")
-            import odmlib.define_2_1.rules.oid_ref as OID_REF
-            OID_REF.OIDRef()
-        dep_warnings = [w for w in caught if issubclass(w.category, DeprecationWarning)]
-        self.assertTrue(len(dep_warnings) > 0)
 
-    def test_define_20_oid_ref_warns(self):
-        import warnings
-        _make_define_20_namespace()
-        with warnings.catch_warnings(record=True) as caught:
-            warnings.simplefilter("always")
-            import odmlib.define_2_0.rules.oid_ref as OID_REF
-            OID_REF.OIDRef()
-        dep_warnings = [w for w in caught if issubclass(w.category, DeprecationWarning)]
-        self.assertTrue(len(dep_warnings) > 0)
+class TestManualOIDRefRemoved(unittest.TestCase):
+    """0.3.0 removed the deprecated manual OIDRef classes; create_oid_checker() replaces them."""
+
+    PACKAGES = ("odm_1_3_2", "define_2_0", "define_2_1")
+
+    def test_manual_oid_ref_modules_removed(self):
+        import importlib
+        import importlib.util
+        for pkg in self.PACKAGES:
+            with self.subTest(package=pkg):
+                self.assertIsNone(importlib.util.find_spec(f"odmlib.{pkg}.rules.oid_ref"))
+                # the rest of the rules package stays
+                rules = importlib.import_module(f"odmlib.{pkg}.rules.metadata_schema")
+                self.assertTrue(hasattr(rules, "MetadataSchema"))
+
+    def test_dynamic_checker_honours_the_manual_tables(self):
+        """Every frozen manual entry resolves the same way, bar the documented divergences."""
+        from odmlib.oid_generator import create_oid_checker
+        disagreements = set()
+        for pkg, table in MANUAL_REF_DEF_SNAPSHOT.items():
+            checker = create_oid_checker(pkg)
+            for attr, target in table.items():
+                allowed = checker.ref_def_any_of.get(attr)
+                ok = (target in allowed) if allowed else checker.ref_def.get(attr) == target
+                if not ok:
+                    disagreements.add((pkg, attr))
+        self.assertEqual(
+            (disagreements - set(MANUAL_REF_DEF_DIVERGENCES),
+             set(MANUAL_REF_DEF_DIVERGENCES) - disagreements),
+            (set(), set()),
+            "(new disagreements with the removed manual tables, stale divergence entries)")
+
+    def test_divergences_resolve_as_documented(self):
+        from odmlib.oid_generator import create_oid_checker
+        checker = create_oid_checker("odm_1_3_2")
+        self.assertNotIn("ArchiveLayoutOID", checker.ref_def)
+        self.assertEqual(checker.ref_def["SignatureOID"], "SignatureDef")
+
+    def test_skip_attrs_match_the_manual_classes(self):
+        from odmlib.oid_generator import create_oid_checker
+        for pkg, expected in MANUAL_SKIP_ATTR_SNAPSHOT.items():
+            with self.subTest(package=pkg):
+                self.assertEqual(sorted(create_oid_checker(pkg).skip_attr), sorted(expected))
 
 
 # ---------------------------------------------------------------------------
@@ -765,40 +785,6 @@ class TestPackageLevelImports(unittest.TestCase):
         checker = odmlib.create_oid_checker("odm_1_3_2")
         from odmlib.oid_generator import DynamicOIDRef
         self.assertIsInstance(checker, DynamicOIDRef)
-
-
-# ---------------------------------------------------------------------------
-# Trailing-space bug fix regression test
-# ---------------------------------------------------------------------------
-
-class TestTrailingSpaceBugFixed(unittest.TestCase):
-    """Verify that the trailing space bugs in odm_1_3_2 oid_ref.py are fixed."""
-
-    def setUp(self):
-        _make_odm_132_namespace()
-
-    def test_signature_oid_no_trailing_space(self):
-        import warnings
-        with warnings.catch_warnings():
-            warnings.simplefilter("ignore")
-            import odmlib.odm_1_3_2.rules.oid_ref as OID_REF
-            checker = OID_REF.OIDRef()
-        # "SignatureOID " with trailing space should be gone.
-        for ref_list in checker.def_ref.values():
-            for ref in ref_list:
-                self.assertEqual(ref, ref.strip(),
-                                 f"Trailing space found in def_ref: '{ref}'")
-
-    def test_item_oid_no_trailing_space(self):
-        import warnings
-        with warnings.catch_warnings():
-            warnings.simplefilter("ignore")
-            import odmlib.odm_1_3_2.rules.oid_ref as OID_REF
-            checker = OID_REF.OIDRef()
-        keyset_refs = checker.def_ref.get("KeySet", [])
-        for ref in keyset_refs:
-            self.assertEqual(ref, ref.strip(),
-                             f"Trailing space found in KeySet def_ref: '{ref}'")
 
 
 class TestRoleCodeListOIDResolution(unittest.TestCase):
@@ -824,21 +810,6 @@ class TestRoleCodeListOIDResolution(unittest.TestCase):
         ref_def = self._get_mapping("define_2_1")
         self.assertIn("RoleCodeListOID", ref_def)
         self.assertEqual(ref_def["RoleCodeListOID"], "CodeList")
-
-
-class TestSignatureOIDManualMapping(unittest.TestCase):
-    """Verify SignatureOID maps to Signature (not SignatureRef) in manual oid_ref (Step 3b fix)."""
-
-    def setUp(self):
-        _make_odm_132_namespace()
-
-    def test_signature_oid_maps_to_signature(self):
-        import warnings
-        with warnings.catch_warnings():
-            warnings.simplefilter("ignore")
-            import odmlib.odm_1_3_2.rules.oid_ref as OID_REF
-            checker = OID_REF.OIDRef()
-        self.assertEqual(checker.ref_def["SignatureOID"], "Signature")
 
 
 class TestAddOidRefUnknownAttr(unittest.TestCase):

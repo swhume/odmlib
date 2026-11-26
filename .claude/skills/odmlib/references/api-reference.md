@@ -229,8 +229,8 @@ conformance field. The list length tracks the number of *defects*, so filter by 
 type rather than by index. `max_errors=N` caps it (enforced inside the layers) and appends
 a final `OdmlibErrorLimitError`, giving at most `N + 1` entries; it is ignored in fail-fast
 mode. Full OID enumeration needs a checker implementing the collecting protocol — the
-`DynamicOIDRef` from `create_oid_checker()` does, the deprecated `OIDRef` classes do not
-and contribute at most one error. See `references/validation.md`.
+`DynamicOIDRef` from `create_oid_checker()` does; a custom checker without it contributes
+at most one error. See `references/validation.md`.
 
 `unreferenced_oids()` returns a `dict` mapping orphan OID → the ref attribute expected to
 point at it. How
@@ -353,18 +353,18 @@ get_mode() / set_mode(mode)                  # manual control (set_mode returns 
 
 ```
 OdmlibError                         (base)
-├─ OdmlibValidationError            (also ValueError in 0.2.x)
+├─ OdmlibValidationError            (also ValueError in 0.2.x only)
 │  ├─ OdmlibRequiredAttributeError
 │  ├─ OdmlibOIDError
 │  ├─ OdmlibConformanceError        (.cerberus_errors, .field_path, .expand())
 │  ├─ OdmlibElementOrderError
 │  ├─ OdmlibErrorLimitError         (max_errors truncation marker — collected, never raised)
 │  └─ OdmlibSchemaValidationError   (.wrapped)
-├─ OdmlibTypeError                  (also TypeError in 0.2.x)
+├─ OdmlibTypeError                  (also TypeError in 0.2.x only)
 ├─ OdmlibParsingError
-│  └─ OdmlibLoaderStateError
+│  └─ OdmlibLoaderStateError        (also ValueError in 0.2.x only)
 ├─ OdmlibSerializationError
-└─ OdmlibNamespaceError
+└─ OdmlibNamespaceError             (also ValueError in 0.2.x only)
 Warnings: OdmlibWarning ─ OdmlibDeprecationWarning, OdmlibInteroperabilityWarning
 Helpers:  ErrorCollector  (.errors, .warnings, .has_errors, .is_full, .truncated,
                            .add_error, .add_warning, .raise_if_errors)
@@ -376,9 +376,9 @@ failing field (what `validate(collect_errors=True)` does internally); each carri
 `field_path` plus the complete raw dict on `cerberus_errors`.
 
 Validation/type errors carry `element_path`, `hint`, `attribute`, and `element_type` where
-known, so their `str()` is already a useful diagnostic. The dual inheritance from
-`ValueError`/`TypeError` is a 0.2.x compatibility bridge and is scheduled for removal in
-0.3.0 — prefer catching `OdmlibError` and its subclasses.
+known, so their `str()` is already a useful diagnostic. The `ValueError`/`TypeError` bases
+were a 0.2.x compatibility bridge, removed in 0.3.0: `except ValueError` no longer catches
+odmlib errors. Catch `OdmlibError` and its subclasses, which works in both versions.
 
 ### Loading files you do not control
 

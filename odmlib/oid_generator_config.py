@@ -1,8 +1,8 @@
 """Per-model skip configuration for dynamic OID ref/def generation.
 
 Defines the ``skip_attr`` and ``skip_elem`` lists for each supported model
-package.  These lists mirror the hard-coded skip behaviour in the legacy
-manual ``OIDRef`` classes:
+package.  For the packages that had them, these lists match the hard-coded
+skip behaviour of the manual ``OIDRef`` classes removed in 0.3.0:
 
 - **skip_attr**: OID-containing attribute names that should *not* be
   validated as OID references (e.g. ``FileOID``, which is a top-level file

@@ -35,14 +35,8 @@ class TestExceptionHierarchy(TestCase):
     def test_validation_error_is_odmlib_error(self):
         self.assertTrue(issubclass(OdmlibValidationError, OdmlibError))
 
-    def test_validation_error_is_value_error_for_backward_compat(self):
-        self.assertTrue(issubclass(OdmlibValidationError, ValueError))
-
     def test_required_attribute_error_is_validation_error(self):
         self.assertTrue(issubclass(OdmlibRequiredAttributeError, OdmlibValidationError))
-
-    def test_required_attribute_error_is_value_error(self):
-        self.assertTrue(issubclass(OdmlibRequiredAttributeError, ValueError))
 
     def test_oid_error_is_validation_error(self):
         self.assertTrue(issubclass(OdmlibOIDError, OdmlibValidationError))
@@ -58,24 +52,27 @@ class TestExceptionHierarchy(TestCase):
     def test_type_error_is_odmlib_error(self):
         self.assertTrue(issubclass(OdmlibTypeError, OdmlibError))
 
-    def test_type_error_is_builtin_type_error_for_backward_compat(self):
-        self.assertTrue(issubclass(OdmlibTypeError, TypeError))
-
     # --- OdmlibLoaderStateError ---
 
     def test_loader_state_error_is_parsing_error(self):
         self.assertTrue(issubclass(OdmlibLoaderStateError, OdmlibParsingError))
-
-    def test_loader_state_error_is_value_error_for_backward_compat(self):
-        self.assertTrue(issubclass(OdmlibLoaderStateError, ValueError))
 
     # --- OdmlibNamespaceError ---
 
     def test_namespace_error_is_odmlib_error(self):
         self.assertTrue(issubclass(OdmlibNamespaceError, OdmlibError))
 
-    def test_namespace_error_is_value_error_for_backward_compat(self):
-        self.assertTrue(issubclass(OdmlibNamespaceError, ValueError))
+    # --- No builtin bases (0.3.0) ---
+
+    def test_no_odmlib_error_is_a_builtin_value_or_type_error(self):
+        """0.3.0 removed the ValueError/TypeError bases that 0.2.x kept for compatibility."""
+        import odmlib.exceptions as EXC
+        classes = [obj for obj in vars(EXC).values()
+                   if isinstance(obj, type) and issubclass(obj, OdmlibError)]
+        self.assertGreaterEqual(len(classes), 12)
+        for cls in classes:
+            with self.subTest(exception=cls.__name__):
+                self.assertFalse(issubclass(cls, (ValueError, TypeError)))
 
     # --- Warnings ---
 
@@ -160,36 +157,37 @@ class TestExceptionFormatting(TestCase):
         self.assertIn("IT.AGE", str(err))
 
 
-class TestBackwardCompatibility(TestCase):
-    """Verify existing except ValueError / except TypeError patterns still work."""
+class TestBuiltinBasesRemoved(TestCase):
+    """0.3.0: ``except ValueError`` / ``except TypeError`` no longer catch odmlib errors.
 
-    def test_odmlib_validation_error_caught_as_value_error(self):
-        with self.assertRaises(ValueError):
-            raise OdmlibValidationError("test")
+    Catch the odmlib class instead (see "Upgrading to 0.3.0" in CHANGELOG.md).
+    """
 
-    def test_odmlib_required_attribute_error_caught_as_value_error(self):
-        with self.assertRaises(ValueError):
-            raise OdmlibRequiredAttributeError("test", attribute="OID")
+    def _escapes(self, builtin, error):
+        """True if *error* propagates past ``except builtin``."""
+        try:
+            try:
+                raise error
+            except builtin:
+                return False
+        except OdmlibError:
+            return True
 
-    def test_odmlib_oid_error_caught_as_value_error(self):
-        with self.assertRaises(ValueError):
-            raise OdmlibOIDError("duplicate OID")
+    def test_validation_errors_escape_except_value_error(self):
+        for error in (OdmlibValidationError("test"),
+                      OdmlibRequiredAttributeError("test", attribute="OID"),
+                      OdmlibOIDError("duplicate OID"),
+                      OdmlibConformanceError("bad", cerberus_errors={}),
+                      OdmlibElementOrderError("out of order")):
+            with self.subTest(exception=type(error).__name__):
+                self.assertTrue(self._escapes(ValueError, error))
 
-    def test_odmlib_conformance_error_caught_as_value_error(self):
-        with self.assertRaises(ValueError):
-            raise OdmlibConformanceError("bad", cerberus_errors={})
+    def test_type_error_escapes_except_type_error(self):
+        self.assertTrue(self._escapes(TypeError, OdmlibTypeError("wrong type")))
 
-    def test_odmlib_type_error_caught_as_type_error(self):
-        with self.assertRaises(TypeError):
-            raise OdmlibTypeError("wrong type")
-
-    def test_odmlib_loader_state_error_caught_as_value_error(self):
-        with self.assertRaises(ValueError):
-            raise OdmlibLoaderStateError("loader not ready")
-
-    def test_odmlib_namespace_error_caught_as_value_error(self):
-        with self.assertRaises(ValueError):
-            raise OdmlibNamespaceError("bad namespace")
+    def test_loader_state_and_namespace_errors_escape_except_value_error(self):
+        self.assertTrue(self._escapes(ValueError, OdmlibLoaderStateError("loader not ready")))
+        self.assertTrue(self._escapes(ValueError, OdmlibNamespaceError("bad namespace")))
 
     def test_odmlib_oid_error_also_caught_as_odmlib_error(self):
         with self.assertRaises(OdmlibError):
@@ -286,19 +284,9 @@ class TestExceptionRaisedByModel(TestCase):
         with self.assertRaises(OdmlibRequiredAttributeError):
             ODM.ItemDef()  # OID and Name required
 
-    def test_missing_required_attribute_still_raises_value_error(self):
-        import odmlib.odm_1_3_2.model as ODM
-        with self.assertRaises(ValueError):
-            ODM.ItemDef()
-
     def test_unknown_kwarg_raises_odmlib_type_error(self):
         import odmlib.odm_1_3_2.model as ODM
         with self.assertRaises(OdmlibTypeError):
-            ODM.ItemDef(OID="IT.TEST", Name="test", NonExistentAttr="x")
-
-    def test_unknown_kwarg_still_raises_type_error(self):
-        import odmlib.odm_1_3_2.model as ODM
-        with self.assertRaises(TypeError):
             ODM.ItemDef(OID="IT.TEST", Name="test", NonExistentAttr="x")
 
     def test_wrong_type_raises_odmlib_type_error(self):
@@ -306,24 +294,14 @@ class TestExceptionRaisedByModel(TestCase):
         with self.assertRaises(OdmlibTypeError):
             ODM.ItemDef(OID=123, Name="test")  # OID must be str
 
-    def test_wrong_type_still_raises_type_error(self):
-        import odmlib.odm_1_3_2.model as ODM
-        with self.assertRaises(TypeError):
-            ODM.ItemDef(OID=123, Name="test")
-
     def test_invalid_enum_raises_odmlib_type_error(self):
         import odmlib.odm_1_3_2.model as ODM
         with self.assertRaises(OdmlibTypeError):
             ODM.ItemDef(OID="IT.TEST", Name="test", DataType="invalid_type")
 
-    def test_invalid_enum_still_raises_type_error(self):
-        import odmlib.odm_1_3_2.model as ODM
-        with self.assertRaises(TypeError):
-            ODM.ItemDef(OID="IT.TEST", Name="test", DataType="invalid_type")
-
     def test_oid_error_has_hint(self):
-        import odmlib.odm_1_3_2.rules.oid_ref as OID_REF
-        checker = OID_REF.OIDRef()
+        from odmlib import create_oid_checker
+        checker = create_oid_checker("odm_1_3_2")
         checker.add_oid("IT.AGE", "ItemDef")
         with self.assertRaises(OdmlibOIDError) as ctx:
             checker.add_oid("IT.AGE", "ItemDef")

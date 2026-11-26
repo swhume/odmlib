@@ -21,6 +21,7 @@ import unittest
 import odmlib.odm_element as OE
 import odmlib.typed as T
 from odmlib.odm_parser import ODMSchemaValidator
+from odmlib.exceptions import OdmlibTypeError, OdmlibValidationError
 
 ODM = "{http://www.cdisc.org/ns/odm/v2.0}"
 XS = "{http://www.w3.org/2001/XMLSchema}"
@@ -88,7 +89,7 @@ class TestDescriptorsMatchXSD(unittest.TestCase):
             try:
                 model(V=value)
                 accepted = True
-            except (ValueError, TypeError):
+            except (OdmlibValidationError, OdmlibTypeError):
                 accepted = False
             if accepted != xsd_type.is_valid(value):
                 mismatches.append(f"{value!r}: odmlib {'accepts' if accepted else 'rejects'}")
@@ -151,9 +152,9 @@ class TestDescriptorBehaviour(unittest.TestCase):
         model = type("FloatProbe", (OE.ODMElement,), {"V": T.Float()})
         self.assertEqual(model(V=" 2.50 ").V, 2.5)
         self.assertEqual(model(V=3).V, 3.0)
-        with self.assertRaises(TypeError):
+        with self.assertRaises(OdmlibTypeError):
             model(V=float("nan"))
-        with self.assertRaises(TypeError):
+        with self.assertRaises(OdmlibTypeError):
             model(V=float("inf"))
 
     def test_values_are_stored_as_given(self):
@@ -163,7 +164,7 @@ class TestDescriptorBehaviour(unittest.TestCase):
 
     def test_non_string_temporal_value_is_a_validation_error(self):
         model = type("DateTimeProbe", (OE.ODMElement,), {"V": T.DateTimeString()})
-        with self.assertRaises(ValueError):
+        with self.assertRaises(OdmlibValidationError):
             model(V=20210101)
 
     def test_permissive_mode_skips_format_checks(self):

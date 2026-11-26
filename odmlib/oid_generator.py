@@ -8,9 +8,9 @@ Inspects odmlib model class definitions to automatically derive:
 - The mapping from reference attribute names to definition element classes.
 - The reverse mapping from definition element classes to reference attributes.
 
-This replaces the manually-coded dictionaries in the ``rules/oid_ref.py``
-files for each model package.  The dynamic system is derived directly from
-the model classes, so it stays in sync automatically when the models evolve.
+It replaced the manually-coded ``rules/oid_ref.py`` ``OIDRef`` classes, which
+were deprecated in 0.2.0 and removed in 0.3.0. Because it is derived directly
+from the model classes, it stays in sync automatically when the models evolve.
 
 Usage::
 
@@ -330,20 +330,18 @@ def build_def_ref_mapping(
 class DynamicOIDRef(ErrorReporting):
     """Dynamically-generated OID ref/def checker.
 
-    Drop-in replacement for the manually-coded ``OIDRef`` classes in the
-    ``rules/oid_ref.py`` files.  Introspects the model module at
-    instantiation time to build the ref/def mappings automatically.
-
-    Implements the same interface as the manual ``OIDRef`` classes so it can
-    be passed directly to
-    :meth:`~odmlib.odm_element.ODMElement.verify_oids`.
+    Introspects the model module at instantiation time to build the ref/def
+    mappings automatically, and can be passed directly to
+    :meth:`~odmlib.odm_element.ODMElement.verify_oids`. It replaced the
+    manually-coded ``rules/oid_ref.py`` ``OIDRef`` classes (removed in 0.3.0)
+    and keeps their interface.
 
     Via the :class:`~odmlib.exceptions.ErrorReporting` mixin it also supports
     the collecting-checker protocol, so
     :meth:`~odmlib.odm_element.ODMElement.validate` with
     ``collect_errors=True`` reports *every* duplicate and every bad reference
-    rather than only the first. The deprecated manual ``OIDRef`` classes do
-    not, and contribute at most one error.
+    rather than only the first. A custom checker without that protocol
+    contributes at most one error.
 
     ``ref_def`` maps each single-target reference attribute to its definition
     class. ``ref_def_any_of`` maps the references that may point at any of
@@ -633,10 +631,6 @@ def create_oid_checker(
 
         from odmlib.oid_generator import create_oid_checker
 
-        # Replace manual OIDRef usage:
-        #   from odmlib.odm_1_3_2.rules.oid_ref import OIDRef
-        #   checker = OIDRef()
-        # With:
         checker = create_oid_checker("odm_1_3_2")
         odm.verify_oids(checker)
 

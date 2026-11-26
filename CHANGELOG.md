@@ -207,9 +207,13 @@ value that now fails can still be loaded in permissive mode.
 No library behaviour changes.
 
 - **Python 3.14** is in the CI matrix and the package classifiers.
-- **Coverage floor raised from 70% to 90%** (actual: 94%). A new **mypy** CI job reports
-  but does not gate. `[tool.mypy]` now excludes `odmlib/schemas/`, whose version-named
-  directories stopped mypy before it checked anything.
+- **Coverage floor raised from 70% to 90%** (actual: 94%).
+- **A new mypy CI job** checks for new type errors but does not gate merges. odmlib's known
+  mypy errors (128) are listed in `scripts/mypy_baseline.txt`. The job runs
+  `scripts/mypy_baseline.py` with mypy pinned to 2.4.1, and fails only when a change adds an
+  error that is not on that list; one that no longer occurs is reported, and `--update`
+  removes it. `[tool.mypy]` now excludes `odmlib/schemas/`, whose version-named directories
+  stopped mypy before it checked anything.
 - **A test module that fails to import now fails the run.** `--continue-on-collection-errors`
   is gone from the pytest options. It had hidden `test_property_based.py`'s `NameError`
   whenever hypothesis was missing; that module now skips via `pytest.importorskip`.
@@ -231,6 +235,66 @@ No library behaviour changes.
   `DateTimeStamp`, `FlagValue` or `FlagType`. A new test requires `_content` wherever the
   XSD forbids empty text. Neither change alters today's results.
 - Removed `odmlib/odmlib/schemas/`, a stray copy of 17 bundled XSDs that was never packaged.
+
+### Upgrading to 0.3.0
+
+0.3.0 removes what 0.2.0 and 0.2.1 deprecated (see the next two sections). Code that already
+catches `OdmlibError` or one of its subclasses, and builds OID checkers with
+`create_oid_checker()`, needs no change.
+
+| Before (0.2.x) | After (0.3.0) |
+|---|---|
+| `except ValueError` around odmlib calls | `except OdmlibValidationError`, a narrower subclass, or `OdmlibError` |
+| `except TypeError` around odmlib calls | `except OdmlibTypeError` |
+| `except ValueError` for a loader-state or namespace error | `except OdmlibLoaderStateError` / `except OdmlibNamespaceError` |
+| `from odmlib.odm_1_3_2.rules.oid_ref import OIDRef` and `OIDRef()` (also `define_2_0`, `define_2_1`) | `from odmlib import create_oid_checker` and `create_oid_checker("odm_1_3_2")` |
+| `ODMBuilder.attach()` / `attach_to_current()` raise `TypeError` | they raise `OdmlibTypeError` |
+| `ODMSchemaValidator()` without a schema raises `ValueError` | it raises `OdmlibTypeError` |
+| Dataset-JSON raises `ValueError` or `json.JSONDecodeError` | `OdmlibValidationError` from `add_row()`; `OdmlibParsingError` when reading |
+| `NamespaceRegistry().set_odm_namespace_attributes_string(s)` | remove the call: `to_xml_string()` declares its own namespaces |
+| `odmlib.odm_2_0.valueset.ValueSet.value_set(attr)` | `odmlib.valueset.ValueSet.value_set(attr, version="odm_2_0")` |
+
+### Removed — APIs deprecated in 0.2.x (breaking)
+
+- **The `ValueError`/`TypeError` bases of odmlib's exceptions.** `OdmlibValidationError` and
+  its subclasses (`OdmlibRequiredAttributeError`, `OdmlibOIDError`, `OdmlibConformanceError`,
+  `OdmlibElementOrderError`, `OdmlibErrorLimitError`, `OdmlibSchemaValidationError`),
+  `OdmlibLoaderStateError` and `OdmlibNamespaceError` no longer inherit from `ValueError`, and
+  `OdmlibTypeError` no longer inherits from `TypeError`. Every odmlib exception now derives
+  from `OdmlibError` alone, so `except ValueError` and `except TypeError` no longer catch them.
+- **The manual `OIDRef` classes** (`odmlib.odm_1_3_2.rules.oid_ref`, `odmlib.define_2_0.rules.oid_ref`,
+  `odmlib.define_2_1.rules.oid_ref`), deprecated in 0.2.0. `create_oid_checker()` has the same
+  interface and also supports collect mode. Their `ref_def` tables are frozen in
+  `tests/test_oid_generator.py`, which checks that the dynamic checker honours every entry
+  except two where the manual ODM 1.3.2 table was wrong:
+  - `ArchiveLayoutOID → ArchiveLayout` could never match: the attribute belongs to
+    `FormData/ArchiveLayoutRef`, which odmlib does not model.
+  - `SignatureOID → Signature` pointed at an element that has no OID. The dynamic checker maps
+    it to `SignatureDef`, as the ODM 1.3.2 schema does.
+
+  The `rules` packages and their `metadata_schema` modules remain.
+- **`NamespaceRegistry.set_odm_namespace_attributes_string()`**, deprecated in 0.2.1. It was a
+  no-op on anything `to_xml_string()` produces.
+- **`odmlib.odm_2_0.valueset`**, a deprecated pass-through to `odmlib.valueset` that nothing
+  imported.
+
+### Changed — the last builtin exceptions became odmlib exceptions (breaking)
+
+- `ODMBuilder.attach()` and `attach_to_current()` raise `OdmlibTypeError` (was `TypeError`).
+- `ODMSchemaValidator()` with neither `xsd_file` nor both `standard` and `version` raises
+  `OdmlibTypeError` (was `ValueError`). Its advice is now on `.hint`, as on other odmlib errors.
+- Dataset-JSON: `DatasetJSON.add_row()` with the wrong number of values raises
+  `OdmlibValidationError` (was `ValueError`). `read_ndjson()` on an empty file raises
+  `OdmlibParsingError` (was `ValueError`). So do `from_json()`, `read_json()` and
+  `read_ndjson()` on malformed JSON (was `json.JSONDecodeError`), with the decode error chained
+  as `__cause__`; for NDJSON the message names the line.
+- `dataframe_to_items()` still skips, with a warning, any row whose element cannot be
+  constructed. It now catches `OdmlibError` (and `AttributeError`) to do so.
+- `xhtml.py` keeps its internal `ValueError`. Its callers catch it and raise
+  `OdmlibValidationError` or `OdmlibSerializationError`, so it never reaches user code.
+- New `tests/test_exception_contract.py` scans the package and fails on any
+  `raise ValueError`/`raise TypeError` outside `xhtml.py`. `tests/test_exceptions.py` now pins
+  the new contract: no odmlib exception is a `ValueError` or `TypeError`.
 
 ## [0.2.1] - 2026-08-27
 

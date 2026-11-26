@@ -9,6 +9,7 @@ import os
 from unittest import TestCase
 import odmlib.odm_2_0.model as ODM2
 import odmlib.ns_registry as NS
+from odmlib.exceptions import OdmlibTypeError
 
 
 def _setup_odm2_namespaces():
@@ -94,11 +95,11 @@ class TestODMv2StudyEventDef(TestCase):
             self.assertEqual(sed.Type, t)
 
     def test_invalid_type_raises(self):
-        with self.assertRaises((TypeError, ValueError)):
+        with self.assertRaises(OdmlibTypeError):
             ODM2.StudyEventDef(OID="SE.BAD", Name="Bad", Repeating="No", Type="InvalidType")
 
     def test_invalid_repeating_raises(self):
-        with self.assertRaises((TypeError, ValueError)):
+        with self.assertRaises(OdmlibTypeError):
             ODM2.StudyEventDef(OID="SE.BAD", Name="Bad", Repeating="Maybe", Type="Common")
 
     def test_to_xml(self):

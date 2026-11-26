@@ -2,6 +2,7 @@ from unittest import TestCase
 import odmlib.valueset as VS
 import odmlib.odm_1_3_2.model as ODM
 import odmlib.odm_2_0.model as ODM2
+from odmlib.exceptions import OdmlibTypeError, OdmlibValidationError
 
 
 class TestValueSetLoader(TestCase):
@@ -162,7 +163,7 @@ class TestValueSet(TestCase):
 
     def test_error_unknown_version(self):
         """Test error handling for unknown version"""
-        with self.assertRaises(ValueError) as context:
+        with self.assertRaises(OdmlibValidationError) as context:
             VS.ValueSet.value_set("StudyEventDef.Repeating", version='unknown_version')
         self.assertIn("Unknown version", str(context.exception))
         self.assertIn("unknown_version", str(context.exception))
@@ -300,7 +301,7 @@ class TestValueSetIntegration(TestCase):
         self.assertEqual(sed.Repeating, "Yes")
 
         # Invalid value should raise error
-        with self.assertRaises(TypeError) as context:
+        with self.assertRaises(OdmlibTypeError) as context:
             ODM.StudyEventDef(OID="SE.1", Name="Visit 1", Repeating="Invalid", Type="Scheduled")
         self.assertIn("Invalid value", str(context.exception))
 
@@ -311,7 +312,7 @@ class TestValueSetIntegration(TestCase):
         self.assertEqual(sed.Repeating, "Yes")
 
         # Invalid value should raise error
-        with self.assertRaises(TypeError) as context:
+        with self.assertRaises(OdmlibTypeError) as context:
             ODM2.StudyEventDef(OID="SE.1", Name="Visit 1", Repeating="Invalid", Type="Scheduled")
         self.assertIn("Invalid value", str(context.exception))
 
@@ -348,13 +349,13 @@ class TestValueSetIntegration(TestCase):
         self.assertEqual(mdv.DefineVersion, "2.1.99")
 
         # Invalid DefineVersion should raise error
-        with self.assertRaises(TypeError):
+        with self.assertRaises(OdmlibTypeError):
             mdv.DefineVersion = "abc"
 
-        with self.assertRaises(TypeError):
+        with self.assertRaises(OdmlibTypeError):
             mdv.DefineVersion = "3.0"
 
-        with self.assertRaises(TypeError):
+        with self.assertRaises(OdmlibTypeError):
             mdv.DefineVersion = "1.0"
 
 
@@ -410,3 +411,11 @@ class TestODM2ValueSetKeys(TestCase):
             o = VS.ValueSet.value_set(k, version="odm_2_0")
             d = VS.ValueSet.value_set(k, version="define_2_1")
             self.assertIsNot(o, d, f"{k} still resolving via fallback")
+
+
+class TestDeprecatedModuleRemoved(TestCase):
+    def test_odm_2_0_valueset_module_removed(self):
+        """The 0.2.0 pass-through was removed in 0.3.0; use odmlib.valueset.ValueSet."""
+        import importlib.util
+        self.assertIsNone(importlib.util.find_spec("odmlib.odm_2_0.valueset"))
+        self.assertIn("text", VS.ValueSet.value_set("ItemDef.DataType", version="odm_2_0"))

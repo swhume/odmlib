@@ -6,6 +6,7 @@ import odmlib.define_loader as DL
 import odmlib.loader as LD
 import os
 import tempfile
+from odmlib.exceptions import OdmlibNamespaceError
 
 
 class TestNamespaceRegistry(TestCase):
@@ -22,7 +23,7 @@ class TestNamespaceRegistry(TestCase):
 
     def test_get_ns_prefix_missing(self):
         nsr = NS.NamespaceRegistry(prefix="def", uri="http://www.cdisc.org/ns/def/v2.0")
-        with self.assertRaises(ValueError):
+        with self.assertRaises(OdmlibNamespaceError):
             def_prefix = nsr.get_prefix_ns_from_uri("http://www.cdisc.org/ns/def/v3.0")
 
     def test_get_ns_entry_dict(self):
@@ -103,7 +104,7 @@ class TestNamespaceRegistry(TestCase):
         self.assertDictEqual(expected_ns, nsr.namespaces)
 
     def test_bad_ns_url(self):
-        with self.assertRaises(ValueError):
+        with self.assertRaises(OdmlibNamespaceError):
             nsr = NS.NamespaceRegistry(prefix="def", uri="www.cdisc.org/ns/def/v2.0")
 
     def test_odm_ns_attributes(self):

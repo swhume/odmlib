@@ -66,9 +66,12 @@ jobs:
           name: coverage-report
           path: coverage.xml
 
-  # Type checking is reported but does not gate merges yet: the baseline has
-  # known errors (128 in 20 files when this job was added). Uses [tool.mypy]
-  # from pyproject.toml.
+  # Type checking does not gate merges yet. odmlib has known mypy errors (128 in
+  # 20 files when this job was added), listed in scripts/mypy_baseline.txt; the
+  # job fails only on an error that is not in that list. After fixing errors,
+  # shrink the list with `python scripts/mypy_baseline.py --update`. mypy is
+  # pinned because another release can report a different error set. Uses
+  # [tool.mypy] from pyproject.toml.
   mypy:
     name: mypy (non-blocking)
     runs-on: ubuntu-latest
@@ -86,6 +89,7 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install -e ".[dev]"
+          pip install "mypy==2.4.1"
 
-      - name: Run mypy
-        run: mypy odmlib
+      - name: Run mypy against the baseline
+        run: python scripts/mypy_baseline.py

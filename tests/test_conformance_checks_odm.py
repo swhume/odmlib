@@ -1,13 +1,14 @@
 from unittest import TestCase
 import odmlib.odm_1_3_2.model as ODM
 import odmlib.odm_1_3_2.rules.metadata_schema as METADATA
-import odmlib.odm_1_3_2.rules.oid_ref as OID
+from odmlib import create_oid_checker
+from odmlib.exceptions import OdmlibConformanceError, OdmlibOIDError, OdmlibRequiredAttributeError
 
 
 class TestConformanceCheckODM(TestCase):
     def setUp(self):
         self.validator = METADATA.MetadataSchema()
-        self.oid_checker = OID.OIDRef()
+        self.oid_checker = create_oid_checker("odm_1_3_2")
 
     def test_OID_unique_clean(self):
         attrs = {"OID": "MDV.TRACE-XML-ODM-01", "Name": "TRACE-XML MDV", "Description": "Trace-XML Example"}
@@ -55,7 +56,7 @@ class TestConformanceCheckODM(TestCase):
         self.mdv.CodeList = self.add_CL()
         self.mdv.MethodDef = self.add_MD()
         self.mdv.ConditionDef = self.add_CD()
-        oid_checker = OID.OIDRef()
+        oid_checker = create_oid_checker("odm_1_3_2")
         # use unitialized oid_checker
         orphans = self.mdv.unreferenced_oids(oid_checker)
         # returns an empty dictionary since oid index has not been created
@@ -75,8 +76,8 @@ class TestConformanceCheckODM(TestCase):
         self.mdv.CodeList = self.add_CL()
         self.mdv.MethodDef = self.add_MD()
         self.mdv.ConditionDef = self.add_CD()
-        oid_checker = OID.OIDRef()
-        with self.assertRaises(ValueError):
+        oid_checker = create_oid_checker("odm_1_3_2")
+        with self.assertRaises(OdmlibOIDError):
             # checks for non-unique OIDs and runs the ref/def check
             self.mdv.verify_oids(oid_checker)
 
@@ -91,14 +92,14 @@ class TestConformanceCheckODM(TestCase):
         self.mdv.CodeList = self.add_CL()
         self.mdv.MethodDef = self.add_MD()
         self.mdv.ConditionDef = self.add_CD()
-        oid_checker = OID.OIDRef()
-        with self.assertRaises(ValueError):
+        oid_checker = create_oid_checker("odm_1_3_2")
+        with self.assertRaises(OdmlibOIDError):
             # checks for non-unique OIDs and runs the ref/def check
             self.mdv.verify_oids(oid_checker)
 
     def test_OID_creation_dirty(self):
         attrs = {"OID": "MDV.TRACE-XML-ODM-01", "Description": "Trace-XML Example"}
-        with self.assertRaises(ValueError):
+        with self.assertRaises(OdmlibRequiredAttributeError):
             # MDV creation should fail due to missing Name attribute
             self.mdv = ODM.MetaDataVersion(**attrs)
 
@@ -125,7 +126,7 @@ class TestConformanceCheckODM(TestCase):
         self.assertTrue(is_valid)
         print(self.mdv.MethodDef[0].to_dict())
         print(self.mdv.MethodDef[1].to_dict())
-        with self.assertRaises(ValueError):
+        with self.assertRaises(OdmlibConformanceError):
             # test shows that MethodDef two fails the schema check because it is missing the required Description object
             self.mdv.MethodDef[1].verify_conformance(validator)
 

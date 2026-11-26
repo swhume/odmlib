@@ -906,5 +906,97 @@ class TestODM20ResolvedAndUnresolvedRefs(unittest.TestCase):
                              f"(no target Def class in the model)")
 
 
+
+class TestODM20ClinicalDataOIDs(unittest.TestCase):
+    """The references ODM 2.0 ClinicalData added in v0.3.0 (plan P4b)."""
+
+    def setUp(self):
+        _make_odm_20_namespace()
+
+    @staticmethod
+    def _clinical(*items, queries=()):
+        import odmlib.odm_2_0.model as ODM2
+        group = ODM2.ItemGroupData(ItemGroupOID="IG.1")
+        group.ItemData = [ODM2.ItemData(ItemOID=oid, Value=[ODM2.Value(_content="1")])
+                          for oid in items]
+        for oid in queries:
+            query = ODM2.Query(OID=oid, Source="System", State="Open",
+                               LastUpdateDatetime="2026-01-01T00:00:00")
+            query.Value = ODM2.Value(_content="check")
+            group.ItemData[0].Query.append(query)
+        event = ODM2.StudyEventData(StudyEventOID="SE.1", ItemGroupData=[group])
+        subject = ODM2.SubjectData(SubjectKey="001", StudyEventData=[event])
+        subject.InvestigatorRef = ODM2.InvestigatorRef(UserOID="USR.1")
+        return ODM2.ClinicalData(StudyOID="ST.1", MetaDataVersionOID="MDV.1",
+                                 SubjectData=[subject])
+
+    @classmethod
+    def _document(cls, with_metadata=True, with_admin=True, **kwargs):
+        import odmlib.odm_2_0.model as ODM2
+        odm = ODM2.ODM(FileType="Snapshot", FileOID="F.1", CreationDateTime="2026-01-01T00:00:00",
+                       ClinicalData=[cls._clinical("IT.1", **kwargs)])
+        if with_metadata:
+            mdv = ODM2.MetaDataVersion(OID="MDV.1", Name="MDV")
+            mdv.StudyEventDef = [ODM2.StudyEventDef(OID="SE.1", Name="SE", Repeating="No",
+                                                    Type="Scheduled")]
+            mdv.ItemGroupDef = [ODM2.ItemGroupDef(OID="IG.1", Name="IG", Repeating="No",
+                                                  Type="Form")]
+            mdv.ItemDef = [ODM2.ItemDef(OID="IT.1", Name="IT", DataType="text")]
+            odm.Study = [ODM2.Study(OID="ST.1", StudyName="S", ProtocolName="P",
+                                    MetaDataVersion=[mdv])]
+        if with_admin:
+            odm.AdminData = [ODM2.AdminData(User=[ODM2.User(OID="USR.1")])]
+        return odm
+
+    def test_odm_20_clinical_ref_def_mappings(self):
+        """Every new reference resolves by the naming convention, with no override."""
+        from odmlib.oid_generator import _REF_DEF_OVERRIDES, create_oid_checker
+        expected = {
+            "UserOID": "User", "LocationOID": "Location", "SignatureOID": "SignatureDef",
+            "CodeListOID": "CodeList", "ItemGroupOID": "ItemGroupDef", "ItemOID": "ItemDef",
+            "StudyEventOID": "StudyEventDef", "StudyOID": "Study",
+            "MetaDataVersionOID": "MetaDataVersion",
+        }
+        ref_def = create_oid_checker("odm_2_0").ref_def
+        self.assertEqual({attr: ref_def.get(attr) for attr in expected}, expected)
+        self.assertEqual(set(expected) & set(_REF_DEF_OVERRIDES), set())
+
+    def test_query_oid_uniqueness_checked_but_never_unreferenced(self):
+        from odmlib.oid_generator import create_oid_checker
+        checker = create_oid_checker("odm_2_0")
+        self.assertIn("Query", checker.skip_elem)
+        document = self._document(queries=("Q.1", "Q.2"))
+        self.assertTrue(document.verify_oids(checker))
+        unreferenced = document.unreferenced_oids(checker)
+        self.assertNotIn("Q.1", unreferenced)
+        self.assertNotIn("Q.2", unreferenced)
+        # a Query OID is unique like any other: twice, or shared with a definition
+        for queries in (("Q.1", "Q.1"), ("IT.1",)):
+            with self.subTest(queries=queries):
+                with self.assertRaisesRegex(OdmlibOIDError, "is not unique"):
+                    self._document(queries=queries).verify_oids(create_oid_checker("odm_2_0"))
+
+    def test_clinical_only_file_passes_with_data_only_skip(self):
+        from odmlib.oid_generator import create_oid_checker
+        from odmlib.oid_generator_config import ODM_20_DATA_ONLY_SKIP_ATTRS
+        data_only = self._document(with_metadata=False)
+        with self.assertRaisesRegex(OdmlibOIDError, "not found"):
+            data_only.verify_oids(create_oid_checker("odm_2_0"))
+        checker = create_oid_checker("odm_2_0", extra_skip_attrs=ODM_20_DATA_ONLY_SKIP_ATTRS)
+        self.assertTrue(data_only.verify_oids(checker))
+        # references into AdminData are still checked
+        no_admin = self._document(with_metadata=False, with_admin=False)
+        with self.assertRaisesRegex(OdmlibOIDError, "USR.1"):
+            no_admin.verify_oids(create_oid_checker(
+                "odm_2_0", extra_skip_attrs=ODM_20_DATA_ONLY_SKIP_ATTRS))
+
+    def test_data_only_skip_does_not_change_the_default(self):
+        from odmlib.oid_generator_config import ODM_20_DATA_ONLY_SKIP_ATTRS, get_skip_config
+        skip_attrs, skip_elems = get_skip_config("odm_2_0")
+        self.assertEqual((skip_attrs, skip_elems), (["FileOID", "PriorFileOID"], ["ODM", "Query"]))
+        self.assertEqual(set(ODM_20_DATA_ONLY_SKIP_ATTRS) & {"UserOID", "LocationOID", "SignatureOID"},
+                         set())
+
+
 if __name__ == "__main__":
     unittest.main()

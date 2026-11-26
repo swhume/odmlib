@@ -475,71 +475,24 @@ def content_that_must_not_be_empty_but_may_be():
 
 #: Per-element divergences between the model and the bundled ODM 2.0 XSD.
 MODEL_XSD_DIVERGENCES: dict[str, set[str]] = {
-    "Location": {
-        "elem-missing:Query",
-    },
-    "ODM": {
-        "elem-missing:Association",
-        "elem-missing:ClinicalData",
-        "elem-missing:ReferenceData",
-    },
 }
 
-#: XSD elements with no model class at all. The ClinicalData/ReferenceData
-#: subtree among these is deliberately deferred to v0.3.0.
-CLASSES_MISSING_FROM_MODEL: set[str] = {
-    "Annotation",
-    "Association",
-    "AuditRecord",
-    "ClinicalData",
-    "Comment",
-    "DateTimeStamp",
-    "Flag",
-    "FlagType",
-    "FlagValue",
-    "InvestigatorRef",
-    "ItemData",
-    "ItemGroupData",
-    "KeySet",
-    "Query",
-    "ReasonForChange",
-    "ReferenceData",
-    "Signature",
-    "SignatureRef",
-    "SiteRef",
-    "SourceID",
-    "StudyEventData",
-    "SubjectData",
-    "UserRef",
-    "Value",
-}
+#: XSD elements with no model class at all. Empty since v0.3.0 modelled the
+#: ClinicalData, ReferenceData and Association layer (plan P4).
+CLASSES_MISSING_FROM_MODEL: set[str] = set()
 
 #: Model classes that are not declared as elements anywhere in the ODM 2.0
 #: XSD -- ODM 1.3.2 carry-over.
 CLASSES_NOT_IN_XSD: set[str] = set()
 
 #: Model classes absent from ``model.pyi``.
-STUB_CLASSES_MISSING: set[str] = {
-    "CDISCNotes",
-    "CRFCompletionInstructions",
-    "Definition",
-    "ImplementationNotes",
-    "Prompt",
-    "WhereClauseRef",
-}
+STUB_CLASSES_MISSING: set[str] = set()
 
 #: ``model.pyi`` classes that no longer exist in the model.
 STUB_CLASSES_EXTRA: set[str] = set()
 
 #: Classes whose ``model.pyi`` field list does not match the model.
-STUB_FIELD_MISMATCHES: set[str] = {
-    "CodeListItem",
-    "ItemGroupDef",
-    "ItemRef",
-    "MethodDef",
-    "Study",
-    "StudyEventDef",
-}
+STUB_FIELD_MISMATCHES: set[str] = set()
 
 #: ``odm_2_0`` valueset keys that match no ``ValueSetString`` descriptor. These
 #: are inert -- unused data, not a validation hole. Keys for classes that do not
@@ -555,9 +508,7 @@ VALUESET_MISSING_KEYS: set[str] = set()
 
 #: Attributes whose value set does not match what the XSD type permits --
 #: missing, wrong values, or a closed list where the XSD is an extensible union
-#: or a pattern. Only *modelled* classes are compared, so the ClinicalData-layer
-#: attributes will appear here of their own accord when v0.3.0 adds their
-#: classes, with the values the XSD requires.
+#: or a pattern. Only *modelled* classes are compared.
 VALUESET_VALUE_FINDINGS: set[str] = set()
 
 
@@ -683,9 +634,23 @@ class TestModelCoversTheXSD(TestCase):
         self.assertEqual(sorted(xsd - model), [])
 
     def test_admin_data_is_reachable_from_odm(self):
-        """AdminData too, short of the deferred data layer that Location/Query leads into."""
-        xsd = xsd_reachable_from("AdminData", stop=CLASSES_MISSING_FROM_MODEL)
+        """AdminData too, including the Query (and its audit trail) that Location holds."""
+        xsd = xsd_reachable_from("AdminData")
+        self.assertIn("Query", xsd)
         self.assertEqual(sorted(xsd - model_reachable_from("ODM")), [])
+
+    def test_every_xsd_element_is_reachable_from_odm(self):
+        """The whole schema: every ODM element the XSD declares has a class reachable from ODM.
+
+        Reachability alone would pass with a class modelled under the wrong parent, so
+        the count is pinned too: 149 elements in the ODM 2.0 XSD, 149 model classes.
+        """
+        xsd = xsd_reachable_from("ODM")
+        model = model_reachable_from("ODM")
+        self.assertEqual(len(ELEM_TYPE), 149)
+        self.assertEqual(sorted(set(ELEM_TYPE) - xsd), [])
+        self.assertEqual(sorted(xsd - model), [])
+        self.assertEqual(len(MODEL), 149)
 
     def test_text_content_is_optional_where_the_xsd_allows_it_empty(self):
         """An empty element the XSD accepts must load strictly (plan O1/O3).
@@ -698,15 +663,17 @@ class TestModelCoversTheXSD(TestCase):
     def test_text_content_is_required_where_the_xsd_forbids_empty(self):
         """The converse: an empty element the XSD rejects must not load strictly.
 
-        No modelled class has such content yet. ``DateTimeStamp``, ``FlagValue``
-        and ``FlagType`` arrive with the ClinicalData layer (P4) and must declare
-        ``_content`` required.
+        ``DateTimeStamp`` (``xs:dateTime``), ``FlagValue`` and ``FlagType`` (``name``,
+        minLength 1) are the three; each declares ``_content`` required.
         """
         self.assertEqual(sorted(content_that_must_not_be_empty_but_may_be()), [])
+        for name in ("DateTimeStamp", "FlagValue", "FlagType"):
+            with self.subTest(element=name):
+                self.assertTrue(MODEL[name]._attrs["_content"].required)
 
 
 class TestGuardMachinery(TestCase):
-    """Self-tests for comparison helpers whose effect only shows once P4 lands."""
+    """Self-tests for comparison helpers that matter only for the data layer (P4)."""
 
     def test_repeated_refs_merge_into_a_list(self):
         """Association's two KeySet refs become one required list, not two singles."""

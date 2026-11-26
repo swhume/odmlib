@@ -113,8 +113,7 @@ def _data(name: str) -> str:
 
 
 #: The fixtures every leg runs over, apart from the vendored ODM v2.0 documents, which
-#: :func:`all_fixtures` adds from their manifest. The vendored ClinicalData documents
-#: join in P4, when odmlib models ClinicalData.
+#: :func:`all_fixtures` adds from their manifest.
 CORE_FIXTURES = (
     # ODM 1.3.2: metadata, clinical data, reference data
     Fixture("odm_1_3_2/cdash-odm-test", _data("cdash-odm-test.xml"), "odm_1_3_2"),
@@ -141,16 +140,17 @@ CORE_FIXTURES = (
 )
 
 
-def vendored_fixtures(clinical_data=False):
+def vendored_fixtures(clinical_data=None):
     """The vendored ODM v2.0 documents, from ``tests/data/odm_v2/MANIFEST.json``.
 
-    ``clinical_data`` selects those with (True) or without (False) ClinicalData.
+    ``clinical_data`` selects those with (True) or without (False) ClinicalData;
+    the default, None, selects all of them.
     """
     with open(os.path.join(ODM_V2_DIR, "MANIFEST.json"), encoding="utf-8") as handle:
         manifest = json.load(handle)
     fixtures = []
     for entry in manifest["fixtures"]:
-        if entry["has_clinical_data"] != clinical_data:
+        if clinical_data is not None and entry["has_clinical_data"] != clinical_data:
             continue
         xml = next(f["path"] for f in entry["files"] if f["path"].endswith(".xml"))
         js = next(f["path"] for f in entry["files"] if f["path"].endswith(".json"))
@@ -161,8 +161,11 @@ def vendored_fixtures(clinical_data=False):
 
 
 def all_fixtures():
-    """Every fixture the legs run over: the core set plus the vendored metadata documents."""
-    return CORE_FIXTURES + tuple(vendored_fixtures(clinical_data=False))
+    """Every fixture the legs run over: the core set plus every vendored ODM v2.0 document.
+
+    The vendored ClinicalData documents joined in P4, when odmlib modelled ClinicalData.
+    """
+    return CORE_FIXTURES + tuple(vendored_fixtures())
 
 
 #: Documents whose child order is XSD-valid but which odmlib writes in model order, with

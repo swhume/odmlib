@@ -4,7 +4,7 @@ All test classes are skipped if pandas is not installed.
 
 Covers:
 - metadata_to_dataframe(): scalar attribute extraction, attribute filtering
-- clinical_data_to_dataframe(): hierarchical ODM 1.3.2 data flattening
+- clinical_data_to_dataframe(): hierarchical ODM 1.3.2 and ODM 2.0 data flattening
 - dataset_to_dataframe(): Dataset-XML 1.0.1 flat ClinicalData
 - dataframe_to_items(): DataFrame rows → odmlib element instances
 - _require_pandas(): ImportError when pandas absent (mocked)
@@ -12,9 +12,12 @@ Covers:
 dataset_json_to_dataframe() coverage lives in test_dataframe_phase3.py
 (TestDatasetJSON11ToDataFrame).
 """
+import os
 import unittest
 
 import odmlib.ns_registry as NS
+
+DATA_DIR = os.path.join(os.path.dirname(os.path.realpath(__file__)), "data")
 
 try:
     import pandas as pd
@@ -106,6 +109,134 @@ class TestMetadataToDataFrame(unittest.TestCase):
             val = df.iloc[0][col]
             self.assertNotIsInstance(val, list)
             self.assertNotIsInstance(val, dict)
+
+
+@unittest.skipUnless(HAS_PANDAS, "pandas not installed")
+class TestClinicalDataToDataFrame(unittest.TestCase):
+    """clinical_data_to_dataframe() for ODM 1.3.2 and, since 0.3.0, ODM 2.0."""
+
+    ODM20 = "http://www.cdisc.org/ns/odm/v2.0"
+
+    def setUp(self):
+        NS.NamespaceRegistry(prefix="odm", uri=self.ODM20, is_default=True, is_reset=True)
+
+    @staticmethod
+    def _item(oid, *values, **attrs):
+        import odmlib.odm_2_0.model as ODM2
+        item = ODM2.ItemData(ItemOID=oid, **attrs)
+        item.Value = [ODM2.Value(_content=v) if isinstance(v, str)
+                      else ODM2.Value(SeqNum=v[0], _content=v[1]) for v in values]
+        return item
+
+    def _odm20_clinical_data(self):
+        """Subject 001: a form with ItemData on both sides of two nested RACE groups."""
+        import odmlib.odm_2_0.model as ODM2
+        clinical = ODM2.ClinicalData(StudyOID="ST.1", MetaDataVersionOID="MDV.1")
+        for key in ("001", "002"):
+            form = ODM2.ItemGroupData(ItemGroupOID="IG.DM")
+            form.ItemData.append(self._item("IT.SEX", "F" if key == "001" else "M"))
+            for repeat, race in (("1", "WHITE"), ("2", "ASIAN")):
+                group = ODM2.ItemGroupData(ItemGroupOID="IG.RACE", ItemGroupRepeatKey=repeat)
+                group.ItemData.append(self._item("IT.RACE", race))
+                form.ItemGroupData.append(group)
+            form.ItemData.append(self._item("IT.AGE", "50"))
+            event = ODM2.StudyEventData(StudyEventOID="SE.1", ItemGroupData=[form])
+            clinical.SubjectData.append(ODM2.SubjectData(SubjectKey=key, StudyEventData=[event]))
+        return clinical
+
+    def test_odm132_walks_form_data(self):
+        import odmlib.loader as LD
+        import odmlib.odm_loader as OL
+        from odmlib.dataframe import clinical_data_to_dataframe
+        loader = LD.ODMLoader(OL.XMLODMLoader(model_package="odm_1_3_2"))
+        loader.open_odm_document(os.path.join(DATA_DIR, "test_clinical_data_01.xml"))
+        df = clinical_data_to_dataframe(loader.ClinicalData(), "LB")
+        self.assertEqual(df.to_dict("records"),
+                         [{"SubjectKey": "1000", "LBDTC": "2006-07-14T14:48",
+                           "LBTESTCD": "ALT", "LBORRES": "245"}])
+
+    def test_odm20_nested_groups_rows(self):
+        """One row per matching group at any depth, holding that group's own items."""
+        from odmlib.dataframe import clinical_data_to_dataframe
+        clinical = self._odm20_clinical_data()
+        races = clinical_data_to_dataframe(clinical, "IG.RACE")
+        self.assertEqual(races.to_dict("records"),
+                         [{"SubjectKey": "001", "IT.RACE": "WHITE"},
+                          {"SubjectKey": "001", "IT.RACE": "ASIAN"},
+                          {"SubjectKey": "002", "IT.RACE": "WHITE"},
+                          {"SubjectKey": "002", "IT.RACE": "ASIAN"}])
+        forms = clinical_data_to_dataframe(clinical, "IG.DM")
+        self.assertEqual(forms.to_dict("records"),
+                         [{"SubjectKey": "001", "IT.SEX": "F", "IT.AGE": "50"},
+                          {"SubjectKey": "002", "IT.SEX": "M", "IT.AGE": "50"}])
+
+    def test_odm20_clinicaldata_level_groups(self):
+        """ItemGroupData directly under ClinicalData belongs to no subject."""
+        import odmlib.odm_2_0.model as ODM2
+        from odmlib.dataframe import clinical_data_to_dataframe
+        clinical = self._odm20_clinical_data()
+        site = ODM2.ItemGroupData(ItemGroupOID="IG.RACE", ItemGroupRepeatKey="9")
+        site.ItemData.append(self._item("IT.RACE", "OTHER"))
+        clinical.ItemGroupData.append(site)
+        df = clinical_data_to_dataframe(clinical, "IG.RACE")
+        self.assertEqual(len(df), 5)
+        site_row = df.iloc[0]
+        self.assertTrue(pd.isna(site_row["SubjectKey"]))      # None; pandas may show NaN
+        self.assertEqual(site_row["IT.RACE"], "OTHER")
+
+        only_groups = ODM2.ClinicalData(StudyOID="ST.1", MetaDataVersionOID="MDV.1",
+                                        ItemGroupData=[site])
+        self.assertEqual(len(clinical_data_to_dataframe(only_groups, "IG.RACE")), 1)
+
+    def test_odm20_multi_value_and_isnull(self):
+        """Several Values become a list ordered by SeqNum; IsNull and no Value become None."""
+        import odmlib.odm_2_0.model as ODM2
+        from odmlib.dataframe import clinical_data_to_dataframe
+        group = ODM2.ItemGroupData(ItemGroupOID="IG.CM")
+        group.ItemData = [self._item("IT.ROUTE", (2, "IV"), (1, "ORAL"), (3, "TOPICAL")),
+                          self._item("IT.DOSE", IsNull="Yes"),
+                          self._item("IT.UNIT"),
+                          self._item("IT.NAME", "aspirin")]
+        clinical = ODM2.ClinicalData(StudyOID="ST.1", MetaDataVersionOID="MDV.1",
+                                     ItemGroupData=[group])
+        row = clinical_data_to_dataframe(clinical, "IG.CM").iloc[0].to_dict()
+        self.assertEqual(list(row), ["SubjectKey", "IT.ROUTE", "IT.DOSE", "IT.UNIT", "IT.NAME"])
+        self.assertEqual(row["IT.ROUTE"], ["ORAL", "IV", "TOPICAL"])
+        self.assertEqual(row["IT.NAME"], "aspirin")
+        for column in ("SubjectKey", "IT.DOSE", "IT.UNIT"):       # None (pandas may show NaN)
+            self.assertTrue(pd.isna(row[column]), column)
+
+    def test_odm20_walk_does_not_change_the_tree(self):
+        from odmlib.dataframe import clinical_data_to_dataframe
+        clinical = self._odm20_clinical_data()
+        before = {id(e): dict(vars(e)) for e in self._walk(clinical)}
+        clinical_data_to_dataframe(clinical, "IG.NONE")
+        clinical_data_to_dataframe(clinical, "IG.RACE")
+        self.assertEqual({id(e): dict(vars(e)) for e in self._walk(clinical)}, before)
+
+    def test_odm20_vendored_example(self):
+        import odmlib.loader as LD
+        import odmlib.odm_loader as OL
+        from odmlib.dataframe import clinical_data_to_dataframe
+        loader = LD.ODMLoader(OL.XMLODMLoader(model_package="odm_2_0"))
+        loader.open_odm_document(os.path.join(
+            DATA_DIR, "odm_v2", "github", "Demographics_RACE",
+            "Demographics_RACE_check_all_that_apply.xml"))
+        df = clinical_data_to_dataframe(loader.ClinicalData(), "IG.RACE")
+        self.assertEqual(len(df), 18)
+        self.assertEqual(sorted(df["SubjectKey"].unique()), ["001", "002", "003"])
+
+    @staticmethod
+    def _walk(element):
+        stack = [element]
+        while stack:
+            current = stack.pop()
+            yield current
+            for value in vars(current).values():
+                if isinstance(value, list):
+                    stack.extend(value)
+                elif hasattr(value, "__dict__") and hasattr(type(value), "_elems"):
+                    stack.append(value)
 
 
 @unittest.skipUnless(HAS_PANDAS, "pandas not installed")

@@ -632,21 +632,22 @@ python -m pytest tests/test_odm_loader.py -v
 - No `ItemData[Type]` support (typed item data elements, deprecated in ODM v2.0)
 - No `ds:Signature` support (digital signatures)
 - Single `MetaDataVersion` per load by default (use `idx` parameter for others)
-- ODM v2.0 implementation is still draft, but every **metadata** element the ODM 2.0
-  XSD defines is now modelled, and the model's divergence from the schema is pinned by
-  `tests/test_odm_2_0_xsd_alignment.py`. Two areas remain:
-  - **ClinicalData / ReferenceData are not modelled.** `ODM` has no `ClinicalData`,
-    `ReferenceData` or `Association` child, and `Location` has no `Query`. The 24
-    elements of that data layer are scoped to v0.3.0 — see `ROADMAP.md`.
-  - **One deliberate approximation**, documented in the class docstring and caught by
+- ODM v2.0 implementation is still draft, but every element the ODM 2.0 XSD defines is
+  modelled: metadata, AdminData and, since 0.3.0, ClinicalData, ReferenceData and
+  Association (load them with `loader.ClinicalData()` / `loader.ReferenceData()`). The
+  model's divergence from the schema is pinned by `tests/test_odm_2_0_xsd_alignment.py`.
+  What remains:
+  - **Two deliberate approximations**, documented in the class docstrings and caught by
     `ODMSchemaValidator` rather than at build time: `FormalExpression` — the XSD requires
     exactly one of `Code` or `ExternalCodeLib`; odmlib cannot express an `xs:choice`, so
-    both are optional.
+    both are optional. `Association` — the XSD requires exactly two `KeySet`s; odmlib
+    holds them in a list and does not enforce the count.
   - **Interleaved children keep their order (0.3.0).** Where the XSD lets two child types
     alternate — `ItemGroupDef`'s `ItemGroupRef`/`ItemRef`, `StudyEventGroupDef`'s
-    `StudyEventGroupRef`/`StudyEventRef`, `WorkflowDef`'s `Transition`/`Branching` — the
-    two lists share one order. Read it with `igd.children("ItemRef", "ItemGroupRef")`.
-    ODM 2.0 JSON keeps one array per type, so a JSON round trip does not carry it.
+    `StudyEventGroupRef`/`StudyEventRef`, `WorkflowDef`'s `Transition`/`Branching`,
+    `ItemGroupData`'s nested `ItemGroupData`/`ItemData` — the two lists share one order.
+    Read it with `igd.children("ItemRef", "ItemGroupRef")`. ODM 2.0 JSON keeps one array
+    per type, so a JSON round trip does not carry it.
   - **XHTML text (0.3.0).** An `xhtml:div` inside `TranslatedText` is kept as a markup
     string in `TranslatedText.div`; odmlib does not model the XHTML elements inside it.
 

@@ -41,6 +41,61 @@ def resolve_model_class(model_module, elem_name):
         ) from None
 
 
+def register_model_namespaces(model_module):
+    """Register the auxiliary namespace prefixes *model_module* declares.
+
+    Calls the module's ``register_namespaces()`` (every bundled model has one, as
+    of 0.3.0). A custom extension model without one is left alone.
+    """
+    register = getattr(model_module, "register_namespaces", None)
+    if callable(register):
+        register()
+
+
+def child_namespace(ns_map, prefix, elem_class, child_name):
+    """Return the ``{prefix: uri}`` map for an ElementTree ``find`` of a child.
+
+    Args:
+        ns_map: ``{prefix: uri}`` the document is being read with -- the snapshot
+            a loader took when it opened the document.
+        prefix: The child descriptor's namespace prefix.
+        elem_class: The parent's model class, for the error message.
+        child_name: The child element's local name, for the error message.
+
+    Raises:
+        OdmlibParsingError: If *prefix* is not in *ns_map*. ElementTree would
+            otherwise raise a bare ``SyntaxError`` ("prefix ... not found").
+    """
+    uri = ns_map.get(prefix)
+    if uri is None:
+        raise OdmlibParsingError(
+            f"Cannot read {elem_class.__name__}/{prefix}:{child_name}: the namespace "
+            f"prefix '{prefix}' is not registered",
+            hint=f"Register it before loading, e.g. NamespaceRegistry(prefix='{prefix}', "
+                 f"uri='...'). NamespaceRegistry.reset() also removes the prefixes model "
+                 f"packages register on import.",
+        )
+    return {prefix: uri}
+
+
+def element_content(elem, elem_class):
+    """Return the ``_content`` to load for XML element *elem*, or None for no content.
+
+    Text with any non-whitespace character is always content. Whitespace-only text
+    is content only for a class that models ``_content`` and an element with no
+    child elements: ``<CheckValue> </CheckValue>`` carries a real value, while the
+    whitespace before a child element is indentation.
+    """
+    text = elem.text
+    if text is None:
+        return None
+    if not text.isspace():
+        return text
+    if "_content" in elem_class._fields and len(elem) == 0:
+        return text
+    return None
+
+
 class DocumentLoader(ABC):
     """Abstract base class for odmlib document loaders.
 
@@ -115,3 +170,16 @@ class DocumentLoader(ABC):
             The root odmlib ``ODM`` object.
         """
         raise NotImplementedError("Attempted to execute an abstract method load_odm in the DocumentLoader class")
+
+    def _ns_map(self):
+        """The ``{prefix: uri}`` map an XML loader resolves child elements with.
+
+        The snapshot the loader took when it opened the document (``_doc_namespaces``),
+        so opening another document -- which changes the process-wide registry -- cannot
+        change how this one is read. An element handed to ``load_document`` without
+        opening a document falls back to the live registry.
+
+        .. versionadded:: 0.3.0
+        """
+        snapshot = getattr(self, "_doc_namespaces", None)
+        return snapshot if snapshot is not None else self.nsr.namespaces

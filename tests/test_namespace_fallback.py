@@ -16,6 +16,7 @@ The conftest leaves only ``odm`` -> ODM v1.3 registered, which is the state unde
 """
 import ast
 import glob
+import importlib
 import os
 import tempfile
 import unittest
@@ -154,7 +155,7 @@ class TestUnresolvablePrefixes(unittest.TestCase):
         """XHTML markup declares its own extra prefixes on the element that uses them."""
         NS.NamespaceRegistry(prefix="odm", uri=ODM20, is_default=True, is_reset=True)
         tt = ODM2.TranslatedText(
-            Type="text/html", lang="en",
+            Type="application/xhtml+xml", lang="en",
             div='<div xmlns="http://www.w3.org/1999/xhtml" xmlns:v="urn:vendor" v:note="x">'
                 '<p xml:lang="fr">Oui</p></div>')
         text, caught = _write(tt)
@@ -165,15 +166,21 @@ class TestUnresolvablePrefixes(unittest.TestCase):
 class TestTableMatchesTheModels(unittest.TestCase):
     """Every model package binds each fixed prefix to the URI in FIXED_PREFIX_URIS.
 
-    Read from the source with ``ast`` -- re-importing a model would re-run its
-    registrations and recreate its classes. A model that binds one of these prefixes to
-    another URI must take the prefix out of the table, or the fallback would declare
-    the wrong namespace.
+    A model declares its bindings in ``AUXILIARY_NAMESPACES`` (0.3.0), read from the
+    already-imported module, so nothing is re-registered. Any direct
+    ``NamespaceRegistry(prefix=..., uri=...)`` call is also read from the source with
+    ``ast``. A model that binds one of these prefixes to another URI must take the
+    prefix out of the table, or the fallback would declare the wrong namespace.
     """
 
     def test_registrations_agree(self):
         seen = {}
         for path in sorted(glob.glob(os.path.join(REPO_ROOT, "odmlib", "*", "model.py"))):
+            package = os.path.basename(os.path.dirname(path))
+            module = importlib.import_module(f"odmlib.{package}.model")
+            for prefix, uri in getattr(module, "AUXILIARY_NAMESPACES", {}).items():
+                if prefix in NS.FIXED_PREFIX_URIS:
+                    seen.setdefault(prefix, set()).add((uri, os.path.relpath(path, REPO_ROOT)))
             with open(path, encoding="utf-8") as source:
                 tree = ast.parse(source.read())
             for node in ast.walk(tree):
@@ -191,6 +198,73 @@ class TestTableMatchesTheModels(unittest.TestCase):
                 self.assertEqual(uri, NS.FIXED_PREFIX_URIS[prefix],
                                  f"{path} binds {prefix!r} to {uri}")
 
+
+
+CT_CODELIST = """<CodeList xmlns="http://www.cdisc.org/ns/odm/v1.3"
+    xmlns:nciodm="http://ncicb.nci.nih.gov/xml/odm/EVS/CDISC"
+    OID="CL.C66731.SEX" Name="Sex" DataType="text"
+    nciodm:ExtCodeID="C66731" nciodm:CodeListExtensible="No">
+  <EnumeratedItem CodedValue="F" nciodm:ExtCodeID="C16576">
+    <nciodm:CDISCDefinition>A person who belongs to the sex that normally produces ova.</nciodm:CDISCDefinition>
+    <nciodm:PreferredTerm>Female</nciodm:PreferredTerm>
+  </EnumeratedItem>
+  <nciodm:CDISCSubmissionValue>SEX</nciodm:CDISCSubmissionValue>
+  <nciodm:CDISCSynonym>Sex</nciodm:CDISCSynonym>
+  <nciodm:PreferredTerm>CDISC SDTM Sex of Individual Terminology</nciodm:PreferredTerm>
+</CodeList>"""
+
+
+class TestXmlLoadersRegisterModelNamespaces(unittest.TestCase):
+    """P2.5 defect 1: an XML loader registers its model's auxiliary prefixes.
+
+    A model registers them only when first imported, and the conftest fixture (like
+    any ``reset()``) removes them, so before 0.3.0 these loads failed on an unknown
+    prefix.
+    """
+
+    def test_ct_loaded_through_the_odm_loader_resolves_and_declares_nciodm(self):
+        import odmlib.odm_loader as OL
+        loader = OL.XMLODMLoader(model_package="ct_1_1_1")
+        codelist = loader.load_document(loader.create_document_from_string(CT_CODELIST))
+        self.assertEqual(codelist.ExtCodeID, "C66731")
+        self.assertEqual(codelist.CDISCSubmissionValue._content, "SEX")
+        self.assertEqual(codelist.EnumeratedItem[0].PreferredTerm._content, "Female")
+        text, caught = _write(codelist)
+        self.assertIn('xmlns:nciodm="http://ncicb.nci.nih.gov/xml/odm/EVS/CDISC"', text)
+        self.assertEqual(caught, [])
+
+    def test_define_loaded_through_the_odm_loader_resolves_def_children(self):
+        import odmlib.odm_loader as OL
+        path = os.path.join(REPO_ROOT, "tests", "data", "defineV21-SDTM.xml")
+        define_loader = LD.ODMLoader(DL.XMLDefineLoader(model_package="define_2_1"))
+        define_loader.open_odm_document(path)
+        expected = define_loader.root().Study.MetaDataVersion
+        self.assertGreater(len(expected.leaf), 0)
+        NS.NamespaceRegistry(prefix="odm", uri=ODM13, is_default=True, is_reset=True)
+        loader = LD.ODMLoader(OL.XMLODMLoader(model_package="define_2_1"))
+        loader.open_odm_document(path)
+        mdv = loader.root().Study.MetaDataVersion
+        self.assertEqual(len(mdv.leaf), len(expected.leaf))
+        self.assertEqual(len(mdv.ValueListDef), len(expected.ValueListDef))
+
+
+class TestBorgReset(unittest.TestCase):
+    """P2.5 defect 4: reset() rebinds Borg's own dictionaries."""
+
+    def test_borg_reset_clears_the_registry_after_a_subclass_reset(self):
+        NS.NamespaceRegistry(prefix="odm", uri=ODM13, is_default=True, is_reset=True)
+        NS.NamespaceRegistry(prefix="zz", uri="http://example.com/zz")
+        NS.Borg.reset()
+        self.assertEqual(NS.NamespaceRegistry().namespaces, {})
+        self.assertEqual(NS.NamespaceRegistry().default_namespace, {})
+
+    def test_no_subclass_copy_is_created(self):
+        NS.NamespaceRegistry(prefix="odm", uri=ODM13, is_default=True, is_reset=True)
+        NS.NamespaceRegistry.reset()
+        self.assertNotIn("namespaces", vars(NS.NamespaceRegistry))
+        self.assertNotIn("default_namespace", vars(NS.NamespaceRegistry))
+        NS.NamespaceRegistry(prefix="zz", uri="http://example.com/zz")
+        self.assertEqual(NS.Borg.namespaces, {"zz": "http://example.com/zz"})
 
 if __name__ == "__main__":
     unittest.main()

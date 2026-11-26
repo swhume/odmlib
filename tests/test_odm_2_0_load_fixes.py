@@ -148,7 +148,7 @@ class TestWhitespaceTextContent(_ODM2TestCase):
 
     def test_indentation_before_a_child_is_not_content(self):
         odm = _load(_document(_item_def(inner=(
-            '<Description>\n  <TranslatedText xml:lang="en" Type="text/html">\n    '
+            '<Description>\n  <TranslatedText xml:lang="en" Type="application/xhtml+xml">\n    '
             '<div xmlns="http://www.w3.org/1999/xhtml"><p>Hi</p></div>\n  </TranslatedText>'
             '\n</Description>'))))
         tt = self.mdv(odm).ItemDef[0].Description.TranslatedText[0]
@@ -177,10 +177,16 @@ class TestXsiAttributes(_ODM2TestCase):
         self.assertNotIn("noNamespaceSchemaLocation", odm.__dict__)
         self.assertSchemaValid(odm)
 
-    def test_unknown_foreign_attribute_still_raises(self):
-        """Only the XSI namespace is exempt; other unmodelled attributes still fail."""
-        with self.assertRaises(OdmlibTypeError):
-            _load(_document(odm_attrs='xmlns:v="urn:vendor" v:extra="1"'))
+    def test_unknown_foreign_attribute_is_ignored_with_a_warning(self):
+        """XSI attributes are dropped silently; other unmodelled ones with a warning.
+
+        Before 0.3.0 an unmodelled attribute in a foreign namespace failed the load
+        (P2.5.5). It is now ignored, and the warning names it.
+        """
+        with self.assertWarns(OdmlibWarning) as ctx:
+            odm = _load(_document(odm_attrs='xmlns:v="urn:vendor" v:extra="1"'))
+        self.assertIn("{urn:vendor}extra", str(ctx.warning))
+        self.assertNotIn("extra", odm.__dict__)
 
 
 class TestOidCheckerMappings(_ODM2TestCase):
@@ -371,7 +377,7 @@ class TestXhtmlTranslatedText(_ODM2TestCase):
         self.assertEqual(loader.root().to_xml_string(), odm.to_xml_string())
 
     def test_markup_without_a_namespace_is_placed_in_xhtml(self):
-        tt = ODM2.TranslatedText(Type="text/html", div="<div><p>Hi <i>there</i></p></div>")
+        tt = ODM2.TranslatedText(Type="application/xhtml+xml", div="<div><p>Hi <i>there</i></p></div>")
         self.assertEqual(tt.div, f'<div xmlns="{XHTML_NS}"><p>Hi <i>there</i></p></div>')
         out = ET.fromstring(tt.to_xml_string())
         self.assertEqual([e.tag for e in out.iter()][1:],
@@ -379,7 +385,7 @@ class TestXhtmlTranslatedText(_ODM2TestCase):
 
     def test_serialization_does_not_depend_on_the_namespace_registry(self):
         """The v0.2.1 opaque div failed when 'xhtml' was not registered."""
-        tt = ODM2.TranslatedText(Type="text/html", div=self.MARKUP)
+        tt = ODM2.TranslatedText(Type="application/xhtml+xml", div=self.MARKUP)
         NS.NamespaceRegistry(prefix="odm", uri=ODM_NS, is_default=True, is_reset=True)
         out = ET.fromstring(tt.to_xml_string())
         self.assertEqual(out[0].tag, f"{{{XHTML_NS}}}div")
@@ -389,11 +395,11 @@ class TestXhtmlTranslatedText(_ODM2TestCase):
                        '<!DOCTYPE div [<!ENTITY e "x">]><div>&e;</div>', "<x:div xmlns:x='urn:x'/>"):
             with self.subTest(markup=markup):
                 with self.assertRaises(OdmlibValidationError):
-                    ODM2.TranslatedText(Type="text/html", div=markup)
+                    ODM2.TranslatedText(Type="application/xhtml+xml", div=markup)
 
     def test_invalid_markup_kept_in_permissive_mode_cannot_be_written(self):
         with permissive(ValidationMode.SKIP_FORMAT):
-            tt = ODM2.TranslatedText(Type="text/html", div="<p>broken")
+            tt = ODM2.TranslatedText(Type="application/xhtml+xml", div="<p>broken")
         with self.assertRaises(OdmlibSerializationError):
             tt.to_xml_string()
 

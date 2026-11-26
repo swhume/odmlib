@@ -93,3 +93,41 @@ jobs:
 
       - name: Run mypy against the baseline
         run: python scripts/mypy_baseline.py
+
+  # Issue #37: a PyInstaller-frozen application must find odmlib's data files and the
+  # model modules the loaders import by name. odmlib ships a hook for that (registered
+  # through the pyinstaller40 entry point), so the freeze below uses no
+  # --collect-data/--hidden-import flags. odmlib is installed non-editable, as a user's
+  # would be, and the build and the run both happen outside the checkout so nothing
+  # can be picked up from the source tree.
+  pyinstaller:
+    name: PyInstaller smoke test
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+
+      - name: Install odmlib (non-editable), PyInstaller and pytest
+        run: |
+          python -m pip install --upgrade pip
+          pip install . pyinstaller pytest
+
+      - name: Check the hook's contents
+        run: python -m pytest tests/test_pyinstaller_hook.py -v --tb=short
+
+      - name: Freeze the smoke test
+        run: |
+          mkdir -p "$RUNNER_TEMP/freeze" "$RUNNER_TEMP/run"
+          cp tests/pyinstaller/smoke.py "$RUNNER_TEMP/freeze/"
+          cd "$RUNNER_TEMP/freeze"
+          pyinstaller --onefile --name odmlib-smoke smoke.py
+
+      - name: Run the frozen binary
+        run: |
+          cd "$RUNNER_TEMP/run"
+          "$RUNNER_TEMP/freeze/dist/odmlib-smoke"

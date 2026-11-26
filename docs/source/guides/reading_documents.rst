@@ -161,6 +161,33 @@ Use :meth:`~odmlib.odm_element.ODMElement.find_by` for multi-attribute search:
 
     item = mdv.find_by("ItemDef", OID="IT.AGE", DataType="integer")
 
+All three search only the **direct** children named in the first argument, not
+the whole subtree: ``mdv.find("ItemDef", ...)`` looks at the MetaDataVersion's
+``ItemDef`` list.
+
+Matching by pattern or predicate
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The value to match can also be a compiled regular expression or a callable:
+
+.. code-block:: python
+
+    import re
+
+    # A pattern must match the whole value; an unset attribute never matches
+    ae_items = mdv.find_all("ItemDef", "OID", re.compile(r"IT\.AE\..+"))
+    item = mdv.find_by("ItemDef", Name=re.compile("^AE", re.I))
+
+    # A predicate is called with the stored value (None when unset)
+    long_items = mdv.find_all("ItemDef", "Length", lambda v: v is not None and v > 8)
+
+Numbers are matched against their ``str()`` form. A plain string is still
+compared exactly, so ``mdv.find("ItemDef", "OID", "IT.X.(A|B)")`` looks for that
+literal OID.
+
+.. versionadded:: 0.3.0
+   Compiled patterns and callables as search values.
+
 Reading Children in Document Order
 ----------------------------------
 

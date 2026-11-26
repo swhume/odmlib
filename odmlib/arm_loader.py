@@ -66,6 +66,8 @@ class XMLArmLoader(DL.DocumentLoader):
             self.ARM = importlib.import_module(f"odmlib.{model_package}.model")
         self.ns_uri = ns_uri
         self.nsr = NS.NamespaceRegistry()
+        # {prefix: uri} captured when a document is opened (see DocumentLoader._ns_map)
+        self._doc_namespaces: Optional[dict] = None
 
     def load_document(self, elem: ET.Element, *args: Any) -> Any:
         """Recursively load an XML element into an odmlib object tree.
@@ -83,21 +85,21 @@ class XMLArmLoader(DL.DocumentLoader):
         """
         elem_name = elem.tag[elem.tag.find('}') + 1:]
         elem_class = DL.resolve_model_class(self.ARM, elem_name)
-        if elem.text and not elem.text.isspace():
-            attrib = {**elem.attrib, **{"_content": elem.text}}
-            odm_obj = elem_class(**attrib)
-        else:
-            odm_obj = elem_class(**elem.attrib)
+        attrib = dict(elem.attrib)
+        content = DL.element_content(elem, elem_class)
+        if content is not None:
+            attrib["_content"] = content
+        odm_obj = elem_class(**attrib)
         odm_obj_dict = elem_class._elems.items()
         for k, v in odm_obj_dict:
             if type(v).__name__ == "ODMObject":
-                namespace = self.nsr.get_ns_entry_dict(v.namespace)
+                namespace = DL.child_namespace(self._ns_map(), v.namespace, elem_class, k)
                 e = elem.find(v.namespace + ":" + k, namespace)
                 if e is not None:
                     odm_child_obj = self.load_document(e)
                     setattr(odm_obj, k, odm_child_obj)
             elif type(v).__name__ == "ODMListObject":
-                namespace = self.nsr.get_ns_entry_dict(v.namespace)
+                namespace = DL.child_namespace(self._ns_map(), v.namespace, elem_class, k)
                 for e in elem.findall(v.namespace + ":" + k, namespace):
                     odm_child_obj = self.load_document(e)
                     getattr(odm_obj, k).append(odm_child_obj)
@@ -118,6 +120,7 @@ class XMLArmLoader(DL.DocumentLoader):
         self._set_registry(namespace_registry)
         self.parser = P.ODMParser(self.filename, self.nsr)
         root = self.parser.parse()
+        self._doc_namespaces = dict(self.nsr.namespaces)
         return root
 
     def create_document_from_string(self, odm_string: str, namespace_registry: Optional[Any] = None) -> ET.Element:
@@ -134,6 +137,7 @@ class XMLArmLoader(DL.DocumentLoader):
         self._set_registry(namespace_registry)
         self.parser = P.ODMStringParser(odm_string, self.nsr)
         root = self.parser.parse()
+        self._doc_namespaces = dict(self.nsr.namespaces)
         return root
 
     def _set_registry(self, namespace_registry: Optional[Any]) -> None:
@@ -153,6 +157,7 @@ class XMLArmLoader(DL.DocumentLoader):
             # different base URIs, this is the spot to derive them from
             # model_package (see _DEFAULT_DEF_NS_URI in define_loader.py for
             # the pattern).
+            DL.register_model_namespaces(self.ARM)
             NS.NamespaceRegistry(prefix="odm", uri="http://www.cdisc.org/ns/odm/v1.3", is_default=True)
             NS.NamespaceRegistry(prefix="def", uri="http://www.cdisc.org/ns/def/v2.1")
             self.nsr = NS.NamespaceRegistry(prefix="arm", uri=self.ns_uri)
@@ -223,6 +228,21 @@ class JSONArmLoader(DL.DocumentLoader):
         self.odm_dict: dict = {}
         self.ARM = importlib.import_module(f"odmlib.{model_package}.model")
 
+    def _register_namespaces(self) -> None:
+        """Register the model's auxiliary prefixes and default namespace.
+
+        JSON carries no namespaces, so without this a document loaded after
+        ``NamespaceRegistry.reset()`` was serialized with whatever namespaces happened
+        to be registered: ODM 2.0 came out as ``xmlns=".../odm/v1.3"`` and Define-XML
+        with ``def:`` undeclared. Called from ``create_document``, before the
+        :class:`~odmlib.loader.ODMLoader` facade snapshots the registry, as the XML
+        loaders do.
+
+        .. versionadded:: 0.3.0
+        """
+        DL.register_model_namespaces(self.ARM)
+        NS.NamespaceRegistry(prefix="odm", uri="http://www.cdisc.org/ns/odm/v1.3", is_default=True)
+
     def load_document(self, odm_dict: dict, key: str) -> Any:
         """Recursively load a dict into an odmlib object tree.
 
@@ -263,6 +283,7 @@ class JSONArmLoader(DL.DocumentLoader):
             dict: The parsed JSON as a Python dictionary.
         """
         self.filename = filename
+        self._register_namespaces()
         # utf-8-sig tolerates a UTF-8 BOM and avoids platform-default encodings
         with open(self.filename, encoding="utf-8-sig") as json_in:
             try:
@@ -283,6 +304,7 @@ class JSONArmLoader(DL.DocumentLoader):
         Returns:
             dict: The parsed JSON as a Python dictionary.
         """
+        self._register_namespaces()
         try:
             self.odm_dict = json.loads(odm_string)
         except json.JSONDecodeError as ex:

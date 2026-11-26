@@ -10,7 +10,7 @@ import odmlib.loader as LD
 from odmlib import permissive, ValidationMode
 from odmlib.dataset_json_1_1 import DefineFlattener, DefineBuilder
 from odmlib.dataset_json_1_1.model import DatasetJSON, Column
-from odmlib.exceptions import OdmlibTypeError
+from odmlib.exceptions import OdmlibTypeError, OdmlibValidationError
 
 
 def _make_test_dataset(name, columns, rows):
@@ -725,3 +725,21 @@ class TestDefineBuilderPermissive(TestCase):
         self.assertIsNone(_int_or_none(None))
         self.assertEqual(_float_or_none(2), 2.0)
         self.assertIsNone(_float_or_none(None))
+
+    def test_non_integral_float_is_not_truncated(self):
+        """P2.2: 3.7 used to become 3 silently."""
+        from odmlib.dataset_json_1_1.define_builder import _int_or_none
+        with self.assertRaises(OdmlibValidationError) as cm:
+            _int_or_none(3.7, "Length")
+        self.assertEqual(cm.exception.attribute, "Length")
+        with permissive(ValidationMode.SKIP_TYPE):
+            self.assertEqual(_int_or_none(3.7, "Length"), 3.7)
+
+    def test_int_or_none_applies_xs_integer_to_strings(self):
+        from odmlib.dataset_json_1_1.define_builder import _int_or_none
+        self.assertEqual(_int_or_none(" 8 "), 8)
+        self.assertEqual(_int_or_none("+8"), 8)
+        for bad in ("1_0", "8.0", "\u0668", True):
+            with self.subTest(value=bad):
+                with self.assertRaises(OdmlibTypeError):
+                    _int_or_none(bad, "Length")

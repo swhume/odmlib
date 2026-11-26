@@ -4,10 +4,31 @@ import odmlib.typed as T
 import odmlib.ns_registry as NS
 
 
+#: Namespace prefixes this model uses besides its default ``odm`` namespace.
+AUXILIARY_NAMESPACES = {
+    "xs": "http://www.w3.org/2001/XMLSchema-instance",
+    "xml": "http://www.w3.org/XML/1998/namespace",
+    "data": "http://www.cdisc.org/ns/Dataset-XML/v1.0",
+}
+
+
+def register_namespaces():
+    """Register the auxiliary namespace prefixes this model uses (not its default).
+
+    The model registers them once, when it is imported, and
+    ``NamespaceRegistry.reset()`` removes them again. The loaders call this from
+    ``create_document`` so that a document loaded after a reset still resolves
+    and declares these prefixes. Safe to call repeatedly. Registering the
+    default namespace is the loader's job.
+
+    .. versionadded:: 0.3.0
+    """
+    for prefix, uri in AUXILIARY_NAMESPACES.items():
+        NS.NamespaceRegistry(prefix=prefix, uri=uri)
+
+
 NS.NamespaceRegistry(prefix="odm", uri="http://www.cdisc.org/ns/odm/v1.3", is_default=True)
-NS.NamespaceRegistry(prefix="xs", uri="http://www.w3.org/2001/XMLSchema-instance")
-NS.NamespaceRegistry(prefix="xml", uri="http://www.w3.org/XML/1998/namespace")
-NS.NamespaceRegistry(prefix="data", uri="http://www.cdisc.org/ns/Dataset-XML/v1.0")
+register_namespaces()
 
 
 class ItemData(OE.ODMElement):

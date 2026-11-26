@@ -199,10 +199,13 @@ Every model object subclasses `ODMElement` and inherits:
 .to_xml(...) -> Element      # internal tree builder: NO xmlns -- prefer to_element()
 .write_xml(odm_file)         .write_json(odm_file)
 
-# Search the subtree
+# Search DIRECT children named obj_name (not the whole subtree)
 .find(obj_name, attr, val)            # first match or None
 .find_all(obj_name, attr, val)        # list of matches
 .find_by(obj_name, **kwargs)          # first match by attribute kwargs, or None
+# 0.3.0+: val (or a kwarg value) may be re.compile(...) -- must match the WHOLE
+# str(value), never matches an unset attribute -- or a predicate called with the
+# stored value (None when unset). Plain strings are still compared with ==.
 .children(*names) -> list             # 0.3.0+: child elements in the order they are written
 
 # OID indexing / integrity

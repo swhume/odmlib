@@ -209,6 +209,23 @@ class TestDocumentedSignatures(TestCase):
         from odmlib.odm_element import ODMElement
         self._assert_signature(ODMElement.children, [("*names", REQUIRED)])
 
+    # -- search: api-reference documents these three exact signatures --------
+
+    def test_find(self):
+        from odmlib.odm_element import ODMElement
+        self._assert_signature(ODMElement.find, [
+            ("obj_name", REQUIRED), ("attr", REQUIRED), ("val", REQUIRED)])
+
+    def test_find_all(self):
+        from odmlib.odm_element import ODMElement
+        self._assert_signature(ODMElement.find_all, [
+            ("obj_name", REQUIRED), ("attr", REQUIRED), ("val", REQUIRED)])
+
+    def test_find_by(self):
+        from odmlib.odm_element import ODMElement
+        self._assert_signature(ODMElement.find_by, [
+            ("obj_name", REQUIRED), ("**kwargs", REQUIRED)])
+
     # -- validation ---------------------------------------------------------
 
     def test_validate(self):

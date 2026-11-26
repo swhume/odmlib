@@ -1,6 +1,6 @@
 import json
 import re
-from pathlib import Path
+from importlib import resources
 from odmlib.exceptions import OdmlibValidationError
 
 
@@ -32,10 +32,11 @@ class ValueSetLoader:
     def load_valuesets(cls):
         """Load JSON once, cache in memory (lazy loading)"""
         if cls._cache is None:
-            data_dir = Path(__file__).parent / 'data'
-            json_path = data_dir / 'valuesets.json'
-            with open(json_path, 'r', encoding='utf-8') as f:
-                cls._cache = json.load(f)
+            # importlib.resources reads the packaged file however odmlib is installed
+            # (wheel, zip, or a PyInstaller bundle), without assuming a directory layout
+            text = (resources.files("odmlib") / "data" / "valuesets.json").read_text(
+                encoding="utf-8")
+            cls._cache = json.loads(text)
             cls._build_version_map()
         return cls._cache
 

@@ -91,3 +91,56 @@ class TestEmptyRegistryErrors(TestCase):
             nsr.get_odm_namespace_entries()
         with self.assertRaises(OdmlibNamespaceError):
             nsr.set_odm_namespace_attributes(ET.Element("ODM"))
+
+
+class TestInterleavedLoadsReadTheirOwnNamespaces(TestCase):
+    """P2.5 defect 3: opening a second document must not change how the first is read.
+
+    Child lookups used to read the process-wide registry when the document was
+    *loaded*, not when it was *opened*, so opening a Define-XML 2.0 file rebound
+    ``def`` and the already-open 2.1 file lost every ``def:`` child.
+    """
+
+    DEFINE21 = os.path.join(DATA_DIR, "defineV21-SDTM.xml")
+    DEFINE20 = os.path.join(DATA_DIR, "define2-0-0-sdtm-test.xml")
+
+    def _define(self, package, path):
+        import odmlib.define_loader as DL
+        loader = LD.ODMLoader(DL.XMLDefineLoader(model_package=package))
+        loader.open_odm_document(path)
+        return loader
+
+    def test_define_2_1_keeps_def_children_after_a_2_0_file_is_opened(self):
+        alone = self._define("define_2_1", self.DEFINE21).root().Study.MetaDataVersion
+        expected = (len(alone.leaf), len(alone.ValueListDef), len(alone.WhereClauseDef))
+        self.assertGreater(expected[0], 0)
+        first = self._define("define_2_1", self.DEFINE21)
+        self._define("define_2_0", self.DEFINE20)           # rebinds def -> v2.0
+        mdv = first.root().Study.MetaDataVersion
+        self.assertEqual((len(mdv.leaf), len(mdv.ValueListDef), len(mdv.WhereClauseDef)),
+                         expected)
+
+    def test_define_2_0_keeps_def_children_after_a_2_1_file_is_opened(self):
+        first = self._define("define_2_0", self.DEFINE20)
+        self._define("define_2_1", self.DEFINE21)
+        self.assertGreater(len(first.root().Study.MetaDataVersion.ValueListDef), 0)
+
+    def test_odm_1_3_2_metadataversion_after_an_odm_2_0_file_is_opened(self):
+        """The parser's root-level lookups use the default namespace of parse time."""
+        first = LD.ODMLoader(OL.XMLODMLoader(model_package="odm_1_3_2"))
+        first.open_odm_document(CDASH_XML)
+        second = LD.ODMLoader(OL.XMLODMLoader(model_package="odm_2_0"))
+        second.open_odm_document(os.path.join(DATA_DIR, "odmv2_example.xml"))
+        self.assertGreater(len(first.MetaDataVersion().ItemDef), 0)
+        self.assertEqual(first.Study().OID, first.root().Study[0].OID)
+        self.assertGreater(len(second.MetaDataVersion().ItemDef), 0)
+
+    def test_parser_dynamic_lookups_use_parse_time_namespaces(self):
+        import odmlib.odm_parser as P
+        parser = P.ODMParser(CDASH_XML, NS.NamespaceRegistry(
+            prefix="odm", uri="http://www.cdisc.org/ns/odm/v1.3", is_default=True))
+        parser.parse()
+        NS.NamespaceRegistry(prefix="odm", uri="http://www.cdisc.org/ns/odm/v2.0",
+                             is_default=True)
+        mdv = parser.MetaDataVersion()
+        self.assertGreater(len(parser.ItemDef(parent=mdv[0])), 0)

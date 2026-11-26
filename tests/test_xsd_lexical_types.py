@@ -120,6 +120,40 @@ class TestDescriptorsMatchXSD(unittest.TestCase):
         self._assert_matches("DurationDateTimeString", self._type("durationDatetime"),
                              TEMPORAL_CORPUS)
 
+    INTEGER_CORPUS = [
+        "0", "1", "-1", "+1", "007", "-0", "+0", " 7 ", "\n7\n", "\t7", "12345678901234567890",
+        "-99999", "1_0", "1.0", "1.", "1e3", "", "  ", "abc", "0x10", "12a", "1 2", "+-1",
+        "--1", "\u0661\u0662", "\u00b2", "\uff11", "\u0663"]
+
+    #: Values xmlschema accepts as integers although the XSD does not. XSD Part 2
+    #: (3.3.13) defines the lexical space as an optional sign and the digits
+    #: #x30-#x39; xmlschema validates with Python's int(), which also takes "1_0"
+    #: and non-ASCII decimal digits. odmlib follows the specification.
+    XMLSCHEMA_INTEGER_LENIENCY = {"1_0", "\u0661\u0662", "\uff11", "\u0663"}
+
+    def _assert_integer_matches(self, descriptor_name, xsd_name):
+        xsd_type = self._type(XS + xsd_name)
+        lenient = self.XMLSCHEMA_INTEGER_LENIENCY
+        self._assert_matches(descriptor_name, xsd_type,
+                             [v for v in self.INTEGER_CORPUS if v not in lenient])
+        model = type(f"Probe{descriptor_name}", (OE.ODMElement,),
+                     {"V": getattr(T, descriptor_name)()})
+        for value in sorted(lenient):
+            with self.subTest(value=value):
+                self.assertTrue(xsd_type.is_valid(value), "xmlschema fixed? drop the entry")
+                with self.assertRaises(OdmlibTypeError):
+                    model(V=value)
+
+    def test_integer(self):
+        """P2.2: int() alone accepted "1_0" and non-ASCII digits."""
+        self._assert_integer_matches("Integer", "integer")
+
+    def test_positive_integer(self):
+        self._assert_integer_matches("PositiveInteger", "positiveInteger")
+
+    def test_non_negative_integer(self):
+        self._assert_integer_matches("NonNegativeInteger", "nonNegativeInteger")
+
     def test_decimal(self):
         self._assert_matches("Float", self._type("decimal"), [
             "1", "1.0", "-1", "+1", ".5", "5.", "-.5", "1.10", " 2.5 ", "\n3\n",
@@ -147,6 +181,27 @@ class TestDescriptorsMatchXSD(unittest.TestCase):
 
 class TestDescriptorBehaviour(unittest.TestCase):
     """Details the XSD comparison does not show."""
+
+    def test_float_attributes_are_written_as_xs_decimal(self):
+        """P2.2: str(1e-07) is "1e-07", which xs:decimal does not allow."""
+        import odmlib.odm_1_3_2.model as ODM
+        decimal = ODMSchemaValidator(standard="odm", version="2.0").xsd.maps.types[XS + "decimal"]
+        for value, text in ((1e-07, "0.0000001"), (1e16, "10000000000000000"),
+                            (2.5, "2.5"), (1.0, "1.0"), (-0.25, "-0.25")):
+            with self.subTest(value=value):
+                written = ODM.CodeListItem(CodedValue="X", Rank=value).to_xml().get("Rank")
+                self.assertEqual(written, text)
+                self.assertTrue(decimal.is_valid(written))
+                self.assertEqual(float(written), value)
+
+    def test_integer_stores_an_int_and_rejects_bool_and_fractions(self):
+        model = type("IntegerProbe", (OE.ODMElement,), {"V": T.Integer()})
+        self.assertEqual(model(V=" +7 ").V, 7)
+        self.assertEqual(model(V=12).V, 12)
+        for bad in (True, False, 3.7):
+            with self.subTest(value=bad):
+                with self.assertRaises(OdmlibTypeError):
+                    model(V=bad)
 
     def test_float_stores_a_float(self):
         model = type("FloatProbe", (OE.ODMElement,), {"V": T.Float()})

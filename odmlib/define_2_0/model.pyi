@@ -3,6 +3,10 @@ from typing import Optional, List
 from odmlib.odm_element import ODMElement
 from odmlib.odm_1_3_2 import model as ODMBase
 
+AUXILIARY_NAMESPACES: dict[str, str]
+
+def register_namespaces() -> None: ...
+
 
 class TranslatedText(ODMBase.TranslatedText):
     lang: Optional[str]

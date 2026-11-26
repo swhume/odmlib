@@ -65,7 +65,8 @@ if __name__ == "__main__":
     print("MetaDataVersion() ->", type(mdv).__name__,
           "| ItemDef count =", len(mdv.ItemDef))
 
-    # find_by walks the subtree for a single match by attribute(s):
+    # find_by searches the MetaDataVersion's direct ItemDef children (not the
+    # whole subtree) for the first match by attribute(s):
     age = mdv.find_by("ItemDef", OID="IT.AGE")
     print("find_by ItemDef OID=IT.AGE ->", age.Name if age else None)
 

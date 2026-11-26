@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- A small, hand-written CT-XML 1.1.1 document for odmlib's round-trip tests. It
+     mirrors the structure of CDISC's published Controlled Terminology files (the nciodm
+     attributes and child elements), but every code, name and definition in it is
+     illustrative, not real CDISC terminology. -->
+<ODM xmlns="http://www.cdisc.org/ns/odm/v1.3"
+     xmlns:xs="http://www.w3.org/2001/XMLSchema-instance"
+     xmlns:nciodm="http://ncicb.nci.nih.gov/xml/odm/EVS/CDISC"
+     xs:schemaLocation="http://www.nci.nih.gov/EVS/CDISC ../schema/controlledterminology1-1-1.xsd"
+     FileType="Snapshot" FileOID="ODMLIB_CT_SAMPLE.2026-11-26" Granularity="Metadata"
+     CreationDateTime="2026-11-26T09:00:00" AsOfDateTime="2026-11-26T00:00:00"
+     ODMVersion="1.3.2" Originator="odmlib test suite" SourceSystem="hand-written"
+     SourceSystemVersion="1">
+    <Study OID="ODMLIB_CT_SAMPLE">
+        <GlobalVariables>
+            <StudyName>odmlib Sample Controlled Terminology</StudyName>
+            <StudyDescription>Illustrative terminology for round-trip tests</StudyDescription>
+            <ProtocolName>odmlib Sample Controlled Terminology</ProtocolName>
+        </GlobalVariables>
+        <MetaDataVersion OID="ODMLIB_CT_SAMPLE.MDV" Name="odmlib Sample Controlled Terminology"
+                         Description="Two illustrative codelists">
+            <CodeList OID="CL.X0001.YESNO" Name="Sample Yes No Response" DataType="text"
+                      nciodm:ExtCodeID="X0001" nciodm:CodeListExtensible="No">
+                <Description>
+                    <TranslatedText xml:lang="en">A sample codelist for yes or no answers.</TranslatedText>
+                </Description>
+                <EnumeratedItem CodedValue="N" nciodm:ExtCodeID="X0002">
+                    <nciodm:CDISCSynonym>No</nciodm:CDISCSynonym>
+                    <nciodm:CDISCSynonym>Negative</nciodm:CDISCSynonym>
+                    <nciodm:CDISCDefinition>A sample term meaning the answer is no.</nciodm:CDISCDefinition>
+                    <nciodm:PreferredTerm>Sample No</nciodm:PreferredTerm>
+                </EnumeratedItem>
+                <EnumeratedItem CodedValue="Y" nciodm:ExtCodeID="X0003">
+                    <nciodm:CDISCSynonym>Yes</nciodm:CDISCSynonym>
+                    <nciodm:CDISCDefinition>A sample term meaning the answer is yes.</nciodm:CDISCDefinition>
+                    <nciodm:PreferredTerm>Sample Yes</nciodm:PreferredTerm>
+                </EnumeratedItem>
+                <nciodm:CDISCSubmissionValue>SYN</nciodm:CDISCSubmissionValue>
+                <nciodm:CDISCSynonym>Sample Yes No Response</nciodm:CDISCSynonym>
+                <nciodm:PreferredTerm>Sample Yes No Response Terminology</nciodm:PreferredTerm>
+            </CodeList>
+            <CodeList OID="CL.X0010.UNIT" Name="Sample Unit" DataType="text"
+                      nciodm:ExtCodeID="X0010" nciodm:CodeListExtensible="Yes">
+                <EnumeratedItem CodedValue="cm" nciodm:ExtCodeID="X0011">
+                    <nciodm:CDISCDefinition>A sample unit of length.</nciodm:CDISCDefinition>
+                    <nciodm:PreferredTerm>Sample Centimeter</nciodm:PreferredTerm>
+                </EnumeratedItem>
+                <EnumeratedItem CodedValue="kg" nciodm:ExtCodeID="X0012">
+                    <nciodm:CDISCSynonym>Kilogram</nciodm:CDISCSynonym>
+                    <nciodm:CDISCDefinition>A sample unit of mass.</nciodm:CDISCDefinition>
+                    <nciodm:PreferredTerm>Sample Kilogram</nciodm:PreferredTerm>
+                </EnumeratedItem>
+                <nciodm:CDISCSubmissionValue>SUNIT</nciodm:CDISCSubmissionValue>
+                <nciodm:CDISCSynonym>Sample Unit</nciodm:CDISCSynonym>
+                <nciodm:PreferredTerm>Sample Unit Terminology</nciodm:PreferredTerm>
+            </CodeList>
+        </MetaDataVersion>
+    </Study>
+</ODM>

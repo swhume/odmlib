@@ -124,6 +124,7 @@ class CDISCSynonym(OE.ODMElement):
         _content (str, required): The synonym text string.
     """
 
+    namespace = "nciodm"
     _content = T.String(required=True)
 
 
@@ -135,6 +136,7 @@ class CDISCDefinition(OE.ODMElement):
             published by CDISC.
     """
 
+    namespace = "nciodm"
     _content = T.String(required=True)
 
 
@@ -148,6 +150,7 @@ class CDISCSubmissionValue(OE.ODMElement):
         _content (str, required): The submission value string.
     """
 
+    namespace = "nciodm"
     _content = T.String(required=True)
 
 
@@ -161,6 +164,7 @@ class PreferredTerm(OE.ODMElement):
         _content (str, required): The NCI preferred term string.
     """
 
+    namespace = "nciodm"
     _content = T.String(required=True)
 
 
